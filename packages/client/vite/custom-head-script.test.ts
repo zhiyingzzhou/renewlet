@@ -8,21 +8,21 @@ import {
 
 describe("parseCustomHeadScript", () => {
   it("accepts one external script and preserves markup", () => {
-    const raw = `<script defer src="https://analytics.example.com/script.js" data-website-id="site-id"></script>`;
+    const raw = `<script defer src="https://cdn.example.com/widget.js" data-widget-id="widget-id"></script>`;
 
     const script = parseCustomHeadScript(raw);
 
     expect(script?.markup).toBe(raw);
-    expect(script?.scriptOrigin).toBe("https://analytics.example.com");
-    expect(script?.connectOrigins).toEqual(["https://analytics.example.com"]);
+    expect(script?.scriptOrigin).toBe("https://cdn.example.com");
+    expect(script?.connectOrigins).toEqual(["https://cdn.example.com"]);
   });
 
   it("adds data-host-url to connect origins", () => {
     const script = parseCustomHeadScript(
-      `<script defer src="https://cdn.example.com/widget.js" data-host-url="https://events.example.com/api/send"></script>`,
+      `<script defer src="https://cdn.example.com/widget.js" data-host-url="https://api.example.com/widget"></script>`,
     );
 
-    expect(script?.connectOrigins).toEqual(["https://cdn.example.com", "https://events.example.com"]);
+    expect(script?.connectOrigins).toEqual(["https://cdn.example.com", "https://api.example.com"]);
   });
 
   it("rejects unsafe or malformed scripts", () => {
@@ -47,11 +47,11 @@ describe("parseCustomHeadScript", () => {
 
 describe("injectCustomHeadScriptHtml", () => {
   it("injects the script before the closing head tag", () => {
-    const script = parseCustomHeadScript(`<script defer src="https://analytics.example.com/script.js"></script>`);
+    const script = parseCustomHeadScript(`<script defer src="https://cdn.example.com/widget.js"></script>`);
 
     const html = injectCustomHeadScriptHtml("<html><head><title>Renewlet</title></head><body></body></html>", script);
 
-    expect(html).toContain(`<script defer src="https://analytics.example.com/script.js"></script>\n  </head>`);
+    expect(html).toContain(`<script defer src="https://cdn.example.com/widget.js"></script>\n  </head>`);
   });
 
   it("leaves html unchanged when the script is absent", () => {
@@ -61,7 +61,7 @@ describe("injectCustomHeadScriptHtml", () => {
   });
 
   it("does not inject the same markup twice", () => {
-    const script = parseCustomHeadScript(`<script defer src="https://analytics.example.com/script.js"></script>`);
+    const script = parseCustomHeadScript(`<script defer src="https://cdn.example.com/widget.js"></script>`);
     const html = "<html><head><title>Renewlet</title></head><body></body></html>";
 
     const once = injectCustomHeadScriptHtml(html, script);
@@ -74,7 +74,7 @@ describe("injectCustomHeadScriptHtml", () => {
 describe("updateCustomHeadScriptStaticHeaders", () => {
   it("adds custom script origins to script-src and connect-src", () => {
     const script = parseCustomHeadScript(
-      `<script defer src="https://cdn.example.com/widget.js" data-host-url="https://events.example.com/api/send"></script>`,
+      `<script defer src="https://cdn.example.com/widget.js" data-host-url="https://api.example.com/widget"></script>`,
     );
     const headers = [
       "/*",
@@ -86,14 +86,14 @@ describe("updateCustomHeadScriptStaticHeaders", () => {
     const updated = updateCustomHeadScriptStaticHeaders(headers, script);
 
     expect(updated).toContain("script-src 'self' 'wasm-unsafe-eval' https://cdn.example.com");
-    expect(updated).toContain("connect-src 'self' https://cdn.jsdelivr.net https://cdn.example.com https://events.example.com");
+    expect(updated).toContain("connect-src 'self' https://cdn.jsdelivr.net https://cdn.example.com https://api.example.com");
   });
 
   it("keeps CSP origins unique when headers are updated again", () => {
-    const script = parseCustomHeadScript(`<script defer src="https://analytics.example.com/script.js"></script>`);
+    const script = parseCustomHeadScript(`<script defer src="https://cdn.example.com/widget.js"></script>`);
     const headers = [
       "/*",
-      "  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' https://analytics.example.com",
+      "  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' https://cdn.example.com",
       "",
     ].join("\n");
 

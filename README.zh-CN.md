@@ -127,17 +127,17 @@ docker compose down
 | `PB_ENCRYPTION_KEY` | PocketBase 敏感设置加密密钥，部署后不要随意更换。 |
 | `CRON_SECRET` | 外部 Cron 调用 `/api/cron/notifications` 时使用的 Bearer 密钥。 |
 | `RENEWLET_DEMO_MODE` | Docker Demo Mode 开关，默认 `false`。 |
-| `RENEWLET_CUSTOM_HEAD_SCRIPT` | 可选外部 `<script>` 注入，适合自管统计、客服组件或站点监控。 |
+| `RENEWLET_CUSTOM_HEAD_SCRIPT` | 可选部署者自备外链 `<script>` 注入。默认留空；留空时不注入任何外部脚本。 |
 | `NOTIFICATION_SCHEDULER_ENABLED` | 内置通知调度器开关，默认 `true`。 |
 
 完整 Docker 环境变量模板见 `.env.example`。
 
 ### 自定义 Head 脚本
 
-Renewlet 可以通过 `RENEWLET_CUSTOM_HEAD_SCRIPT` 向 SPA `<head>` 注入一个外部 `<script>` 标签：
+Renewlet 默认不注入任何外部脚本。配置 `RENEWLET_CUSTOM_HEAD_SCRIPT` 后，Renewlet 会向 SPA `<head>` 注入一个部署者自备的外部 `<script>` 标签：
 
 ```env
-RENEWLET_CUSTOM_HEAD_SCRIPT='<script defer src="https://analytics.example.com/script.js" data-website-id="site-id"></script>'
+RENEWLET_CUSTOM_HEAD_SCRIPT='<script defer src="https://cdn.example.com/widget.js" data-host-url="https://api.example.com/widget"></script>'
 ```
 
 Renewlet 只接受单个带 `src`、无内联内容的外链 script。脚本 origin 会自动加入 `script-src` 和 `connect-src`；如果提供 `data-host-url`，该 origin 也会加入 `connect-src`。

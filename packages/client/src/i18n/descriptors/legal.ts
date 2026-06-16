@@ -4,7 +4,7 @@ import { msg } from "@lingui/core/macro";
 export const messages = [
   msg({ id: "legal.privacy.title", message: "隐私政策" }),
   msg({ id: "legal.privacy.subtitle", message: "最后更新：2026-01-12" }),
-  msg({ id: "legal.privacy.intro", message: "Renewlet 默认不内置第三方埋点、广告 SDK 或外部脚本。部署者可以通过环境变量自行注入外部 script；你在使用某个部署实例时，数据将由该实例的运营者（可能是你自己）负责保存与处理。" }),
+  msg({ id: "legal.privacy.intro", message: "Renewlet 默认不注入任何外部脚本。部署者可以通过环境变量提供一个外链 script；你在使用某个部署实例时，该脚本及其数据处理由实例运营者（可能是你自己）负责。" }),
   msg({ id: "legal.privacy.data.title", message: "1. 我们会处理哪些数据" }),
   msg({ id: "legal.privacy.data.account", message: "账号信息：由 PocketBase 认证管理（例如邮箱、本地 token）。" }),
   msg({ id: "legal.privacy.data.business", message: "业务数据：订阅信息、分类/支付方式/货币配置、用户设置等（SQLite）。" }),
@@ -17,7 +17,7 @@ export const messages = [
   msg({ id: "legal.privacy.thirdParty.icons", message: "图标搜索：可能会在浏览器中加载外部 favicon/logo 候选（作为备用能力，失败会自动降级）。" }),
   msg({ id: "legal.privacy.thirdParty.notifications", message: "通知：Telegram/企业微信/Webhook/SMTP 邮件/Bark/Server酱 等渠道会接收你配置的通知内容。" }),
   msg({ id: "legal.privacy.thirdParty.ai", message: "AI 识别：当你主动使用 AI 识别添加订阅时，粘贴的文字、上传的图片和已有标签名会发送到你在设置页配置的第三方 AI 平台。" }),
-  msg({ id: "legal.privacy.thirdParty.customScript", message: "自定义外部脚本：部署者可通过环境变量注入单个外链 script，例如统计、客服组件或站点监控；该脚本可能向其服务商发送访问数据。" }),
+  msg({ id: "legal.privacy.thirdParty.customScript", message: "部署者自定义脚本：实例运营者可通过环境变量提供单个外链 script；该脚本可能向其服务商发送访问数据。" }),
   msg({ id: "legal.privacy.control.title", message: "4. 你的控制权" }),
   msg({ id: "legal.privacy.control.settings", message: "你可以在设置页随时修改通知渠道配置，或关闭通知。" }),
   msg({ id: "legal.privacy.control.selfHost", message: "如果你是自托管部署者，你可以通过 PocketBase 后台和 `/pb_data` 管理、备份或删除数据。" }),

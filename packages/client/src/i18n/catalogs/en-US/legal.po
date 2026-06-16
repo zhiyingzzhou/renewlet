@@ -61,7 +61,7 @@ msgstr "AI recognition: when you actively use AI recognition to add subscription
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/legal.ts:20
 msgid "legal.privacy.thirdParty.customScript"
-msgstr "Custom external script: an instance operator can inject one external script through environment configuration, such as analytics, a chat widget, or site monitoring; that script may send visit data to its provider."
+msgstr "Operator-provided script: an instance operator can provide one external script through environment configuration; that script may send visit data to its provider."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/legal.ts:25
@@ -131,7 +131,7 @@ msgstr "The project is provided as is, without warranties of any kind, including
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/legal.ts:7
 msgid "legal.privacy.intro"
-msgstr "Renewlet does not include third-party analytics, advertising SDKs, or external scripts by default. An instance operator can inject an external script through environment configuration; when you use a deployed instance, that operator, which may be you, is responsible for storing and processing the data."
+msgstr "Renewlet does not inject external scripts by default. An instance operator can provide one external script through environment configuration; when you use a deployed instance, that script and its data handling are the operator's responsibility, which may be yours."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/legal.ts:30

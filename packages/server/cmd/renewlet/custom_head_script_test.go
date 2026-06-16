@@ -9,7 +9,7 @@ import (
 )
 
 func TestParseCustomHeadScriptAcceptsSingleExternalScript(t *testing.T) {
-	raw := `<script defer src="https://analytics.example.com/script.js" data-website-id="00000000-0000-4000-8000-000000000000"></script>`
+	raw := `<script defer src="https://cdn.example.com/widget.js" data-widget-id="00000000-0000-4000-8000-000000000000"></script>`
 
 	script, err := parseCustomHeadScript(raw)
 	if err != nil {
@@ -18,22 +18,22 @@ func TestParseCustomHeadScriptAcceptsSingleExternalScript(t *testing.T) {
 	if script.Markup != raw {
 		t.Fatalf("custom script markup changed: %q", script.Markup)
 	}
-	if script.ScriptOrigin != "https://analytics.example.com" {
+	if script.ScriptOrigin != "https://cdn.example.com" {
 		t.Fatalf("ScriptOrigin = %q", script.ScriptOrigin)
 	}
-	if len(script.ConnectOrigins) != 1 || script.ConnectOrigins[0] != "https://analytics.example.com" {
+	if len(script.ConnectOrigins) != 1 || script.ConnectOrigins[0] != "https://cdn.example.com" {
 		t.Fatalf("ConnectOrigins = %#v", script.ConnectOrigins)
 	}
 }
 
 func TestParseCustomHeadScriptAddsHostURLConnectOrigin(t *testing.T) {
-	raw := `<script defer src="https://cdn.example.com/widget.js" data-host-url="https://events.example.com/api/send"></script>`
+	raw := `<script defer src="https://cdn.example.com/widget.js" data-host-url="https://api.example.com/widget"></script>`
 
 	script, err := parseCustomHeadScript(raw)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if strings.Join(script.ConnectOrigins, ",") != "https://cdn.example.com,https://events.example.com" {
+	if strings.Join(script.ConnectOrigins, ",") != "https://cdn.example.com,https://api.example.com" {
 		t.Fatalf("ConnectOrigins = %#v", script.ConnectOrigins)
 	}
 }
@@ -62,7 +62,7 @@ func TestParseCustomHeadScriptRejectsUnsafeMarkup(t *testing.T) {
 }
 
 func TestCustomHeadScriptFSInjectsOnlyIndex(t *testing.T) {
-	raw := `<script defer src="https://analytics.example.com/script.js" data-website-id="site-id"></script>`
+	raw := `<script defer src="https://cdn.example.com/widget.js" data-widget-id="widget-id"></script>`
 	t.Setenv(customHeadScriptEnvName, raw)
 
 	fsys := customHeadScriptFS{FS: fstest.MapFS{
@@ -118,7 +118,7 @@ func TestCustomHeadScriptFSLeavesIndexUnchangedWithoutEnv(t *testing.T) {
 }
 
 func TestInjectCustomHeadScriptIsIdempotent(t *testing.T) {
-	script, err := parseCustomHeadScript(`<script defer src="https://analytics.example.com/script.js"></script>`)
+	script, err := parseCustomHeadScript(`<script defer src="https://cdn.example.com/widget.js"></script>`)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,17 +133,17 @@ func TestInjectCustomHeadScriptIsIdempotent(t *testing.T) {
 }
 
 func TestStaticContentSecurityPolicyAllowsCustomHeadScriptOrigin(t *testing.T) {
-	t.Setenv(customHeadScriptEnvName, `<script defer src="https://analytics.example.com/script.js" data-host-url="https://events.example.com/api/send"></script>`)
+	t.Setenv(customHeadScriptEnvName, `<script defer src="https://cdn.example.com/widget.js" data-host-url="https://api.example.com/widget"></script>`)
 
 	request, err := http.NewRequest(http.MethodGet, "http://renewlet.test/", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	policy := staticContentSecurityPolicy(request)
-	if !strings.Contains(policy, "script-src 'self' 'wasm-unsafe-eval' https://analytics.example.com") {
+	if !strings.Contains(policy, "script-src 'self' 'wasm-unsafe-eval' https://cdn.example.com") {
 		t.Fatalf("expected script-src to include custom script origin, got %q", policy)
 	}
-	if !strings.Contains(policy, "connect-src 'self' https://cdn.jsdelivr.net https://latest.currency-api.pages.dev https://www.floatrates.com https://analytics.example.com https://events.example.com") {
+	if !strings.Contains(policy, "connect-src 'self' https://cdn.jsdelivr.net https://latest.currency-api.pages.dev https://www.floatrates.com https://cdn.example.com https://api.example.com") {
 		t.Fatalf("expected connect-src to include custom connect origins, got %q", policy)
 	}
 }
