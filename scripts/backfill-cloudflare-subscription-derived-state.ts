@@ -332,9 +332,15 @@ async function assertDerivedInvariants(client: D1Client, expectedScheduleCount?:
     ), '')
     OR (scheduler.auto_renew_count = 0 AND scheduler.next_auto_renew_check_at_utc IS NOT NULL)
     OR (scheduler.auto_renew_count > 0 AND scheduler.next_auto_renew_check_at_utc IS NULL)
-    OR scheduler.next_daily_notification_due_at_utc IS NULL
+    OR (
+      scheduler.next_daily_notification_due_at_utc IS NULL
+      AND EXISTS (SELECT 1 FROM subscriptions WHERE user_id = scheduler.user_id)
+    )
     OR (scheduler.next_auto_renew_check_at_utc IS NOT NULL AND unixepoch(scheduler.next_auto_renew_check_at_utc) IS NULL)
-    OR unixepoch(scheduler.next_daily_notification_due_at_utc) IS NULL
+    OR (
+      scheduler.next_daily_notification_due_at_utc IS NOT NULL
+      AND unixepoch(scheduler.next_daily_notification_due_at_utc) IS NULL
+    )
     OR (
       scheduler.next_repeat_notification_due_at_utc IS NOT NULL
       AND unixepoch(scheduler.next_repeat_notification_due_at_utc) IS NULL

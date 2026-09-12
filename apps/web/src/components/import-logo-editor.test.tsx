@@ -198,6 +198,10 @@ describe("ImportLogoEditor", () => {
   it("keeps the import Logo editor open when the search button is clicked", async () => {
     const user = userEvent.setup();
     mockMatchMedia({ "(max-width: 767px)": true });
+    let resolveRequest: ((value: Awaited<ReturnType<MediaCandidateResolve>>) => void) | undefined;
+    mocks.resolveMediaCandidates.mockImplementation((): ReturnType<MediaCandidateResolve> => new Promise((resolve) => {
+      resolveRequest = resolve;
+    }));
 
     renderWithTooltipProvider(
       <ImportLogoEditor
@@ -216,6 +220,14 @@ describe("ImportLogoEditor", () => {
 
     expect(screen.getByTestId("import-logo-sheet")).toBe(sheet);
     expect(input).toHaveValue("YouTube");
+
+    resolveRequest?.({
+      items: [{ id: "search", autoCandidate: null, candidates: { best: null, builtIn: [], appStore: [], favicon: [] } }],
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("import-logo-sheet")).toBe(sheet);
+      expect(input).toHaveValue("YouTube");
+    });
   });
 
   it("applies a custom Logo link without carrying a deferred asset", async () => {

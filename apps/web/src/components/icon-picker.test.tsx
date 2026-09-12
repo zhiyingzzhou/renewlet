@@ -165,6 +165,15 @@ describe("IconPicker", () => {
 
   it("keeps the icon search popover open when the search button is clicked", async () => {
     const user = userEvent.setup();
+    let resolveRequest: ((value: unknown) => void) | undefined;
+    mocks.apiFetch.mockImplementation((url: string) => {
+      if (url === "/api/app/media/candidates") {
+        return new Promise((resolve) => {
+          resolveRequest = resolve;
+        });
+      }
+      return Promise.resolve({});
+    });
 
     render(<IconPicker value={undefined} onChange={vi.fn()} />);
 
@@ -177,6 +186,14 @@ describe("IconPicker", () => {
 
     expect(input.closest('[role="dialog"]')).toBe(popover);
     expect(input).toHaveValue("Binance");
+
+    resolveRequest?.({
+      items: [{ id: "search", autoCandidate: null, candidates: { best: null, builtIn: [], appStore: [], favicon: [] } }],
+    });
+    await waitFor(() => {
+      expect(input.closest('[role="dialog"]')).toBe(popover);
+      expect(input).toHaveValue("Binance");
+    });
   });
 
   it("allows SVG files in the custom icon file picker", () => {

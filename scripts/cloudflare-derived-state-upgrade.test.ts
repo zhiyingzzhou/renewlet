@@ -377,6 +377,31 @@ test("a completed v3 marker rejects parseable scheduler instants that are not le
   }
 });
 
+test("a completed v3 marker accepts an empty user without a daily scheduler occurrence", async () => {
+  const client = openDerivedDatabase();
+  try {
+    await runBackfill(client, backfillNow);
+    client.db.exec(`
+      DELETE FROM subscriptions WHERE id = 'sub_two';
+      UPDATE subscription_user_stats
+      SET total_count = 0, trial_count = 0, active_count = 0, expired_count = 0, paused_count = 0, cancelled_count = 0
+      WHERE user_id = 'usr_two';
+      UPDATE subscription_scheduler_state
+      SET auto_renew_count = 0,
+          repeat_reminder_count = 0,
+          next_auto_renew_check_at_utc = NULL,
+          next_daily_notification_due_at_utc = NULL,
+          next_repeat_notification_due_at_utc = NULL
+      WHERE user_id = 'usr_two';
+    `);
+
+    await runBackfill(client, backfillNow);
+    assert.equal(markerCount(client.db, "subscription-derived-state-v3"), 1);
+  } finally {
+    client.db.close();
+  }
+});
+
 test("a completed v3 marker accepts overdue scheduler occurrences that still match the stored settings", async () => {
   const client = openDerivedDatabase();
   try {

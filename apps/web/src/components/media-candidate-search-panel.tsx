@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Image as ImageIcon, Loader2, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,6 +66,12 @@ export function MediaCandidateSearchPanel({
   autoFocus = true,
 }: MediaCandidateSearchPanelProps) {
   const { t } = useI18n();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const runSearch = () => {
+    // 禁用当前按钮会让浏览器把焦点移出 Popover；先把焦点交给仍可交互的输入框，避免 DismissableLayer 误判为外部焦点。
+    inputRef.current?.focus();
+    search.search();
+  };
   const hasResults = search.candidates.builtIn.length > 0 || search.candidates.appStore.length > 0 || search.candidates.favicon.length > 0;
   // 搜索中保留已返回候选，能让 provider 图标先可选，同时继续展示“加载更多”而不是闪回空态。
   const shouldShowResultsArea = hasResults || (!search.isSearching && search.hasSearched);
@@ -84,17 +91,18 @@ export function MediaCandidateSearchPanel({
 
       <div className={cn("flex items-center gap-2", inputRowClassName)}>
         <Input
+          ref={inputRef}
           placeholder={placeholder}
           value={search.query}
           onChange={(event) => search.setQuery(event.target.value)}
-          onKeyDown={(event) => event.key === "Enter" && search.search()}
+          onKeyDown={(event) => event.key === "Enter" && runSearch()}
           className={cn("flex-1 border-border bg-secondary", inputClassName)}
           autoFocus={autoFocus}
         />
         <Button
           type="button"
           size="sm"
-          onClick={search.search}
+          onClick={runSearch}
           disabled={search.isSearching || !search.query.trim()}
           className={searchButtonClassName}
           aria-label={t("media.search")}
