@@ -2,7 +2,7 @@
   "name": "@renewlet/server",
   "private": true,
   "license": "MIT",
-  "version": "0.3.24",
+  "version": "0.3.26",
   "scripts": {
     "build": "mkdir -p dist && VERSION=$(node -p \"require('./package.json').version\"); CGO_ENABLED=0 go build -trimpath -ldflags=\"-s -w -X main.Version=${VERSION}\" -o dist/renewlet ./cmd/renewlet",
     "start": "go run ./cmd/renewlet serve --http=0.0.0.0:3000 --dir=./pb_data --encryptionEnv=PB_ENCRYPTION_KEY",
