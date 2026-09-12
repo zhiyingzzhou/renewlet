@@ -243,6 +243,10 @@ describe("LogoPicker", () => {
     resolveRequest?.({
       items: [{ id: "search", autoCandidate: null, candidates: { best: null, builtIn: [], appStore: [], favicon: [] } }],
     });
+    await waitFor(() => {
+      expect(screen.getByTestId("logo-search-sheet")).toBe(sheet);
+      expect(input).toHaveValue("YouTube");
+    });
   });
 
   it("keeps the mobile Logo search sheet open when the search button is clicked", async () => {
@@ -272,6 +276,10 @@ describe("LogoPicker", () => {
 
     resolveRequest?.({
       items: [{ id: "search", autoCandidate: null, candidates: { best: null, builtIn: [], appStore: [], favicon: [] } }],
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("logo-search-sheet")).toBe(sheet);
+      expect(input).toHaveValue("YouTube");
     });
   });
 

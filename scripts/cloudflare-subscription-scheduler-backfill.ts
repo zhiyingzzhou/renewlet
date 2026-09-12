@@ -22,6 +22,7 @@ const schedulerVerificationRowSchema = z.object({
   stored_next_repeat_notification_due_at_utc: z.string().nullable(),
   fact_auto_renew_count: z.union([z.number(), z.string()]),
   fact_repeat_reminder_count: z.union([z.number(), z.string()]),
+  fact_subscription_count: z.union([z.number(), z.string()]),
   fact_next_repeat_notification_due_at_utc: z.string().nullable(),
 });
 
@@ -116,6 +117,7 @@ export async function assertStoredSubscriptionSchedulerRowsValid(
         (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND auto_renew = 1) AS fact_auto_renew_count,
         (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND repeat_reminder_enabled = 1)
           AS fact_repeat_reminder_count,
+        (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id) AS fact_subscription_count,
         (SELECT next_due_at_utc FROM subscription_repeat_schedule
          WHERE user_id = users.id ORDER BY next_due_at_utc, subscription_id LIMIT 1)
           AS fact_next_repeat_notification_due_at_utc
@@ -131,6 +133,15 @@ export async function assertStoredSubscriptionSchedulerRowsValid(
       const settings = settingsFromRowJson(row.settings_json);
       const autoRenewCount = Number(row.fact_auto_renew_count);
       const repeatReminderCount = Number(row.fact_repeat_reminder_count);
+      const subscriptionCount = Number(row.fact_subscription_count);
+      const dailyOccurrenceValid = row.stored_next_daily_notification_due_at_utc === null
+        ? subscriptionCount === 0
+        : storedDailyOccurrenceValid(
+          row.stored_next_daily_notification_due_at_utc,
+          settings.timezone,
+          settings.notificationTimeLocal,
+          now,
+        );
       if (
         Number(row.stored_auto_renew_count) !== autoRenewCount
         || Number(row.stored_repeat_reminder_count) !== repeatReminderCount
@@ -142,12 +153,7 @@ export async function assertStoredSubscriptionSchedulerRowsValid(
           now,
           notificationWindowMinutes,
         )
-        || !storedDailyOccurrenceValid(
-          row.stored_next_daily_notification_due_at_utc,
-          settings.timezone,
-          settings.notificationTimeLocal,
-          now,
-        )
+        || !dailyOccurrenceValid
         || row.stored_next_repeat_notification_due_at_utc !== row.fact_next_repeat_notification_due_at_utc
       ) {
         throw new Error("subscription_scheduler_state stored occurrence invariant failed");
@@ -182,6 +188,7 @@ export async function assertSubscriptionSchedulerRows(
         (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND auto_renew = 1) AS fact_auto_renew_count,
         (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND repeat_reminder_enabled = 1)
           AS fact_repeat_reminder_count,
+        (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id) AS fact_subscription_count,
         (SELECT next_due_at_utc FROM subscription_repeat_schedule
          WHERE user_id = users.id ORDER BY next_due_at_utc, subscription_id LIMIT 1)
           AS fact_next_repeat_notification_due_at_utc
