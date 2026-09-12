@@ -1,6 +1,6 @@
 // 导入 Logo 编辑器测试保护“暂存资产先预览、apply 时再持久化”的导入边界。
 import type { ReactNode } from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -193,6 +193,29 @@ describe("ImportLogoEditor", () => {
         limit: 32,
       }, expect.any(AbortSignal));
     });
+  });
+
+  it("keeps the import Logo editor open when the search button is clicked", async () => {
+    const user = userEvent.setup();
+    mockMatchMedia({ "(max-width: 767px)": true });
+
+    renderWithTooltipProvider(
+      <ImportLogoEditor
+        name="Apple"
+        value={null}
+        onChange={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "修改 Logo" }));
+    const sheet = await screen.findByTestId("import-logo-sheet");
+    const input = within(sheet).getByPlaceholderText("输入服务名称、品牌或网址...");
+    await user.clear(input);
+    await user.type(input, "YouTube");
+    await user.click(within(sheet).getByRole("button", { name: "搜索" }));
+
+    expect(screen.getByTestId("import-logo-sheet")).toBe(sheet);
+    expect(input).toHaveValue("YouTube");
   });
 
   it("applies a custom Logo link without carrying a deferred asset", async () => {

@@ -156,7 +156,8 @@ const PopoverContent = React.forwardRef<
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        "h5-floating-content z-50 w-72 overflow-hidden border bg-popover p-4 text-popover-foreground shadow-md outline-none",
+        // 父 Dialog 的滚动锁会把 body 的 pointer-events 设为 none；Portal 内的浮层必须显式恢复自身交互，否则点击面板控件会被 Radix 当作 outside interaction。
+        "pointer-events-auto h5-floating-content z-50 w-72 overflow-hidden border bg-popover p-4 text-popover-foreground shadow-md outline-none",
         !useMobileSheet &&
           "rounded-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         className,
