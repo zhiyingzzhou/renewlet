@@ -202,4 +202,83 @@ describe("useReportExchangeRates", () => {
     expect(result.current.activeProvider).toBe("builtin");
     expect(serviceMocks.capture).not.toHaveBeenCalled();
   });
+
+  it("keeps a suspended document request but cancels it when the document is permanently discarded", async () => {
+    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    let rejectCapture: (error: Error) => void = () => { throw new Error("Capture has not started"); };
+    serviceMocks.capture.mockImplementation(() => new Promise((_resolve, reject) => { rejectCapture = reject; }));
+    const useReportExchangeRates = createUseReportExchangeRates(remoteStore());
+    renderHook(() => useReportExchangeRates());
+    await waitFor(() => expect(serviceMocks.capture).toHaveBeenCalledTimes(1));
+    const signal = serviceMocks.capture.mock.calls[0]?.[2];
+    expect(signal?.aborted).toBe(false);
+    act(() => window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true })));
+    expect(signal?.aborted).toBe(false);
+    // BFCache 恢复不重新挂载 Hook；第一次暂存不能移除永久离开时仍要使用的清理监听。
+    act(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
+    act(() => window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: false })));
+    expect(signal?.aborted).toBe(true);
+    await act(async () => rejectCapture(new Error("Discarded document request")));
+    expect(warning).not.toHaveBeenCalled();
+  });
+
+  it.each([false, true])("still exposes a committed capture failure with StrictMode=%s", async (reactStrictMode) => {
+    const failure = new Error("Capture service unavailable");
+    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    serviceMocks.capture.mockRejectedValue(failure);
+    const useReportExchangeRates = createUseReportExchangeRates(remoteStore());
+    const { result } = renderHook(() => useReportExchangeRates(), { reactStrictMode });
+    await waitFor(() => expect(result.current.reportBasisCaptureError).toBe(failure));
+    expect(warning).toHaveBeenCalledExactlyOnceWith("Failed to capture report exchange-rate snapshot:", failure);
+  });
+
+  it("preserves the locked report basis and reports a real refresh capture failure", async () => {
+    const failure = new Error("Snapshot write unavailable");
+    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    serviceMocks.list.mockResolvedValue([{
+      schemaVersion: 1, month: currentMonth, base: "USD", rates: { USD: 1, CNY: 6 },
+      requestedProvider: "frankfurter", provider: "frankfurter", sourceDate: "2026-08-01",
+      capturedAt: "2026-08-06T00:00:00.000Z",
+    }]);
+    serviceMocks.capture.mockRejectedValue(failure);
+    const useReportExchangeRates = createUseReportExchangeRates(remoteStore());
+    const { result, rerender } = renderHook(() => useReportExchangeRates());
+    await waitFor(() => expect(result.current.reportBasisCaptureError).toBe(failure));
+    expect(result.current.reportBasisStatus.locked).toBe(true);
+    expect(result.current.convert(1, "USD", "CNY")).toBe(6);
+    rerender();
+    expect(warning).toHaveBeenCalledExactlyOnceWith("Failed to capture report exchange-rate snapshot:", failure);
+  });
+
+  it("does not commit or report a late capture rejection after unmount", async () => {
+    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    let rejectCapture: (error: Error) => void = () => { throw new Error("Capture has not started"); };
+    serviceMocks.capture.mockImplementation(() => new Promise((_resolve, reject) => { rejectCapture = reject; }));
+    const useReportExchangeRates = createUseReportExchangeRates(remoteStore());
+    const { unmount } = renderHook(() => useReportExchangeRates(), { reactStrictMode: true });
+    await waitFor(() => expect(serviceMocks.capture).toHaveBeenCalledTimes(1));
+    const signal = serviceMocks.capture.mock.calls[0]?.[2];
+    unmount();
+    expect(signal?.aborted).toBe(true);
+    await act(async () => rejectCapture(new Error("Late capture rejection")));
+    expect(warning).not.toHaveBeenCalled();
+  });
+
+  it("disposes every document listener and pending read under StrictMode", async () => {
+    const added = vi.spyOn(window, "addEventListener");
+    const removed = vi.spyOn(window, "removeEventListener");
+    serviceMocks.list.mockImplementation(() => new Promise(() => {}));
+    const useReportExchangeRates = createUseReportExchangeRates(remoteStore());
+    const { unmount } = renderHook(() => useReportExchangeRates(), { reactStrictMode: true });
+    await waitFor(() => expect(serviceMocks.list).toHaveBeenCalledTimes(2));
+    const signal = serviceMocks.list.mock.calls.at(-1)?.[1];
+    expect(signal?.aborted).toBe(false);
+    act(() => window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: false })));
+    expect(signal?.aborted).toBe(true);
+    unmount();
+    for (const call of added.mock.calls.filter(([type]) => type === "pagehide")) {
+      expect(removed.mock.calls).toContainEqual(call);
+    }
+    expect(serviceMocks.capture).not.toHaveBeenCalled();
+  });
 });

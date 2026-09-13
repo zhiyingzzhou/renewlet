@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { RouteProgress } from "@/components/route-progress";
 import { dashboardStatLayout } from "@/components/dashboard-stat-layout";
 import { getHeaderDesktopNavSkeletonItemClass, headerLayout } from "@/components/header-layout";
 import { subscriptionFilterLayout } from "@/components/subscription-filter-layout";
@@ -20,6 +21,7 @@ function SkeletonBox({ className }: { className: string }) {
 function HeaderSkeleton({ showAddAction = false }: { showAddAction?: boolean }) {
   return (
     <header className={headerLayout.shell} data-testid="app-header-skeleton">
+      <RouteProgress />
       <div className={headerLayout.inner} data-testid="app-header-skeleton-inner">
         <div className={headerLayout.primaryCluster}>
           <div className={headerLayout.brandCluster}>

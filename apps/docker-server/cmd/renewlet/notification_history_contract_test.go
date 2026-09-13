@@ -257,8 +257,19 @@ func createRawNotificationHistoryJobRecordForDate(t *testing.T, app core.App, us
 	record.Set("status", notificationStatusSkipped)
 	record.Set("attempts", 1)
 	record.Set("lastError", "")
-	record.Set("result", result)
+	payload, err := jsonBytesFromValue(result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	metadata, parts, err := splitNotificationJobMessage(payload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	record.Set("result", metadata)
 	if err := app.SaveNoValidate(record); err != nil {
+		t.Fatal(err)
+	}
+	if err := writeNotificationJobMessage(app, record.Id, parts); err != nil {
 		t.Fatal(err)
 	}
 	return record

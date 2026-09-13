@@ -7,6 +7,7 @@ import { NOTIFICATION_JOB_COLUMNS, newId, nowIso, parseJobResult } from "./db";
 import type { AppLocale } from "./http";
 import type { Env, NotificationJobRow } from "./types";
 import type { ScheduleOccurrence } from "./notification-schedule";
+import { notificationMessageStatements, splitNotificationJobMessage } from "./notification-message-storage";
 
 // Worker 不能读取 Go 的通知 env；Cloudflare 调度常量固定在这里，并由 shared fixture 与 Go 测试锁住。
 export const NOTIFICATION_CRON_WINDOW_MINUTES = 2;
@@ -106,11 +107,15 @@ export async function finalizeNotificationJob(
   }
   const timestamp = nowIso();
   const persistedResult = stripNotificationFailureDetails(result);
+  if (!target || target.user_id !== userId) throw new Error("Notification job owner mismatch");
+  const snapshot = splitNotificationJobMessage(persistedResult);
   // finalize 按调度唯一键更新而不是只按 id，确保 INSERT OR IGNORE 抢占后的同一窗口仍能幂等落最终态。
-  await env.DB.prepare(`
+  const finalize = env.DB.prepare(`
     UPDATE notification_jobs SET status = ?, attempts = ?, last_error = ?, result_json = ?, updated_at = ?
     WHERE user_id = ? AND scheduled_local_date = ? AND scheduled_local_time = ? AND time_zone = ?
-  `).bind(status, Math.max(0, attempts), error, JSON.stringify(persistedResult), timestamp, userId, schedule.scheduledLocalDate, schedule.scheduledLocalTime, schedule.timeZone).run();
+  `).bind(status, Math.max(0, attempts), error, snapshot.metadata, timestamp, userId, schedule.scheduledLocalDate, schedule.scheduledLocalTime, schedule.timeZone);
+  // D1 batch 统一提交消息与最终态；失败时保留上次完整快照和渠道记录，不能部分替换。
+  await env.DB.batch([...notificationMessageStatements(env, target.id, snapshot.parts), finalize]);
 }
 
 function stripNotificationFailureDetails(result: unknown): unknown {

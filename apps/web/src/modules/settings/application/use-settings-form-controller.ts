@@ -68,6 +68,7 @@ import { EMPTY_SETTINGS_SECRET_STATUS } from "@/services/settings-service";
 import { useSettingsSecretDrafts } from "./use-settings-secret-drafts";
 import type { SettingsFormController } from "./settings-form-controller-types";
 import { toSettingsReadState } from "./settings-read-state";
+import { useRouteReady } from "@/components/route-progress";
 export type { SettingsFormController } from "./settings-form-controller-types";
 
 /**
@@ -88,8 +89,10 @@ export function useSettingsFormController(): SettingsFormController {
   const accountIdentity = useAccountIdentity();
   const accountEmail = accountIdentity.email;
   const canManageUsers = accountIdentity.role === "admin" && !accountIdentity.banned;
-  const { data: remoteEnvelope } = useSettingsEnvelope();
+  const { data: remoteEnvelope, isPending: settingsPending } = useSettingsEnvelope();
   const remoteSettings = remoteEnvelope?.settings;
+  // settings 请求结束后还要等首份草稿提交，不能把默认设置的过渡帧当作页面就绪。
+  useRouteReady(settingsPending || Boolean(remoteSettings && savedSettings === DEFAULT_SETTINGS));
   const secretStatus = remoteEnvelope?.secretStatus ?? EMPTY_SETTINGS_SECRET_STATUS;
   const subscriptionFacetsQuery = useSubscriptionFacets();
   const subscriptionFacets = toSettingsReadState(subscriptionFacetsQuery);

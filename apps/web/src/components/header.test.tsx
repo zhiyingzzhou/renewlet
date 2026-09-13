@@ -20,7 +20,6 @@ const mocks = vi.hoisted(() => ({
   setTheme: vi.fn(),
   theme: "dark",
   writeAppearancePendingToStorage: vi.fn(),
-  useRoutePreloadPending: vi.fn(() => false),
 }));
 
 vi.mock("@/lib/auth-client", () => ({
@@ -50,10 +49,6 @@ vi.mock("@/lib/theme-provider", () => ({
 
 vi.mock("@/lib/theme-storage", () => ({
   writeAppearancePendingToStorage: mocks.writeAppearancePendingToStorage,
-}));
-
-vi.mock("@/lib/route-resources", () => ({
-  useRoutePreloadPending: mocks.useRoutePreloadPending,
 }));
 
 vi.mock("@/i18n/I18nProvider", () => ({
@@ -173,8 +168,6 @@ describe("Header system version entry", () => {
     mocks.setTheme.mockReset();
     mocks.theme = "dark";
     mocks.writeAppearancePendingToStorage.mockReset();
-    mocks.useRoutePreloadPending.mockReset();
-    mocks.useRoutePreloadPending.mockReturnValue(false);
     mocks.useSystemVersion.mockReturnValue({
       data: versionFixture(),
       isPending: false,
@@ -253,22 +246,22 @@ describe("Header system version entry", () => {
 
     renderHeader();
 
-    expect(screen.getByTestId("app-header-route-preload-indicator")).toHaveClass("opacity-0");
+    expect(screen.getByTestId("route-progress")).toHaveClass("opacity-0");
   });
 
-  it("shows a thin route preload indicator in the existing header chrome", () => {
+  it("keeps the shared progress indicator inside the existing header chrome", () => {
     mocks.useSession.mockReturnValue(adminSession("user"));
-    mocks.useRoutePreloadPending.mockReturnValue(true);
 
     renderHeader();
 
-    expect(screen.getByTestId("app-header-route-preload-indicator")).toHaveClass(
+    expect(screen.getByTestId("route-progress")).toHaveClass(
       "absolute",
       "bottom-0",
       "h-0.5",
-      "bg-primary",
-      "opacity-100",
+      "pointer-events-none",
+      "opacity-0",
     );
+    expect(screen.getByTestId("route-progress").firstElementChild).toHaveClass("bg-primary");
   });
 
   it("keeps the header theme toggle as a local-only preference", async () => {

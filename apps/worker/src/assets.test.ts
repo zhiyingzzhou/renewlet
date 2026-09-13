@@ -1,7 +1,7 @@
 // Worker 私有资产测试保护 D1 owner 索引、订阅引用阻止和 R2/D1 删除顺序。
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { readSuccessData } from "./api-test-helpers";
-import { deleteAsset, uploadAsset } from "./assets";
+import { deleteAsset, readAsset, uploadAsset } from "./assets";
 import worker from "./index";
 import type { AssetRow, Env, SubscriptionRow } from "./types";
 
@@ -42,14 +42,16 @@ function createEnv(overrides: Partial<AssetTestState> = {}) {
     ...overrides,
   };
   const r2Delete = vi.fn(async () => undefined);
+  const r2Get = vi.fn(async () => ({ body: new Response("private asset").body }));
   const env = {
     DB: new AssetTestDB(state) as unknown as D1Database,
     ASSETS: {} as Fetcher,
     ASSETS_BUCKET: {
       delete: r2Delete,
+      get: r2Get,
     } as unknown as R2Bucket,
   } satisfies Env;
-  return { env, r2Delete, state };
+  return { env, r2Delete, r2Get, state };
 }
 
 class AssetTestDB {
@@ -152,6 +154,37 @@ describe("Cloudflare uploaded assets", () => {
       user: { id: USER_ID },
       session: { id: "ses" },
     });
+  });
+
+  it("reads private metadata and the object once, in authenticated owner order", async () => {
+    const fixture = createEnv({ assets: [assetRow()] });
+    const metadata = vi.spyOn(fixture.env.DB, "prepare");
+    const response = await readAsset(requestFixture("GET"), fixture.env, "asset_logo");
+
+    expect(await response.text()).toBe("private asset");
+    expect(response.headers.get("cache-control")).toBe("private, max-age=31536000, immutable");
+    expect(metadata).toHaveBeenCalledTimes(1);
+    expect(metadata.mock.calls[0]?.[0]).toContain("WHERE user_id = ? AND id = ?");
+    expect(fixture.r2Get).toHaveBeenCalledExactlyOnceWith(assetRow().r2_key);
+    // 少一次权限读取不是优化：必须先认证，再查 owner，最后访问 R2。
+    expect(authMocks.requireAuth.mock.invocationCallOrder[0]).toBeLessThan(metadata.mock.invocationCallOrder[0] ?? 0);
+    expect(metadata.mock.invocationCallOrder[0]).toBeLessThan(fixture.r2Get.mock.invocationCallOrder[0] ?? 0);
+  });
+
+  it("does not read objects owned by another account", async () => {
+    const fixture = createEnv({ assets: [assetRow({ user_id: "another-owner" })] });
+    await expect(readAsset(requestFixture("GET"), fixture.env, "asset_logo")).rejects.toMatchObject({ status: 404 });
+    expect(fixture.r2Get).not.toHaveBeenCalled();
+  });
+
+  it("rejects unauthenticated reads before metadata or object access", async () => {
+    const fixture = createEnv({ assets: [assetRow()] });
+    const metadata = vi.spyOn(fixture.env.DB, "prepare");
+    const denied = new Error("unauthenticated");
+    authMocks.requireAuth.mockRejectedValueOnce(denied);
+    await expect(readAsset(requestFixture("GET"), fixture.env, "asset_logo")).rejects.toBe(denied);
+    expect(metadata).not.toHaveBeenCalled();
+    expect(fixture.r2Get).not.toHaveBeenCalled();
   });
 
   it("deletes the R2 object and owner-scoped D1 metadata", async () => {

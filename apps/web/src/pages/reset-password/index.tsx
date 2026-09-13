@@ -7,8 +7,10 @@
  */
 import { useSearchParams } from "react-router";
 import { ResetPasswordClient } from "./reset-password-client";
+import { useRouteReady } from "@/components/route-progress";
 
 export default function ResetPasswordPage() {
+  useRouteReady();
   const [searchParams] = useSearchParams();
   return <ResetPasswordClient token={searchParams.get("token") ?? ""} />;
 }

@@ -14,6 +14,7 @@ import {
   useMemo,
   useRef,
   type FocusEvent,
+  type MouseEvent,
   type PointerEvent,
   type Ref,
   type TouchEvent,
@@ -28,6 +29,7 @@ import {
 } from "react-router";
 import { QueryClientContext } from "@tanstack/react-query";
 import { preloadRoute, type RoutePreloadMode } from "@/lib/route-resources";
+import { useRouteNavigationIntent } from "@/components/route-progress";
 
 type LinkProps = Omit<RouterLinkProps, "to"> & {
   href?: RouterLinkProps["to"];
@@ -73,6 +75,14 @@ function isExternalTo(to: To): boolean {
   return typeof to === "string" && (/^[a-z][a-z0-9+.-]*:/i.test(to) || to.startsWith("//"));
 }
 
+function beginLinkNavigation(event: MouseEvent<HTMLAnchorElement>, begin: (target: string) => void) {
+  const anchor = event.currentTarget;
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey
+    || anchor.target && anchor.target !== "_self" || anchor.hasAttribute("download")
+    || anchor.origin !== window.location.origin) return;
+  begin(`${anchor.pathname}${anchor.search}`);
+}
+
 function useRoutePreload(to: To, mode: RoutePreloadMode, disabled: boolean) {
   const queryClient = useContext(QueryClientContext) ?? null;
   const resolved = useResolvedPath(to);
@@ -115,11 +125,13 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link({
   to,
   routePreload = "intent",
   reloadDocument,
+  onClick,
   onPointerEnter,
   onFocus,
   onTouchStart,
   ...props
 }, ref) {
+  const begin = useRouteNavigationIntent();
   const target = useMemo(() => to ?? href ?? "/", [href, to]);
   const { elementRef, preload } = useRoutePreload(target, routePreload, Boolean(reloadDocument));
   const mergedRef = useMemo(() => composeRefs(ref, elementRef), [elementRef, ref]);
@@ -130,6 +142,9 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link({
       ref={mergedRef}
       to={target}
       {...reloadDocumentProps}
+      onClick={composeEventHandlers<MouseEvent<HTMLAnchorElement>>(onClick, (event) => {
+        if (!reloadDocument) beginLinkNavigation(event, begin);
+      })}
       onPointerEnter={composeEventHandlers<PointerEvent<HTMLAnchorElement>>(onPointerEnter, preload)}
       onFocus={composeEventHandlers<FocusEvent<HTMLAnchorElement>>(onFocus, preload)}
       onTouchStart={composeEventHandlers<TouchEvent<HTMLAnchorElement>>(onTouchStart, preload)}
@@ -144,11 +159,13 @@ export const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(function NavL
   to,
   routePreload = "intent",
   reloadDocument,
+  onClick,
   onPointerEnter,
   onFocus,
   onTouchStart,
   ...props
 }, ref) {
+  const begin = useRouteNavigationIntent();
   const target = useMemo(() => to ?? href ?? "/", [href, to]);
   const { elementRef, preload } = useRoutePreload(target, routePreload, Boolean(reloadDocument));
   const mergedRef = useMemo(() => composeRefs(ref, elementRef), [elementRef, ref]);
@@ -159,6 +176,9 @@ export const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(function NavL
       ref={mergedRef}
       to={target}
       {...reloadDocumentProps}
+      onClick={composeEventHandlers<MouseEvent<HTMLAnchorElement>>(onClick, (event) => {
+        if (!reloadDocument) beginLinkNavigation(event, begin);
+      })}
       onPointerEnter={composeEventHandlers<PointerEvent<HTMLAnchorElement>>(onPointerEnter, preload)}
       onFocus={composeEventHandlers<FocusEvent<HTMLAnchorElement>>(onFocus, preload)}
       onTouchStart={composeEventHandlers<TouchEvent<HTMLAnchorElement>>(onTouchStart, preload)}

@@ -16,36 +16,50 @@ const sqliteDatabaseHeader = "SQLite format 3\x00"
 
 // 排他迁移的恢复点必须早于 collection 收敛和数据 backfill；否则备份可能已经包含一半新 schema。
 func prepareExclusiveSchemaDataMigrations(app core.App) error {
-	pending, err := schemaDataMigrationPendingWithoutWrites(app, settingsLocalePreferenceMigrationName)
-	if err != nil || !pending {
-		return err
-	}
-	hasHistory, err := historicalRenewletDataExists(app)
-	if err != nil || !hasHistory {
-		return err
-	}
-
-	exists, err := inspectSettingsLocalePreferenceRecoveryPoint(app)
-	if err != nil {
-		return err
-	}
-	if exists {
-		return nil
-	}
-	if err := app.CreateBackup(context.Background(), settingsLocalePreferenceRecoveryPoint); err != nil {
-		return fmt.Errorf("create destructive migration recovery point: %w", err)
-	}
-	exists, err = inspectSettingsLocalePreferenceRecoveryPoint(app)
-	if err != nil {
-		return err
-	}
-	if !exists {
-		return errors.New("destructive migration recovery point is missing after backup creation")
+	for _, migration := range []struct {
+		name          string
+		recoveryPoint string
+		hasHistory    func(core.App) (bool, error)
+	}{
+		{settingsLocalePreferenceMigrationName, settingsLocalePreferenceRecoveryPoint, historicalRenewletDataExists},
+		{notificationMessageMigration, notificationMessageRecoveryPoint, notificationMessageHistoryExists},
+	} {
+		pending, err := schemaDataMigrationPendingWithoutWrites(app, migration.name)
+		if err != nil {
+			return err
+		}
+		if !pending {
+			continue
+		}
+		hasHistory, err := migration.hasHistory(app)
+		if err != nil {
+			return err
+		}
+		if !hasHistory {
+			continue
+		}
+		exists, err := inspectSchemaMigrationRecoveryPoint(app, migration.recoveryPoint)
+		if err != nil {
+			return err
+		}
+		if exists {
+			continue
+		}
+		if err := app.CreateBackup(context.Background(), migration.recoveryPoint); err != nil {
+			return fmt.Errorf("create destructive migration recovery point: %w", err)
+		}
+		exists, err = inspectSchemaMigrationRecoveryPoint(app, migration.recoveryPoint)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			return errors.New("destructive migration recovery point is missing after backup creation")
+		}
 	}
 	return nil
 }
 
-func inspectSettingsLocalePreferenceRecoveryPoint(app core.App) (exists bool, resultErr error) {
+func inspectSchemaMigrationRecoveryPoint(app core.App, recoveryPoint string) (exists bool, resultErr error) {
 	fsys, err := app.NewBackupsFilesystem()
 	if err != nil {
 		return false, fmt.Errorf("open destructive migration backup storage: %w", err)
@@ -56,14 +70,14 @@ func inspectSettingsLocalePreferenceRecoveryPoint(app core.App) (exists bool, re
 		}
 	}()
 
-	exists, err = fsys.Exists(settingsLocalePreferenceRecoveryPoint)
+	exists, err = fsys.Exists(recoveryPoint)
 	if err != nil {
 		return false, fmt.Errorf("check destructive migration recovery point: %w", err)
 	}
 	if !exists {
 		return false, nil
 	}
-	reader, err := fsys.GetReader(settingsLocalePreferenceRecoveryPoint)
+	reader, err := fsys.GetReader(recoveryPoint)
 	if err != nil {
 		return true, fmt.Errorf("open destructive migration recovery point: %w", err)
 	}
@@ -72,13 +86,13 @@ func inspectSettingsLocalePreferenceRecoveryPoint(app core.App) (exists bool, re
 			resultErr = errors.Join(resultErr, fmt.Errorf("close destructive migration recovery point: %w", err))
 		}
 	}()
-	if err := validateSettingsLocalePreferenceRecoveryPoint(&lockedReaderAt{reader: reader}, reader.Size()); err != nil {
+	if err := validateSchemaMigrationRecoveryPoint(&lockedReaderAt{reader: reader}, reader.Size()); err != nil {
 		return true, fmt.Errorf("invalid destructive migration recovery point: %w", err)
 	}
 	return true, nil
 }
 
-func validateSettingsLocalePreferenceRecoveryPoint(reader io.ReaderAt, size int64) error {
+func validateSchemaMigrationRecoveryPoint(reader io.ReaderAt, size int64) error {
 	if size <= 0 {
 		return errors.New("backup is empty")
 	}

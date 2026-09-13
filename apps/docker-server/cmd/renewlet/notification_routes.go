@@ -16,7 +16,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
 
@@ -143,8 +142,14 @@ func handleNotificationOverview(app core.App, e *core.RequestEvent) error {
 		"batches", len(overview.UpcomingBatches),
 		"duration", time.Since(startedAt),
 	)
-	latestJob, _ := latestNotificationJob(app, e.Auth.Id, "")
-	latestFailedJob, _ := latestNotificationJob(app, e.Auth.Id, notificationStatusFailed)
+	latestJob, err := latestNotificationHistoryJob(app, e.Auth.Id, "all")
+	if err != nil {
+		return e.InternalServerError(serverText(locale, "notification.loadHistoryFailed"), err)
+	}
+	latestFailedJob, err := latestNotificationHistoryJob(app, e.Auth.Id, notificationStatusFailed)
+	if err != nil {
+		return e.InternalServerError(serverText(locale, "notification.loadHistoryFailed"), err)
+	}
 
 	return apiSuccessJSON(e, http.StatusOK, notificationOverviewResponse{
 		Summary: notificationHistorySummaryResponse{
@@ -153,8 +158,8 @@ func handleNotificationOverview(app core.App, e *core.RequestEvent) error {
 			Blockers:         overview.Blockers,
 			EnabledChannels:  overview.EnabledChannels,
 			UpcomingDays:     overview.UpcomingDays,
-			LatestJob:        toHistoryJob(latestJob),
-			LatestFailedJob:  toHistoryJob(latestFailedJob),
+			LatestJob:        latestJob,
+			LatestFailedJob:  latestFailedJob,
 		},
 		Upcoming: overview.UpcomingBatches,
 	})
@@ -174,13 +179,7 @@ func handleNotificationHistory(app core.App, e *core.RequestEvent) error {
 	limit := clampInt(parseInt(query.Get("limit"), 20), 1, 50)
 	offset := maxInt(parseInt(query.Get("offset"), 0), 0)
 
-	filter := "user = {:user}"
-	params := dbx.Params{"user": e.Auth.Id}
-	if status != "all" {
-		filter += " && status = {:status}"
-		params["status"] = status
-	}
-	rows, err := app.FindRecordsByFilter("notification_jobs", filter, "-scheduledInstantUtc,-created", limit+1, offset, params)
+	rows, err := loadNotificationHistoryJobs(app, e.Auth.Id, status, limit+1, offset)
 	if err != nil {
 		return e.InternalServerError(serverText(locale, "notification.loadHistoryFailed"), err)
 	}
@@ -192,7 +191,7 @@ func handleNotificationHistory(app core.App, e *core.RequestEvent) error {
 		hasMore = true
 	}
 	return apiSuccessJSON(e, http.StatusOK, notificationHistoryPageResponse{
-		Jobs:    recordsToHistoryJobs(jobs),
+		Jobs:    jobs,
 		Status:  status,
 		Limit:   limit,
 		Offset:  offset,

@@ -3,6 +3,7 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n/I18nProvider";
 import { reportClientError } from "@/lib/report-client-error";
+import { useRouteReady } from "@/components/route-progress";
 
 interface AppErrorBoundaryState {
   error: Error | null;
@@ -32,6 +33,7 @@ export class AppErrorBoundary extends Component<PropsWithChildren, AppErrorBound
 }
 
 function AppErrorFallback({ onReload }: { onReload: () => void }) {
+  useRouteReady();
   const { t } = useI18n();
   return (
     <main className="flex min-h-svh items-center justify-center bg-background px-4 py-10 text-foreground">

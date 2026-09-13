@@ -100,6 +100,9 @@ func ensureCollectionsSchema(app core.App) error {
 	if err := ensureNotificationJobsCollection(app, users); err != nil {
 		return err
 	}
+	if err := ensureNotificationMessageTable(app); err != nil {
+		return err
+	}
 	if err := ensureCalendarFeedsCollection(app, users); err != nil {
 		return err
 	}

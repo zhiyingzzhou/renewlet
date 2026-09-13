@@ -43,6 +43,7 @@ import { useSubscriptionCalendarDialog } from "@/hooks/use-subscription-calendar
 import { useZonedToday } from "@/hooks/use-zoned-today";
 import { formatCompactCurrencyAmount } from "@/lib/currency";
 import { cn } from "@/lib/utils";
+import { useRouteReady } from "@/components/route-progress";
 
 const EMPTY_SUBSCRIPTIONS: SubscriptionCollectionItem[] = [];
 
@@ -52,6 +53,7 @@ export default function Index() {
   const subscriptions = subscriptionsQuery.data ?? EMPTY_SUBSCRIPTIONS;
   const facetsQuery = useSubscriptionFacets();
   const settingsQuery = useSettings();
+  useRouteReady(subscriptionsQuery.isPending || settingsQuery.isPending);
   const settings = settingsQuery.data;
   const { config } = useCustomConfigState();
   const { t, locale, formatCurrency } = useI18n();

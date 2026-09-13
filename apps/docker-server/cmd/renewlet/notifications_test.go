@@ -539,7 +539,11 @@ func TestRepeatReminderCronCreatesOneIdempotentJob(t *testing.T) {
 		t.Fatalf("expected one notification job, got %d", len(jobs))
 	}
 	var result notificationJobResult
-	if err := decodeJSONRecordField(jobs[0], "result", &result); err != nil {
+	history, err := loadNotificationHistoryJobs(app, user.Id, "all", 1, 0)
+	if err != nil || len(history) != 1 {
+		t.Fatalf("missing history: %v", err)
+	}
+	if err := json.Unmarshal(history[0].Result, &result); err != nil {
 		t.Fatal(err)
 	}
 	if len(result.Message.Items) != 1 || result.Message.Items[0].RepeatReminder == nil {

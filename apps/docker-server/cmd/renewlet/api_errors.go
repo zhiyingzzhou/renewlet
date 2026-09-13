@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
+	"errors"
+	"net"
 	"net/http"
 	"strings"
+	"syscall"
 
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	pbrouter "github.com/pocketbase/pocketbase/tools/router"
 )
@@ -22,6 +27,11 @@ type apiErrorBody struct {
 // apiErrorMiddleware 只挂在 Renewlet 产品 API 上；PocketBase Admin UI 和静态资源继续使用平台原生响应。
 func apiErrorMiddleware(e *core.RequestEvent) error {
 	err := e.Next()
+	if isCanceledReadDelivery(e, err) {
+		// 保留原请求审计并标记交付取消；不能把业务错误、写请求或未取消的网络故障归为正常离开。
+		e.Set(apis.RequestEventKeyLogMeta, map[string]string{"responseDelivery": "client_disconnected"})
+		return nil
+	}
 	if err == nil || e.Written() {
 		return err
 	}
@@ -31,6 +41,20 @@ func apiErrorMiddleware(e *core.RequestEvent) error {
 		details = apiErr.Data
 	}
 	return apiErrorJSON(e, apiErr.Status, defaultAPIErrorCode(apiErr.Status), apiErr.Message, details)
+}
+
+func isCanceledReadDelivery(e *core.RequestEvent, err error) bool {
+	if err == nil || (e.Request.Method != http.MethodGet && e.Request.Method != http.MethodHead) {
+		return false
+	}
+	if !e.Written() || e.Status() < http.StatusOK || e.Status() >= http.StatusMultipleChoices {
+		return false
+	}
+	// net/http 写连接失败时先取消请求上下文；仅凭 canceled 或错误文本不能判断响应交付已被客户端中止。
+	var networkError *net.OpError
+	return errors.Is(e.Request.Context().Err(), context.Canceled) &&
+		errors.As(err, &networkError) && networkError.Op == "write" &&
+		(errors.Is(networkError, syscall.EPIPE) || errors.Is(networkError, syscall.ECONNRESET))
 }
 
 // apiErrorJSON 是 Docker/Go 产品 API 的唯一错误 envelope 出口；route 不应手写 map 或扁平 message/code。

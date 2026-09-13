@@ -4,8 +4,10 @@ import {
   type ConsoleMessage,
   type Page,
   type Route,
+  type Request,
 } from "@playwright/test";
-import { SUPPORTED_EXCHANGE_RATE_CURRENCIES } from "../../packages/shared/src/schemas/exchange-rates.js";
+import { performanceEnvironmentSchema } from "../../scripts/browser-performance";
+import { e2eFrankfurterRates, performanceExchangeRateCache } from "./exchange-rate-fixture";
 
 type BrowserDiagnostic = {
   level: "error" | "pageerror" | "warning";
@@ -13,17 +15,11 @@ type BrowserDiagnostic = {
 };
 
 const FRANKFURTER_ROUTE = /^https:\/\/api\.frankfurter\.dev\/v2\/rates(?:\?.*)?$/;
-const E2E_EXCHANGE_RATE_DATE = "2026-08-17";
-const E2E_FRANKFURTER_RATES = SUPPORTED_EXCHANGE_RATE_CURRENCIES.map((quote, index) => ({
-  date: E2E_EXCHANGE_RATE_DATE,
-  base: "USD",
-  quote,
-  rate: quote === "USD" ? 1 : 1 + (index + 1) / 1000,
-}));
-
-export const test = base.extend<{ pageGuards: void }>({
-  pageGuards: [async ({ page }, use) => {
-    const guards = await installE2EPageGuards(page);
+export const test = base.extend<{ pageGuards: void; cacheExchangeRates: boolean }>({
+  cacheExchangeRates: [false, { option: true }],
+  pageGuards: [async ({ page, cacheExchangeRates }, use, testInfo) => {
+    const day = cacheExchangeRates ? performanceEnvironmentSchema.parse(testInfo.config.metadata["performance"]).fixtureDay : undefined;
+    const guards = await installE2EPageGuards(page, day);
     try {
       await use();
     } finally {
@@ -32,13 +28,13 @@ export const test = base.extend<{ pageGuards: void }>({
   }, { auto: true }],
 });
 
-export async function installE2EPageGuards(page: Page): Promise<{ close(): Promise<void> }> {
+export async function installE2EPageGuards(page: Page, exchangeRateCacheDay?: string): Promise<{ close(): Promise<void> }> {
   const diagnostics: BrowserDiagnostic[] = [];
   const fulfillFrankfurter = async (route: Route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify(E2E_FRANKFURTER_RATES),
+      body: JSON.stringify(e2eFrankfurterRates),
     });
   };
   const recordConsoleMessage = (message: ConsoleMessage) => {
@@ -49,9 +45,21 @@ export async function installE2EPageGuards(page: Page): Promise<{ close(): Promi
   const recordPageError = (error: Error) => {
     diagnostics.push({ level: "pageerror", text: error.stack ?? error.message });
   };
+  const recordExternalRequest = (request: Request) => {
+    const url = new URL(request.url());
+    if (url.protocol === "https:") diagnostics.push({ level: "error", text: `Performance fixture escaped to external host: ${url.hostname}` });
+  };
 
   // 每个显式 BrowserContext 都必须复用这组守卫，避免手工 page 绕过第三方隔离或浏览器诊断门禁。
-  await page.route(FRANKFURTER_ROUTE, fulfillFrankfurter);
+  if (exchangeRateCacheDay) {
+    page.on("request", recordExternalRequest);
+    const cache = performanceExchangeRateCache(exchangeRateCacheDay);
+    await page.addInitScript(({ key, value }) => {
+      if (location.protocol === "http:" || location.protocol === "https:") localStorage.setItem(key, JSON.stringify(value));
+    }, cache);
+  } else {
+    await page.route(FRANKFURTER_ROUTE, fulfillFrankfurter);
+  }
   page.on("console", recordConsoleMessage);
   page.on("pageerror", recordPageError);
   return {
@@ -62,6 +70,7 @@ export async function installE2EPageGuards(page: Page): Promise<{ close(): Promi
       }
       page.off("console", recordConsoleMessage);
       page.off("pageerror", recordPageError);
+      page.off("request", recordExternalRequest);
       expect(diagnostics, "unexpected browser console warnings or errors").toEqual([]);
     },
   };

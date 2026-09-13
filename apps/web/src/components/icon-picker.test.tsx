@@ -163,6 +163,39 @@ describe("IconPicker", () => {
     expect(await screen.findByAltText(binanceLabel)).toHaveClass("media-thumbnail-image");
   });
 
+  it("keeps the icon search popover open when the search button is clicked", async () => {
+    const user = userEvent.setup();
+    let resolveRequest: ((value: unknown) => void) | undefined;
+    mocks.apiFetch.mockImplementation((url: string) => {
+      if (url === "/api/app/media/candidates") {
+        return new Promise((resolve) => {
+          resolveRequest = resolve;
+        });
+      }
+      return Promise.resolve({});
+    });
+
+    render(<IconPicker value={undefined} onChange={vi.fn()} />);
+
+    await user.click(screen.getByRole("button", { name: "搜索" }));
+    const input = screen.getByPlaceholderText("输入名称...");
+    const popover = input.closest<HTMLElement>('[role="dialog"]');
+    if (!popover) throw new Error("Expected icon search popover to be open.");
+    await user.type(input, "Binance");
+    await user.click(within(popover).getByRole("button", { name: "搜索" }));
+
+    expect(input.closest('[role="dialog"]')).toBe(popover);
+    expect(input).toHaveValue("Binance");
+
+    resolveRequest?.({
+      items: [{ id: "search", autoCandidate: null, candidates: { best: null, builtIn: [], appStore: [], favicon: [] } }],
+    });
+    await waitFor(() => {
+      expect(input.closest('[role="dialog"]')).toBe(popover);
+      expect(input).toHaveValue("Binance");
+    });
+  });
+
   it("allows SVG files in the custom icon file picker", () => {
     const { container } = render(<IconPicker value={undefined} onChange={vi.fn()} />);
     const input = container.querySelector<HTMLInputElement>('input[type="file"]');

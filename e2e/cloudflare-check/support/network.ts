@@ -26,7 +26,7 @@ type ConsoleRecord = {
 
 type PageErrorRecord = {
   message: string;
-  stack?: string;
+  stack: string | undefined;
 };
 
 type NetworkAssertionOptions = {
@@ -71,6 +71,15 @@ export function isApiResponse(response: Response, pathname: string, method?: str
   return responsePathname === pathname && (!method || response.request().method() === method);
 }
 
+export function recordResponseTiming(
+  started: RequestRecord,
+  timing: Pick<ReturnType<Request["timing"]>, "startTime" | "responseStart">,
+  status: number,
+): ResponseRecord {
+  // Node 回调可能排队；并发窗口必须使用浏览器请求开始到响应首字节的时间，不能把事件传输延迟算进 API 耗时。
+  return { ...started, startedAt: timing.startTime, durationMs: timing.responseStart, status };
+}
+
 export function createNetworkMonitor(page: Page) {
   const requestStarts = new Map<Request, RequestRecord>();
   const inflightByPath = new Map<string, number>();
@@ -112,11 +121,7 @@ export function createNetworkMonitor(page: Page) {
     const pathname = started?.pathname ?? pathnameFromURL(response.url());
     decrementInflight(pathname);
     if (!started) return;
-    responses.push({
-      ...started,
-      durationMs: Date.now() - started.startedAt,
-      status: response.status(),
-    });
+    responses.push(recordResponseTiming(started, request.timing(), response.status()));
   });
 
   page.on("requestfailed", (request) => {
@@ -257,7 +262,7 @@ function consumeAllowedBrowserResourceError(
   return true;
 }
 
-export function expectNoConcurrentCoreRequests(monitor: NetworkMonitor, label: string) {
+export function expectNoConcurrentCoreRequests(monitor: SettledRequests, label: string) {
   // 线上巡检把“同页并发核心 API”当质量门；它直接暴露 session/settings/subscriptions 风暴，而不是普通请求计数。
   const maxConcurrentByPath = calculateEffectiveMaxConcurrentByPath(monitor);
   const duplicated = coreApiPaths.flatMap((pathname) =>
@@ -284,18 +289,26 @@ export function expectNoRepeatedSessionWithin(monitor: NetworkMonitor, label: st
 }
 
 type SettledRequestRecord = RequestRecord & { durationMs: number };
+type SettledRequests = Pick<NetworkMonitor, "responses" | "requestFailures">;
 
-function effectiveSettledRequests(monitor: NetworkMonitor): SettledRequestRecord[] {
-  return [
+function effectiveSettledRequests(monitor: SettledRequests): SettledRequestRecord[] {
+  const records = [
     ...monitor.responses,
     ...monitor.requestFailures.filter(isBlockingRequestFailure),
-  ];
+  ].filter((record) => isAppApiPath(record.pathname));
+  // 缓存静态资源可没有 timing；API 门禁不能用缺失计时证明无并发，也不能换回 Node 时钟凑出区间。
+  for (const record of records) {
+    if (!Number.isFinite(record.startedAt) || record.startedAt <= 0 ||
+        !Number.isFinite(record.durationMs) || record.durationMs < 0) {
+      throw new Error(`Missing browser response timing: ${record.method} ${record.pathname}`);
+    }
+  }
+  return records;
 }
 
-function calculateEffectiveMaxConcurrentByPath(monitor: NetworkMonitor): Map<string, number> {
+function calculateEffectiveMaxConcurrentByPath(monitor: SettledRequests): Map<string, number> {
   const eventsByPath = new Map<string, Array<{ at: number; delta: 1 | -1 }>>();
   for (const record of effectiveSettledRequests(monitor)) {
-    if (!isAppApiPath(record.pathname)) continue;
     const events = eventsByPath.get(record.pathname) ?? [];
     events.push({ at: record.startedAt, delta: 1 });
     events.push({ at: record.startedAt + record.durationMs, delta: -1 });

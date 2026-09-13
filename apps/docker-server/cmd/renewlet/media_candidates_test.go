@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -524,9 +525,13 @@ func TestMediaCandidatesRespectsAppStoreStorefrontSettings(t *testing.T) {
 			settings.OnlineIconSources[appStoreOnlineIconSource] = onlineIconSourceSetting{Enabled: true, Storefronts: tc.storefronts}
 			createNotificationCronRouteTestSettings(t, app, user, settings)
 			calls := []string{}
+			var callsMu sync.Mutex
 			restore := stubAppStoreIconHTTPClient(t, func(request *http.Request) (*http.Response, error) {
 				country := request.URL.Query().Get("country")
+				// 双区请求本来就并发；测试采集器必须同步，不能因 append 竞争漏记真实请求。
+				callsMu.Lock()
 				calls = append(calls, country)
+				callsMu.Unlock()
 				return jsonResponse(`{"resultCount":1,"results":[{"trackId":200,"trackName":"Renewlet Mobile","sellerName":"Renewlet","bundleId":"app.renewlet.mobile","artworkUrl512":"https://is1-ssl.mzstatic.com/image/` + country + `.png"}]}`), nil
 			})
 			defer restore()

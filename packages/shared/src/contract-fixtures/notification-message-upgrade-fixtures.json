@@ -1,0 +1,320 @@
+{
+  "description": "由固定历史 tag 的真实 Go 实现生成并保存的通知结果；数据库原件和生成过程见 harness 工件，不由候选实现构造。",
+  "fixtures": [
+    {
+      "version": "v0.2.95",
+      "revision": "02fec668d65ad6b03ba0321301abf05e17ba28dd",
+      "databaseHash": "500aa67766a640bae9224eb3c1fdbbc2fccc95489bf74c5e54ab4a105508e88f",
+      "expectedHash": "a59ed55676d0b722ce537007c3037c3aa3972b47c3c732717ac06b08cb40841f",
+      "result": {
+        "source": "cron",
+        "reason": "some_channels_failed",
+        "force": false,
+        "windowMinutes": 2,
+        "triggeredAtUtc": "2026-09-08T08:00:00Z",
+        "schedule": {
+          "scheduledLocalDate": "2026-09-08",
+          "scheduledLocalTime": "08:00",
+          "timeZone": "UTC",
+          "scheduledInstantUtc": "2026-09-08T08:00:00Z"
+        },
+        "settings": {
+          "timezone": "UTC",
+          "locale": "en-US",
+          "notificationTimeLocal": "08:00",
+          "enabledChannels": [
+            "webhook",
+            "telegram"
+          ],
+          "showExpired": true
+        },
+        "message": {
+          "title": "旧版本订阅提醒 🌏",
+          "content": "保留原始正文\n旧版本升级不能改变这条消息。",
+          "timestamp": "2026-09-08 08:00 UTC",
+          "hasPayload": true,
+          "items": [
+            {
+              "type": "renewal",
+              "subscriptionId": "historicalsub01",
+              "name": "Historical service 🌏",
+              "price": 12.5,
+              "currency": "CNY",
+              "status": "active",
+              "targetDate": "2026-09-11",
+              "reminderDays": 3,
+              "daysUntil": 3
+            }
+          ]
+        },
+        "channels": {
+          "attempted": [
+            "webhook",
+            "telegram"
+          ],
+          "succeeded": [
+            "webhook"
+          ],
+          "failed": [
+            {
+              "channel": "telegram",
+              "error": "historic failed channel"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "version": "v0.2.96",
+      "revision": "d2755510203c8eaf7f8454aca22a36885c62a6cc",
+      "databaseHash": "ffbd2d16851cf6208143bff787b758e2df26514ce585db5c9ff27597618ad4d3",
+      "expectedHash": "d53d6945ee9baf2e4500366998528b13d3f4b3e55d3c716c400e9765ac813994",
+      "result": {
+        "source": "cron",
+        "reason": "some_channels_failed",
+        "force": false,
+        "windowMinutes": 2,
+        "triggeredAtUtc": "2026-09-08T08:00:00Z",
+        "schedule": {
+          "scheduledLocalDate": "2026-09-08",
+          "scheduledLocalTime": "08:00",
+          "timeZone": "UTC",
+          "scheduledInstantUtc": "2026-09-08T08:00:00Z"
+        },
+        "settings": {
+          "timezone": "UTC",
+          "locale": "en-US",
+          "notificationTimeLocal": "08:00",
+          "enabledChannels": [
+            "webhook",
+            "telegram"
+          ],
+          "showExpired": true
+        },
+        "message": {
+          "title": "旧版本订阅提醒 🌏",
+          "content": "保留原始正文\n旧版本升级不能改变这条消息。",
+          "timestamp": "2026-09-08 08:00 UTC",
+          "hasPayload": true,
+          "items": [
+            {
+              "type": "renewal",
+              "subscriptionId": "historicalsub01",
+              "name": "Historical service 🌏",
+              "price": "12.50",
+              "currency": "CNY",
+              "status": "active",
+              "targetDate": "2026-09-11",
+              "reminderDays": 3,
+              "daysUntil": 3
+            }
+          ]
+        },
+        "channels": {
+          "attempted": [
+            "webhook",
+            "telegram"
+          ],
+          "succeeded": [
+            "webhook"
+          ],
+          "failed": [
+            {
+              "channel": "telegram",
+              "error": "historic failed channel"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "version": "v0.3.21",
+      "revision": "dee5d8c8cf055583d9c45eb82a0b41e0cd13e016",
+      "databaseHash": "4eaed746c4560ea29c5949b47db6223119938a3969047ce73997bc8382b0124d",
+      "expectedHash": "8c9f66cab03c07e5efe33b94922c19566c131c038395a49a7afb3081190d9455",
+      "result": {
+        "source": "cron",
+        "reason": "some_channels_failed",
+        "force": false,
+        "windowMinutes": 2,
+        "triggeredAtUtc": "2026-09-08T08:00:00Z",
+        "schedule": {
+          "scheduledLocalDate": "2026-09-08",
+          "scheduledLocalTime": "08:00",
+          "timeZone": "UTC",
+          "scheduledInstantUtc": "2026-09-08T08:00:00Z"
+        },
+        "settings": {
+          "timezone": "UTC",
+          "locale": "en-US",
+          "notificationTimeLocal": "08:00",
+          "enabledChannels": [
+            "webhook",
+            "telegram"
+          ],
+          "showExpired": true
+        },
+        "message": {
+          "title": "旧版本订阅提醒 🌏",
+          "content": "保留原始正文\n旧版本升级不能改变这条消息。",
+          "timestamp": "2026-09-08 08:00 UTC",
+          "hasPayload": true,
+          "items": [
+            {
+              "type": "renewal",
+              "subscriptionId": "historicalsub01",
+              "name": "Historical service 🌏",
+              "price": "12.50",
+              "currency": "CNY",
+              "status": "active",
+              "targetDate": "2026-09-11",
+              "reminderDays": 3,
+              "daysUntil": 3
+            }
+          ]
+        },
+        "channels": {
+          "attempted": [
+            "webhook",
+            "telegram"
+          ],
+          "succeeded": [
+            "webhook"
+          ],
+          "failed": [
+            {
+              "channel": "telegram",
+              "error": "historic failed channel"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "version": "v0.3.24",
+      "revision": "7390d2596db2ec018e0fa0593836d3f1f6e78b74",
+      "databaseHash": "4ecfffd45f8d34d0c37ad32df45136ec6a4c5c9ada7b376e38c9b635f3e53ffe",
+      "expectedHash": "2c4e84fd9fb73593eb1239e148d53dd77c812def3ca5fd83ab3734a8fe99e474",
+      "result": {
+        "source": "cron",
+        "reason": "some_channels_failed",
+        "force": false,
+        "windowMinutes": 2,
+        "triggeredAtUtc": "2026-09-08T08:00:00Z",
+        "schedule": {
+          "scheduledLocalDate": "2026-09-08",
+          "scheduledLocalTime": "08:00",
+          "timeZone": "UTC",
+          "scheduledInstantUtc": "2026-09-08T08:00:00Z"
+        },
+        "settings": {
+          "timezone": "UTC",
+          "locale": "zh-CN",
+          "notificationTimeLocal": "08:00",
+          "enabledChannels": [
+            "webhook",
+            "telegram"
+          ],
+          "showExpired": true
+        },
+        "message": {
+          "title": "旧版本订阅提醒 🌏",
+          "content": "保留原始正文\n旧版本升级不能改变这条消息。",
+          "timestamp": "2026-09-08 08:00 UTC",
+          "hasPayload": true,
+          "items": [
+            {
+              "type": "renewal",
+              "subscriptionId": "historicalsub01",
+              "name": "Historical service 🌏",
+              "price": "12.50",
+              "currency": "CNY",
+              "status": "active",
+              "targetDate": "2026-09-11",
+              "reminderDays": 3,
+              "daysUntil": 3
+            }
+          ]
+        },
+        "channels": {
+          "attempted": [
+            "webhook",
+            "telegram"
+          ],
+          "succeeded": [
+            "webhook"
+          ],
+          "failed": [
+            {
+              "channel": "telegram",
+              "error": "historic failed channel"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "version": "v0.3.25",
+      "revision": "385e139b098de0b72b7e6fe879bf1462c53fd645",
+      "databaseHash": "38c94d0b09fff4048f6ebecac7c2a302da509b720176ff580cb7ea3fb9d85ae2",
+      "expectedHash": "3adb44fe866d01a7242b50302c5cc0ccfa3d29e5868e4687ee6a8a90d09e0533",
+      "result": {
+        "source": "cron",
+        "reason": "some_channels_failed",
+        "force": false,
+        "windowMinutes": 2,
+        "triggeredAtUtc": "2026-09-08T08:00:00Z",
+        "schedule": {
+          "scheduledLocalDate": "2026-09-08",
+          "scheduledLocalTime": "08:00",
+          "timeZone": "UTC",
+          "scheduledInstantUtc": "2026-09-08T08:00:00Z"
+        },
+        "settings": {
+          "timezone": "UTC",
+          "locale": "zh-CN",
+          "notificationTimeLocal": "08:00",
+          "enabledChannels": [
+            "webhook",
+            "telegram"
+          ],
+          "showExpired": true
+        },
+        "message": {
+          "title": "旧版本订阅提醒 🌏",
+          "content": "保留原始正文\n旧版本升级不能改变这条消息。",
+          "timestamp": "2026-09-08 08:00 UTC",
+          "hasPayload": true,
+          "items": [
+            {
+              "type": "renewal",
+              "subscriptionId": "historicalsub01",
+              "name": "Historical service 🌏",
+              "price": "12.50",
+              "currency": "CNY",
+              "status": "active",
+              "targetDate": "2026-09-11",
+              "reminderDays": 3,
+              "daysUntil": 3
+            }
+          ]
+        },
+        "channels": {
+          "attempted": [
+            "webhook",
+            "telegram"
+          ],
+          "succeeded": [
+            "webhook"
+          ],
+          "failed": [
+            {
+              "channel": "telegram",
+              "error": "historic failed channel"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

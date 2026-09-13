@@ -33,6 +33,7 @@ import {
   preloadAIRecognizeSubscriptionDialog,
 } from '@/components/ai-recognize-subscription-dialog-loader';
 import { SubscriptionsPageSkeleton } from '@/components/loading-skeleton';
+import { useRouteReady } from '@/components/route-progress';
 import { SubscriptionCategoryFilter } from '@/components/subscription-category-filter';
 import { SubscriptionFilterFeedback } from '@/components/subscription-filter-feedback';
 import { QueryErrorState } from '@/components/query-error-state';
@@ -160,7 +161,6 @@ const Subscriptions = () => {
     advancedFilters,
     setAdvancedFilters,
     allTags,
-    filteredSubscriptions: localFilteredSubscriptions,
     sortSubscriptionsForDisplay,
     selectSubscriptionsForExport,
     subscriptionListFilters,
@@ -170,7 +170,7 @@ const Subscriptions = () => {
     clearSelectedCategories,
     toggleTag,
     clearFilters,
-  } = useSubscriptionFilters(subscriptions, {
+  } = useSubscriptionFilters({
     defaultCurrency,
     convert,
     locale,
@@ -180,12 +180,13 @@ const Subscriptions = () => {
   const indexQuery = useSubscriptionIndex(subscriptionListFilters, needsCollectionIndex);
   const indexedSubscriptions = indexQuery.data?.subscriptions ?? EMPTY_SUBSCRIPTIONS;
   const displaySourceSubscriptions = needsCollectionIndex ? indexedSubscriptions : subscriptions;
-  // index 已经是全库筛选真相源；客户端只应用用户选择的排序，不再读取轻量 DTO 中不存在的详情字段。
+  // 先选择分页或全库索引，再只排序实际展示的数据；索引模式不能附带重排未展示的分页列表。
   const filteredSubscriptions = useMemo(
-    () => needsCollectionIndex ? sortSubscriptionsForDisplay(displaySourceSubscriptions) : localFilteredSubscriptions,
-    [displaySourceSubscriptions, localFilteredSubscriptions, needsCollectionIndex, sortSubscriptionsForDisplay],
+    () => sortSubscriptionsForDisplay(displaySourceSubscriptions),
+    [displaySourceSubscriptions, sortSubscriptionsForDisplay],
   );
   const isDisplayPending = needsCollectionIndex && indexQuery.isPending;
+  useRouteReady(subscriptionsQuery.isPending || isDisplayPending);
   const displayError = needsCollectionIndex ? indexQuery.error : subscriptionsQuery.error;
   const retryDisplayQuery = needsCollectionIndex ? indexQuery.refetch : subscriptionsQuery.refetch;
   const displayedTotal = needsCollectionIndex ? (indexQuery.data?.total ?? 0) : subscriptionsQuery.total;

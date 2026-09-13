@@ -92,10 +92,16 @@ export function useInfiniteSubscriptions(options: UseInfiniteSubscriptionsOption
     () => query.data?.pages.flatMap((page) => page.subscriptions) ?? [],
     [query.data?.pages],
   );
+  // 只读取列表实际消费的 Query 属性；展开整个结果会订阅 isFetching 等无关变化，让相同数据的后台刷新也重渲染。
   return {
-    ...query,
     subscriptions,
     total: query.data?.pages[0]?.total ?? 0,
+    isPending: query.isPending,
+    error: query.error,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    fetchNextPage: query.fetchNextPage,
+    refetch: query.refetch,
   };
 }
 

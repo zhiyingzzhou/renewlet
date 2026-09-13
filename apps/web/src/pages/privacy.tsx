@@ -8,6 +8,7 @@
 
 import { LegalPageShell } from "@/components/legal-page";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useRouteReady } from "@/components/route-progress";
 import type { MessageKey } from "@/i18n/messages";
 
 const PRIVACY_SECTIONS: Array<{ title: MessageKey; items: MessageKey[] }> = [
@@ -36,6 +37,7 @@ const PRIVACY_SECTIONS: Array<{ title: MessageKey; items: MessageKey[] }> = [
 ];
 
 export default function PrivacyPage() {
+  useRouteReady();
   const { t } = useI18n();
 
   return (

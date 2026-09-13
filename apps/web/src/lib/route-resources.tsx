@@ -1,4 +1,4 @@
-import { useSyncExternalStore, type ComponentType, type ReactElement } from "react";
+import type { ComponentType, ReactElement } from "react";
 import type { QueryClient } from "@tanstack/react-query";
 import {
   AdminUsersPageSkeleton,
@@ -175,37 +175,10 @@ const resourcesByExactPath = new Map<string, RouteResource>(
 );
 
 const inFlightPreloads = new Map<string, Promise<void>>();
-const preloadListeners = new Set<() => void>();
-let routePreloadPendingCount = 0;
 
 function routeResourceForPathname(pathname: string): RouteResource | null {
   if (pathname.startsWith("/status/")) return routeResources.publicStatus;
   return resourcesByExactPath.get(pathname) ?? null;
-}
-
-function routePreloadSnapshot() {
-  return routePreloadPendingCount > 0;
-}
-
-function subscribeRoutePreload(listener: () => void) {
-  preloadListeners.add(listener);
-  return () => {
-    preloadListeners.delete(listener);
-  };
-}
-
-function emitRoutePreloadState() {
-  for (const listener of preloadListeners) listener();
-}
-
-function trackPreloadPromise(promise: Promise<void>) {
-  routePreloadPendingCount += 1;
-  emitRoutePreloadState();
-  const settle = () => {
-    routePreloadPendingCount = Math.max(0, routePreloadPendingCount - 1);
-    emitRoutePreloadState();
-  };
-  promise.then(settle, settle);
 }
 
 function canPrefetchPrivateData() {
@@ -257,7 +230,7 @@ export function preloadRoute(pathname: string, queryClient?: QueryClient | null)
     .then(() => undefined);
 
   inFlightPreloads.set(resource.path, preload);
-  trackPreloadPromise(preload);
+  // intent 只静默预热资源；鼠标悬停或缓存刷新不能伪装成页面导航。
   const clearInFlight = () => {
     if (inFlightPreloads.get(resource.path) === preload) {
       inFlightPreloads.delete(resource.path);
@@ -265,8 +238,4 @@ export function preloadRoute(pathname: string, queryClient?: QueryClient | null)
   };
   preload.then(clearInFlight, clearInFlight);
   return preload;
-}
-
-export function useRoutePreloadPending(): boolean {
-  return useSyncExternalStore(subscribeRoutePreload, routePreloadSnapshot, () => false);
 }

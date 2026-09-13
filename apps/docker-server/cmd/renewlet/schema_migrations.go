@@ -53,6 +53,15 @@ func runSchemaDataMigrations(app core.App) error {
 		{Name: "subscription_cycle_fields_v1", Run: migrateSubscriptionCycleFields},
 		{Name: "invalid_subscription_logos_v1", Run: cleanupInvalidSubscriptionLogos},
 		{Name: "orphan_subscription_calendar_feeds_v1", Run: deleteOrphanSubscriptionCalendarFeeds},
+		{
+			Name: notificationMessageMigration, Run: migrateNotificationJobMessages,
+			Exclusive: &exclusiveSchemaDataMigration{
+				Preflight:    preflightNotificationJobMessages,
+				Verify:       verifyNotificationMessageTable,
+				InstallGuard: installNotificationMessageGuards,
+				VerifyGuard:  verifyNotificationMessageGuards,
+			},
+		},
 	}
 	for _, migration := range migrations {
 		var err error

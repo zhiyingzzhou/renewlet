@@ -24,7 +24,6 @@ import {
   listNotificationScheduleCandidateSubscriptions,
   listRepeatReminderCandidateSubscriptions,
   listSubscriptions,
-  NOTIFICATION_JOB_COLUMNS,
   parseJobResult,
   toApiSubscription,
 } from "./db";
@@ -37,6 +36,7 @@ import { requireAuth } from "./auth";
 import { notificationChannelErrorDetails } from "./notification-errors";
 import { sendChannel, sendChannels } from "./notification-channel-send";
 import type { Env, NotificationJobRow } from "./types";
+import { readNotificationHistoryRows } from "./notification-message-storage";
 import {
   NOTIFICATION_CRON_WINDOW_MINUTES,
   NOTIFICATION_MAX_RETRIES,
@@ -121,8 +121,8 @@ export async function notificationOverview(request: Request, env: Env): Promise<
   await renewAutoSubscriptionsForUserWithSettings(env, auth.user.id, settings, new Date());
   const subscriptions = (await listSubscriptions(env, auth.user.id)).map(toApiSubscription);
   const overview = buildOverview(new Date(), settings, subscriptions);
-  const latestJob = await latestJobForUser(env, auth.user.id);
-  const latestFailedJob = await latestJobForUser(env, auth.user.id, "failed");
+  const [latestJob] = await readNotificationHistoryRows(env, auth.user.id, "all", 1);
+  const [latestFailedJob] = await readNotificationHistoryRows(env, auth.user.id, "failed", 1);
   logNotificationResources("overview", subscriptions.length, overview.upcoming.length, startedAt);
   return successJson(notificationOverviewPayloadSchema.parse({
     summary: {
@@ -141,18 +141,9 @@ export async function notificationHistory(request: Request, env: Env): Promise<R
   const status = parseHistoryStatus(url.searchParams.get("status"));
   const limit = clamp(parseIntOr(url.searchParams.get("limit"), 20), 1, 50);
   const offset = Math.max(0, parseIntOr(url.searchParams.get("offset"), 0));
-  const params: unknown[] = [auth.user.id];
-  let filter = "WHERE user_id = ?";
-  if (status !== "all") {
-    filter += " AND status = ?";
-    params.push(status);
-  }
-  params.push(limit + 1, offset);
-  const rows = await env.DB.prepare(`SELECT ${NOTIFICATION_JOB_COLUMNS} FROM notification_jobs ${filter} ORDER BY scheduled_instant_utc DESC, created_at DESC LIMIT ? OFFSET ?`)
-    .bind(...params)
-    .all<NotificationJobRow>();
-  const hasMore = rows.results.length > limit;
-  const jobs = rows.results.slice(0, limit).map(toHistoryJob);
+  const rows = await readNotificationHistoryRows(env, auth.user.id, status, limit + 1, offset);
+  const hasMore = rows.length > limit;
+  const jobs = rows.slice(0, limit).map(toHistoryJob);
   return successJson(notificationHistoryPayloadSchema.parse({
     jobs,
     status,
@@ -745,12 +736,6 @@ function toHistoryJob(row: NotificationJobRow) {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
-}
-
-async function latestJobForUser(env: Env, userId: string, status?: string): Promise<NotificationJobRow | null> {
-  const filter = status ? "WHERE user_id = ? AND status = ?" : "WHERE user_id = ?";
-  const params = status ? [userId, status] : [userId];
-  return await env.DB.prepare(`SELECT ${NOTIFICATION_JOB_COLUMNS} FROM notification_jobs ${filter} ORDER BY scheduled_instant_utc DESC, created_at DESC LIMIT 1`).bind(...params).first<NotificationJobRow>();
 }
 
 function parseHistoryStatus(value: string | null): NotificationHistoryStatusFilter {

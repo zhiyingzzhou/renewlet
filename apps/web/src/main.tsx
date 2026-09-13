@@ -13,6 +13,7 @@ import { BrowserRouter } from "react-router";
 import App from "@/App";
 import Providers from "@/providers";
 import { AppErrorBoundary } from "@/components/app-error-boundary";
+import { RouteNavigationProvider } from "@/components/route-progress";
 import { initializeProductSessionQuery } from "@/lib/auth-client";
 import { getInitialLocale } from "@/i18n/locales";
 import { loadAndActivateLocale } from "@/i18n/messages";
@@ -37,11 +38,13 @@ async function bootstrap() {
   createRoot(document.getElementById("root") as HTMLElement).render(
     <StrictMode>
       <BrowserRouter>
-        <Providers queryClient={appQueryClient}>
-          <AppErrorBoundary>
-            <App />
-          </AppErrorBoundary>
-        </Providers>
+        <RouteNavigationProvider>
+          <Providers queryClient={appQueryClient}>
+            <AppErrorBoundary>
+              <App />
+            </AppErrorBoundary>
+          </Providers>
+        </RouteNavigationProvider>
       </BrowserRouter>
     </StrictMode>,
   );

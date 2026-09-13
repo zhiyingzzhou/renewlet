@@ -37,6 +37,7 @@ import { daysBetweenDateOnly } from "@/lib/time/date-only";
 import { usePublicStatus } from "@/hooks/use-public-status-page";
 import { useExchangeRates } from "@/hooks/use-exchange-rates";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useRouteReady } from "@/components/route-progress";
 import type { Locale } from "@/i18n/locales";
 import type { MessageKey } from "@/i18n/messages";
 import {
@@ -537,6 +538,7 @@ export default function PublicStatusPage() {
   useNoIndexMeta();
   const { token } = useParams<{ token: string }>();
   const query = usePublicStatus(token);
+  useRouteReady(query.isPending);
   const { t } = useI18n();
 
   if (query.isPending) {

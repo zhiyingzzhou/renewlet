@@ -9,6 +9,9 @@ import { DEFAULT_LOCALE } from "@/i18n/locales";
 import { getIntlCurrencyNarrowSymbol } from "@/lib/currency-data";
 import { moneyToNumber } from "@renewlet/shared/money";
 
+// 走势无障碍摘要会连续格式化大量同语言金额；只复用一个 Intl 实例，不保存金额或账号数据。
+let numberFormatter: { locale: string; value: Intl.NumberFormat } | undefined;
+
 /** currency 来自用户配置和导入数据，非法值只能降级展示，不能让统计页崩溃。 */
 export function formatCurrency(amount: number | string, currency: string, locale = DEFAULT_LOCALE): string {
   const currencyCode = normalizeCurrencyCode(currency);
@@ -45,10 +48,16 @@ function normalizeCurrencyCode(currency: string): string {
 
 function formatCurrencyNumber(amount: number, locale: string): string {
   try {
-    return new Intl.NumberFormat(locale, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(amount);
+    if (numberFormatter?.locale !== locale) {
+      numberFormatter = {
+        locale,
+        value: new Intl.NumberFormat(locale, {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2,
+        }),
+      };
+    }
+    return numberFormatter.value.format(amount);
   } catch {
     return Number.isInteger(amount) ? amount.toFixed(0) : amount.toFixed(2);
   }

@@ -1,6 +1,6 @@
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useRouter } from '@/lib/router';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -528,7 +528,7 @@ function MobileSettingsPageHeader() {
 }
 
 export function useUnsavedChangesGuard(enabled: boolean, onConfirmLeave: () => void) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [pendingUrl, setPendingUrl] = useState<URL | null>(null);
 
   useEffect(() => {
@@ -600,8 +600,8 @@ export function useUnsavedChangesGuard(enabled: boolean, onConfirmLeave: () => v
     const nextPath = `${pendingUrl.pathname}${pendingUrl.search}${pendingUrl.hash}`;
     setPendingUrl(null);
     onConfirmLeave();
-    navigate(nextPath);
-  }, [navigate, onConfirmLeave, pendingUrl]);
+    router.push(nextPath);
+  }, [router, onConfirmLeave, pendingUrl]);
 
   return {
     pendingLeave: pendingUrl !== null,

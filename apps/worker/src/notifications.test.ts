@@ -89,7 +89,8 @@ async function handleFakeD1(
     return d1Run(1);
   }
   if (query.method === "run" && (
-    query.sql.includes("subscription_list_index")
+    query.sql.includes("notification_job_messages")
+    || query.sql.includes("subscription_list_index")
     || query.sql.includes("subscription_tags")
     || query.sql.includes("subscription_repeat_schedule")
     || query.sql.includes("subscription_user_stats")
@@ -313,7 +314,7 @@ describe("Cloudflare notifications", () => {
     const env = fakeEnv((query) => {
       queries.push(query);
       const { sql, method } = query;
-      if (method === "all" && sql.includes("FROM notification_jobs")) return d1All([legacyJob]);
+      if (method === "all" && sql.includes("FROM notification_jobs")) return d1All([{ ...legacyJob, chunk_index: null, content: null }]);
       throw new Error(`unexpected ${method} query: ${sql}`);
     });
 

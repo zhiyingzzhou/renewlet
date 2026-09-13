@@ -1,6 +1,6 @@
 // LogoPicker 测试覆盖私有资产、远端 URL、内置候选和上传状态，防止订阅 logo 契约回退到 data URL。
 import type { ReactNode } from "react";
-import { render as renderComponent, screen, waitFor } from "@testing-library/react";
+import { render as renderComponent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -213,6 +213,73 @@ describe("LogoPicker", () => {
 
     await waitFor(() => {
       expectMediaCandidateRequest("Svix", "https://www.svix.com/");
+    });
+  });
+
+  it("keeps the desktop Logo search popover open when the search button is clicked", async () => {
+    const user = userEvent.setup();
+    let resolveRequest: ((value: unknown) => void) | undefined;
+    mocks.apiFetch.mockImplementation((url: string) => {
+      if (url === "/api/app/media/candidates") {
+        return new Promise((resolve) => {
+          resolveRequest = resolve;
+        });
+      }
+      return Promise.resolve({});
+    });
+
+    render(<LogoPicker value={undefined} onChange={vi.fn()} />);
+
+    await user.click(screen.getByRole("button", { name: "搜索" }));
+    const sheet = screen.getByTestId("logo-search-sheet");
+    const input = within(sheet).getByPlaceholderText("输入服务名称、品牌或网址...");
+    await user.type(input, "YouTube");
+    await user.click(within(sheet).getByRole("button", { name: "搜索" }));
+
+    expect(screen.getByTestId("logo-search-sheet")).toBe(sheet);
+    expect(input).toHaveValue("YouTube");
+    expect(within(sheet).getByRole("button", { name: "搜索" })).toBeDisabled();
+
+    resolveRequest?.({
+      items: [{ id: "search", autoCandidate: null, candidates: { best: null, builtIn: [], appStore: [], favicon: [] } }],
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("logo-search-sheet")).toBe(sheet);
+      expect(input).toHaveValue("YouTube");
+    });
+  });
+
+  it("keeps the mobile Logo search sheet open when the search button is clicked", async () => {
+    const user = userEvent.setup();
+    mockMatchMedia({ "(max-width: 767px)": true, [desktopTooltipQuery]: false });
+    let resolveRequest: ((value: unknown) => void) | undefined;
+    mocks.apiFetch.mockImplementation((url: string) => {
+      if (url === "/api/app/media/candidates") {
+        return new Promise((resolve) => {
+          resolveRequest = resolve;
+        });
+      }
+      return Promise.resolve({});
+    });
+
+    render(<LogoPicker value={undefined} onChange={vi.fn()} />);
+
+    await user.click(screen.getByRole("button", { name: "搜索" }));
+    const sheet = screen.getByTestId("logo-search-sheet");
+    const input = within(sheet).getByPlaceholderText("输入服务名称、品牌或网址...");
+    await user.type(input, "YouTube");
+    await user.click(within(sheet).getByRole("button", { name: "搜索" }));
+
+    expect(screen.getByTestId("logo-search-sheet")).toBe(sheet);
+    expect(sheet).toHaveAttribute("data-vaul-drawer");
+    expect(input).toHaveValue("YouTube");
+
+    resolveRequest?.({
+      items: [{ id: "search", autoCandidate: null, candidates: { best: null, builtIn: [], appStore: [], favicon: [] } }],
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("logo-search-sheet")).toBe(sheet);
+      expect(input).toHaveValue("YouTube");
     });
   });
 

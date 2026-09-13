@@ -96,6 +96,9 @@ type subscriptionDBOperations struct {
 	WriteSQL        []string
 	Elapsed         time.Duration
 	AllocatedBytes  uint64
+	SQLDuration     time.Duration
+	PoolWaitCount   int64
+	PoolWaitTime    time.Duration
 }
 
 func TestSubscriptionDerivedStatePerformanceBudget(t *testing.T) {
@@ -122,11 +125,17 @@ func TestSubscriptionDerivedStatePerformanceBudget(t *testing.T) {
 					t.Fatalf("%s derived writes = %d, budget = %d + %d tags\n%s", mutation.Kind, operations.DerivedWrites,
 						scenario.OperationBudget.DerivedWriteBase, uniqueTagCount, operations.WriteSQL)
 				}
-				t.Logf("n=%d mutation=%s elapsed=%s total_alloc=%d", scenario.Size, mutation.Kind, operations.Elapsed, operations.AllocatedBytes)
+				t.Logf("n=%d mutation=%s operations=%+v", scenario.Size, mutation.Kind, operations)
 			}
 
+			var pageBytes int
 			listOperations, err := measureSubscriptionDBOperations(app, func() error {
-				_, listErr := listSubscriptionRecordsForQuery(app, user.Id, subscriptionListQuery{Limit: 50}, "2026-08-17")
+				page, listErr := listSubscriptionRecordsForQuery(app, user.Id, subscriptionListQuery{Limit: 50}, "2026-08-17")
+				if listErr == nil {
+					body, marshalErr := json.Marshal(page.Rows)
+					pageBytes = len(body)
+					return marshalErr
+				}
 				return listErr
 			})
 			if err != nil {
@@ -135,6 +144,8 @@ func TestSubscriptionDerivedStatePerformanceBudget(t *testing.T) {
 			if listOperations.ReadQueries != scenario.OperationBudget.ListReadQueries {
 				t.Fatalf("list read queries = %d, want %d\n%s", listOperations.ReadQueries, scenario.OperationBudget.ListReadQueries, listOperations.ReadSQL)
 			}
+			// 序列化的是记录行而非 HTTP envelope；单列字节，不能冒充浏览器线上传输量。
+			t.Logf("n=%d list_record_bytes=%d operations=%+v", scenario.Size, pageBytes, listOperations)
 
 			boundedOperations, err := measureSubscriptionDBOperations(app, func() error {
 				page, exceeded, listErr := boundedSubscriptionRecordsForQuery(
@@ -151,6 +162,7 @@ func TestSubscriptionDerivedStatePerformanceBudget(t *testing.T) {
 			if boundedOperations.ReadQueries != scenario.OperationBudget.ListReadQueries {
 				t.Fatalf("bounded read queries = %d, want %d\n%s", boundedOperations.ReadQueries, scenario.OperationBudget.ListReadQueries, boundedOperations.ReadSQL)
 			}
+			t.Logf("n=%d bounded operations=%+v", scenario.Size, boundedOperations)
 			if scenario.Size == 1000 || scenario.Size == 5000 {
 				assertSubscriptionProjectionQueryPlan(t, app, user.Id)
 			}
@@ -180,6 +192,7 @@ func assertSubscriptionProjectionQueryPlan(t *testing.T, app core.App, userID st
 			details = append(details, row.Detail)
 		}
 		joined := strings.Join(details, "\n")
+		t.Logf("projection paymentType=%q plan=%s", query.PaymentType, joined)
 		if !strings.Contains(joined, "SEARCH idx") || strings.Contains(joined, "SCAN idx") ||
 			strings.Contains(joined, "SCAN subscription_list_index") {
 			t.Fatalf("subscription projection must stay owner-indexed for paymentType=%q:\n%s", query.PaymentType, joined)
@@ -470,18 +483,20 @@ func measureSubscriptionDBOperations(app core.App, operation func() error) (subs
 
 	var mutex sync.Mutex
 	operations := subscriptionDBOperations{}
-	queryLog := func(_ context.Context, _ time.Duration, statement string, _ *sql.Rows, _ error) {
+	queryLog := func(_ context.Context, elapsed time.Duration, statement string, _ *sql.Rows, _ error) {
 		mutex.Lock()
 		defer mutex.Unlock()
 		operations.ReadQueries++
+		operations.SQLDuration += elapsed
 		if len(operations.ReadSQL) < 12 {
 			operations.ReadSQL = append(operations.ReadSQL, statement)
 		}
 	}
-	execLog := func(_ context.Context, _ time.Duration, statement string, _ sql.Result, _ error) {
+	execLog := func(_ context.Context, elapsed time.Duration, statement string, _ sql.Result, _ error) {
 		mutex.Lock()
 		defer mutex.Unlock()
 		operations.WriteStatements++
+		operations.SQLDuration += elapsed
 		if isSubscriptionDerivedWriteSQL(statement) {
 			operations.DerivedWrites++
 		}
@@ -496,12 +511,19 @@ func measureSubscriptionDBOperations(app core.App, operation func() error) (subs
 
 	var before runtime.MemStats
 	runtime.ReadMemStats(&before)
+	concurrentBefore := concurrent.DB().Stats()
+	nonconcurrentBefore := nonconcurrent.DB().Stats()
 	startedAt := time.Now()
 	err := operation()
 	operations.Elapsed = time.Since(startedAt)
 	var after runtime.MemStats
 	runtime.ReadMemStats(&after)
 	operations.AllocatedBytes = after.TotalAlloc - before.TotalAlloc
+	// database/sql 的连接池等待不等于 SQLite 锁等待；SQL 日志耗时也不包含 Rows 后续消费。
+	concurrentAfter := concurrent.DB().Stats()
+	nonconcurrentAfter := nonconcurrent.DB().Stats()
+	operations.PoolWaitCount = concurrentAfter.WaitCount - concurrentBefore.WaitCount + nonconcurrentAfter.WaitCount - nonconcurrentBefore.WaitCount
+	operations.PoolWaitTime = concurrentAfter.WaitDuration - concurrentBefore.WaitDuration + nonconcurrentAfter.WaitDuration - nonconcurrentBefore.WaitDuration
 	return operations, err
 }
 

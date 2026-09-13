@@ -120,7 +120,7 @@ vi.mock("@/modules/subscriptions/application/use-subscription-export", () => ({
 }));
 
 vi.mock("@/modules/subscriptions/application/use-subscription-filters", () => ({
-  useSubscriptionFilters: (subscriptions: Subscription[]) => ({
+  useSubscriptionFilters: () => ({
     searchQuery: "",
     setSearchQuery: vi.fn(),
     selectedCategories: [],
@@ -146,8 +146,6 @@ vi.mock("@/modules/subscriptions/application/use-subscription-filters", () => ({
     },
     setAdvancedFilters: vi.fn(),
     allTags: [],
-    filteredSubscriptions: subscriptions,
-    filterSubscriptionsForDisplay: (items: Subscription[]) => items,
     sortSubscriptionsForDisplay: (items: Subscription[]) => items,
     subscriptionListFilters: undefined,
     hasActiveFilters: false,

@@ -5,8 +5,10 @@
  */
 import { ForgotPasswordClient } from "./forgot-password-client";
 import { usePasswordResetAvailability } from "@/hooks/use-password-reset-availability";
+import { useRouteReady } from "@/components/route-progress";
 
 export default function ForgotPasswordPage() {
+  useRouteReady();
   const enabled = usePasswordResetAvailability();
   return <ForgotPasswordClient enabled={enabled} />;
 }

@@ -8,6 +8,7 @@ describe("HeaderSkeleton", () => {
     render(<DashboardPageSkeleton />);
 
     expect(screen.getByTestId("app-header-skeleton")).toHaveClass("sticky", "top-0", "z-50", "bg-card/80");
+    expect(screen.getByTestId("route-progress")).toHaveClass("absolute", "bottom-0", "h-0.5", "opacity-0");
     expect(screen.getByTestId("app-header-skeleton-inner")).toHaveClass("max-w-7xl", "justify-between", "gap-3");
     expect(screen.getByTestId("app-header-actions-skeleton")).toHaveClass("min-w-0", "shrink-0", "justify-end");
 

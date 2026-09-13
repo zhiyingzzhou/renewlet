@@ -6,12 +6,14 @@
  */
 
 import { useEffect } from "react";
+import { useRouteReady } from "@/components/route-progress";
 import { usePathname } from '@/lib/router';
 import Link from '@/components/router-link';
 import { useI18n } from "@/i18n/I18nProvider";
 import { reportClientError } from "@/lib/report-client-error";
 
 export default function NotFound() {
+  useRouteReady();
   const pathname = usePathname();
   const { t } = useI18n();
 

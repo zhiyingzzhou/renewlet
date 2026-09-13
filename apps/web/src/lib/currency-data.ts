@@ -73,15 +73,21 @@ export function getIntlCurrencySymbol(currency: string, locale: Locale = DEFAULT
   }
 }
 
+// 只保留最近一种展示身份，语言或货币改变即重算；不持久化，也不随历史导入代码无限增长。
+let narrowSymbol: { currency: string; locale: Locale; value: string } | undefined;
+
 export function getIntlCurrencyNarrowSymbol(currency: string, locale: Locale = DEFAULT_LOCALE): string {
   try {
+    if (narrowSymbol?.currency === currency && narrowSymbol.locale === locale) return narrowSymbol.value;
     const parts = new Intl.NumberFormat(locale, {
       style: "currency",
       currency,
       currencyDisplay: "narrowSymbol",
       maximumFractionDigits: 0,
     }).formatToParts(0);
-    return parts.find((part) => part.type === "currency")?.value ?? currency;
+    const value = parts.find((part) => part.type === "currency")?.value ?? currency;
+    narrowSymbol = { currency, locale, value };
+    return value;
   } catch {
     return currency;
   }

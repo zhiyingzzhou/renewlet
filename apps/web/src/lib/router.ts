@@ -10,8 +10,10 @@ import {
   useLocation,
   useNavigate,
   useSearchParams as useReactRouterSearchParams,
+  resolvePath,
 } from "react-router";
 import { useCallback, useMemo } from "react";
+import { useRouteNavigationIntent } from "@/components/route-progress";
 
 export function usePathname(): string {
   return useLocation().pathname;
@@ -26,8 +28,18 @@ export function useSearchParams(): URLSearchParams {
 /** 提供项目内统一使用的命令式导航接口；保留 Next 风格方法名是为了让共享组件迁移到 React Router 后不分叉。 */
 export function useRouter() {
   const navigate = useNavigate();
-  const push = useCallback((href: string) => navigate(href), [navigate]);
-  const replace = useCallback((href: string) => navigate(href, { replace: true }), [navigate]);
+  const { pathname } = useLocation();
+  const begin = useRouteNavigationIntent();
+  const push = useCallback((href: string) => {
+    const target = resolvePath(href, pathname);
+    begin(`${target.pathname}${target.search}`);
+    return navigate(href);
+  }, [navigate, pathname, begin]);
+  const replace = useCallback((href: string) => {
+    const target = resolvePath(href, pathname);
+    begin(`${target.pathname}${target.search}`);
+    return navigate(href, { replace: true });
+  }, [navigate, pathname, begin]);
   const back = useCallback(() => window.history.back(), []);
 
   // 登录页的条件式 Passkey effect 依赖 router 回调；这里保持对象身份稳定，避免普通输入重渲染反复重启浏览器凭据流程。

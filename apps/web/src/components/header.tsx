@@ -25,7 +25,7 @@ import { AddSubscriptionDialog } from '@/components/add-subscription-dialog';
 import { SystemUpdateDialog } from '@/components/system-update-dialog';
 import { useI18n } from '@/i18n/I18nProvider';
 import type { MessageKey } from '@/i18n/messages';
-import { useRoutePreloadPending } from '@/lib/route-resources';
+import { RouteProgress } from '@/components/route-progress';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
@@ -71,7 +71,6 @@ export function Header({ onAddSubscription, availableTags, subscriptionActions }
   const { data: sessionData } = authClient.useSession();
   const [systemDialogOpen, setSystemDialogOpen] = useState(false);
   const isAuthenticated = Boolean(sessionData?.user);
-  const isRoutePreloadPending = useRoutePreloadPending();
 
   /**
    * Header 是全局快捷开关，只写本机偏好；账户级外观草稿必须从 Settings 页外观控件产生。
@@ -94,14 +93,7 @@ export function Header({ onAddSubscription, availableTags, subscriptionActions }
 
   return (
     <header className={headerLayout.shell} data-testid="app-header">
-      <div
-        aria-hidden="true"
-        data-testid="app-header-route-preload-indicator"
-        className={cn(
-          "pointer-events-none absolute inset-x-0 bottom-0 h-0.5 bg-primary transition-opacity duration-200",
-          isRoutePreloadPending ? "opacity-100" : "opacity-0",
-        )}
-      />
+      <RouteProgress />
       <div className={headerLayout.inner} data-testid="app-header-inner">
         <div className={headerLayout.primaryCluster}>
           <div className={headerLayout.brandCluster}>

@@ -18,7 +18,7 @@ func TestPrepareExclusiveSchemaDataMigrationsCreatesAndReusesRecoveryPoint(t *te
 	if err := prepareExclusiveSchemaDataMigrations(app); err != nil {
 		t.Fatal(err)
 	}
-	if exists, err := inspectSettingsLocalePreferenceRecoveryPoint(app); err != nil || !exists {
+	if exists, err := inspectSchemaMigrationRecoveryPoint(app, settingsLocalePreferenceRecoveryPoint); err != nil || !exists {
 		t.Fatalf("created recovery point exists=%v err=%v", exists, err)
 	}
 

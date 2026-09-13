@@ -2,7 +2,7 @@
   "name": "@renewlet/client",
   "private": true,
   "license": "MIT",
-  "version": "0.3.25",
+  "version": "0.3.26",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
@@ -13,7 +13,7 @@
     "i18n:check": "node ../../scripts/check-i18n-catalogs.mjs",
     "i18n:extract": "lingui extract --clean --overwrite && node ../../scripts/generate-i18n-artifacts.mjs",
     "test": "vitest",
-    "test:perf": "vitest run src/lib/route-resources.performance.test.tsx",
+    "test:perf": "vitest run .performance.test.tsx",
     "test:run": "vitest run --exclude '**/*.performance.test.tsx'",
     "typecheck": "tsc --noEmit --project tsconfig.app.json",
     "typecheck:all": "tsc --noEmit --project tsconfig.json --incremental false"

@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -18,6 +19,27 @@ function BrokenChild(): never {
 }
 
 describe("AppErrorBoundary", () => {
+  it("requires explicit recovery after a lazy chunk failure without clearing preferences", async () => {
+    const reload = vi.spyOn(appErrorBoundaryBrowser, "reload").mockImplementation(() => undefined);
+    const reported = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const previousTheme = localStorage.getItem("renewlet_theme_mode");
+    const MissingChunk = lazy(() => Promise.reject(new TypeError("Failed to fetch dynamically imported module: /assets/previous-release.js")));
+    try {
+      localStorage.setItem("renewlet_theme_mode", "dark");
+      render(<AppErrorBoundary><Suspense fallback={null}><MissingChunk /></Suspense></AppErrorBoundary>);
+      await screen.findByText("页面暂时无法显示");
+      expect(reload).not.toHaveBeenCalled();
+      expect(localStorage.getItem("renewlet_theme_mode")).toBe("dark");
+      await userEvent.click(screen.getByRole("button", { name: "刷新页面" }));
+      expect(reload).toHaveBeenCalledTimes(1);
+      expect(reported).toHaveBeenCalled();
+    } finally {
+      reload.mockRestore();
+      reported.mockRestore();
+      if (previousTheme === null) localStorage.removeItem("renewlet_theme_mode");
+      else localStorage.setItem("renewlet_theme_mode", previousTheme);
+    }
+  });
   it("renders children during the normal path", () => {
     render(
       <AppErrorBoundary>

@@ -20,6 +20,7 @@ import { EditSubscriptionDialog } from '@/components/edit-subscription-dialog';
 import { DeferredRenewSubscriptionDialog } from '@/components/renew-subscription-dialog-loader';
 import { Header } from '@/components/header';
 import { StatisticsPageSkeleton } from '@/components/loading-skeleton';
+import { useRouteReady } from '@/components/route-progress';
 import { QueryErrorState } from '@/components/query-error-state';
 import { ExchangeRateErrorFeedback } from '@/components/exchange-rate-error-feedback';
 import { ExchangeRateRefreshButton } from '@/components/exchange-rate-refresh-button';
@@ -164,6 +165,7 @@ const Statistics = () => {
     }
   }, [refreshRates, t]);
 
+  useRouteReady(subscriptionsQuery.isPending || settingsQuery.isPending);
   // 汇率 hook 有内置 fallback；远端刷新中继续渲染统计内容，避免切页后因为第三方汇率慢而整页回退骨架。
   if (subscriptionsQuery.isPending || settingsQuery.isPending) {
     return (

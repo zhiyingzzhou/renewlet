@@ -13,6 +13,7 @@ import { BackToTopFloatButton } from '@/components/back-to-top-float-button';
 import { SubscriptionCalendar } from '@/components/subscription-calendar';
 import { EditSubscriptionDialog } from '@/components/edit-subscription-dialog';
 import { CalendarPageSkeleton } from '@/components/loading-skeleton';
+import { useRouteReady } from '@/components/route-progress';
 import { QueryErrorState } from '@/components/query-error-state';
 import { useSubscriptionCalendar, useSubscriptionFacets } from '@/hooks/use-subscriptions';
 import { useI18n } from '@/i18n/I18nProvider';
@@ -28,6 +29,7 @@ const Calendar = () => {
   const range = useMemo(() => getSubscriptionCalendarRange(currentMonth), [currentMonth]);
   const subscriptionsQuery = useSubscriptionCalendar(range.from, range.to);
   const hasCalendarData = subscriptionsQuery.data !== undefined;
+  useRouteReady(!hasCalendarData && subscriptionsQuery.isPending);
   const subscriptions = subscriptionsQuery.data ?? EMPTY_SUBSCRIPTIONS;
   const facetsQuery = useSubscriptionFacets();
   const { t } = useI18n();

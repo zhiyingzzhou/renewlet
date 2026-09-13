@@ -18,6 +18,7 @@ import { apiFetch } from "@/lib/api-client";
 import { setupCreateResponseSchema } from "@/lib/api/schemas/app";
 import { getDisplayErrorMessage } from "@/lib/display-error";
 import { useSetupStatus } from "@/hooks/use-setup-status";
+import { useRouteReady } from "@/components/route-progress";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,6 +31,7 @@ export default function SetupPage() {
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const { setupRequired, isLoading: isSetupStatusLoading } = useSetupStatus();
+  useRouteReady(isSetupStatusLoading);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("Admin");
   const [email, setEmail] = useState("");

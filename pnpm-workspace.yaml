@@ -25,3 +25,13 @@ minimumReleaseAgeExclude:
   - ai@7.0.55
   - lucide-react@1.29.0
   - tsx@4.23.9
+  # Wrangler 与官方同批 workerd/类型一起升级；仅放行这批精确版本，不关闭全仓冷却期或放行整个命名空间。
+  - wrangler@4.131.1
+  - miniflare@5.20260911.0-alpha
+  - workerd@1.20260911.1
+  - '@cloudflare/workers-types@5.20260911.1'
+  - '@cloudflare/workerd-darwin-64@1.20260911.1'
+  - '@cloudflare/workerd-darwin-arm64@1.20260911.1'
+  - '@cloudflare/workerd-linux-64@1.20260911.1'
+  - '@cloudflare/workerd-linux-arm64@1.20260911.1'
+  - '@cloudflare/workerd-windows-64@1.20260911.1'

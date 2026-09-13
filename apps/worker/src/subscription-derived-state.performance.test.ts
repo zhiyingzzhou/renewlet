@@ -71,10 +71,7 @@ describe.each(subscriptionPerformanceFixture.scenarios)("Worker derived mutation
   });
 });
 
-const subscriptionReadPerformanceScenarios = subscriptionPerformanceFixture.scenarios
-  .filter(({ size }) => size === 1_000 || size === 5_000);
-
-describe.each(subscriptionReadPerformanceScenarios)("Worker collection read budget: $size", (scenario) => {
+describe.each(subscriptionPerformanceFixture.scenarios)("Worker collection read budget: $size", (scenario) => {
   it("uses one private-page query, two bounded-index queries, and indexed fact lookups", async () => {
     const db = openSubscriptionReadDatabase();
     try {
@@ -87,29 +84,23 @@ describe.each(subscriptionReadPerformanceScenarios)("Worker collection read budg
         ASSETS_BUCKET: {} as R2Bucket,
       } satisfies Env;
 
-      const privatePage = await listSubscriptionsForQuery(
-        env,
-        "subscription-perf-owner",
-        { limit: 50 },
-        "2026-08-17",
-        null,
-      );
-      expect(privatePage.total).toBe(scenario.expected.total);
-      expect(privatePage.rows).toHaveLength(Math.min(51, scenario.expected.total));
-      expect(database.readQueries).toBe(1);
+      for (let sample = 0; sample < 10; sample += 1) {
+        database.readQueries = 0;
+        database.reads.length = 0;
+        const privatePage = await listSubscriptionsForQuery(env, "subscription-perf-owner", { limit: 50 }, "2026-08-17", null);
+        expect(privatePage.total).toBe(scenario.expected.total);
+        expect(privatePage.rows).toHaveLength(Math.min(51, scenario.expected.total));
+        expect(database.readQueries).toBe(1);
+        console.info(`[perf] worker_sqlite ${JSON.stringify({ size: scenario.size, sample, operation: "private-page", reads: database.reads })}`);
 
-      database.readQueries = 0;
-      const boundedPage = await listBoundedSubscriptionsForQuery(
-        env,
-        "subscription-perf-owner",
-        {},
-        "2026-08-17",
-        scenario.size,
-      );
-
-      expect(boundedPage).toMatchObject({ total: scenario.expected.total, exceeded: false });
-      expect(boundedPage.rows).toHaveLength(scenario.expected.total);
-      expect(database.readQueries).toBe(scenario.operationBudget.listReadQueries);
+        database.readQueries = 0;
+        database.reads.length = 0;
+        const boundedPage = await listBoundedSubscriptionsForQuery(env, "subscription-perf-owner", {}, "2026-08-17", scenario.size);
+        expect(boundedPage).toMatchObject({ total: scenario.expected.total, exceeded: false });
+        expect(boundedPage.rows).toHaveLength(scenario.expected.total);
+        expect(database.readQueries).toBe(scenario.operationBudget.listReadQueries);
+        console.info(`[perf] worker_sqlite ${JSON.stringify({ size: scenario.size, sample, operation: "bounded-index", reads: database.reads })}`);
+      }
 
       const queryPlanFilters = [
         {},
@@ -128,6 +119,7 @@ describe.each(subscriptionReadPerformanceScenarios)("Worker collection read budg
         const details = db.prepare(`EXPLAIN QUERY PLAN ${plan.sql}`)
           .all(...(plan.params as SQLInputValue[])) as Array<{ detail: string }>;
         const label = filters.paymentType ?? "default";
+        console.info(`[perf] worker_sqlite_plan ${JSON.stringify({ size: scenario.size, paymentType: label, details })}`);
         expect(details.some(({ detail }) => /SEARCH idx\b/u.test(detail)), label).toBe(true);
         expect(details.some(({ detail }) => /SEARCH sub\b/u.test(detail)), label).toBe(true);
         expect(details.some(({ detail }) => /SCAN (?:idx|subscription_list_index)\b/u.test(detail)), label).toBe(false);
@@ -395,6 +387,8 @@ function seedSubscriptionReadRows(db: DatabaseSync, records: SubscriptionPerform
 
 class SubscriptionReadD1Database {
   readQueries = 0;
+  // node:sqlite 只能给本地执行/返回量，不能把返回行数伪造成真实 D1 rows_read 或 SQL duration 元数据。
+  readonly reads: { elapsedMs: number; returnedRows: number; resultBytes: number }[] = [];
 
   constructor(private readonly db: DatabaseSync) {}
 
@@ -419,12 +413,17 @@ class SubscriptionReadD1PreparedStatement {
 
   async first<T>(): Promise<T | null> {
     this.owner.readQueries += 1;
-    return (this.db.prepare(this.sql).get(...this.params) as T | undefined) ?? null;
+    const startedAt = performance.now();
+    const result = (this.db.prepare(this.sql).get(...this.params) as T | undefined) ?? null;
+    this.owner.reads.push({ elapsedMs: performance.now() - startedAt, returnedRows: result === null ? 0 : 1, resultBytes: Buffer.byteLength(JSON.stringify(result)) });
+    return result;
   }
 
   async all<T>(): Promise<D1Result<T>> {
     this.owner.readQueries += 1;
+    const startedAt = performance.now();
     const results = this.db.prepare(this.sql).all(...this.params) as T[];
+    this.owner.reads.push({ elapsedMs: performance.now() - startedAt, returnedRows: results.length, resultBytes: Buffer.byteLength(JSON.stringify(results)) });
     return { results, success: true, meta: {} } as D1Result<T>;
   }
 }

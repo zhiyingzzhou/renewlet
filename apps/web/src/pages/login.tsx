@@ -31,6 +31,7 @@ import { reportClientError } from "@/lib/report-client-error";
 import { useTheme } from "@/lib/theme-provider";
 import { usePasswordResetAvailability } from '@/hooks/use-password-reset-availability';
 import { useSetupStatus } from '@/hooks/use-setup-status';
+import { useRouteReady } from '@/components/route-progress';
 import { useI18n } from '@/i18n/I18nProvider';
 import { LoginMfaDialog, type LoginMfaErrors, type LoginMfaState } from "@/pages/login-mfa-dialog";
 import type { AuthenticatorMfaMethod } from "@renewlet/shared/schemas/auth";
@@ -90,6 +91,7 @@ const Login = () => {
   const [mfaErrors, setMfaErrors] = useState<LoginMfaErrors>({});
   const passwordResetEnabled = usePasswordResetAvailability();
   const setupStatus = useSetupStatus();
+  useRouteReady(setupStatus.isLoading);
   const { t } = useI18n();
   const { resolvedTheme } = useTheme();
   const showSetupPrompt = setupStatus.setupRequired && setupStatus.setupEnabled;

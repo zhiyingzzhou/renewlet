@@ -42,7 +42,7 @@ export const exchangeRateSnapshotService = {
       {
         method: "PUT",
         body: JSON.stringify(body),
-        // 快照是小型写后任务；整页跳转时允许浏览器完成传输，SPA 卸载仍由 signal 主动取消。
+        // BFCache 暂存时保留小型传输；永久离开文档或 SPA 卸载由所属视图的 signal 取消。
         keepalive: true,
         ...(signal ? { signal } : {}),
       },

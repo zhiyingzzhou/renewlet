@@ -1,10 +1,3 @@
-/**
- * 订阅筛选 application hook。
- *
- * 架构位置：
- * - 持有用户当前筛选条件。
- * - 调用 domain 纯函数得到标签集合和筛选结果。
- */
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales";
 import { todayDateOnlyInTimeZone, type DateOnly } from "@/lib/time/date-only";
@@ -33,9 +26,8 @@ interface UseSubscriptionFiltersOptions {
 
 const IDENTITY_CONVERT = (amount: number | string) => moneyToNumber(amount);
 
-/** 管理订阅列表筛选状态，并返回筛选后的结果。 */
+/** 管理筛选和排序规则；页面选定数据源后才排序，导出则接收完整详情数据。 */
 export function useSubscriptionFilters(
-  subscriptions: readonly SubscriptionCollectionItem[],
   {
     defaultCurrency = "CNY",
     convert = IDENTITY_CONVERT,
@@ -69,16 +61,13 @@ export function useSubscriptionFilters(
     () => buildSubscriptionListFilters(activeControlFilters, advancedFilters),
     [activeControlFilters, advancedFilters],
   );
-  const sortedSubscriptions = useMemo(
-    () => sortSubscriptions(subscriptions, { sortOption, today, defaultCurrency, convert, locale }),
-    [convert, defaultCurrency, locale, sortOption, subscriptions, today],
-  );
   const sortSubscriptionsForDisplay = useCallback(
     <T extends SubscriptionCollectionItem>(items: readonly T[]) =>
       sortSubscriptions(items, { sortOption, today, defaultCurrency, convert, locale }),
     [convert, defaultCurrency, locale, sortOption, today],
   );
   const selectSubscriptionsForExport = useCallback(
+    // 导出不能使用 deferred 搜索或当前可见页，否则输入后立即导出会沿用上一次筛选条件。
     (items: readonly Subscription[]) =>
       sortSubscriptions(filterSubscriptionsByListFilters(items, activeSubscriptionListFilters, { today }), {
         sortOption,
@@ -136,7 +125,6 @@ export function useSubscriptionFilters(
     advancedFilters,
     setAdvancedFilters,
     allTags: availableTags,
-    filteredSubscriptions: sortedSubscriptions,
     sortSubscriptionsForDisplay,
     selectSubscriptionsForExport,
     subscriptionListFilters,
