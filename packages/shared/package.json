@@ -2,7 +2,7 @@
   "name": "@renewlet/shared",
   "private": true,
   "license": "MIT",
-  "version": "0.3.24",
+  "version": "0.3.26",
   "type": "module",
   "exports": {
     "./schemas/api": "./src/schemas/api.ts",

@@ -2,7 +2,7 @@
   "name": "renewlet",
   "private": true,
   "license": "MIT",
-  "version": "0.3.24",
+  "version": "0.3.26",
   "packageManager": "pnpm@11.20.0",
   "engines": {
     "node": ">=24.19.0 <25 || >=26.5.0 <27"
