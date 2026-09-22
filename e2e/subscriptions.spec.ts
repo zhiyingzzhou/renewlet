@@ -432,7 +432,7 @@ test("bulk public visibility preserves card details and applies one command to t
       const confirmation = page.getByRole("alertdialog");
       await expect(confirmation).toContainText("所选 2 条订阅");
       const responsePromise = page.waitForResponse((response) => response.url().endsWith("/api/app/subscriptions/bulk-public-visibility") && response.request().method() === "POST");
-      await confirmation.getByRole("button", { name: "保存", exact: true }).click();
+      await confirmation.getByRole("button", { name: publicHidden ? "从公开页隐藏" : "在公开页展示", exact: true }).click();
       const response = await responsePromise;
       expect(response.ok()).toBe(true);
       expect(response.request().postDataJSON()).toEqual({ selection: { ids: expect.arrayContaining(ids) }, publicHidden, dryRun: false });
@@ -474,7 +474,7 @@ test("100 selected subscriptions hide and restore through real bulk requests", a
       const dialog = page.getByRole("alertdialog");
       await expect(dialog).toContainText("所选 100 条订阅");
       const responsePromise = page.waitForResponse((response) => response.url().endsWith("/bulk-public-visibility"));
-      await dialog.getByRole("button", { name: "保存", exact: true }).click();
+      await dialog.getByRole("button", { name: publicHidden ? "从公开页隐藏" : "在公开页展示", exact: true }).click();
       const response = await responsePromise;
       expect(response.status(), await response.text()).toBe(200);
       expect(response.request().postDataJSON()).toEqual({ selection: { ids: expect.arrayContaining(ids) }, publicHidden, dryRun: false });

@@ -133,7 +133,8 @@ func readPublicVisibilityTargets(app core.App, userID string, selection subscrip
 				clauses = append(clauses, "(s.status = 'expired' OR (s.status IN ('active', 'trial') AND s.nextBillingDate < {:today}))")
 			}
 			if category == "lifetime" {
-				clauses = append(clauses, "(s.billingCycle = 'one-time' AND s.oneTimeTermCount <= 0)")
+				// 历史 PocketBase 记录的空服务期与 0 同义；两端都必须把它归入长期买断。
+				clauses = append(clauses, "(s.billingCycle = 'one-time' AND COALESCE(s.oneTimeTermCount, 0) <= 0)")
 			}
 		}
 		query += " AND (" + strings.Join(clauses, " OR ") + ") ORDER BY s.created DESC, s.id DESC LIMIT 5001"

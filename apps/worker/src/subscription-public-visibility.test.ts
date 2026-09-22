@@ -132,7 +132,7 @@ describe("bulk public visibility with real SQLite transactions", () => {
       state.db.exec(`UPDATE subscriptions SET next_billing_date='2000-01-01';
         UPDATE subscriptions SET status='paused' WHERE id='sub_visibility_1';
         UPDATE subscriptions SET status='cancelled' WHERE id='sub_visibility_2';
-        UPDATE subscriptions SET billing_cycle='one-time', one_time_term_count=0, next_billing_date='2099-01-01' WHERE id='sub_visibility_3';
+        UPDATE subscriptions SET billing_cycle='one-time', one_time_term_count=NULL, next_billing_date='2099-01-01' WHERE id='sub_visibility_3';
         UPDATE subscriptions SET billing_cycle='one-time', one_time_term_count=12, one_time_term_unit='month', next_billing_date='2099-01-01' WHERE id='sub_visibility_4';
         UPDATE subscriptions SET next_billing_date='2099-01-01' WHERE id='sub_visibility_5'`);
       const preview = await bulkUpdatePublicVisibility(request({ categories: ["expired", "lifetime"] }, true, true), state.env);
