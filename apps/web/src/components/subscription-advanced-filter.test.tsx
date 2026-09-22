@@ -79,13 +79,19 @@ function optionRow(checkbox: HTMLElement): HTMLElement {
   return row as HTMLElement;
 }
 
+async function openFilter(user: ReturnType<typeof userEvent.setup>, mode: "desktop" | "mobile") {
+  await user.click(within(screen.getByTestId(`${mode}-advanced-filter`)).getByRole("button"));
+  // 弹层外壳先取得焦点，测试须等真实面板内容加载，不能把 Suspense 占位当作可操作字段。
+  await screen.findByTestId(mode === "desktop" ? "advanced-payment-method-entry" : "advanced-section-billingCycle-entry");
+}
+
 describe("SubscriptionAdvancedFilter", () => {
   it("opens a dedicated desktop dialog for payment method selection and applies through the side panel", async () => {
     installPointerMocks();
     const user = userEvent.setup();
     const onChange = renderFilter("desktopSidePanel");
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     const panel = screen.getByTestId("desktop-advanced-filter-panel");
     const paymentEntry = within(panel).getByTestId("advanced-payment-method-entry");
 
@@ -134,7 +140,7 @@ describe("SubscriptionAdvancedFilter", () => {
       selectedCurrencies: ["CNY", "EUR", "USD", "X19"],
     });
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     const panel = screen.getByTestId("desktop-advanced-filter-panel");
     const paymentEntry = within(panel).getByTestId("advanced-payment-method-entry");
     const paymentPreview = within(paymentEntry).getByTestId("advanced-payment-method-entry-preview");
@@ -162,7 +168,7 @@ describe("SubscriptionAdvancedFilter", () => {
       nextBillingTo: "2026-06-30",
     });
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     const panel = screen.getByTestId("desktop-advanced-filter-panel");
     const nextBillingSummary = within(panel).getByTestId("advanced-section-nextBilling-summary");
 
@@ -177,7 +183,7 @@ describe("SubscriptionAdvancedFilter", () => {
     const user = userEvent.setup();
     const onChange = renderFilter("desktopSidePanel");
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     const panel = screen.getByTestId("desktop-advanced-filter-panel");
     const currencyEntry = within(panel).getByTestId("advanced-currency-entry");
 
@@ -227,7 +233,7 @@ describe("SubscriptionAdvancedFilter", () => {
       { value: "EUR", label: "€ 欧元 (EUR)", keywords: ["Euro"] },
     ]);
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     await user.click(within(screen.getByTestId("desktop-advanced-filter-panel")).getByTestId("advanced-currency-entry"));
 
     const currencyList = within(screen.getByTestId("advanced-currency-dialog")).getByTestId("advanced-currency-picker");
@@ -260,7 +266,7 @@ describe("SubscriptionAdvancedFilter", () => {
       { value: "PHP", label: "₱ 菲律宾比索 (PHP)", keywords: ["Philippine peso", "currency"] },
     ]);
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     await user.click(within(screen.getByTestId("desktop-advanced-filter-panel")).getByTestId("advanced-currency-entry"));
 
     const currencyList = within(screen.getByTestId("advanced-currency-dialog")).getByTestId("advanced-currency-picker");
@@ -282,7 +288,7 @@ describe("SubscriptionAdvancedFilter", () => {
       selectedPaymentMethods: ["paypal"],
     });
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     const panel = screen.getByTestId("desktop-advanced-filter-panel");
     await user.click(within(panel).getByTestId("advanced-payment-method-entry"));
     const dialog = screen.getByTestId("advanced-payment-method-dialog");
@@ -304,7 +310,7 @@ describe("SubscriptionAdvancedFilter", () => {
     const user = userEvent.setup();
     const onChange = renderFilter("desktopSidePanel");
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     const panel = screen.getByTestId("desktop-advanced-filter-panel");
     await user.click(within(panel).getByTestId("advanced-payment-method-entry"));
     const dialog = screen.getByTestId("advanced-payment-method-dialog");
@@ -379,7 +385,7 @@ describe("SubscriptionAdvancedFilter", () => {
       nextBillingTo: "2026-08-31",
     });
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     const panel = screen.getByTestId("desktop-advanced-filter-panel");
 
     expect(panel.querySelector('input[type="date"]')).toBeNull();
@@ -418,7 +424,7 @@ describe("SubscriptionAdvancedFilter", () => {
       nextBillingTo: "2026-08-20",
     });
 
-    await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
+    await openFilter(user, "desktop");
     const panel = screen.getByTestId("desktop-advanced-filter-panel");
     const endPicker = within(panel).getByTestId("advanced-next-billing-to-picker");
 
@@ -451,7 +457,7 @@ describe("SubscriptionAdvancedFilter", () => {
     const user = userEvent.setup();
     const onChange = renderFilter("mobileWorkspace");
 
-    await user.click(within(screen.getByTestId("mobile-advanced-filter")).getByRole("button"));
+    await openFilter(user, "mobile");
     const workspace = screen.getByTestId("mobile-advanced-filter-workspace");
 
     expect(workspace).toHaveClass("h5-dialog-panel");
@@ -492,7 +498,7 @@ describe("SubscriptionAdvancedFilter", () => {
       nextBillingFrom: "2026-08-01",
     });
 
-    await user.click(within(screen.getByTestId("mobile-advanced-filter")).getByRole("button"));
+    await openFilter(user, "mobile");
     const workspace = screen.getByTestId("mobile-advanced-filter-workspace");
     await user.click(within(workspace).getByRole("button", { name: /Renewal \/ expiry date|续费\/到期日期/ }));
     const dialog = screen.getByTestId("advanced-next-billing-dialog");
@@ -538,7 +544,7 @@ describe("SubscriptionAdvancedFilter", () => {
       selectedCurrencies: ["CNY", "EUR", "USD", "X19"],
     });
 
-    await user.click(within(screen.getByTestId("mobile-advanced-filter")).getByRole("button"));
+    await openFilter(user, "mobile");
     const workspace = screen.getByTestId("mobile-advanced-filter-workspace");
     const currencyEntry = within(workspace).getByTestId("advanced-section-currency-entry");
     const currencyPreview = within(currencyEntry).getByTestId("advanced-section-currency-preview");
@@ -560,7 +566,7 @@ describe("SubscriptionAdvancedFilter", () => {
       nextBillingTo: "2026-06-30",
     });
 
-    await user.click(within(screen.getByTestId("mobile-advanced-filter")).getByRole("button"));
+    await openFilter(user, "mobile");
     const workspace = screen.getByTestId("mobile-advanced-filter-workspace");
     const nextBillingEntry = within(workspace).getByTestId("advanced-section-nextBilling-entry");
     const nextBillingPreview = within(nextBillingEntry).getByTestId("advanced-section-nextBilling-preview");
@@ -582,7 +588,7 @@ describe("SubscriptionAdvancedFilter", () => {
       repeatReminderFilter: "yes",
     });
 
-    await user.click(within(screen.getByTestId("mobile-advanced-filter")).getByRole("button"));
+    await openFilter(user, "mobile");
     const workspace = screen.getByTestId("mobile-advanced-filter-workspace");
     const flagsEntry = within(workspace).getByTestId("advanced-section-flags-entry");
     expect(flagsEntry).toHaveTextContent(/4 selected|4 项/);
@@ -629,7 +635,7 @@ describe("SubscriptionAdvancedFilter", () => {
     const user = userEvent.setup();
     const onChange = renderFilter("mobileWorkspace");
 
-    await user.click(within(screen.getByTestId("mobile-advanced-filter")).getByRole("button"));
+    await openFilter(user, "mobile");
     const workspace = screen.getByTestId("mobile-advanced-filter-workspace");
     await user.click(within(workspace).getByRole("button", { name: /Currency|货币/ }));
 
@@ -678,7 +684,7 @@ describe("SubscriptionAdvancedFilter", () => {
     const user = userEvent.setup();
     const onChange = renderFilter("mobileWorkspace");
 
-    await user.click(within(screen.getByTestId("mobile-advanced-filter")).getByRole("button"));
+    await openFilter(user, "mobile");
     const workspace = screen.getByTestId("mobile-advanced-filter-workspace");
     await user.click(within(workspace).getByRole("button", { name: /Payment method|支付方式/ }));
     const dialog = screen.getByTestId("advanced-payment-method-dialog");
@@ -706,7 +712,7 @@ describe("SubscriptionAdvancedFilter", () => {
     const user = userEvent.setup();
     const onChange = renderFilter("mobileWorkspace");
 
-    await user.click(within(screen.getByTestId("mobile-advanced-filter")).getByRole("button"));
+    await openFilter(user, "mobile");
     const workspace = screen.getByTestId("mobile-advanced-filter-workspace");
     await user.click(within(workspace).getByRole("button", { name: /Billing cycle|扣费周期/ }));
     const dialog = screen.getByTestId("advanced-billing-cycle-dialog");
@@ -728,7 +734,7 @@ describe("SubscriptionAdvancedFilter", () => {
       selectedCurrencies: ["USD"],
     });
 
-    await user.click(within(screen.getByTestId("mobile-advanced-filter")).getByRole("button"));
+    await openFilter(user, "mobile");
     const workspace = screen.getByTestId("mobile-advanced-filter-workspace");
     await user.click(within(workspace).getByRole("button", { name: /Clear conditions|清空条件/ }));
     await user.click(within(workspace).getByRole("button", { name: /Apply|确定/ }));

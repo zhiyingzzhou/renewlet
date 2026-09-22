@@ -12,7 +12,8 @@
  * - 页面保留视图模式和布局，不承载业务规则。
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { Header } from '@/components/header';
 import { BackToTopFloatButton } from '@/components/back-to-top-float-button';
@@ -43,7 +44,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Subscription, SubscriptionCollectionItem, SubscriptionStatus } from '@/types/subscription';
 import { BILLING_CYCLES, CYCLE_LABELS, DEFAULT_NOTIFICATION_REMINDER_DAYS, DEFAULT_SETTINGS } from '@/types/subscription';
-import { Search, Plus, Grid, List as ListIcon, Download, Upload, Sparkles } from 'lucide-react';
+import { Search, Plus, Grid, List as ListIcon, Download, Upload, Sparkles, Eye, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -80,6 +81,8 @@ import {
   SubscriptionAdvancedFilter,
 } from '@/components/subscription-advanced-filter';
 
+const SubscriptionBulkVisibilityToolbar = lazy(() => import('@/components/subscription-bulk-visibility-toolbar').then((module) => ({ default: module.SubscriptionBulkVisibilityToolbar })));
+
 /** 空订阅数组：用于在数据未加载完成时提供稳定引用，避免 useMemo 依赖抖动。 */
 const EMPTY_SUBSCRIPTIONS: SubscriptionCollectionItem[] = [];
 const SORT_OPTION_LABEL_KEYS: Record<SubscriptionSortOption, MessageKey> = {
@@ -101,10 +104,13 @@ const PAYMENT_TYPE_FILTER_LABEL_KEYS: Record<SubscriptionPaymentTypeFilter, Mess
   "one-time-buyout": "subscriptions.paymentTypeFilter.buyout",
   "one-time-fixed-term": "subscriptions.paymentTypeFilter.fixedTerm",
 };
-
 /** 订阅列表页组件。 */
 const Subscriptions = () => {
   const settingsQuery = useSettingsEnvelope();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const publicVisibilityManage = searchParams.get("publicVisibility") === "manage";
   const timeZone = settingsQuery.data?.settings.timezone ?? "UTC";
   const today = useZonedToday(timeZone);
   const queryClient = useQueryClient();
@@ -112,7 +118,6 @@ const Subscriptions = () => {
   useEffect(() => {
     if (collectionBoundary) void syncSubscriptionCollectionBoundary(queryClient, collectionBoundary);
   }, [collectionBoundary, queryClient]);
-
   const subscriptionsQuery = useInfiniteSubscriptions();
   const subscriptions = subscriptionsQuery.subscriptions ?? EMPTY_SUBSCRIPTIONS;
   const facetsQuery = useSubscriptionFacets();
@@ -144,6 +149,13 @@ const Subscriptions = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [aiRecognitionDialogOpen, setAIRecognitionDialogOpen] = useState(false);
+  const [publicVisibilitySelectionMode, setPublicVisibilitySelectionMode] = useState(false);
+  const [selectedPublicVisibilityIds, setSelectedPublicVisibilityIds] = useState<Set<string>>(() => new Set());
+  const [bulkVisibilityPending, setBulkVisibilityPending] = useState(false);
+  const hasPublicVisibilitySelection = selectedPublicVisibilityIds.size > 0;
+  useEffect(() => {
+    if (publicVisibilityManage) setPublicVisibilitySelectionMode(true);
+  }, [publicVisibilityManage]);
   const isMobileTagFilter = useMediaQuery("(max-width: 767px)");
   const {
     searchQuery,
@@ -180,6 +192,9 @@ const Subscriptions = () => {
   const indexQuery = useSubscriptionIndex(subscriptionListFilters, needsCollectionIndex);
   const indexedSubscriptions = indexQuery.data?.subscriptions ?? EMPTY_SUBSCRIPTIONS;
   const displaySourceSubscriptions = needsCollectionIndex ? indexedSubscriptions : subscriptions;
+  useEffect(() => {
+    setSelectedPublicVisibilityIds(new Set());
+  }, [subscriptionListFilters, publicVisibilitySelectionMode]);
   // 先选择分页或全库索引，再只排序实际展示的数据；索引模式不能附带重排未展示的分页列表。
   const filteredSubscriptions = useMemo(
     () => sortSubscriptionsForDisplay(displaySourceSubscriptions),
@@ -252,6 +267,25 @@ const Subscriptions = () => {
   const handleLoadMore = useCallback(() => {
     void fetchNextPage();
   }, [fetchNextPage]);
+  const togglePublicVisibilitySelection = useCallback((id: string, selected: boolean) => {
+    setSelectedPublicVisibilityIds((current) => {
+      const next = new Set(current);
+      if (selected) next.add(id); else next.delete(id);
+      return next;
+    });
+  }, []);
+  const exitPublicVisibilityManagement = useCallback(() => {
+    setSelectedPublicVisibilityIds(new Set());
+    setPublicVisibilitySelectionMode(false);
+    if (publicVisibilityManage) {
+      const returnTo = (location.state as { publicVisibilityReturnTo?: string } | null)?.publicVisibilityReturnTo;
+      if (returnTo) {
+        navigate(-1);
+      } else {
+        navigate("/subscriptions", { replace: true });
+      }
+    }
+  }, [location.state, navigate, publicVisibilityManage]);
   const handleEditFromDetail = useCallback((subscription: Subscription) => {
     handleEditSubscription(subscription.id);
   }, [handleEditSubscription]);
@@ -277,7 +311,6 @@ const Subscriptions = () => {
       </TooltipContent>
     </Tooltip>
   );
-
   // 首次加载订阅列表时展示骨架屏（筛选条 + 卡片网格占位）。
   if (subscriptionsQuery.isPending) {
     return (
@@ -289,21 +322,43 @@ const Subscriptions = () => {
       </div>
     );
   }
-
   return (
     <div className="app-page bg-background">
       <Header onAddSubscription={handleAddSubscription} availableTags={allTags} subscriptionActions={aiRecognitionAction} />
-
-      <main className="app-main mx-auto max-w-7xl">
+      <main className={cn(
+        "app-main mx-auto max-w-7xl",
+        hasPublicVisibilitySelection && "pb-[calc(9rem+env(safe-area-inset-bottom))] sm:pb-[calc(6rem+env(safe-area-inset-bottom))]",
+      )}>
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">{t("subscriptions.title")}</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {t("subscriptions.count", { count: displayedTotal })}
               {unfilteredTotal !== undefined && ` ${t("subscriptions.filteredCount", { count: unfilteredTotal })}`}
+              {publicVisibilitySelectionMode ? ` · ${t("subscriptions.publicVisibilityManagementDescription")}` : null}
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant={publicVisibilitySelectionMode ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => {
+                if (publicVisibilitySelectionMode) {
+                  exitPublicVisibilityManagement();
+                } else {
+                  setPublicVisibilitySelectionMode(true);
+                  setSelectedPublicVisibilityIds(new Set());
+                }
+              }}
+              className="gap-2 border-border"
+              aria-label={publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}
+              aria-pressed={publicVisibilitySelectionMode}
+              disabled={bulkVisibilityPending}
+            >
+              {publicVisibilitySelectionMode ? <X className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              <span className="hidden sm:inline">{publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}</span>
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -350,7 +405,6 @@ const Subscriptions = () => {
             </Button>
           </div>
         </div>
-
         <div className={cn("mb-6 rounded-xl border border-border bg-card p-5", isMobileTagFilter ? "grid gap-3" : "grid gap-4")}>
           {isMobileTagFilter ? (
             <>
@@ -366,7 +420,6 @@ const Subscriptions = () => {
                   className="h-11 border-border bg-secondary pl-10"
                 />
               </div>
-
               <div className="grid grid-cols-2 gap-3">
                 <SubscriptionCategoryFilter
                   categories={config.categories}
@@ -376,7 +429,6 @@ const Subscriptions = () => {
                   onApply={setSelectedCategories}
                   mode="drawer"
                 />
-
                 <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as SubscriptionStatus | 'all')}>
                   <SelectTrigger className="h-11 min-w-0 border-border bg-secondary" tooltipContent={statusFilterLabel}>
                     <SelectValue placeholder={t("subscription.field.status")} />
@@ -391,7 +443,6 @@ const Subscriptions = () => {
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="grid grid-cols-2 gap-3" data-testid="mobile-payment-type-sort-row">
                 <Select value={paymentTypeFilter} onValueChange={(v) => setPaymentTypeFilter(v as SubscriptionPaymentTypeFilter)}>
                   <SelectTrigger className="h-11 min-w-0 border-border bg-secondary" tooltipContent={paymentTypeFilterLabel}>
@@ -405,7 +456,6 @@ const Subscriptions = () => {
                     <SelectItem value="one-time-fixed-term">{t("subscriptions.paymentTypeFilter.fixedTerm")}</SelectItem>
                   </SelectContent>
                 </Select>
-
                 <Select value={sortOption} onValueChange={(v) => setSortOption(v as SubscriptionSortOption)}>
                   <SelectTrigger
                     aria-label={t("subscriptions.sort.label")}
@@ -427,7 +477,6 @@ const Subscriptions = () => {
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="flex min-w-0 items-center gap-3" data-testid="mobile-advanced-tag-row">
                 <SubscriptionAdvancedFilter
                   filters={advancedFilters}
@@ -438,7 +487,6 @@ const Subscriptions = () => {
                   mode="mobileWorkspace"
                   className="flex-1"
                 />
-
                 {allTags.length > 0 && (
                   <SubscriptionTagFilterDrawer
                     tags={allTags}
@@ -447,7 +495,6 @@ const Subscriptions = () => {
                   />
                 )}
               </div>
-
               <SubscriptionFilterFeedback
                 selectedTags={selectedTags}
                 onRemoveTag={removeSelectedTag}
@@ -478,7 +525,6 @@ const Subscriptions = () => {
                     className="border-border bg-secondary pl-10"
                   />
                 </div>
-
                 <SubscriptionCategoryFilter
                   categories={config.categories}
                   selectedCategories={selectedCategories}
@@ -487,7 +533,6 @@ const Subscriptions = () => {
                   onApply={setSelectedCategories}
                   mode="popover"
                 />
-
                 <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as SubscriptionStatus | 'all')}>
                   <SelectTrigger className={subscriptionFilterLayout.desktopStatusTrigger} tooltipContent={statusFilterLabel}>
                     <SelectValue placeholder={t("subscription.field.status")} />
@@ -501,7 +546,6 @@ const Subscriptions = () => {
                     ))}
                   </SelectContent>
                 </Select>
-
                 <Select value={paymentTypeFilter} onValueChange={(v) => setPaymentTypeFilter(v as SubscriptionPaymentTypeFilter)}>
                   <SelectTrigger className={subscriptionFilterLayout.desktopPaymentTypeTrigger} tooltipContent={paymentTypeFilterLabel}>
                     <SelectValue placeholder={t("subscriptions.paymentTypeFilter.label")} />
@@ -514,7 +558,6 @@ const Subscriptions = () => {
                     <SelectItem value="one-time-fixed-term">{t("subscriptions.paymentTypeFilter.fixedTerm")}</SelectItem>
                   </SelectContent>
                 </Select>
-
                 <Select value={sortOption} onValueChange={(v) => setSortOption(v as SubscriptionSortOption)}>
                   <SelectTrigger
                     aria-label={t("subscriptions.sort.label")}
@@ -535,7 +578,6 @@ const Subscriptions = () => {
                     <SelectItem value="name_desc">{t("subscriptions.sort.nameDesc")}</SelectItem>
                   </SelectContent>
                 </Select>
-
                 <SubscriptionAdvancedFilter
                   filters={advancedFilters}
                   onChange={setAdvancedFilters}
@@ -544,7 +586,6 @@ const Subscriptions = () => {
                   currencyOptions={currencyFilterOptions}
                   mode="desktopSidePanel"
                 />
-
                 {allTags.length > 0 && (
                   <SubscriptionTagFilterPopover
                     tags={allTags}
@@ -554,7 +595,6 @@ const Subscriptions = () => {
                   />
                 )}
               </div>
-
               <SubscriptionFilterFeedback
                 selectedTags={selectedTags}
                 onRemoveTag={removeSelectedTag}
@@ -572,7 +612,15 @@ const Subscriptions = () => {
             </>
           )}
         </div>
-
+        {publicVisibilitySelectionMode ? <Suspense fallback={null}><SubscriptionBulkVisibilityToolbar
+          key={JSON.stringify(subscriptionListFilters)}
+          subscriptions={filteredSubscriptions}
+          filters={subscriptionListFilters}
+          total={displayedTotal}
+          selectedIds={selectedPublicVisibilityIds}
+          onSelectionChange={setSelectedPublicVisibilityIds}
+          onBusyChange={setBulkVisibilityPending}
+        /></Suspense> : null}
         {displayError ? (
           <QueryErrorState error={displayError} onRetry={retryDisplayQuery} />
         ) : isDisplayPending ? (
@@ -624,6 +672,9 @@ const Subscriptions = () => {
               onClone={handleCloneSubscription}
               onTogglePinned={handleTogglePinnedSubscription}
               onTogglePublicHidden={handleTogglePublicHiddenSubscription}
+              selectionMode={publicVisibilitySelectionMode}
+              selectedIds={selectedPublicVisibilityIds}
+              onSelect={togglePublicVisibilitySelection}
               onRenew={handleRenewSubscription}
               onViewDetails={handleViewDetails}
               onAddToCalendar={calendarDialog.show}
@@ -646,7 +697,11 @@ const Subscriptions = () => {
         )}
       </main>
 
-      <BackToTopFloatButton />
+      <BackToTopFloatButton
+        bottomOffsetClassName={hasPublicVisibilitySelection
+          ? "bottom-[calc(8rem+env(safe-area-inset-bottom))] sm:bottom-[calc(5rem+env(safe-area-inset-bottom))]"
+          : undefined}
+      />
 
       <EditSubscriptionDialog
         subscription={editingSubscription}

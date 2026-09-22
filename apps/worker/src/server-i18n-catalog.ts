@@ -371,7 +371,9 @@ export const SERVER_I18N_CATALOGS = {
     "url.mustUseHttpsGeneric": "URL 必须使用 https://",
     "url.privateOrLocalNotAllowed": "{label} 不允许指向内网或本机地址",
     "url.privateOrLocalNotAllowedGeneric": "URL 不允许指向内网或本机地址",
-    "validation.jsonParseFailed": "JSON 解析失败：请检查格式是否正确"
+    "validation.jsonParseFailed": "JSON 解析失败：请检查格式是否正确",
+    "subscription.visibilityConflict": "订阅数据已变化，已保留选择，请重试以使用最新数据。",
+    "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。"
   },
   "en-US": {
     "admin.createFailed": "Failed to create admin",
@@ -732,7 +734,9 @@ export const SERVER_I18N_CATALOGS = {
     "url.mustUseHttpsGeneric": "URL must use https://",
     "url.privateOrLocalNotAllowed": "{label} cannot point to private or localhost addresses",
     "url.privateOrLocalNotAllowedGeneric": "URL cannot point to private or localhost addresses",
-    "validation.jsonParseFailed": "JSON parsing failed. Check the format."
+    "validation.jsonParseFailed": "JSON parsing failed. Check the format.",
+    "subscription.visibilityConflict": "Subscriptions have changed. Your selection is preserved; retry to use the latest data.",
+    "subscription.visibilityFailed": "Unable to update public visibility. Your selection is preserved; please retry."
   }
 } as const satisfies Record<ServerI18nLocale, ServerI18nCatalog>;
 

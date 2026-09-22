@@ -105,13 +105,16 @@ export function useInfiniteSubscriptions(options: UseInfiniteSubscriptionsOption
   };
 }
 
-export function useSubscriptionIndex(filters?: SubscriptionListFilters, enabled = true) {
-  return useQuery({
+export function subscriptionIndexQueryOptions(filters?: SubscriptionListFilters) {
+  return queryOptions({
     queryKey: subscriptionQueryKeys.index(filters),
     queryFn: ({ signal }) => subscriptionService.index(filters, signal),
-    enabled,
     staleTime: SUBSCRIPTIONS_STALE_TIME_MS,
   });
+}
+
+export function useSubscriptionIndex(filters?: SubscriptionListFilters, enabled = true) {
+  return useQuery({ ...subscriptionIndexQueryOptions(filters), enabled });
 }
 
 export function useSubscriptionAnalytics() {

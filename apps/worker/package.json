@@ -5,7 +5,7 @@
   "version": "0.3.26",
   "type": "module",
   "scripts": {
-    "build": "wrangler deploy --dry-run --config ../../wrangler.jsonc --outdir dist",
+    "build": "pnpm typecheck && wrangler deploy --dry-run --config ../../wrangler.jsonc --outdir dist",
     "test:perf": "vitest run src/subscription-derived-state.performance.test.ts",
     "test:run": "vitest run --exclude '**/*.performance.test.ts'",
     "typecheck": "tsc --noEmit --project tsconfig.json"

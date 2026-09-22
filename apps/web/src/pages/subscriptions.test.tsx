@@ -131,7 +131,6 @@ vi.mock("@/contexts/CustomConfigContext", () => ({
     updateCurrencies: vi.fn(),
   }),
 }));
-
 vi.mock("@/modules/subscriptions/application/use-subscription-crud", () => ({
   useSubscriptionCrud: () => ({
     editingSubscription: undefined,
@@ -360,6 +359,7 @@ describe("Subscriptions page sorting", () => {
     await user.click(screen.getByRole("button", { name: "重试" }));
     expect(refetch).toHaveBeenCalledTimes(1);
   });
+  it("enters public visibility management without creating a public visibility filter", async () => { renderSubscriptionsPage(["/subscriptions?publicVisibility=manage"]); expect(await screen.findByRole("button", { name: "退出管理" })).toBeInTheDocument(); expect(screen.queryByText("公开页可见")).not.toBeInTheDocument(); });
 
   it("resets collection queries when the account timezone changes", async () => {
     const rendered = renderSubscriptionsPage();

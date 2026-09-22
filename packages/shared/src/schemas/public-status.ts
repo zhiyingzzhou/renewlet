@@ -22,6 +22,8 @@ export const publicStatusPageSchema = z.object({
   createdAt: z.string().optional(),
   pageUrl: z.string().trim().url().max(4096).optional(),
   showPrices: z.boolean(),
+  hideExpired: z.boolean(),
+  hideLifetime: z.boolean(),
   updatedAt: z.string().optional(),
 }).strict();
 
@@ -38,6 +40,8 @@ export const publicStatusPageCreatePayloadSchema = z.object({
     createdAt: z.string().trim().min(1),
     pageUrl: z.string().trim().url().max(4096),
     showPrices: z.boolean(),
+    hideExpired: z.boolean(),
+    hideLifetime: z.boolean(),
     updatedAt: z.string().trim().min(1),
   }).strict(),
 }).strict();
@@ -45,6 +49,8 @@ export const publicStatusPageCreateResponseSchema = apiSuccessResponseSchema(pub
 
 export const publicStatusPageUpdateRequestSchema = z.object({
   showPrices: z.boolean(),
+  hideExpired: z.boolean(),
+  hideLifetime: z.boolean(),
 }).strict();
 
 export const publicStatusPageDeleteResponseSchema = okResponseSchema;

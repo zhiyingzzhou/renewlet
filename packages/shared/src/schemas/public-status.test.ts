@@ -9,6 +9,17 @@ import { appSettingsSchema } from "./settings";
 const success = <T>(data: T) => ({ ok: true, data });
 
 describe("public status schemas", () => {
+  it("keeps owner filter settings out of the anonymous response", () => {
+    // 过滤由服务端执行；管理端字段不进入匿名投影，不能为迁就错误夹具放宽公开 allowlist。
+    const page = { title: "Renewlet", showPrices: false, asOf: "2026-06-07", generatedAt: "2026-06-07T00:00:00Z", truncated: false };
+    expect(publicStatusResponseSchema.safeParse(success({ page, subscriptions: [] })).success).toBe(true);
+    for (const field of ["hideExpired", "hideLifetime"]) {
+      const result = publicStatusResponseSchema.safeParse(success({ page: { ...page, [field]: false }, subscriptions: [] }));
+      expect(result.success).toBe(false);
+      if (!result.success) expect(result.error.issues).toContainEqual(expect.objectContaining({ code: "unrecognized_keys", path: ["data", "page"], keys: [field] }));
+    }
+  });
+
   it("accepts minimal public status rows without prices", () => {
     expect(publicStatusResponseSchema.parse(success({
       page: {
@@ -185,7 +196,7 @@ describe("public status schemas", () => {
         createdAt: "2026-06-07T00:00:00.000Z",
         updatedAt: "2026-06-07T00:00:00.000Z",
         pageUrl: "https://renewlet.example/status/abc123abc123abc123abc123abc123abc123abc123a",
-        showPrices: false,
+        showPrices: false, hideExpired: false, hideLifetime: false,
       },
     })).success).toBe(true);
   });

@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { vi } from "vitest";
+import { MemoryRouter } from "react-router";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { assertDateOnly } from "@/lib/time/date-only";
 import {
@@ -50,16 +51,18 @@ export function subscription(overrides: SubscriptionOverrides = {}): Subscriptio
   };
 }
 
-export function renderSubscriptionsPage() {
+export function renderSubscriptionsPage(initialEntries: string[] = ["/subscriptions"]) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   const renderResult = render(
     <div id="root" style={{ height: 800, overflowY: "auto" }}>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider delayDuration={0}>
-          <Subscriptions />
-        </TooltipProvider>
+        <MemoryRouter initialEntries={initialEntries}>
+          <TooltipProvider delayDuration={0}>
+            <Subscriptions />
+          </TooltipProvider>
+        </MemoryRouter>
       </QueryClientProvider>
     </div>,
   );
@@ -70,9 +73,11 @@ export function renderSubscriptionsPage() {
     rerenderSubscriptionsPage: () => renderResult.rerender(
       <div id="root" style={{ height: 800, overflowY: "auto" }}>
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider delayDuration={0}>
-            <Subscriptions />
-          </TooltipProvider>
+          <MemoryRouter initialEntries={initialEntries}>
+            <TooltipProvider delayDuration={0}>
+              <Subscriptions />
+            </TooltipProvider>
+          </MemoryRouter>
         </QueryClientProvider>
       </div>,
     ),

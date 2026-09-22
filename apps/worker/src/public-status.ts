@@ -65,10 +65,12 @@ export async function updatePublicStatusPage(request: Request, env: Env): Promis
   const row: PublicStatusPageRow = {
     ...existing,
     show_prices: body.showPrices ? 1 : 0,
+    hide_expired: body.hideExpired ? 1 : 0,
+    hide_lifetime: body.hideLifetime ? 1 : 0,
     updated_at: timestamp,
   };
-  await env.DB.prepare("UPDATE public_status_pages SET show_prices = ?, updated_at = ? WHERE user_id = ?")
-    .bind(row.show_prices, timestamp, auth.user.id)
+  await env.DB.prepare("UPDATE public_status_pages SET show_prices = ?, hide_expired = ?, hide_lifetime = ?, updated_at = ? WHERE user_id = ?")
+    .bind(row.show_prices, row.hide_expired, row.hide_lifetime, timestamp, auth.user.id)
     .run();
   return successJson(publicStatusPagePayloadSchema.parse({ publicStatusPage: publicStatusPageStatus(row, request) }));
 }
@@ -89,7 +91,7 @@ export async function readPublicStatus(request: Request, env: Env, token: string
   const resolver = await newPublicStatusCategoryResolver(env, page.user_id, locale);
   const now = new Date();
   const today = todayDateOnly(settings.timezone, now);
-  const { rows, truncated } = await listPublicStatusSubscriptions(env, page.user_id, today);
+  const { rows, truncated } = await listPublicStatusSubscriptions(env, page, today);
   const showPrices = intToBool(page.show_prices);
   const response = publicStatusPayloadSchema.parse({
     page: {
@@ -144,19 +146,21 @@ async function ensurePublicStatusPage(env: Env, userId: string): Promise<PublicS
     user_id: userId,
     token: randomToken(),
     show_prices: 0,
+    hide_expired: 0,
+    hide_lifetime: 0,
     created_at: timestamp,
     updated_at: timestamp,
   };
   await env.DB.prepare(`
-    INSERT INTO public_status_pages (id, user_id, token, show_prices, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).bind(row.id, row.user_id, row.token, row.show_prices, row.created_at, row.updated_at).run();
+    INSERT INTO public_status_pages (id, user_id, token, show_prices, hide_expired, hide_lifetime, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(row.id, row.user_id, row.token, row.show_prices, row.hide_expired, row.hide_lifetime, row.created_at, row.updated_at).run();
   return row;
 }
 
 async function getPublicStatusPage(env: Env, userId: string): Promise<PublicStatusPageRow | null> {
   return await env.DB.prepare(`
-    SELECT id, user_id, token, show_prices, created_at, updated_at
+    SELECT id, user_id, token, show_prices, hide_expired, hide_lifetime, created_at, updated_at
     FROM public_status_pages
     WHERE user_id = ?
     LIMIT 1
@@ -167,16 +171,19 @@ async function getPublicStatusPageByToken(env: Env, token: string): Promise<Publ
   if (!publicStatusTokenPattern.test(token)) return null;
   // 公开 API 不区分无效、撤销和猜测 token；调用方统一走 404，避免 token 探测信号。
   return await env.DB.prepare(`
-    SELECT id, user_id, token, show_prices, created_at, updated_at
+    SELECT id, user_id, token, show_prices, hide_expired, hide_lifetime, created_at, updated_at
     FROM public_status_pages
     WHERE token = ?
     LIMIT 1
   `).bind(token).first<PublicStatusPageRow>();
 }
 
-async function listPublicStatusSubscriptions(env: Env, userId: string, today: string): Promise<{ rows: SubscriptionRow[]; truncated: boolean }> {
+async function listPublicStatusSubscriptions(env: Env, page: PublicStatusPageRow, today: string): Promise<{ rows: SubscriptionRow[]; truncated: boolean }> {
   // 公开页复用私有默认集合顺序，但响应仍只经过公开 allowlist 投影。
-  const plan = publicStatusSubscriptionQueryPlan(userId, today, PUBLIC_STATUS_LIMIT + 1);
+  const plan = publicStatusSubscriptionQueryPlan(page.user_id, today, PUBLIC_STATUS_LIMIT + 1, {
+    hideExpired: intToBool(page.hide_expired),
+    hideLifetime: intToBool(page.hide_lifetime),
+  });
   const result = await env.DB.prepare(plan.sql).bind(...plan.params).all<SubscriptionRow>();
   const rows = result.results.slice(0, PUBLIC_STATUS_LIMIT);
   return { rows, truncated: result.results.length > PUBLIC_STATUS_LIMIT };
@@ -300,12 +307,14 @@ function localizedConfigLabel(labels: ApiCustomConfig["categories"][number]["lab
 }
 
 function publicStatusPageStatus(row: PublicStatusPageRow | null, request: Request) {
-  if (!row) return { enabled: false, showPrices: false };
+  if (!row) return { enabled: false, showPrices: false, hideExpired: false, hideLifetime: false };
   return {
     enabled: true,
     createdAt: row.created_at,
     pageUrl: publicStatusPageUrl(request, row.token),
     showPrices: intToBool(row.show_prices),
+    hideExpired: intToBool(row.hide_expired),
+    hideLifetime: intToBool(row.hide_lifetime),
     updatedAt: row.updated_at,
   };
 }

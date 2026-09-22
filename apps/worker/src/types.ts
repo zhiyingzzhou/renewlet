@@ -314,6 +314,8 @@ export interface PublicStatusPageRow {
   user_id: string;
   token: string;
   show_prices: number;
+  hide_expired: number;
+  hide_lifetime: number;
   created_at: string;
   updated_at: string;
 }

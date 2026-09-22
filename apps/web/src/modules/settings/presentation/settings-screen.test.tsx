@@ -23,7 +23,7 @@ import {
 function useStatefulPublicStatusController() {
   const [pageUrl, setPageUrl] = useState<string | null>("https://example.com/status/secret");
   const controller = createControllerState({
-    publicStatusPage: { enabled: pageUrl !== null, pageUrl, showPrices: true, visibleCount: 3, hiddenCount: 1 },
+    publicStatusPage: { enabled: pageUrl !== null, pageUrl, showPrices: true, hideExpired: false, hideLifetime: false, visibleCount: 3, hiddenCount: 1, expiredCount: 0, lifetimeCount: 0 },
   });
   controller.publicStatusPage.revoke = vi.fn(async () => {
     setPageUrl(null);
@@ -435,9 +435,9 @@ describe("SettingsScreen SMTP email settings", () => {
       publicStatusPage: {
         enabled: true,
         pageUrl: "https://example.com/status/secret",
-        showPrices: true,
+        showPrices: true, hideExpired: false, hideLifetime: false,
         visibleCount: 3,
-        hiddenCount: 1,
+        hiddenCount: 1, expiredCount: 0, lifetimeCount: 0,
       },
     });
     mocks.useSettingsFormController.mockReturnValue(controller);
@@ -461,7 +461,7 @@ describe("SettingsScreen SMTP email settings", () => {
     const currencySelect = screen.getByRole("combobox", { name: "公开页统计货币" });
     const publicStatusFields = currencySelect.closest('[data-slot="form-field-row"]');
     expect(publicStatusFields).toHaveAttribute("data-align-at", "lg");
-    expect(publicStatusFields?.querySelectorAll('[data-slot="form-field"]')).toHaveLength(2);
+    expect(publicStatusFields?.querySelectorAll('[data-slot="form-field"]')).toHaveLength(4);
     expect(screen.getByRole("switch", { name: "公开金额" }).closest('[data-slot="form-field-row"]')).toBe(publicStatusFields);
     expect(currencySelect).toHaveTextContent("继承统计货币（当前 USD）");
 
@@ -498,7 +498,7 @@ describe("SettingsScreen SMTP email settings", () => {
       publicStatusPage: {
         enabled: true,
         pageUrl: "https://example.com/status/secret",
-        showPrices: true,
+        showPrices: true, hideExpired: false, hideLifetime: false,
       },
     }));
 
@@ -531,7 +531,7 @@ describe("SettingsScreen SMTP email settings", () => {
         enabled: false,
         pageUrl: null,
         visibleCount: 105,
-        hiddenCount: 0,
+        hiddenCount: 0, expiredCount: 0, lifetimeCount: 0,
       },
     });
     mocks.useSettingsFormController.mockReturnValue(controller);

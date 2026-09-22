@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { Activity, Coins, CreditCard, FolderKanban, Settings2 } from "lucide-react";
 import { DeferredImportDataDialog } from "@/components/import-data-dialog-loader";
 import { RawErrorResponseDialog } from "@/components/raw-error-response-dialog";
@@ -48,6 +49,7 @@ export function SettingsAdvancedSections({
   onReady?: (() => void) | undefined;
 }) {
   const { t, locale } = useI18n();
+  const navigate = useNavigate();
   const {
     settings,
     secretStatus,
@@ -347,6 +349,12 @@ export function SettingsAdvancedSections({
         onOpenPage={publicStatusPage.openPage}
         onRegenerate={publicStatusPage.regenerate}
         onShowPricesChange={publicStatusPage.updateShowPrices}
+        onHideExpiredChange={publicStatusPage.updateHideExpired}
+        onHideLifetimeChange={publicStatusPage.updateHideLifetime}
+        onBulkPublicVisibility={publicStatusPage.bulkPublicVisibility}
+        onManageVisibility={() => navigate("/subscriptions?publicVisibility=manage", {
+          state: { publicVisibilityReturnTo: "/settings#settings-public-status" },
+        })}
         onPublicStatusCurrencyChange={(value) => updateSetting("publicStatusCurrency", value as PublicStatusCurrency)}
       />
 

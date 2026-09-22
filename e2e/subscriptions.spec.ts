@@ -1,3 +1,4 @@
+import { subscriptionResponseSchema, subscriptionsIndexResponseSchema } from "../packages/shared/src/schemas/subscriptions";
 // 桌面订阅 E2E 覆盖创建、筛选、编辑、Logo sheet 和持久化回读，是订阅主流程的跨组件回归基线。
 import type { ElementHandle, Locator } from "@playwright/test";
 import subscriptionCollectionContractFixtures from "../packages/shared/src/contract-fixtures/subscription-collection-contract-fixtures.json";
@@ -22,7 +23,7 @@ import {
   expectVerticallyCenteredInViewport,
 } from "./support/layout";
 import { installLogoCandidateRoute } from "./support/media-candidates";
-import { createProductSubscriptionSeed, deleteProductSubscriptionsByName } from "./support/product-api";
+import { createProductSubscriptionSeed, deleteProductSubscriptionsByName, productApiFetch } from "./support/product-api";
 import { expectSideDrawerExitLifecycle } from "./support/side-drawer";
 
 async function getRequiredElement(locator: Locator, label: string): Promise<ElementHandle<SVGElement | HTMLElement>> {
@@ -327,4 +328,162 @@ test("desktop import Logo editor gives search candidates a real scroll viewport"
     scroll.scrollHeight - scroll.clientHeight - 1,
   );
   expect(scroll.lastBottomGap, JSON.stringify(scroll, null, 2)).toBeGreaterThanOrEqual(8);
+});
+
+
+test("bulk selection offers cross-page selection only after selecting the current page", async ({ page }) => {
+  const collectionTemplate = subscriptionCollectionContractFixtures.collectionItems[0];
+  if (!collectionTemplate) throw new Error("Missing subscription collection fixture");
+  const subscriptions = Array.from({ length: 3 }, (_, index) => ({
+    ...collectionTemplate,
+    id: `visibility-summary-${index}`,
+    name: `Visibility Summary ${index}`,
+    startDate: "2099-01-01",
+    nextBillingDate: "2099-02-01",
+  }));
+  let indexRequests = 0;
+  // 固定两条已加载、三条匹配的分页边界，防止账号种子数量掩盖跨页入口的出现条件。
+  await page.route(/\/api\/app\/subscriptions(?:\?.*)?$/, (route) => route.fulfill({
+    json: { ok: true, data: { subscriptions: subscriptions.slice(0, 2), total: 3, nextCursor: "visibility-next-page" } },
+  }));
+  await page.route("**/api/app/subscriptions/index**", (route) => {
+    indexRequests += 1;
+    return route.fulfill({ json: { ok: true, data: { subscriptions, total: 3 } } });
+  });
+  await page.route("**/api/app/subscriptions/visibility-summary-*", (route) => {
+    const subscription = subscriptions.find((item) => new URL(route.request().url()).pathname.endsWith(`/${item.id}`));
+    if (!subscription) throw new Error("Missing visibility summary detail fixture");
+    return route.fulfill({ json: { ok: true, data: { subscription: { ...subscriptionCollectionContractFixtures.completeSubscription, ...subscription } } } });
+  });
+
+  await page.goto("/subscriptions");
+  await expect(page.getByTestId("subscription-card")).toHaveCount(2);
+  await page.getByRole("button", { name: "批量管理公开可见性", exact: true }).click();
+  const summary = page.getByTestId("public-visibility-selection-summary");
+  const selectPage = summary.getByRole("checkbox", { name: "全选所有匹配订阅" });
+  const clear = summary.getByRole("button", { name: "清空选择" });
+  const dock = page.getByTestId("public-visibility-bulk-dock");
+  const card = page.getByTestId("subscription-card").first();
+  await expect(selectPage).not.toBeChecked();
+  await expect(clear).toBeDisabled();
+  await expect(dock).toHaveCount(0);
+  await card.click();
+  await expect(selectPage).toHaveAttribute("aria-checked", "mixed");
+  await expect(summary).not.toContainText("已选择");
+  await expect(page.getByText("已选择 1 条", { exact: true })).toHaveCount(1);
+  await expect.poll(async () => dock.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return Math.abs(rect.left + rect.width / 2 - document.documentElement.clientWidth / 2);
+  })).toBeLessThanOrEqual(1);
+  await summary.getByText("全选", { exact: true }).click();
+  await expect(selectPage).toBeChecked();
+  await expect(dock).toContainText("已选择 3 条");
+  expect(indexRequests).toBe(1);
+  await card.press("Space");
+  await expect(selectPage).toHaveAttribute("aria-checked", "mixed");
+  await selectPage.click();
+  await expect(selectPage).toBeChecked();
+  await expect(dock).toContainText("已选择 3 条");
+  expect(indexRequests).toBe(2);
+  await clear.click();
+  await expect(clear).toBeDisabled();
+  await expect(selectPage).not.toBeChecked();
+  await expect(dock).toHaveCount(0);
+});
+
+test("bulk public visibility preserves card details and applies one command to the selected subscriptions", async ({ page }, testInfo) => {
+  await page.goto("/subscriptions");
+  const prefix = uniqueE2EName(testInfo, "Bulk visibility");
+  const names = [`${prefix} A`, `${prefix} B`];
+  const ids: string[] = [];
+  for (const name of names) {
+    ids.push(await createProductSubscriptionSeed(page, {
+      name, price: "12", startDate: "2099-01-01", nextBillingDate: "2099-02-01",
+    }));
+  }
+  try {
+    await page.reload();
+    await page.getByPlaceholder("搜索订阅、标签或备注...").fill(prefix);
+    const cards = page.getByTestId("subscription-card");
+    await expect(cards).toHaveCount(2);
+    const mode = page.getByRole("button", { name: "批量管理公开可见性", exact: true });
+    await mode.click();
+    for (const publicHidden of [true, false]) {
+      const summary = page.getByTestId("public-visibility-selection-summary");
+      await expect(summary).toBeVisible();
+      await expect(summary.getByRole("checkbox", { name: "全选所有匹配订阅" })).not.toBeChecked();
+      await expect(summary.getByRole("button", { name: "清空选择" })).toBeDisabled();
+      await cards.first().getByRole("checkbox").check();
+      await expect(summary.getByRole("checkbox")).toHaveAttribute("aria-checked", "mixed");
+      const toolbar = page.getByRole("toolbar", { name: "批量管理公开可见性", exact: true });
+      await expect(toolbar).toBeVisible();
+      await expect(summary).not.toContainText("已选择");
+      await expect(page.getByText("已选择 1 条", { exact: true })).toHaveCount(1);
+      // 管理模式下卡片主体只表达选择，详情从卡片菜单进入，避免一次点击产生两个意图。
+      const detailCard = subscriptionCard(page, names[0]!);
+      await detailCard.getByRole("button", { name: "更多操作", exact: true }).click();
+      await page.getByRole("menuitem", { name: new RegExp(`查看 ${names[0]} 的详情`) }).click();
+      const dialog = page.getByRole("dialog", { name: names[0]! });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByText(publicHidden ? "会展示" : "已隐藏", { exact: true })).toBeVisible();
+      await dialog.getByRole("contentinfo").getByRole("button", { name: "关闭", exact: true }).click();
+      await summary.getByRole("checkbox").check();
+      await toolbar.getByRole("button", { name: publicHidden ? "从公开页隐藏" : "在公开页展示", exact: true }).click();
+      const confirmation = page.getByRole("alertdialog");
+      await expect(confirmation).toContainText("所选 2 条订阅");
+      const responsePromise = page.waitForResponse((response) => response.url().endsWith("/api/app/subscriptions/bulk-public-visibility") && response.request().method() === "POST");
+      await confirmation.getByRole("button", { name: "保存", exact: true }).click();
+      const response = await responsePromise;
+      expect(response.ok()).toBe(true);
+      expect(response.request().postDataJSON()).toEqual({ selection: { ids: expect.arrayContaining(ids) }, publicHidden, dryRun: false });
+      await expect(page.getByRole("button", { name: "退出管理", exact: true })).toHaveAttribute("aria-pressed", "true");
+      for (const id of ids) {
+        const result = await productApiFetch(page, `/api/app/subscriptions/${id}`);
+        expect(result.ok).toBe(true);
+        expect(subscriptionResponseSchema.parse(result.json).data.subscription).toMatchObject({ publicHidden, price: "12", status: "active" });
+      }
+    }
+  } finally {
+    await deleteProductSubscriptionsByName(page, names);
+  }
+});
+
+test("100 selected subscriptions hide and restore through real bulk requests", async ({ page }, testInfo) => {
+  const prefix = uniqueE2EName(testInfo, "Visibility100");
+  const names = Array.from({ length: 100 }, (_, i) => `${prefix} ${i}`);
+  const ids: string[] = [];
+  await page.goto("/subscriptions");
+  try {
+    for (const name of names) ids.push(await createProductSubscriptionSeed(page, { name, price: "12", startDate: "2099-01-01", nextBillingDate: "2099-02-01" }));
+    await page.goto("/subscriptions?publicVisibility=manage");
+    await page.getByPlaceholder("搜索订阅、标签或备注...").fill(prefix);
+    await expect(page.getByTestId("subscription-card").first()).toContainText(prefix);
+    const summary = page.getByTestId("public-visibility-selection-summary");
+    const dock = page.getByTestId("public-visibility-bulk-dock");
+    const requests: string[] = [];
+    page.on("request", (request) => { if (request.url().endsWith("/bulk-public-visibility")) requests.push(request.method()); });
+    for (const publicHidden of [true, false]) {
+      await summary.getByRole("checkbox").check();
+      await expect(dock).toContainText("已选择 100 条");
+      await expect(summary).not.toContainText("已选择");
+      const box = await dock.boundingBox();
+      const width = page.viewportSize()?.width;
+      if (!box || !width) throw new Error("Missing dock geometry");
+      expect(Math.abs(box.x + box.width / 2 - width / 2)).toBeLessThanOrEqual(1);
+      await dock.getByRole("button", { name: publicHidden ? "从公开页隐藏" : "在公开页展示", exact: true }).click();
+      const dialog = page.getByRole("alertdialog");
+      await expect(dialog).toContainText("所选 100 条订阅");
+      const responsePromise = page.waitForResponse((response) => response.url().endsWith("/bulk-public-visibility"));
+      await dialog.getByRole("button", { name: "保存", exact: true }).click();
+      const response = await responsePromise;
+      expect(response.status(), await response.text()).toBe(200);
+      expect(response.request().postDataJSON()).toEqual({ selection: { ids: expect.arrayContaining(ids) }, publicHidden, dryRun: false });
+      await expect(dock).toBeHidden();
+      const result = await productApiFetch(page, `/api/app/subscriptions/index?q=${encodeURIComponent(prefix)}`);
+      const current = subscriptionsIndexResponseSchema.parse(result.json).data;
+      expect(current.subscriptions).toHaveLength(100);
+      expect(current.subscriptions.every((item) => item.publicHidden === publicHidden && item.price === "12")).toBe(true);
+    }
+    expect(requests).toEqual(["POST", "POST"]);
+  } finally { await deleteProductSubscriptionsByName(page, names); }
 });

@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/hooks/use-subscriptions", () => ({
   useSubscriptionCalendar: mocks.useSubscriptionCalendar,
   useSubscriptionFacets: () => ({
-    data: { total: 0, categoryCounts: {}, tags: [], visibleCount: 0, hiddenCount: 0 },
+    data: { total: 0, categoryCounts: {}, tags: [], visibleCount: 0, hiddenCount: 0, expiredCount: 0, lifetimeCount: 0 },
   }),
 }));
 

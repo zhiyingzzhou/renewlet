@@ -344,6 +344,29 @@ test("a completed v3 marker verifies corruption and never silently rebuilds it",
   }
 });
 
+test("a completed v3 marker accepts public visibility updates without rewriting tag timestamps", async () => {
+  const client = openDerivedDatabase();
+  try {
+    await runBackfill(client, backfillNow);
+    const previousTagTimestamp = client.db.prepare(`SELECT updated_at FROM subscription_tags
+      WHERE user_id = 'usr_one' AND subscription_id = 'sub_one' AND tag_norm = 'work'`).get()?.["updated_at"];
+    client.db.exec(`
+      UPDATE subscriptions
+      SET public_hidden = 1, updated_at = '2026-08-24T13:00:00.000Z'
+      WHERE id = 'sub_one';
+      UPDATE subscription_list_index
+      SET public_hidden = 1, updated_at = '2026-08-24T13:00:00.000Z'
+      WHERE subscription_id = 'sub_one';
+    `);
+
+    await runBackfill(client, backfillNow);
+    assert.equal(client.db.prepare(`SELECT updated_at FROM subscription_tags
+      WHERE user_id = 'usr_one' AND subscription_id = 'sub_one' AND tag_norm = 'work'`).get()?.["updated_at"], previousTagTimestamp);
+  } finally {
+    client.db.close();
+  }
+});
+
 test("a completed v3 marker rejects a missing repeat schedule even when its aggregate was also cleared", async () => {
   const client = openDerivedDatabase();
   try {

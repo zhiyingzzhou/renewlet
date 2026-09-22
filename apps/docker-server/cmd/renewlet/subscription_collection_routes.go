@@ -65,6 +65,8 @@ type subscriptionFacetsResponse struct {
 	Tags           []string         `json:"tags"`
 	VisibleCount   int64            `json:"visibleCount"`
 	HiddenCount    int64            `json:"hiddenCount"`
+	ExpiredCount   int64            `json:"expiredCount"`
+	LifetimeCount  int64            `json:"lifetimeCount"`
 }
 
 func handleSubscriptionsList(app core.App, e *core.RequestEvent) error {
@@ -181,14 +183,19 @@ func handleSubscriptionsExport(app core.App, e *core.RequestEvent) error {
 
 func handleSubscriptionsFacets(app core.App, e *core.RequestEvent) error {
 	var counts struct {
-		Total        int64 `db:"total"`
-		VisibleCount int64 `db:"visible_count"`
-		HiddenCount  int64 `db:"hidden_count"`
+		Total         int64 `db:"total"`
+		VisibleCount  int64 `db:"visible_count"`
+		HiddenCount   int64 `db:"hidden_count"`
+		ExpiredCount  int64 `db:"expired_count"`
+		LifetimeCount int64 `db:"lifetime_count"`
 	}
+	today := subscriptionQueryToday(app, e.Auth, subscriptionListQuery{})
 	err := app.DB().NewQuery(`SELECT COUNT(*) AS total,
 		COALESCE(SUM(CASE WHEN public_hidden = 0 THEN 1 ELSE 0 END), 0) AS visible_count,
-		COALESCE(SUM(CASE WHEN public_hidden = 1 THEN 1 ELSE 0 END), 0) AS hidden_count
-		FROM subscription_list_index WHERE user_id = {:user}`).Bind(dbx.Params{"user": e.Auth.Id}).One(&counts)
+		COALESCE(SUM(CASE WHEN public_hidden = 1 THEN 1 ELSE 0 END), 0) AS hidden_count,
+		COALESCE(SUM(CASE WHEN status = 'expired' OR (status IN ('active', 'trial') AND next_billing_date < {:today}) THEN 1 ELSE 0 END), 0) AS expired_count,
+		COALESCE(SUM(CASE WHEN billing_cycle = 'one-time' AND COALESCE(one_time_term_count, 0) <= 0 THEN 1 ELSE 0 END), 0) AS lifetime_count
+		FROM subscription_list_index WHERE user_id = {:user}`).Bind(dbx.Params{"user": e.Auth.Id, "today": today}).One(&counts)
 	if err != nil {
 		return e.InternalServerError(serverText(requestLocale(e.Request), "common.internalError"), err)
 	}
@@ -223,6 +230,8 @@ func handleSubscriptionsFacets(app core.App, e *core.RequestEvent) error {
 		Tags:           tags,
 		VisibleCount:   counts.VisibleCount,
 		HiddenCount:    counts.HiddenCount,
+		ExpiredCount:   counts.ExpiredCount,
+		LifetimeCount:  counts.LifetimeCount,
 	})
 }
 

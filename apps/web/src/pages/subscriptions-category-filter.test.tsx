@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { MemoryRouter } from "react-router";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { assertDateOnly } from "@/lib/time/date-only";
 import type { CustomConfig } from "@/types/config";
@@ -205,9 +206,11 @@ function renderSubscriptionsPage() {
   return render(
     <div id="root" style={{ height: 800, overflowY: "auto" }}>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider delayDuration={0}>
-          <Subscriptions />
-        </TooltipProvider>
+        <MemoryRouter>
+          <TooltipProvider delayDuration={0}>
+            <Subscriptions />
+          </TooltipProvider>
+        </MemoryRouter>
       </QueryClientProvider>
     </div>,
   );
@@ -458,7 +461,7 @@ describe("Subscriptions page category filters", () => {
     renderSubscriptionsPage();
 
     await user.click(within(screen.getByTestId("desktop-advanced-filter")).getByRole("button"));
-    await user.click(within(screen.getByTestId("desktop-advanced-filter-panel")).getByTestId("advanced-currency-entry"));
+    await user.click(await within(screen.getByTestId("desktop-advanced-filter-panel")).findByTestId("advanced-currency-entry"));
 
     const currencyList = within(screen.getByTestId("advanced-currency-dialog")).getByTestId("advanced-currency-picker");
     expectAdvancedOptionRowsContainCodes(

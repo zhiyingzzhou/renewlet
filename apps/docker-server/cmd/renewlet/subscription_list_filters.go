@@ -43,6 +43,8 @@ type subscriptionListQuery struct {
 	PublicHidden    *bool
 	ReminderMode    string
 	RepeatReminder  *bool
+	HideExpired     bool
+	HideLifetime    bool
 }
 
 type subscriptionListPage struct {
@@ -185,9 +187,11 @@ func listSubscriptionRecordsInDefaultOrder(
 	today string,
 	limit int,
 	publicHidden *bool,
+	hideExpired bool,
+	hideLifetime bool,
 ) ([]*core.Record, error) {
 	projectedRows, _, err := projectedSubscriptionPage(app, userID, subscriptionListQuery{
-		Limit: limit, PublicHidden: publicHidden,
+		Limit: limit, PublicHidden: publicHidden, HideExpired: hideExpired, HideLifetime: hideLifetime,
 	}, today, subscriptionProjectionOrderedWindow, 0)
 	if err != nil {
 		return nil, err
@@ -243,6 +247,12 @@ func projectedSubscriptionPage(
 			ELSE idx.status
 		END) = {:status}`)
 		base.params["status"] = query.Status
+	}
+	if query.HideExpired {
+		base.conditions = append(base.conditions, "NOT (idx.status = 'expired' OR (idx.status IN ('active', 'trial') AND idx.next_billing_date < {:today}))")
+	}
+	if query.HideLifetime {
+		base.conditions = append(base.conditions, "NOT (idx.billing_cycle = 'one-time' AND idx.one_time_term_count <= 0)")
 	}
 	base.params["today"] = today
 	rows, err := runSubscriptionProjectionPage(app, base, query.Limit+1, query.Cursor, mode, candidateLimit)

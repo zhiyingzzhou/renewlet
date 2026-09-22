@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { subscriptionCollectionContractFixture } from "@renewlet/shared/contract-fixtures";
 import {
   subscriptionFacetsPayloadSchema,
@@ -66,6 +66,9 @@ function envFixture(): Env {
 describe("Cloudflare subscription collection routes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // facets 按账号时区的业务日期计数；固定时钟避免测试随执行日跨午夜漂移。
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-09-14T23:30:00Z"));
     mocks.requireAuth.mockResolvedValue({
       user: { id: USER_ID },
       session: { id: "ses" },
@@ -83,9 +86,11 @@ describe("Cloudflare subscription collection routes", () => {
       categoryCounts: { productivity: 2 },
       tags: ["AI", "Team"],
       visibleCount: 1,
-      hiddenCount: 1,
+      hiddenCount: 1, expiredCount: 0, lifetimeCount: 0,
     });
   });
+
+  afterEach(() => vi.useRealTimers());
 
   it("reads one filtered index request as lightweight items without pagination parameters", async () => {
     const env = envFixture();
@@ -175,8 +180,8 @@ describe("Cloudflare subscription collection routes", () => {
       categoryCounts: { productivity: 2 },
       tags: ["AI", "Team"],
       visibleCount: 1,
-      hiddenCount: 1,
+      hiddenCount: 1, expiredCount: 0, lifetimeCount: 0,
     });
-    expect(mocks.readSubscriptionFacetsForUser).toHaveBeenCalledWith(env, USER_ID);
+    expect(mocks.readSubscriptionFacetsForUser).toHaveBeenCalledWith(env, USER_ID, "2026-09-14");
   });
 });

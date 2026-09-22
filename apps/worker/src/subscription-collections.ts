@@ -71,8 +71,10 @@ export async function readSubscriptionExport(request: Request, env: Env): Promis
 
 export async function readSubscriptionFacets(request: Request, env: Env): Promise<Response> {
   const auth = await requireAuth(request, env);
+  const settings = await getSettings(env, auth.user.id);
+  const today = dateOnlyInZone(new Date(), settings.timezone);
   return successJson(subscriptionFacetsPayloadSchema.parse(
-    await readSubscriptionFacetsForUser(env, auth.user.id),
+    await readSubscriptionFacetsForUser(env, auth.user.id, today),
   ));
 }
 

@@ -357,5 +357,7 @@
   "url.mustUseHttpsGeneric": "URL 必须使用 https://",
   "url.privateOrLocalNotAllowed": "{label} 不允许指向内网或本机地址",
   "url.privateOrLocalNotAllowedGeneric": "URL 不允许指向内网或本机地址",
-  "validation.jsonParseFailed": "JSON 解析失败：请检查格式是否正确"
+  "validation.jsonParseFailed": "JSON 解析失败：请检查格式是否正确",
+  "subscription.visibilityConflict": "订阅数据已变化，已保留选择，请重试以使用最新数据。",
+  "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。"
 }

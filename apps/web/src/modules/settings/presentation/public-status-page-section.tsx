@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Clipboard, ExternalLink, Globe2, RefreshCw, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useI18n } from "@/i18n/I18nProvider";
 import type { ClipboardCopyTarget } from "@/shared/browser/clipboard";
 import { LoadingButtonContent } from "./settings-shared-controls";
@@ -29,7 +31,7 @@ interface PublicStatusPageSectionProps {
   id?: string;
   className?: string;
   status: SettingsReadState<PublicStatusPage>;
-  visibility: SettingsReadState<{ visibleCount: number; hiddenCount: number }>;
+  visibility: SettingsReadState<{ visibleCount: number; hiddenCount: number; expiredCount: number; lifetimeCount: number }>;
   publicStatusCurrency: string;
   effectivePublicStatusCurrency: string;
   publicStatusCurrencyOptions: SearchableSelectOption[];
@@ -42,6 +44,10 @@ interface PublicStatusPageSectionProps {
   onOpenPage: () => void | Promise<void>;
   onRegenerate: () => void | Promise<boolean>;
   onShowPricesChange: (checked: boolean) => void | Promise<void>;
+  onHideExpiredChange: (checked: boolean) => void | Promise<void>;
+  onHideLifetimeChange: (checked: boolean) => void | Promise<void>;
+  onManageVisibility: () => void;
+  onBulkPublicVisibility: (categories: Array<"expired" | "lifetime">, publicHidden: boolean, dryRun?: boolean) => Promise<{ matchedCount: number; changedCount: number }>;
   onPublicStatusCurrencyChange: (value: string) => void | Promise<void>;
 }
 
@@ -118,17 +124,42 @@ export function PublicStatusPageSection({
   onOpenPage,
   onRegenerate,
   onShowPricesChange,
+  onHideExpiredChange,
+  onHideLifetimeChange,
+  onManageVisibility,
+  onBulkPublicVisibility,
   onPublicStatusCurrencyChange,
 }: PublicStatusPageSectionProps) {
   const { t } = useI18n();
   const [confirmation, setConfirmation] = useState<"regenerate" | "revoke" | null>(null);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkCategories, setBulkCategories] = useState<Array<"expired" | "lifetime">>(["expired", "lifetime"]);
+  const [bulkHidden, setBulkHidden] = useState(true);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkPreview, setBulkPreview] = useState<{ matchedCount: number; changedCount: number } | null>(null);
+  const [bulkPreviewBusy, setBulkPreviewBusy] = useState(false);
   const confirmationTriggerRef = useRef<HTMLButtonElement>(null);
   const generateButtonRef = useRef<HTMLButtonElement>(null);
   const page = status.data;
   const enabled = page?.enabled === true;
   const pageUrl = page?.pageUrl ?? null;
   const showPrices = page?.showPrices === true;
-  const busy = isCreating || isDeleting || isUpdating;
+  const hideExpired = page?.hideExpired === true;
+  const hideLifetime = page?.hideLifetime === true;
+  const busy = isCreating || isDeleting || isUpdating || bulkBusy;
+  useEffect(() => {
+    if (!bulkOpen || bulkCategories.length === 0) {
+      setBulkPreview(null);
+      return;
+    }
+    let active = true;
+    setBulkPreviewBusy(true);
+    void onBulkPublicVisibility(bulkCategories, bulkHidden, true)
+      .then((result) => { if (active) setBulkPreview(result); })
+      .catch(() => { if (active) setBulkPreview(null); })
+      .finally(() => { if (active) setBulkPreviewBusy(false); });
+    return () => { active = false; };
+  }, [bulkCategories, bulkHidden, bulkOpen, onBulkPublicVisibility]);
   const headerStatus = status.isInitialLoading
     ? t("common.loading")
     : !status.hasData && status.error
@@ -204,6 +235,28 @@ export function PublicStatusPageSection({
             </FormField>
 
             <FormField
+              id="publicStatusHideExpired"
+              label={t("settings.publicStatusHideExpired")}
+              labelClassName="cursor-pointer text-sm font-medium"
+              description={t("settings.publicStatusHideExpiredHelp", { count: visibility.data?.expiredCount ?? 0 })}
+            >
+              {({ id, describedBy }) => (
+                <Switch id={id} checked={hideExpired} disabled={busy} onCheckedChange={onHideExpiredChange} aria-label={t("settings.publicStatusHideExpired")} aria-describedby={describedBy} />
+              )}
+            </FormField>
+
+            <FormField
+              id="publicStatusHideLifetime"
+              label={t("settings.publicStatusHideLifetime")}
+              labelClassName="cursor-pointer text-sm font-medium"
+              description={t("settings.publicStatusHideLifetimeHelp", { count: visibility.data?.lifetimeCount ?? 0 })}
+            >
+              {({ id, describedBy }) => (
+                <Switch id={id} checked={hideLifetime} disabled={busy} onCheckedChange={onHideLifetimeChange} aria-label={t("settings.publicStatusHideLifetime")} aria-describedby={describedBy} />
+              )}
+            </FormField>
+
+            <FormField
               id="publicStatusCurrency"
               label={t("settings.publicStatusCurrency")}
               labelClassName="text-sm font-medium"
@@ -228,6 +281,19 @@ export function PublicStatusPageSection({
               )}
             </FormField>
           </FormFieldRow>
+
+          <div className="flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs leading-5 text-muted-foreground">{t("settings.publicStatusVisibilityManageHelp")}</p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:shrink-0">
+              <Button type="button" variant="outline" size="sm" onClick={onManageVisibility} disabled={busy} className="justify-center gap-2 border-border">
+                <Clipboard className="h-4 w-4" />
+                {t("settings.publicStatusManageVisibility")}
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={() => setBulkOpen(true)} disabled={busy} className="justify-center gap-2 border-border">
+                {t("settings.publicStatusQuickBulk")}
+              </Button>
+            </div>
+          </div>
 
           <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
@@ -330,6 +396,43 @@ export function PublicStatusPageSection({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={bulkOpen} onOpenChange={(open) => { if (!bulkBusy) setBulkOpen(open); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("settings.publicStatusQuickBulkTitle")}</DialogTitle>
+            <DialogDescription>{t("settings.publicStatusQuickBulkDescription")}</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 py-2">
+            <label className="flex items-center gap-3 text-sm">
+              <Checkbox checked={bulkCategories.includes("expired")} onCheckedChange={(checked) => setBulkCategories((current): Array<"expired" | "lifetime"> => checked === true ? (current.includes("expired") ? current : [...current, "expired"]) : current.filter((item) => item !== "expired"))} />
+              <span>{t("settings.publicStatusHideExpired")}（{visibility.data?.expiredCount ?? 0}）</span>
+            </label>
+            <label className="flex items-center gap-3 text-sm">
+              <Checkbox checked={bulkCategories.includes("lifetime")} onCheckedChange={(checked) => setBulkCategories((current): Array<"expired" | "lifetime"> => checked === true ? (current.includes("lifetime") ? current : [...current, "lifetime"]) : current.filter((item) => item !== "lifetime"))} />
+              <span>{t("settings.publicStatusHideLifetime")}（{visibility.data?.lifetimeCount ?? 0}）</span>
+            </label>
+            <div className="flex gap-2">
+              <Button type="button" size="sm" variant={bulkHidden ? "default" : "outline"} onClick={() => setBulkHidden(true)}>{t("subscription.publicHide")}</Button>
+              <Button type="button" size="sm" variant={!bulkHidden ? "default" : "outline"} onClick={() => setBulkHidden(false)}>{t("subscription.publicShow")}</Button>
+            </div>
+            <p className="text-xs text-muted-foreground" aria-live="polite">
+              {bulkPreviewBusy
+                ? t("common.loading")
+                : bulkPreview
+                  ? t("settings.publicStatusBulkPreview", { matched: bulkPreview.matchedCount, changed: bulkPreview.changedCount })
+                  : t("settings.publicStatusBulkPreviewUnavailable")}
+            </p>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setBulkOpen(false)} disabled={bulkBusy}>{t("common.cancel")}</Button>
+            <Button type="button" disabled={bulkBusy || bulkCategories.length === 0} onClick={() => {
+              setBulkBusy(true);
+              void onBulkPublicVisibility(bulkCategories, bulkHidden).then(() => setBulkOpen(false)).catch(() => undefined).finally(() => setBulkBusy(false));
+            }}>{bulkBusy ? t("common.saving") : t("common.save")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

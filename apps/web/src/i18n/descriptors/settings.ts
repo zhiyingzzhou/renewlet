@@ -1,6 +1,5 @@
 // settings domain 聚合账号、主题、通知、日历 Feed 和系统更新文案，配合保存草稿状态机统一维护。
 import { msg } from "@lingui/core/macro";
-
 export const messages = [
   msg({ id: "settings.title", message: "系统配置" }),
   msg({ id: "settings.subtitle", message: "管理您的账户、显示和通知设置" }),
@@ -399,6 +398,14 @@ export const messages = [
   msg({ id: "settings.publicStatusDisabledHelp", message: "生成后展示未隐藏订阅，金额默认隐藏。" }),
   msg({ id: "settings.publicStatusShowPrices", message: "公开金额" }),
   msg({ id: "settings.publicStatusShowPricesHelp", message: "开启后显示价格和币种；关闭时只给最小状态。" }),
+  msg({ id: "settings.publicStatusHideExpired", message: "隐藏已过期订阅" }), msg({ id: "settings.publicStatusHideExpiredHelp", message: "当前有 {count} 项已过期订阅。" }),
+  msg({ id: "settings.publicStatusHideLifetime", message: "隐藏长期买断订阅" }), msg({ id: "settings.publicStatusHideLifetimeHelp", message: "当前有 {count} 项长期买断订阅。" }),
+  msg({ id: "settings.publicStatusExpiredHidden", message: "已隐藏过期订阅" }), msg({ id: "settings.publicStatusExpiredShown", message: "已显示过期订阅" }),
+  msg({ id: "settings.publicStatusLifetimeHidden", message: "已隐藏长期买断订阅" }), msg({ id: "settings.publicStatusLifetimeShown", message: "已显示长期买断订阅" }),
+  msg({ id: "settings.publicStatusManageVisibility", message: "管理公开可见性" }), msg({ id: "settings.publicStatusVisibilityManageHelp", message: "在订阅列表中选择并批量隐藏或恢复订阅。" }),
+  msg({ id: "settings.publicStatusQuickBulk", message: "快速批量编辑" }), msg({ id: "settings.publicStatusQuickBulkTitle", message: "快速批量编辑公开可见性" }),
+  msg({ id: "settings.publicStatusQuickBulkDescription", message: "选择类别后批量隐藏或恢复公开展示。具体订阅可在订阅列表中管理。" }), msg({ id: "settings.publicStatusBulkPreview", message: "匹配 {matched} 项，实际将修改 {changed} 项。" }),
+  msg({ id: "settings.publicStatusBulkPreviewUnavailable", message: "暂时无法获取预览数量。" }), msg({ id: "settings.publicStatusBulkVisibilityDone", message: "已更新 {count} 项订阅" }),
   msg({ id: "settings.publicStatusCurrency", message: "公开页统计货币" }),
   msg({ id: "settings.publicStatusCurrencyHelp", message: "汇总换算为 {currency}，单项保留原账单币种。" }),
   msg({ id: "settings.publicStatusCurrencyInherit", message: "继承统计货币（当前 {currency}）" }),

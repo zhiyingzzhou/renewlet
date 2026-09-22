@@ -25,9 +25,12 @@ type SubscriptionCardHandlers = {
   onViewDetails?: (id: string) => void;
   onAddToCalendar?: (id: string) => void;
   onPrefetchDetails?: (id: string) => void;
+  onSelect?: (id: string, selected: boolean) => void;
 };
 type SubscriptionCardRenderOptions = {
   viewMode?: "grid" | "list";
+  selectionMode?: boolean;
+  selected?: boolean;
   currencyRatesReady?: boolean;
   priceReferenceCurrency?: string | null;
   currencyConvert?: (amount: number | string, fromCurrency: string, toCurrency: string) => number;
@@ -121,6 +124,8 @@ export function renderSubscriptionCard(
         })}
         currencyRatesReady={options.currencyRatesReady ?? true}
         priceReferenceCurrency={options.priceReferenceCurrency ?? null}
+        selectionMode={options.selectionMode ?? false}
+        selected={options.selected ?? false}
         categoryByValue={new Map(mocks.categories.map((category) => [category.value, category]))}
         paymentMethodByValue={new Map(mocks.paymentMethods.map((method) => [method.value, method]))}
         onEdit={handlers.onEdit ?? vi.fn()}
@@ -129,6 +134,7 @@ export function renderSubscriptionCard(
         {...(handlers.onTogglePinned ? { onTogglePinned: handlers.onTogglePinned } : {})}
         {...(handlers.onTogglePublicHidden ? { onTogglePublicHidden: handlers.onTogglePublicHidden } : {})}
         {...(handlers.onViewDetails ? { onViewDetails: handlers.onViewDetails } : {})}
+        {...(handlers.onSelect ? { onSelect: handlers.onSelect } : {})}
         onAddToCalendar={handlers.onAddToCalendar ?? vi.fn()}
         onPrefetchDetails={handlers.onPrefetchDetails ?? vi.fn()}
       />

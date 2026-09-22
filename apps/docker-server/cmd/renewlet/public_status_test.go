@@ -152,7 +152,7 @@ func TestPublicStatusPageLifecycleAndPublicRoute(t *testing.T) {
 		t.Fatalf("expected public asset proxy logo, got %#v", item["logo"])
 	}
 
-	patchRes := serveTestRequest(t, app, http.MethodPatch, "/api/app/public-status-page", `{"showPrices":true}`, token)
+	patchRes := serveTestRequest(t, app, http.MethodPatch, "/api/app/public-status-page", `{"showPrices":true,"hideExpired":false,"hideLifetime":false}`, token)
 	if patchRes.Code != http.StatusOK {
 		t.Fatalf("expected public status patch 200, got %d: %s", patchRes.Code, patchRes.Body.String())
 	}

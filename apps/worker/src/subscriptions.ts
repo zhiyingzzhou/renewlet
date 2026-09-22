@@ -17,6 +17,7 @@ import { listSubscriptionsForQuery, parsePrivateSubscriptionCursor, privateSubsc
 import { subscriptionCollectionQueryInput } from "./subscription-query";
 import { advanceSubscriptionRenewal, dateOnlyInZone } from "./subscription-renewal";
 import type { SubscriptionRenewalResult } from "@renewlet/shared/subscription-renewal";
+import { writePublicVisibility } from "./subscription-public-visibility";
 import { subscriptionDerivedMutationPlan } from "./subscription-derived-state";
 import { HttpError, ok, readJson, requestLocale, successJson } from "./http";
 import { serverText } from "./server-i18n";
@@ -82,6 +83,12 @@ export async function updateSubscription(request: Request, env: Env, id: string)
   const existing = await getSubscription(env, auth.user.id, id);
   if (!existing) throw new HttpError(404, serverText(locale, "subscription.notFound"));
   const patch = await readJson(request, subscriptionUpdateBodySchema, locale);
+  if (Object.keys(patch).length === 1 && patch.publicHidden !== undefined) {
+    await writePublicVisibility(env, auth.user.id, existing.public_hidden === boolToInt(patch.publicHidden) ? [] : [existing], patch.publicHidden, locale);
+    const current = await getSubscription(env, auth.user.id, id);
+    if (!current) throw new HttpError(404, serverText(locale, "subscription.notFound"));
+    return successJson(subscriptionPayloadSchema.parse({ subscription: toApiSubscription(current) }));
+  }
   const timestamp = nowIso();
   const settings = await getSettings(env, auth.user.id);
   // Worker 没有 PocketBase hook 可二次归一；切换计费类型时先清理互斥字段，再合并 patch 走同一套 create schema。
