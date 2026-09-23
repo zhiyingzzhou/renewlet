@@ -88,7 +88,11 @@ function createFixture() {
           docker exec "$container_id" /renewlet healthcheck
 `,
   );
-  writeFixtureFile(root, ".github/workflows/security-scan.yml", `${workflow}  image-scan:\n${workflow}`);
+  writeFixtureFile(
+    root,
+    ".github/workflows/security-scan.yml",
+    `${workflow}  image-scan:\n${workflow}      - uses: anchore/scan-action/download-grype@27805bf3b4e84b4a5c980df22ed233c00390a439\n        with:\n          grype-version: v0.119.0\n      - run: anchore-grype renewlet:security-scan --fail-on high --scope all-layers\n`,
+  );
   writeFixtureFile(root, ".github/workflows/release-publish.yml", workflow);
   return root;
 }

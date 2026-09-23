@@ -29,6 +29,8 @@ const currencyOptions = [
   { value: "USD", label: "$ 美元 (USD)", keywords: ["美元", "$", "US Dollar"] },
 ];
 
+const LAZY_PANEL_CONTENT_TIMEOUT = 5_000;
+
 function installPointerMocks({ mobileOverlay = false }: { mobileOverlay?: boolean } = {}) {
   Element.prototype.hasPointerCapture ??= vi.fn(() => false);
   Element.prototype.setPointerCapture ??= vi.fn();
@@ -81,8 +83,12 @@ function optionRow(checkbox: HTMLElement): HTMLElement {
 
 async function openFilter(user: ReturnType<typeof userEvent.setup>, mode: "desktop" | "mobile") {
   await user.click(within(screen.getByTestId(`${mode}-advanced-filter`)).getByRole("button"));
-  // 弹层外壳先取得焦点，测试须等真实面板内容加载，不能把 Suspense 占位当作可操作字段。
-  await screen.findByTestId(mode === "desktop" ? "advanced-payment-method-entry" : "advanced-section-billingCycle-entry");
+  // 弹层外壳先取得焦点；Node 24 冷启动会跨过 Testing Library 默认 1 秒窗口，必须等待真实模块内容而不是依赖任意延时。
+  await screen.findByTestId(
+    mode === "desktop" ? "advanced-payment-method-entry" : "advanced-section-billingCycle-entry",
+    undefined,
+    { timeout: LAZY_PANEL_CONTENT_TIMEOUT },
+  );
 }
 
 describe("SubscriptionAdvancedFilter", () => {
