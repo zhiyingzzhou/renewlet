@@ -23,7 +23,7 @@ import {
   expectVerticallyCenteredInViewport,
 } from "./support/layout";
 import { installLogoCandidateRoute } from "./support/media-candidates";
-import { createProductSubscriptionSeed, deleteProductSubscriptionsByName, productApiFetch } from "./support/product-api";
+import { createProductSubscriptionSeed, deleteProductSubscriptionsByName, ensurePublicStatusPage, productApiFetch } from "./support/product-api";
 import { expectSideDrawerExitLifecycle } from "./support/side-drawer";
 
 async function getRequiredElement(locator: Locator, label: string): Promise<ElementHandle<SVGElement | HTMLElement>> {
@@ -357,6 +357,8 @@ test("bulk selection offers cross-page selection only after selecting the curren
   });
 
   await page.goto("/subscriptions");
+  await ensurePublicStatusPage(page);
+  await page.reload();
   await expect(page.getByTestId("subscription-card")).toHaveCount(2);
   await page.getByRole("button", { name: "批量管理公开可见性", exact: true }).click();
   const summary = page.getByTestId("public-visibility-selection-summary");
@@ -393,6 +395,8 @@ test("bulk selection offers cross-page selection only after selecting the curren
 
 test("bulk public visibility preserves card details and applies one command to the selected subscriptions", async ({ page }, testInfo) => {
   await page.goto("/subscriptions");
+  await ensurePublicStatusPage(page);
+  await page.reload();
   const prefix = uniqueE2EName(testInfo, "Bulk visibility");
   const names = [`${prefix} A`, `${prefix} B`];
   const ids: string[] = [];
@@ -453,6 +457,8 @@ test("100 selected subscriptions hide and restore through real bulk requests", a
   const names = Array.from({ length: 100 }, (_, i) => `${prefix} ${i}`);
   const ids: string[] = [];
   await page.goto("/subscriptions");
+  await ensurePublicStatusPage(page);
+  await page.reload();
   try {
     for (const name of names) ids.push(await createProductSubscriptionSeed(page, { name, price: "12", startDate: "2099-01-01", nextBillingDate: "2099-02-01" }));
     await page.goto("/subscriptions?publicVisibility=manage");

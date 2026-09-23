@@ -42,7 +42,7 @@ const mocks = vi.hoisted(() => ({
   useInfiniteSubscriptions: vi.fn<() => MockInfiniteSubscriptionsResult>(),
   useSubscriptionIndex: vi.fn<(filters?: SubscriptionListFilters) => MockSubscriptionIndexResult>(),
   useSubscriptionFacets: vi.fn<() => MockSubscriptionFacetsResult>(),
-  useSettingsEnvelope: vi.fn<() => MockSettingsEnvelopeResult>(),
+  useSettingsEnvelope: vi.fn<() => MockSettingsEnvelopeResult>(), usePublicStatusPageStatus: vi.fn<() => { data?: { enabled: boolean }; isSuccess?: boolean }>(),
   handleDeleteSubscription: vi.fn(),
   handleEditSubscription: vi.fn(),
   handleTogglePinnedSubscription: vi.fn(),
@@ -77,6 +77,8 @@ vi.mock("@/hooks/use-settings", () => ({
     return { ...envelope, data: envelope.data?.settings };
   },
 }));
+
+vi.mock("@/hooks/use-public-status-page", () => ({ usePublicStatusPageStatus: mocks.usePublicStatusPageStatus }));
 
 vi.mock("@/hooks/use-exchange-rates", () => ({
   useExchangeRates: () => ({
@@ -258,11 +260,9 @@ function mockSubscriptionsPageSettings(timezone = DEFAULT_SUBSCRIPTIONS_PAGE_SET
 }
 
 beforeEach(() => {
-  mocks.renderHeaderActions = false;
-  mocks.useSubscriptionIndex.mockImplementation((filters) =>
-    subscriptionIndexQueryFixture(mocks.useInfiniteSubscriptions().subscriptions ?? [], filters));
-  mocks.useSubscriptionFacets.mockImplementation(() =>
-    subscriptionFacetsQueryFixture(mocks.useInfiniteSubscriptions().subscriptions ?? []));
+  mocks.renderHeaderActions = false; mocks.usePublicStatusPageStatus.mockReturnValue({ data: { enabled: true }, isSuccess: true });
+  mocks.useSubscriptionIndex.mockImplementation((filters) => subscriptionIndexQueryFixture(mocks.useInfiniteSubscriptions().subscriptions ?? [], filters));
+  mocks.useSubscriptionFacets.mockImplementation(() => subscriptionFacetsQueryFixture(mocks.useInfiniteSubscriptions().subscriptions ?? []));
 });
 
 describe("Subscriptions page sorting", () => {
@@ -360,7 +360,7 @@ describe("Subscriptions page sorting", () => {
     expect(refetch).toHaveBeenCalledTimes(1);
   });
   it("enters public visibility management without creating a public visibility filter", async () => { renderSubscriptionsPage(["/subscriptions?publicVisibility=manage"]); expect(await screen.findByRole("button", { name: "退出管理" })).toBeInTheDocument(); expect(screen.queryByText("公开页可见")).not.toBeInTheDocument(); });
-
+  it("hides public visibility management when the public page is disabled", () => { mocks.usePublicStatusPageStatus.mockReturnValue({ data: { enabled: false }, isSuccess: true }); renderSubscriptionsPage(); expect(screen.queryByRole("button", { name: "批量管理公开可见性" })).not.toBeInTheDocument(); });
   it("resets collection queries when the account timezone changes", async () => {
     const rendered = renderSubscriptionsPage();
     const resetQueries = vi.spyOn(rendered.queryClient, "resetQueries");

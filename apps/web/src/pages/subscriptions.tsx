@@ -72,6 +72,7 @@ import { useSubscriptionDetailDialog } from '@/hooks/use-subscription-detail-dia
 import { useSubscriptionCalendarDialog } from '@/hooks/use-subscription-calendar-dialog';
 import { useManagedCurrencyOptions } from '@/hooks/use-managed-currency-options';
 import { useZonedToday } from '@/hooks/use-zoned-today';
+import { usePublicStatusPageStatus } from '@/hooks/use-public-status-page';
 import { syncSubscriptionCollectionBoundary } from '@/hooks/subscription-query-cache';
 import {
   SubscriptionTagFilterDrawer,
@@ -107,10 +108,13 @@ const PAYMENT_TYPE_FILTER_LABEL_KEYS: Record<SubscriptionPaymentTypeFilter, Mess
 /** 订阅列表页组件。 */
 const Subscriptions = () => {
   const settingsQuery = useSettingsEnvelope();
+  const publicStatusPageQuery = usePublicStatusPageStatus();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
   const publicVisibilityManage = searchParams.get("publicVisibility") === "manage";
+  // 入口只读取公开页状态查询；设置页撤销会同步同一 Query 缓存，避免列表页复制开关或额外请求订阅数据。
+  const publicStatusPageEnabled = publicStatusPageQuery.data?.enabled === true;
   const timeZone = settingsQuery.data?.settings.timezone ?? "UTC";
   const today = useZonedToday(timeZone);
   const queryClient = useQueryClient();
@@ -154,8 +158,14 @@ const Subscriptions = () => {
   const [bulkVisibilityPending, setBulkVisibilityPending] = useState(false);
   const hasPublicVisibilitySelection = selectedPublicVisibilityIds.size > 0;
   useEffect(() => {
-    if (publicVisibilityManage) setPublicVisibilitySelectionMode(true);
-  }, [publicVisibilityManage]);
+    if (!publicVisibilityManage || !publicStatusPageQuery.isSuccess) return;
+    if (publicStatusPageEnabled) {
+      setPublicVisibilitySelectionMode(true);
+      return;
+    }
+    setSelectedPublicVisibilityIds(new Set());
+    setPublicVisibilitySelectionMode(false);
+  }, [publicStatusPageEnabled, publicStatusPageQuery.isSuccess, publicVisibilityManage]);
   const isMobileTagFilter = useMediaQuery("(max-width: 767px)");
   const {
     searchQuery,
@@ -339,26 +349,28 @@ const Subscriptions = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant={publicVisibilitySelectionMode ? "secondary" : "outline"}
-              size="sm"
-              onClick={() => {
-                if (publicVisibilitySelectionMode) {
-                  exitPublicVisibilityManagement();
-                } else {
-                  setPublicVisibilitySelectionMode(true);
-                  setSelectedPublicVisibilityIds(new Set());
-                }
-              }}
-              className="gap-2 border-border"
-              aria-label={publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}
-              aria-pressed={publicVisibilitySelectionMode}
-              disabled={bulkVisibilityPending}
-            >
-              {publicVisibilitySelectionMode ? <X className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              <span className="hidden sm:inline">{publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}</span>
-            </Button>
+            {(publicVisibilitySelectionMode || publicStatusPageEnabled) ? (
+              <Button
+                type="button"
+                variant={publicVisibilitySelectionMode ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => {
+                  if (publicVisibilitySelectionMode) {
+                    exitPublicVisibilityManagement();
+                  } else {
+                    setPublicVisibilitySelectionMode(true);
+                    setSelectedPublicVisibilityIds(new Set());
+                  }
+                }}
+                className="gap-2 border-border"
+                aria-label={publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}
+                aria-pressed={publicVisibilitySelectionMode}
+                disabled={bulkVisibilityPending}
+              >
+                {publicVisibilitySelectionMode ? <X className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="hidden sm:inline">{publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}</span>
+              </Button>
+            ) : null}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

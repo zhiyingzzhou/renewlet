@@ -1,4 +1,8 @@
 import { expect, type Page } from "@playwright/test";
+import {
+  publicStatusPageCreateResponseSchema,
+  publicStatusPageResponseSchema,
+} from "../../packages/shared/src/schemas/public-status";
 
 type JsonObject = Record<string, unknown>;
 
@@ -61,6 +65,17 @@ export async function productApiFetch(
   }, { requestPath: path, requestOptions: options });
 
   return result;
+}
+
+export async function ensurePublicStatusPage(page: Page) {
+  const statusResult = await productApiFetch(page, "/api/app/public-status-page");
+  expect(statusResult.ok, `read public status page: ${statusResult.status} ${statusResult.body}`).toBe(true);
+  const status = publicStatusPageResponseSchema.parse(statusResult.json).data.publicStatusPage;
+  if (status.enabled) return;
+
+  const createResult = await productApiFetch(page, "/api/app/public-status-page", { method: "POST", body: {} });
+  expect(createResult.ok, `create public status page: ${createResult.status} ${createResult.body}`).toBe(true);
+  publicStatusPageCreateResponseSchema.parse(createResult.json);
 }
 
 export async function createAdminManagedUser(
