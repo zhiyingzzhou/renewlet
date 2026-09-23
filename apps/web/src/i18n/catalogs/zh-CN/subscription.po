@@ -2239,6 +2239,11 @@ msgid "subscription.viewDetailsLabel"
 msgstr "查看 {name} 的详情"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:219
+msgid "subscription.viewDetailsMenuLabel"
+msgstr "查看详情"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:667
 msgid "dashboard.viewAll"
 msgstr "查看全部 ({count})"

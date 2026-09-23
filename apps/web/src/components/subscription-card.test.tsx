@@ -417,7 +417,9 @@ describe("SubscriptionCard", () => {
     renderSubscriptionCard({ name: "Fastmail" }, { onSelect, onViewDetails }, { selectionMode: true });
 
     await user.click(screen.getByRole("button", { name: "更多操作" }));
-    await user.click(screen.getByRole("menuitem", { name: "查看 Fastmail 的详情" }));
+    const viewDetailsItem = screen.getByRole("menuitem", { name: "查看详情" });
+    expect(viewDetailsItem).not.toHaveTextContent("Fastmail");
+    await user.click(viewDetailsItem);
 
     expect(onViewDetails).toHaveBeenCalledWith("sub-1");
     expect(onSelect).not.toHaveBeenCalled();

@@ -216,6 +216,7 @@ export const messages = [
   msg({ id: "subscription.publicHide", message: "从公开页隐藏" }),
   msg({ id: "subscription.publicShow", message: "在公开页展示" }),
   msg({ id: "subscription.viewDetailsLabel", message: "查看 {name} 的详情" }),
+  msg({ id: "subscription.viewDetailsMenuLabel", message: "查看详情" }),
   msg({ id: "subscription.detailFallbackTitle", message: "订阅详情" }),
   msg({ id: "subscription.detailDescription", message: "查看 {name} 的价格、周期、日期、标签、网站和备注。" }),
   msg({ id: "subscription.detailFallbackDescription", message: "查看订阅详情。" }),

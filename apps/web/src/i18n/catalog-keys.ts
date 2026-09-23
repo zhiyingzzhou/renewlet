@@ -2056,6 +2056,7 @@ export const MESSAGE_KEYS = [
   "subscription.validation.tagsTooMany",
   "subscription.validation.websiteInvalid",
   "subscription.viewDetailsLabel",
+  "subscription.viewDetailsMenuLabel",
   "subscriptions.addFirst",
   "subscriptions.advanced.allCurrencies",
   "subscriptions.advanced.allPaymentMethods",

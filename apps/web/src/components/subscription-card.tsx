@@ -445,7 +445,7 @@ function SubscriptionCardComponent({
                 {selectionMode && onViewDetails ? (
                   <DropdownMenuItem className={CARD_ACTION_MENU_ITEM_CLASSNAME} onClick={handleViewDetails}>
                     <Eye className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    {t("subscription.viewDetailsLabel", { name: subscription.name })}
+                    {t("subscription.viewDetailsMenuLabel")}
                   </DropdownMenuItem>
                 ) : null}
                 <DropdownMenuItem className={CARD_ACTION_MENU_ITEM_CLASSNAME} onClick={() => onEdit?.(subscription.id)}>

@@ -422,7 +422,7 @@ test("bulk public visibility preserves card details and applies one command to t
       // 管理模式下卡片主体只表达选择，详情从卡片菜单进入，避免一次点击产生两个意图。
       const detailCard = subscriptionCard(page, names[0]!);
       await detailCard.getByRole("button", { name: "更多操作", exact: true }).click();
-      await page.getByRole("menuitem", { name: new RegExp(`查看 ${names[0]} 的详情`) }).click();
+      await page.getByRole("menuitem", { name: "查看详情", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: names[0]! });
       await expect(dialog).toBeVisible();
       await expect(dialog.getByText(publicHidden ? "会展示" : "已隐藏", { exact: true })).toBeVisible();

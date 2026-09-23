@@ -2239,6 +2239,11 @@ msgid "subscription.viewDetailsLabel"
 msgstr "View details for {name}"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:219
+msgid "subscription.viewDetailsMenuLabel"
+msgstr "View details"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:667
 msgid "dashboard.viewAll"
 msgstr "View all ({count})"
