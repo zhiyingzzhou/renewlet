@@ -193,10 +193,11 @@ export async function assertSubscriptionCollectionProjectionRows(
         tag_norm: tag.key,
         tag: tag.value,
         created_at: row.created_at,
-        updated_at: row.updated_at,
       }));
       if (actualTags.length !== expectedTagRows.length || actualTags.some((tag, index) => {
         const expected = expectedTagRows[index];
+        // publicHidden-only writes intentionally leave tag projection timestamps untouched; updated_at means
+        // the tag row last changed, not the enclosing subscription's last fact update.
         return expected === undefined || Object.entries(expected).some(([key, value]) => tag[key as keyof TagVerificationRow] !== value);
       })) {
         throw new Error("subscription_tags value invariant failed");

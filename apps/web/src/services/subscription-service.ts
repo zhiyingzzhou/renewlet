@@ -302,7 +302,7 @@ export const subscriptionService = {
 
   async facets(signal?: AbortSignal): Promise<SubscriptionFacets> {
     if (!getCurrentUserId()) {
-      return { total: 0, categoryCounts: {}, tags: [], visibleCount: 0, hiddenCount: 0 };
+      return { total: 0, categoryCounts: {}, tags: [], visibleCount: 0, hiddenCount: 0, expiredCount: 0, lifetimeCount: 0 };
     }
     return await apiFetch("/api/app/subscriptions/facets", subscriptionFacetsResponseSchema, signalInit(signal));
   },

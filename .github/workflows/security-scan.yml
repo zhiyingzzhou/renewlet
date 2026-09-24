@@ -21,9 +21,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  GRYPE_VERSION: "0.116.1"
-
 jobs:
   govulncheck:
     runs-on: ubuntu-latest
@@ -98,19 +95,12 @@ jobs:
           tags: renewlet:security-scan
 
       - name: Install Grype
-        # 不使用远程 install.sh；固定 release asset 并校验官方 checksums，避免扫描器安装链路变成新供应链入口。
-        run: |
-          set -euo pipefail
-          base_url="https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}"
-          archive="grype_${GRYPE_VERSION}_linux_amd64.tar.gz"
-          checksums="grype_${GRYPE_VERSION}_checksums.txt"
-          curl -fsSLO "${base_url}/${archive}"
-          curl -fsSLO "${base_url}/${checksums}"
-          grep " ${archive}$" "${checksums}" | sha256sum -c -
-          tar -xzf "${archive}" grype
-          sudo install -m 0755 grype /usr/local/bin/grype
-          grype version
+        id: grype
+        # Anchore 官方子 action 负责固定版本的下载与 runner 工具缓存；完整 commit pin 保持安装链可审计。
+        uses: anchore/scan-action/download-grype@27805bf3b4e84b4a5c980df22ed233c00390a439
+        with:
+          grype-version: v0.119.0
 
       - name: Scan Docker image
-        # high 及以上直接失败，低等级 CVE 保留在 job 输出中供版本升级时评估，避免个人自托管镜像被噪音阻断。
-        run: grype renewlet:security-scan --fail-on high --scope all-layers
+        # high 及以上直接失败，且继续扫描镜像所有层；低等级 CVE 保留在输出中供版本升级时评估。
+        run: "${{ steps.grype.outputs.cmd }} renewlet:security-scan --fail-on high --scope all-layers"

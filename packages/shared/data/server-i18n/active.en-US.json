@@ -357,5 +357,7 @@
   "url.mustUseHttpsGeneric": "URL must use https://",
   "url.privateOrLocalNotAllowed": "{label} cannot point to private or localhost addresses",
   "url.privateOrLocalNotAllowedGeneric": "URL cannot point to private or localhost addresses",
-  "validation.jsonParseFailed": "JSON parsing failed. Check the format."
+  "validation.jsonParseFailed": "JSON parsing failed. Check the format.",
+  "subscription.visibilityConflict": "Subscriptions have changed. Your selection is preserved; retry to use the latest data.",
+  "subscription.visibilityFailed": "Unable to update public visibility. Your selection is preserved; please retry."
 }

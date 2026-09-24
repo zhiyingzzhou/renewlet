@@ -161,7 +161,7 @@ vi.mock("@/hooks/use-subscriptions", () => ({
   useSubscriptionAnalytics: mocks.useSubscriptionAnalytics,
   useSubscriptionDetail: mocks.useSubscriptionDetail,
   useSubscriptionFacets: () => ({
-    data: { total: 1, categoryCounts: { productivity: 1 }, tags: [], visibleCount: 1, hiddenCount: 0 },
+    data: { total: 1, categoryCounts: { productivity: 1 }, tags: [], visibleCount: 1, hiddenCount: 0, expiredCount: 0, lifetimeCount: 0 },
   }),
 }));
 

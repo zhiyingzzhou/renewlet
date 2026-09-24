@@ -25,6 +25,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/contexts/CustomConfigContext", () => ({
   useCustomConfigState: () => ({ config: mocks.config }),
+  useLunarCalendar: () => ({ enabled: false, supported: true }),
 }));
 
 vi.mock("@/hooks/use-settings", () => ({

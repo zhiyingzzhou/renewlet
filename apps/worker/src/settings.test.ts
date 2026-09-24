@@ -197,6 +197,13 @@ describe("Cloudflare settings initialization", () => {
     expect(settings.subscriptionPriceReferenceCurrency).toBe("default");
   });
 
+  it("adds the lunar display default when reading old settings JSON", () => {
+    const settings = normalizeSettingsJson(JSON.stringify({ localePreference: "auto", defaultCurrency: "USD" }));
+
+    expect(settings.showLunarCalendar).toBe(false);
+    expect(normalizeSettingsJson(JSON.stringify({ localePreference: "auto", showLunarCalendar: true })).showLunarCalendar).toBe(true);
+  });
+
   it("rejects migrated settings rows without a valid locale preference", async () => {
     expect(() => normalizeSettingsJson(JSON.stringify({ monthlyBudget: "2333" }))).toThrow();
     expect(() => normalizeSettingsJson("{")).toThrow();
@@ -329,6 +336,19 @@ describe("Cloudflare settings initialization", () => {
     expect(response.status).toBe(200);
     await expect(readSuccessData(response)).resolves.toMatchObject({ settings: { localePreference: "auto", monthlyBudget: "2333" } });
     expect(JSON.parse(state.rows.get(USER_ID) ?? "{}")).toMatchObject({ localePreference: "auto", monthlyBudget: "2333" });
+  });
+
+  it("reads and writes the account lunar display preference", async () => {
+    const { env, state } = createEnv();
+
+    const response = await updateSettings(settingsRequest("PUT", "en-US", { showLunarCalendar: true }), env);
+
+    expect(response.status).toBe(200);
+    await expect(readSuccessData(response)).resolves.toMatchObject({ settings: { showLunarCalendar: true } });
+    expect(JSON.parse(state.rows.get(USER_ID) ?? "{}")).toMatchObject({ showLunarCalendar: true });
+    await expect(readSuccessData(await readSettings(settingsRequest("GET", "en-US"), env))).resolves.toMatchObject({
+      settings: { showLunarCalendar: true },
+    });
   });
 
   it("persists an explicit locale preference only from the settings payload", async () => {

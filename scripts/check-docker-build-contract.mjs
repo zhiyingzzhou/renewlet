@@ -10,6 +10,7 @@ const CLIENT_CHECK_SCRIPTS = [
 const DOCKER_SIDECAR_SCRIPT = "node scripts/generate-static-sidecars.mjs";
 const BUNDLE_BUDGET_VALUES = ["400000", "344000"];
 const DISTROLESS_RUNTIME = "gcr.io/distroless/static-debian13@sha256:9197324ba51d9cd071af8505989365c006adf9d6d2067eada25aef00abbb5278";
+const GRYPE_ACTION_COMMIT = "27805bf3b4e84b4a5c980df22ed233c00390a439";
 const IMAGE_WORKFLOWS = [
   ".github/workflows/build-smoke.yml",
   ".github/workflows/security-scan.yml",
@@ -131,6 +132,20 @@ function checkWorkflowRuntimeSmoke(repoRoot) {
   for (const redundantStep of ["Set up Node.js", "Enable Corepack", "Install dependencies"]) {
     if (imageScan.includes(redundantStep)) {
       throw new Error(`Security Scan image-scan must not repeat host dependency setup: ${redundantStep}`);
+    }
+  }
+
+  // 镜像门禁的扫描器必须来自 Anchore 官方固定 commit；手写下载会把 CDN、checksum 和版本选择重新散落到 workflow。
+  const grypeAction = `anchore/scan-action/download-grype@${GRYPE_ACTION_COMMIT}`;
+  if (!securityScan.includes(`uses: ${grypeAction}`)) {
+    throw new Error(`Security Scan must use the pinned Anchore Grype downloader: ${grypeAction}`);
+  }
+  for (const snippet of [
+    "grype-version: v0.119.0",
+    "--fail-on high --scope all-layers",
+  ]) {
+    if (!securityScan.includes(snippet)) {
+      throw new Error(`Security Scan must keep scanner contract: ${snippet}`);
     }
   }
 }

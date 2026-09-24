@@ -14,6 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/labels.ts:115
+msgid "date.gregorianWithLunar"
+msgstr "{gregorian} · 农历 {lunar}"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/labels.ts:112
 msgid "date.monthDay"
 msgstr "{month}月{day}日"
@@ -192,6 +197,11 @@ msgstr "WebMoney"
 #: src/i18n/descriptors/labels.ts:39
 msgid "cycle.oneTime"
 msgstr "一次性购买"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/labels.ts:116
+msgid "date.chineseLunarDescription"
+msgstr "中国农历 {lunar}"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/labels.ts:13

@@ -1,3 +1,4 @@
+import { bulkUpdatePublicVisibility } from "./subscription-public-visibility";
 import { healthPayloadSchema } from "@renewlet/shared/schemas/app";
 import { Hono, type Context } from "hono";
 import {
@@ -261,6 +262,7 @@ defineRoute(subscriptionRoutes, "/", {
   GET: (context) => readSubscriptions(context.req.raw, context.env),
   POST: (context) => createSubscription(context.req.raw, context.env),
 });
+defineRoute(subscriptionRoutes, "/bulk-public-visibility", { POST: (context) => bulkUpdatePublicVisibility(context.req.raw, context.env) });
 // 集合静态路由先于 /:id 注册，避免 Hono 把 index/analytics/calendar-feeds/facets/export 当作订阅 ID。
 defineRoute(subscriptionRoutes, "/index", { GET: (context) => readSubscriptionIndex(context.req.raw, context.env) });
 defineRoute(subscriptionRoutes, "/analytics", { GET: (context) => readSubscriptionAnalytics(context.req.raw, context.env) });

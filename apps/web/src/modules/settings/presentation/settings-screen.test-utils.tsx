@@ -30,14 +30,12 @@ import type { SettingsCalendarFeedController } from "../application/use-calendar
 import type { CloudBackupController } from "../application/use-cloud-backup-controller";
 import type { SettingsReadState } from "../application/settings-read-state";
 import { MFA_STATUS_QUERY_KEY, PASSKEYS_QUERY_KEY } from "./account-security-query-keys";
-
 const mocks = vi.hoisted(() => ({
   useSettingsFormController: vi.fn(),
   useCalendarFeedSettingsController: vi.fn(),
   useCloudBackupController: vi.fn(),
   useUploadedAssetsManager: vi.fn(),
 }));
-
 export { mocks };
 
 export const SETTINGS_SECTION_IDS = [
@@ -112,7 +110,6 @@ export function useStatefulMonthlyBudgetController(initialBudget = "10000") {
     },
   };
 }
-
 function iconProviderVersion(provider: BuiltInIconProvider) {
   const commitSha = provider === "thesvg"
     ? "aaa111122223333444455556666777788889999"
@@ -221,7 +218,7 @@ vi.mock("@/components/header", () => ({
 
 vi.mock("@/contexts/CustomConfigContext", async () => {
   const { DEFAULT_CUSTOM_CONFIG: defaultConfig } = await import("@/types/config");
-  return { useCustomConfigState: () => ({ config: defaultConfig }) };
+  return { useCustomConfigState: () => ({ config: defaultConfig }), useLunarCalendar: () => ({ enabled: false, supported: true }) };
 });
 
 vi.mock("./settings-advanced-sections-loader", async () => {
@@ -449,8 +446,12 @@ export function createControllerState(overrides: {
     enabled?: boolean;
     pageUrl?: string | null;
     showPrices?: boolean;
+    hideExpired?: boolean;
+    hideLifetime?: boolean;
     visibleCount?: number;
     hiddenCount?: number;
+    expiredCount?: number;
+    lifetimeCount?: number;
   };
   publicApi?: {
     tokens?: Array<{
@@ -534,7 +535,7 @@ export function createControllerState(overrides: {
       categoryCounts: {},
       tags: [],
       visibleCount: 0,
-      hiddenCount: 0,
+      hiddenCount: 0, expiredCount: 0, lifetimeCount: 0,
     }),
     categoryUsageCount: new Map(),
     rates: overrides.rates ?? {},
@@ -626,10 +627,14 @@ export function createControllerState(overrides: {
         enabled: overrides.publicStatusPage?.enabled ?? Boolean(overrides.publicStatusPage?.pageUrl),
         pageUrl: overrides.publicStatusPage?.pageUrl ?? undefined,
         showPrices: overrides.publicStatusPage?.showPrices ?? false,
+        hideExpired: overrides.publicStatusPage?.hideExpired ?? false,
+        hideLifetime: overrides.publicStatusPage?.hideLifetime ?? false,
       }),
       visibility: createSettingsReadState({
         visibleCount: overrides.publicStatusPage?.visibleCount ?? 0,
         hiddenCount: overrides.publicStatusPage?.hiddenCount ?? 0,
+        expiredCount: overrides.publicStatusPage?.expiredCount ?? 0,
+        lifetimeCount: overrides.publicStatusPage?.lifetimeCount ?? 0,
       }),
       isCreating: false,
       isDeleting: false,
@@ -640,6 +645,9 @@ export function createControllerState(overrides: {
       regenerate: fn,
       revoke: fn,
       updateShowPrices: fn,
+      updateHideExpired: fn,
+      updateHideLifetime: fn,
+      bulkPublicVisibility: fn,
     },
     publicApi: {
       tokens: createSettingsReadState(overrides.publicApi?.tokens ?? []),

@@ -268,6 +268,8 @@
   "smtp.startTlsMissing": "SMTP 服务器未声明 STARTTLS，Cloudflare 版不能明文发送邮件。",
   "smtp.usernamePasswordTogether": "SMTP 用户名和密码必须同时填写",
   "subscription.notFound": "订阅不存在",
+  "subscription.visibilityConflict": "订阅数据已变化，已保留选择，请重试以使用最新数据。",
+  "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。",
   "system.alreadyLatest": "当前已经是最新版本",
   "system.checkVersionFailed": "检查版本失败",
   "system.cloudflareRestartUnsupported": "Cloudflare 部署不支持页面内重启，请使用 Cloudflare 部署流程重新发布。",

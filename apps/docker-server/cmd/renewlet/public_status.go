@@ -24,11 +24,13 @@ const (
 // publicStatusPageStatus 是登录用户设置页看到的公开展示页状态。
 // PageURL 是唯一可复制凭据；token 不拆字段出站，避免进入 settings/export 等持久配置。
 type publicStatusPageStatus struct {
-	Enabled    bool   `json:"enabled"`
-	CreatedAt  string `json:"createdAt,omitempty"`
-	PageURL    string `json:"pageUrl,omitempty"`
-	ShowPrices bool   `json:"showPrices"`
-	UpdatedAt  string `json:"updatedAt,omitempty"`
+	Enabled      bool   `json:"enabled"`
+	CreatedAt    string `json:"createdAt,omitempty"`
+	PageURL      string `json:"pageUrl,omitempty"`
+	ShowPrices   bool   `json:"showPrices"`
+	HideExpired  bool   `json:"hideExpired"`
+	HideLifetime bool   `json:"hideLifetime"`
+	UpdatedAt    string `json:"updatedAt,omitempty"`
 }
 
 // publicStatusPageStatusResponse 保持 settings 页读取的 root key；前端 schema 依赖 publicStatusPage 包裹层。
@@ -38,11 +40,13 @@ type publicStatusPageStatusResponse struct {
 
 // publicStatusPageCreateStatus 是创建/复用 token 后的完整状态。
 type publicStatusPageCreateStatus struct {
-	Enabled    bool   `json:"enabled"`
-	CreatedAt  string `json:"createdAt"`
-	PageURL    string `json:"pageUrl"`
-	ShowPrices bool   `json:"showPrices"`
-	UpdatedAt  string `json:"updatedAt"`
+	Enabled      bool   `json:"enabled"`
+	CreatedAt    string `json:"createdAt"`
+	PageURL      string `json:"pageUrl"`
+	ShowPrices   bool   `json:"showPrices"`
+	HideExpired  bool   `json:"hideExpired"`
+	HideLifetime bool   `json:"hideLifetime"`
+	UpdatedAt    string `json:"updatedAt"`
 }
 
 // publicStatusPageCreateResponse 与读取响应保持同一 root key，避免创建后缓存写入需要单独分支。
@@ -55,7 +59,9 @@ type publicStatusPageCreateRequest struct{}
 
 // publicStatusPageUpdateRequest 只允许切换金额公开开关，不允许客户端提交 token 或 URL。
 type publicStatusPageUpdateRequest struct {
-	ShowPrices bool `json:"showPrices"`
+	ShowPrices   bool `json:"showPrices"`
+	HideExpired  bool `json:"hideExpired"`
+	HideLifetime bool `json:"hideLifetime"`
 }
 
 // publicStatusResponse 是公开 API 的 allowlist 投影，不能直接返回订阅 record。
@@ -126,11 +132,13 @@ func handlePublicStatusPageCreate(app core.App, e *core.RequestEvent) error {
 	}
 	// 创建接口可重复调用；已存在 token 时只回显状态，避免刷新页面意外轮换公开 URL。
 	return apiSuccessJSON(e, http.StatusOK, publicStatusPageCreateResponse{PublicStatusPage: publicStatusPageCreateStatus{
-		Enabled:    true,
-		CreatedAt:  record.GetDateTime("created").Time().UTC().Format(time.RFC3339),
-		PageURL:    publicStatusPageURL(e.Request, record.GetString("token")),
-		ShowPrices: record.GetBool("showPrices"),
-		UpdatedAt:  record.GetDateTime("updated").Time().UTC().Format(time.RFC3339),
+		Enabled:      true,
+		CreatedAt:    record.GetDateTime("created").Time().UTC().Format(time.RFC3339),
+		PageURL:      publicStatusPageURL(e.Request, record.GetString("token")),
+		ShowPrices:   record.GetBool("showPrices"),
+		HideExpired:  record.GetBool("hideExpired"),
+		HideLifetime: record.GetBool("hideLifetime"),
+		UpdatedAt:    record.GetDateTime("updated").Time().UTC().Format(time.RFC3339),
 	}})
 }
 
@@ -148,6 +156,8 @@ func handlePublicStatusPageUpdate(app core.App, e *core.RequestEvent) error {
 		return e.NotFoundError(serverText(locale, "common.notFound"), nil)
 	}
 	record.Set("showPrices", body.ShowPrices)
+	record.Set("hideExpired", body.HideExpired)
+	record.Set("hideLifetime", body.HideLifetime)
 	if err := app.Save(record); err != nil {
 		return e.InternalServerError(serverText(locale, "common.internalError"), err)
 	}
@@ -254,14 +264,16 @@ func ensurePublicStatusPage(app core.App, userID string) (*core.Record, error) {
 
 func publicStatusPageStatusFromRecord(request *http.Request, record *core.Record) publicStatusPageStatus {
 	if record == nil {
-		return publicStatusPageStatus{Enabled: false, ShowPrices: false}
+		return publicStatusPageStatus{Enabled: false, ShowPrices: false, HideExpired: false, HideLifetime: false}
 	}
 	return publicStatusPageStatus{
-		Enabled:    true,
-		CreatedAt:  record.GetDateTime("created").Time().UTC().Format(time.RFC3339),
-		PageURL:    publicStatusPageURL(request, record.GetString("token")),
-		ShowPrices: record.GetBool("showPrices"),
-		UpdatedAt:  record.GetDateTime("updated").Time().UTC().Format(time.RFC3339),
+		Enabled:      true,
+		CreatedAt:    record.GetDateTime("created").Time().UTC().Format(time.RFC3339),
+		PageURL:      publicStatusPageURL(request, record.GetString("token")),
+		ShowPrices:   record.GetBool("showPrices"),
+		HideExpired:  record.GetBool("hideExpired"),
+		HideLifetime: record.GetBool("hideLifetime"),
+		UpdatedAt:    record.GetDateTime("updated").Time().UTC().Format(time.RFC3339),
 	}
 }
 
@@ -312,7 +324,7 @@ func listPublicStatusSubscriptions(app core.App, request *http.Request, page *co
 	token := page.GetString("token")
 	publicHidden := false
 	// 公开页复用私有默认集合顺序，但不复用私有 cursor；created/id 仍只参与内部排序，不能进入公开 allowlist。
-	rows, err := listSubscriptionRecordsInDefaultOrder(app, userID, today, publicStatusSubscriptionLimit, &publicHidden)
+	rows, err := listSubscriptionRecordsInDefaultOrder(app, userID, today, publicStatusSubscriptionLimit, &publicHidden, page.GetBool("hideExpired"), page.GetBool("hideLifetime"))
 	if err != nil {
 		return nil, false, err
 	}

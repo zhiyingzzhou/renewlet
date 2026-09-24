@@ -60,6 +60,7 @@ type appSettings struct {
 	ThemeVariant                       string                    `json:"themeVariant"`
 	ThemeCustomColor                   themeCustomColor          `json:"themeCustomColor"`
 	ShowExpired                        bool                      `json:"showExpired"`
+	ShowLunarCalendar                  bool                      `json:"showLunarCalendar"`
 	LocalePreference                   string                    `json:"localePreference"`
 	DefaultCurrency                    string                    `json:"defaultCurrency"`
 	PublicStatusCurrency               string                    `json:"publicStatusCurrency"`
@@ -481,6 +482,7 @@ func defaultAppSettings() appSettings {
 		ThemeVariant:                       "emerald",
 		ThemeCustomColor:                   themeCustomColor{H: 160, S: 84, L: 39},
 		ShowExpired:                        true,
+		ShowLunarCalendar:                  false,
 		LocalePreference:                   string(autoLocalePreference),
 		DefaultCurrency:                    "CNY",
 		PublicStatusCurrency:               "inherit",

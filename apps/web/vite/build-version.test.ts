@@ -10,13 +10,14 @@ describe("resolveClientBuildVersion", () => {
     expect(resolveClientBuildVersion(repoRoot, {})).toBe(rootPackageJson.version);
   });
 
-  it("hides dev placeholders behind the stable package version", () => {
+  it("does not couple the client bundle to Worker deployment metadata", () => {
     expect(resolveClientBuildVersion(repoRoot, { RENEWLET_VERSION: "0.0.0-dev" })).toBe(rootPackageJson.version);
     expect(resolveClientBuildVersion(repoRoot, { RENEWLET_VERSION: `${rootPackageJson.version}-dev` })).toBe(rootPackageJson.version);
+    expect(resolveClientBuildVersion(repoRoot, { RENEWLET_VERSION: `${rootPackageJson.version}-dev+504c168` })).toBe(rootPackageJson.version);
   });
 
-  it("keeps explicit release and branch build versions", () => {
-    expect(resolveClientBuildVersion(repoRoot, { RENEWLET_VERSION: "0.2.0-rc.1" })).toBe("0.2.0-rc.1");
+  it("keeps explicit client release and branch build versions", () => {
+    expect(resolveClientBuildVersion(repoRoot, { VITE_RENEWLET_VERSION: "0.2.0-rc.1" })).toBe("0.2.0-rc.1");
     expect(resolveClientBuildVersion(repoRoot, { VITE_RENEWLET_VERSION: "0.2.0-dev+504c168" })).toBe("0.2.0-dev+504c168");
   });
 });

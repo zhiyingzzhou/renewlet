@@ -42,7 +42,7 @@ const mocks = vi.hoisted(() => ({
   syncRemoteLocalePreference: vi.fn(),
   testConnection: vi.fn(),
   refetchNotificationHistory: vi.fn<() => Promise<void>>(),
-  publicStatusPageStatus: { data: { enabled: false, pageUrl: undefined as string | undefined, showPrices: false }, isLoading: false },
+  publicStatusPageStatus: { data: { enabled: false, pageUrl: undefined as string | undefined, showPrices: false, hideExpired: false, hideLifetime: false }, isLoading: false },
   createPublicStatusPageMutateAsync: vi.fn(),
   updatePublicStatusPageMutateAsync: vi.fn(),
   deletePublicStatusPageMutateAsync: vi.fn(),
@@ -102,7 +102,7 @@ vi.mock("@/hooks/use-report-exchange-rates", () => ({
 
 vi.mock("@/hooks/use-subscriptions", () => ({
   useSubscriptionFacets: () => ({
-    data: { total: 0, categoryCounts: {}, tags: [], visibleCount: 0, hiddenCount: 0 },
+    data: { total: 0, categoryCounts: {}, tags: [], visibleCount: 0, hiddenCount: 0, expiredCount: 0, lifetimeCount: 0 },
     isPending: false,
     status: "success",
   }),
@@ -352,3 +352,7 @@ describe("useSettingsFormController monthly budget input", () => {
     expect(result.current.hasUnsavedChanges).toBe(false);
   });
 });
+
+vi.mock("@/hooks/use-bulk-public-visibility", () => ({
+  useBulkPublicVisibility: () => ({ mutateAsync: vi.fn(), isPending: false }),
+}));

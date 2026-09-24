@@ -290,6 +290,11 @@ func handleSubscriptionUpdate(app core.App, e *core.RequestEvent) error {
 	if err != nil {
 		return e.NotFoundError(serverText(locale, "subscription.notFound"), err)
 	}
+	withoutVisibility := body
+	withoutVisibility.PublicHidden = optionalJSONField[bool]{}
+	if body.PublicHidden.Set && !withoutVisibility.HasChanges() {
+		return handleSinglePublicVisibilityUpdate(app, e, record, body.PublicHidden)
+	}
 	if err := applySubscriptionWriteRequest(record, body, false); err != nil {
 		return e.BadRequestError(validationErrorMessage(locale, "common.invalidRequestBody", err), err)
 	}

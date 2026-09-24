@@ -43,6 +43,8 @@ type subscriptionListQuery struct {
 	PublicHidden    *bool
 	ReminderMode    string
 	RepeatReminder  *bool
+	HideExpired     bool
+	HideLifetime    bool
 }
 
 type subscriptionListPage struct {
@@ -185,9 +187,11 @@ func listSubscriptionRecordsInDefaultOrder(
 	today string,
 	limit int,
 	publicHidden *bool,
+	hideExpired bool,
+	hideLifetime bool,
 ) ([]*core.Record, error) {
 	projectedRows, _, err := projectedSubscriptionPage(app, userID, subscriptionListQuery{
-		Limit: limit, PublicHidden: publicHidden,
+		Limit: limit, PublicHidden: publicHidden, HideExpired: hideExpired, HideLifetime: hideLifetime,
 	}, today, subscriptionProjectionOrderedWindow, 0)
 	if err != nil {
 		return nil, err
@@ -238,11 +242,17 @@ func projectedSubscriptionPage(
 	if query.Status != "" {
 		base.conditions = append(base.conditions, `(CASE
 			WHEN idx.status = 'expired' THEN 'expired'
-			WHEN idx.billing_cycle = 'one-time' AND idx.one_time_term_count <= 0 THEN idx.status
+			WHEN idx.billing_cycle = 'one-time' AND COALESCE(idx.one_time_term_count, 0) <= 0 THEN idx.status
 			WHEN idx.status IN ('active', 'trial') AND idx.next_billing_date < {:today} THEN 'expired'
 			ELSE idx.status
 		END) = {:status}`)
 		base.params["status"] = query.Status
+	}
+	if query.HideExpired {
+		base.conditions = append(base.conditions, "NOT (idx.status = 'expired' OR (idx.status IN ('active', 'trial') AND idx.next_billing_date < {:today}))")
+	}
+	if query.HideLifetime {
+		base.conditions = append(base.conditions, "NOT (idx.billing_cycle = 'one-time' AND COALESCE(idx.one_time_term_count, 0) <= 0)")
 	}
 	base.params["today"] = today
 	rows, err := runSubscriptionProjectionPage(app, base, query.Limit+1, query.Cursor, mode, candidateLimit)
@@ -280,7 +290,7 @@ func subscriptionProjectionBaseQuery(userID string, query subscriptionListQuery)
 	appendSQLTagCondition(&base, query.Tags)
 	if query.NextBillingFrom != "" || query.NextBillingTo != "" {
 		// PocketBase 投影用 0 表示长期买断服务期；日期范围只筛真实续费/到期事件，不能把购买日占位值算进去。
-		base.conditions = append(base.conditions, "NOT (idx.billing_cycle = 'one-time' AND idx.one_time_term_count <= 0)")
+		base.conditions = append(base.conditions, "NOT (idx.billing_cycle = 'one-time' AND COALESCE(idx.one_time_term_count, 0) <= 0)")
 	}
 	if query.NextBillingFrom != "" {
 		base.conditions = append(base.conditions, "idx.next_billing_date >= {:nextBillingFrom}")
@@ -460,7 +470,7 @@ func appendSQLPaymentTypeCondition(base *subscriptionProjectionBase, paymentType
 		base.conditions = append(base.conditions, "idx.billing_cycle != 'one-time' AND idx.auto_renew = 0")
 	case "one-time-buyout":
 		// PocketBase 数字字段的空值会落为 0；<= 0 与 Worker D1 的 NULL/历史非正值语义对齐。
-		base.conditions = append(base.conditions, "idx.billing_cycle = 'one-time' AND idx.one_time_term_count <= 0")
+		base.conditions = append(base.conditions, "idx.billing_cycle = 'one-time' AND COALESCE(idx.one_time_term_count, 0) <= 0")
 	case "one-time-fixed-term":
 		base.conditions = append(base.conditions, "idx.billing_cycle = 'one-time' AND idx.one_time_term_count > 0")
 	}

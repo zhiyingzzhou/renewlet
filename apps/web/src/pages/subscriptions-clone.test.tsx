@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { MemoryRouter } from "react-router";
 import { assertDateOnly } from "@/lib/time/date-only";
 import {
   subscriptionCycleFixture,
@@ -284,7 +285,9 @@ function renderSubscriptionsPage() {
   return render(
     <div id="root">
       <QueryClientProvider client={queryClient}>
-        <Subscriptions />
+        <MemoryRouter>
+          <Subscriptions />
+        </MemoryRouter>
       </QueryClientProvider>
     </div>,
   );

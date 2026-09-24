@@ -14,22 +14,22 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:738
+#: src/i18n/descriptors/settings.ts:745
 msgid "settings.dingtalkTemplateExampleCountTitle"
 msgstr "'{brand}' · '{itemCount}' 项提醒"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:735
+#: src/i18n/descriptors/settings.ts:742
 msgid "settings.dingtalkTemplateExampleKeywordTitle"
 msgstr "'{brand}' · '{title}'"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:732
+#: src/i18n/descriptors/settings.ts:739
 msgid "settings.dingtalkTemplateExampleDefaultTitle"
 msgstr "'{title}'"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:733
+#: src/i18n/descriptors/settings.ts:740
 msgid "settings.dingtalkTemplateExampleDefaultContent"
 msgstr "'{title}'\n"
 "\n"
@@ -38,7 +38,7 @@ msgstr "'{title}'\n"
 "'{timestamp}'"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:736
+#: src/i18n/descriptors/settings.ts:743
 msgid "settings.dingtalkTemplateExampleKeywordContent"
 msgstr "'{title}'\n"
 "\n"
@@ -49,112 +49,112 @@ msgstr "'{title}'\n"
 "'{brand}' · '{keyword}'"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:610
+#: src/i18n/descriptors/settings.ts:617
 msgid "settings.channelConfig"
 msgstr "{channel} 配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:57
+#: src/i18n/descriptors/settings.ts:56
 msgid "settings.passkeyCount"
 msgstr "{count} 个"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:58
+#: src/i18n/descriptors/settings.ts:57
 msgid "settings.passkeyCountStale"
 msgstr "{count} 个 · 未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:148
+#: src/i18n/descriptors/settings.ts:147
 msgid "settings.builtInIconIndexProviderIconCount"
 msgstr "{count} 个图标"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:648
+#: src/i18n/descriptors/settings.ts:655
 msgid "settings.channel.webhookReady"
 msgstr "{method} Webhook URL 已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:229
+#: src/i18n/descriptors/settings.ts:228
 msgid "settings.uploadedIconsMeta"
 msgstr "{mimeType} · {size} · 更新于 {updated}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:584
+#: src/i18n/descriptors/settings.ts:591
 msgid "settings.exchangeRateReportBasisLocked"
 msgstr "{month} 已锁定（来源日期 {date}）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:585
+#: src/i18n/descriptors/settings.ts:592
 msgid "settings.exchangeRateReportBasisLive"
 msgstr "{month} 暂未锁定，当前使用实时口径"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:470
+#: src/i18n/descriptors/settings.ts:477
 msgid "settings.cloudBackupSummary"
 msgstr "{provider} · {credential} · {status}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:626
+#: src/i18n/descriptors/settings.ts:633
 msgid "settings.sectionSaved"
 msgstr "{section} 配置已更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:230
+#: src/i18n/descriptors/settings.ts:229
 msgid "settings.uploadedIconsSizeBytes"
 msgstr "{size} B"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:231
+#: src/i18n/descriptors/settings.ts:230
 msgid "settings.uploadedIconsSizeKb"
 msgstr "{size} KB"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:232
+#: src/i18n/descriptors/settings.ts:231
 msgid "settings.uploadedIconsSizeMb"
 msgstr "{size} MB"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:162
+#: src/i18n/descriptors/settings.ts:161
 msgid "settings.builtInIconIndexUpdateQueued"
 msgstr "{source} 会在后台更新；完成或失败后状态会自动停止轮询。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:161
+#: src/i18n/descriptors/settings.ts:160
 msgid "settings.builtInIconIndexUpdated"
 msgstr "{source} 已更新，{count} 个图标可用于 Logo 和图标搜索。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:375
+#: src/i18n/descriptors/settings.ts:374
 msgid "settings.calendarFeedSubscriptionMeta"
 msgstr "{status} · {date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:145
+#: src/i18n/descriptors/settings.ts:144
 msgid "settings.builtInIconIndexJobStatusValue"
 msgstr "{status} · 尝试 {attempts} 次 · {time}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:151
+#: src/i18n/descriptors/settings.ts:150
 msgid "settings.builtInIconIndexVersionWithTime"
 msgstr "{time} · {version}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:458
+#: src/i18n/descriptors/settings.ts:465
 msgid "settings.publicApiDeleteDescription"
 msgstr "「{name}」会被永久删除，外部集成后续请求将返回未授权。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:219
+#: src/i18n/descriptors/settings.ts:218
 msgid "settings.uploadedIconsDeleted"
 msgstr "「{name}」已从上传图标中移除。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:377
+#: src/i18n/descriptors/settings.ts:376
 msgid "settings.calendarFeedUrlFor"
 msgstr "「{name}」的日历订阅 URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:739
+#: src/i18n/descriptors/settings.ts:746
 msgid "settings.dingtalkTemplateExampleCountContent"
 msgstr "【'{title}'】\n"
 "\n"
@@ -163,852 +163,857 @@ msgstr "【'{title}'】\n"
 "发送时间：'{timestamp}'"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:752
+#: src/i18n/descriptors/settings.ts:759
 msgid "settings.wechatAtAll"
 msgstr "@全体成员"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:750
+#: src/i18n/descriptors/settings.ts:757
 msgid "settings.wechatPhones"
 msgstr "@手机号 (可选)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:318
+#: src/i18n/descriptors/settings.ts:317
 msgid "settings.perMonth"
 msgstr "/ 月"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:289
+#: src/i18n/descriptors/settings.ts:288
 msgid "aiRecognition.thinking.budget.1024"
 msgstr "1024 tokens"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:591
+#: src/i18n/descriptors/settings.ts:598
 msgid "settings.cachePolicyValue"
 msgstr "24 小时本地缓存"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:290
+#: src/i18n/descriptors/settings.ts:289
 msgid "aiRecognition.thinking.budget.4096"
 msgstr "4096 tokens"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:756
+#: src/i18n/descriptors/settings.ts:763
 msgid "settings.smtpSecureHelp"
 msgstr "465 通常开启；587/2525 通常关闭并使用 STARTTLS。Cloudflare Workers 不支持 25。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:291
+#: src/i18n/descriptors/settings.ts:290
 msgid "aiRecognition.thinking.budget.8192"
 msgstr "8192 tokens"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:494
+#: src/i18n/descriptors/settings.ts:501
 msgid "settings.cloudBackupS3AccessKey"
 msgstr "Access Key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:29
+#: src/i18n/descriptors/settings.ts:28
 msgid "settings.sectionNav.aiRecognition"
 msgstr "AI 识别"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:233
+#: src/i18n/descriptors/settings.ts:232
 msgid "aiRecognition.settingsTitle"
 msgstr "AI 识别"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:306
+#: src/i18n/descriptors/settings.ts:305
 msgid "aiRecognition.testSucceeded"
 msgstr "AI 连接可用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:307
+#: src/i18n/descriptors/settings.ts:306
 msgid "aiRecognition.testFailed"
 msgstr "AI 连接失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:305
+#: src/i18n/descriptors/settings.ts:304
 msgid "aiRecognition.testBlockedTitle"
 msgstr "AI 配置不完整"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:309
+#: src/i18n/descriptors/settings.ts:308
 msgid "aiRecognition.errorDetailsTitle"
 msgstr "AI 错误详情"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:254
+#: src/i18n/descriptors/settings.ts:253
 msgid "aiRecognition.apiKey"
 msgstr "API Key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:646
+#: src/i18n/descriptors/settings.ts:653
 msgid "settings.channel.notifyxReady"
 msgstr "API Key 已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:460
+#: src/i18n/descriptors/settings.ts:467
 msgid "settings.publicApiCreateFailed"
 msgstr "API Token 创建失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:466
+#: src/i18n/descriptors/settings.ts:473
 msgid "settings.publicApiDeleteFailed"
 msgstr "API Token 删除失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:459
+#: src/i18n/descriptors/settings.ts:466
 msgid "settings.publicApiCreated"
 msgstr "API Token 已创建"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:465
+#: src/i18n/descriptors/settings.ts:472
 msgid "settings.publicApiDeleted"
 msgstr "API Token 已删除"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:710
+#: src/i18n/descriptors/settings.ts:717
 msgid "settings.apiKeyLabel"
 msgstr "API 密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:169
+#: src/i18n/descriptors/settings.ts:168
 msgid "settings.onlineIconSource.appStore"
 msgstr "App Store"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:171
+#: src/i18n/descriptors/settings.ts:170
 msgid "settings.onlineIconSource.appStore.storefronts"
 msgstr "App Store 地区"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:668
+#: src/i18n/descriptors/settings.ts:675
 msgid "settings.help.bark"
 msgstr "Bark iOS 应用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:251
+#: src/i18n/descriptors/settings.ts:250
 msgid "aiRecognition.baseUrl"
 msgstr "Base URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:644
+#: src/i18n/descriptors/settings.ts:651
 msgid "settings.channel.telegramReady"
 msgstr "Bot Token 与 Chat ID 已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:681
+#: src/i18n/descriptors/settings.ts:688
 msgid "settings.telegramBotCommands"
 msgstr "Bot 查询命令"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:492
+#: src/i18n/descriptors/settings.ts:499
 msgid "settings.cloudBackupS3Bucket"
 msgstr "Bucket"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:238
+#: src/i18n/descriptors/settings.ts:237
 msgid "aiRecognition.providerType.anthropic"
 msgstr "Claude"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:299
+#: src/i18n/descriptors/settings.ts:298
 msgid "aiRecognition.thinking.anthropic.high.description"
 msgstr "Claude effort=high。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:297
+#: src/i18n/descriptors/settings.ts:296
 msgid "aiRecognition.thinking.anthropic.low.description"
 msgstr "Claude effort=low。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:301
+#: src/i18n/descriptors/settings.ts:300
 msgid "aiRecognition.thinking.anthropic.max.description"
 msgstr "Claude effort=max。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:298
+#: src/i18n/descriptors/settings.ts:297
 msgid "aiRecognition.thinking.anthropic.medium.description"
 msgstr "Claude effort=medium。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:300
+#: src/i18n/descriptors/settings.ts:299
 msgid "aiRecognition.thinking.anthropic.xhigh.description"
 msgstr "Claude effort=xhigh。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:175
+#: src/i18n/descriptors/settings.ts:174
 msgid "settings.onlineIconSource.appStore.storefront.cn"
 msgstr "CN"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:188
+#: src/i18n/descriptors/settings.ts:187
 msgid "settings.builtInIconSourceShort.dashboardIcons"
 msgstr "Dashboard"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:187
+#: src/i18n/descriptors/settings.ts:186
 msgid "settings.builtInIconSource.dashboardIcons"
 msgstr "Dashboard Icons"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:671
+#: src/i18n/descriptors/settings.ts:678
 msgid "settings.help.discord"
 msgstr "Discord Webhook 文档"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:489
+#: src/i18n/descriptors/settings.ts:496
 msgid "settings.cloudBackupS3Endpoint"
 msgstr "Endpoint"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:579
+#: src/i18n/descriptors/settings.ts:586
 msgid "settings.exchangeRateProvider.exchangeApi"
 msgstr "Exchange API"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:580
+#: src/i18n/descriptors/settings.ts:587
 msgid "settings.exchangeRateProvider.floatrates"
 msgstr "FloatRates JSON Feeds"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:578
+#: src/i18n/descriptors/settings.ts:585
 msgid "settings.exchangeRateProvider.frankfurter"
 msgstr "Frankfurter"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:237
+#: src/i18n/descriptors/settings.ts:236
 msgid "aiRecognition.providerType.gemini"
 msgstr "Gemini"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:288
+#: src/i18n/descriptors/settings.ts:287
 msgid "aiRecognition.thinking.gemini.budget.description"
 msgstr "Gemini thinkingBudget 固定预算。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:287
+#: src/i18n/descriptors/settings.ts:286
 msgid "aiRecognition.thinking.gemini.dynamic.description"
 msgstr "Gemini thinkingBudget=-1，由模型动态决定预算。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:285
+#: src/i18n/descriptors/settings.ts:284
 msgid "aiRecognition.thinking.gemini.off.description"
 msgstr "Gemini thinkingBudget=0，关闭支持预算控制模型的 thinking。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:284
+#: src/i18n/descriptors/settings.ts:283
 msgid "aiRecognition.thinking.gemini.level.high.description"
 msgstr "Gemini thinkingLevel=high。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:282
+#: src/i18n/descriptors/settings.ts:281
 msgid "aiRecognition.thinking.gemini.level.low.description"
 msgstr "Gemini thinkingLevel=low。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:283
+#: src/i18n/descriptors/settings.ts:282
 msgid "aiRecognition.thinking.gemini.level.medium.description"
 msgstr "Gemini thinkingLevel=medium。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:281
+#: src/i18n/descriptors/settings.ts:280
 msgid "aiRecognition.thinking.gemini.level.minimal.description"
 msgstr "Gemini thinkingLevel=minimal。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:713
+#: src/i18n/descriptors/settings.ts:720
 msgid "settings.webhookGetPostHelp"
 msgstr "GET：会把 title/content/timestamp 作为 query 参数；POST：默认发送 JSON（也可用下方模板自定义）。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:269
+#: src/i18n/descriptors/settings.ts:268
 msgid "aiRecognition.thinking.openai.high"
 msgstr "High"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:280
+#: src/i18n/descriptors/settings.ts:279
 msgid "aiRecognition.thinking.gemini.level.high"
 msgstr "High"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:294
+#: src/i18n/descriptors/settings.ts:293
 msgid "aiRecognition.thinking.anthropic.high"
 msgstr "High"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:715
+#: src/i18n/descriptors/settings.ts:722
 msgid "settings.webhookHeadersHelp"
 msgstr "JSON格式的自定义请求头，可留空则使用默认"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:212
+#: src/i18n/descriptors/settings.ts:211
 msgid "settings.uploadedIconsKindLogo"
 msgstr "Logo"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:267
+#: src/i18n/descriptors/settings.ts:266
 msgid "aiRecognition.thinking.openai.low"
 msgstr "Low"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:278
+#: src/i18n/descriptors/settings.ts:277
 msgid "aiRecognition.thinking.gemini.level.low"
 msgstr "Low"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:292
+#: src/i18n/descriptors/settings.ts:291
 msgid "aiRecognition.thinking.anthropic.low"
 msgstr "Low"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:296
+#: src/i18n/descriptors/settings.ts:295
 msgid "aiRecognition.thinking.anthropic.max"
 msgstr "Max"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:268
+#: src/i18n/descriptors/settings.ts:267
 msgid "aiRecognition.thinking.openai.medium"
 msgstr "Medium"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:279
+#: src/i18n/descriptors/settings.ts:278
 msgid "aiRecognition.thinking.gemini.level.medium"
 msgstr "Medium"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:293
+#: src/i18n/descriptors/settings.ts:292
 msgid "aiRecognition.thinking.anthropic.medium"
 msgstr "Medium"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:266
+#: src/i18n/descriptors/settings.ts:265
 msgid "aiRecognition.thinking.openai.minimal"
 msgstr "Minimal"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:277
+#: src/i18n/descriptors/settings.ts:276
 msgid "aiRecognition.thinking.gemini.level.minimal"
 msgstr "Minimal"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:669
+#: src/i18n/descriptors/settings.ts:676
 msgid "settings.help.notifyx"
 msgstr "Notifyx 说明"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:236
+#: src/i18n/descriptors/settings.ts:235
 msgid "aiRecognition.providerType.openai"
 msgstr "OpenAI"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:239
+#: src/i18n/descriptors/settings.ts:238
 msgid "aiRecognition.providerType.openaiCompatible"
 msgstr "OpenAI Compatible"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:260
+#: src/i18n/descriptors/settings.ts:259
 msgid "aiRecognition.thinkingUnsupportedCompatible"
 msgstr "OpenAI Compatible 没有统一 thinking 标准，Renewlet 不会传递思考控制。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:275
+#: src/i18n/descriptors/settings.ts:274
 msgid "aiRecognition.thinking.openai.high.description"
 msgstr "OpenAI reasoning_effort=high。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:273
+#: src/i18n/descriptors/settings.ts:272
 msgid "aiRecognition.thinking.openai.low.description"
 msgstr "OpenAI reasoning_effort=low。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:274
+#: src/i18n/descriptors/settings.ts:273
 msgid "aiRecognition.thinking.openai.medium.description"
 msgstr "OpenAI reasoning_effort=medium。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:272
+#: src/i18n/descriptors/settings.ts:271
 msgid "aiRecognition.thinking.openai.minimal.description"
 msgstr "OpenAI reasoning_effort=minimal。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:271
+#: src/i18n/descriptors/settings.ts:270
 msgid "aiRecognition.thinking.openai.none.description"
 msgstr "OpenAI reasoning_effort=none，仅在支持关闭推理的模型上显示。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:276
+#: src/i18n/descriptors/settings.ts:275
 msgid "aiRecognition.thinking.openai.xhigh.description"
 msgstr "OpenAI reasoning_effort=xhigh，仅在支持的模型上显示。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:37
+#: src/i18n/descriptors/settings.ts:36
 msgid "settings.pocketBaseAdmin"
 msgstr "PocketBase 后台"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:493
+#: src/i18n/descriptors/settings.ts:500
 msgid "settings.cloudBackupS3Prefix"
 msgstr "Prefix"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:26
+#: src/i18n/descriptors/settings.ts:25
 msgid "settings.sectionNav.publicApi"
 msgstr "Public API"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:429
+#: src/i18n/descriptors/settings.ts:436
 msgid "settings.publicApi"
 msgstr "Public API"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:447
+#: src/i18n/descriptors/settings.ts:454
 msgid "settings.publicApiTokens"
 msgstr "Public API token 列表"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:779
+#: src/i18n/descriptors/settings.ts:786
 msgid "settings.pushplusToken"
 msgstr "PushPlus Token"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:672
+#: src/i18n/descriptors/settings.ts:679
 msgid "settings.help.pushplus"
 msgstr "PushPlus 消息接口"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:490
+#: src/i18n/descriptors/settings.ts:497
 msgid "settings.cloudBackupS3Region"
 msgstr "Region"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:740
+#: src/i18n/descriptors/settings.ts:747
 msgid "settings.dingtalkKeywordPlaceholder"
 msgstr "Renewlet"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:484
+#: src/i18n/descriptors/settings.ts:491
 msgid "settings.cloudBackupProviderS3"
 msgstr "S3 兼容存储"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:773
+#: src/i18n/descriptors/settings.ts:780
 msgid "settings.serverchanSendKeyPlaceholder"
 msgstr "SCTxxxxxxxxxxxxxxxx 或 sctp123tabc"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:495
+#: src/i18n/descriptors/settings.ts:502
 msgid "settings.cloudBackupS3Secret"
 msgstr "Secret Key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:184
+#: src/i18n/descriptors/settings.ts:183
 msgid "settings.builtInIconSourceShort.selfhst"
 msgstr "selfh.st"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:183
+#: src/i18n/descriptors/settings.ts:182
 msgid "settings.builtInIconSource.selfhst"
 msgstr "selfh.st icons"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:772
+#: src/i18n/descriptors/settings.ts:779
 msgid "settings.serverchanSendKey"
 msgstr "SendKey"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:658
+#: src/i18n/descriptors/settings.ts:665
 msgid "settings.channel.serverchanReady"
 msgstr "SendKey 已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:670
+#: src/i18n/descriptors/settings.ts:677
 msgid "settings.help.serverchan"
 msgstr "Server酱 文档"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:758
+#: src/i18n/descriptors/settings.ts:765
 msgid "settings.smtpPassword"
 msgstr "SMTP 密码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:753
+#: src/i18n/descriptors/settings.ts:760
 msgid "settings.smtpHost"
 msgstr "SMTP 服务器"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:757
+#: src/i18n/descriptors/settings.ts:764
 msgid "settings.smtpUser"
 msgstr "SMTP 用户名"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:754
+#: src/i18n/descriptors/settings.ts:761
 msgid "settings.smtpPort"
 msgstr "SMTP 端口"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:699
+#: src/i18n/descriptors/settings.ts:706
 msgid "settings.telegramBotCommandsHttpsRequired"
 msgstr "Telegram Webhook 需要 HTTPS 外部访问地址。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:698
+#: src/i18n/descriptors/settings.ts:705
 msgid "settings.telegramBotCommandsSaveFirst"
 msgstr "Telegram 凭据有未保存更改，请先保存设置。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:707
+#: src/i18n/descriptors/settings.ts:714
 msgid "settings.telegramBotCommandsDeleteFailed"
 msgstr "Telegram 查询命令删除失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:704
+#: src/i18n/descriptors/settings.ts:711
 msgid "settings.telegramBotCommandsInstallFailed"
 msgstr "Telegram 查询命令安装失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:706
+#: src/i18n/descriptors/settings.ts:713
 msgid "settings.telegramBotCommandsDeleted"
 msgstr "Telegram 查询命令已删除"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:703
+#: src/i18n/descriptors/settings.ts:710
 msgid "settings.telegramBotCommandsInstalled"
 msgstr "Telegram 查询命令已安装"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:676
+#: src/i18n/descriptors/settings.ts:683
 msgid "settings.telegramMessageFormat"
 msgstr "Telegram 消息样式"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:179
+#: src/i18n/descriptors/settings.ts:178
 msgid "settings.builtInIconSource.thesvg"
 msgstr "TheSVG"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:180
+#: src/i18n/descriptors/settings.ts:179
 msgid "settings.builtInIconSourceShort.thesvg"
 msgstr "TheSVG"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:437
+#: src/i18n/descriptors/settings.ts:444
 msgid "settings.publicApiTokensLoadFailed"
 msgstr "Token 加载失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:441
+#: src/i18n/descriptors/settings.ts:448
 msgid "settings.publicApiCreateHelp"
 msgstr "Token 只允许读取订阅列表、详情、状态摘要和未来到期项；不会获得登录 session 或写入权限。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:439
+#: src/i18n/descriptors/settings.ts:446
 msgid "settings.publicApiCreateName"
 msgstr "Token 名称"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:662
+#: src/i18n/descriptors/settings.ts:669
 msgid "settings.channel.pushplusReady"
 msgstr "Token 已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:462
+#: src/i18n/descriptors/settings.ts:469
 msgid "settings.publicApiTokenCopied"
 msgstr "Token 已复制"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:336
+#: src/i18n/descriptors/settings.ts:335
 msgid "settings.calendarFeedCopied"
 msgstr "URL 已复制"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:419
+#: src/i18n/descriptors/settings.ts:426
 msgid "settings.publicStatusCopied"
 msgstr "URL 已复制"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:173
+#: src/i18n/descriptors/settings.ts:172
 msgid "settings.onlineIconSource.appStore.storefront.us"
 msgstr "US"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:483
+#: src/i18n/descriptors/settings.ts:490
 msgid "settings.cloudBackupProviderWebdav"
 msgstr "WebDAV"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:485
+#: src/i18n/descriptors/settings.ts:492
 msgid "settings.cloudBackupWebdavUrl"
 msgstr "WebDAV 地址"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:775
+#: src/i18n/descriptors/settings.ts:782
 msgid "settings.discordWebhookUrl"
 msgstr "Webhook URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:660
+#: src/i18n/descriptors/settings.ts:667
 msgid "settings.channel.discordReady"
 msgstr "Webhook URL 已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:711
+#: src/i18n/descriptors/settings.ts:718
 msgid "settings.webhookUrlLabel"
 msgstr "Webhook 地址"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:665
+#: src/i18n/descriptors/settings.ts:672
 msgid "settings.help.webhook"
 msgstr "Webhook 说明"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:270
+#: src/i18n/descriptors/settings.ts:269
 msgid "aiRecognition.thinking.openai.xhigh"
 msgstr "XHigh"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:295
+#: src/i18n/descriptors/settings.ts:294
 msgid "aiRecognition.thinking.anthropic.xhigh"
 msgstr "XHigh"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:443
+#: src/i18n/descriptors/settings.ts:450
 msgid "settings.publicApiPlainToken"
 msgstr "一次性 API Token"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:20
+#: src/i18n/descriptors/settings.ts:19
 msgid "settings.sectionNav.uploadedIcons"
 msgstr "上传图标"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:195
+#: src/i18n/descriptors/settings.ts:194
 msgid "settings.uploadedIcons"
 msgstr "上传图标"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:220
+#: src/i18n/descriptors/settings.ts:219
 msgid "settings.uploadedIconsDeleteFailed"
 msgstr "上传图标删除失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:480
+#: src/i18n/descriptors/settings.ts:487
 msgid "settings.cloudBackupLastBackupAt"
 msgstr "上次备份"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:473
+#: src/i18n/descriptors/settings.ts:480
 msgid "settings.cloudBackupStatusFailed"
 msgstr "上次失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:472
+#: src/i18n/descriptors/settings.ts:479
 msgid "settings.cloudBackupStatusSuccess"
 msgstr "上次成功"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:592
+#: src/i18n/descriptors/settings.ts:599
 msgid "settings.lastUpdated"
 msgstr "上次更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:157
+#: src/i18n/descriptors/settings.ts:156
 msgid "settings.builtInIconIndexLastRefreshError"
 msgstr "上次更新失败：{message}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:479
+#: src/i18n/descriptors/settings.ts:486
 msgid "settings.cloudBackupLastStatus"
 msgstr "上次状态"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:263
+#: src/i18n/descriptors/settings.ts:262
 msgid "aiRecognition.thinking.noExplicitControl"
 msgstr "不显式控制"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:642
+#: src/i18n/descriptors/settings.ts:649
 msgid "settings.currencyPolicy.defaultTitle"
 msgstr "不能禁用统计货币"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:111
+#: src/i18n/descriptors/settings.ts:110
 msgid "settings.showExpiredHelp"
 msgstr "为避免过于冗长的通知可以关闭这项"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:30
+#: src/i18n/descriptors/settings.ts:29
 msgid "settings.sectionNav.cloudBackup"
 msgstr "云同步与备份"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:468
+#: src/i18n/descriptors/settings.ts:475
 msgid "settings.cloudBackup"
 msgstr "云同步与备份"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:545
+#: src/i18n/descriptors/settings.ts:552
 msgid "settings.cloudBackupTestSucceeded"
 msgstr "云备份连接可用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:546
+#: src/i18n/descriptors/settings.ts:553
 msgid "settings.cloudBackupTestFailed"
 msgstr "云备份连接失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:543
+#: src/i18n/descriptors/settings.ts:550
 msgid "settings.cloudBackupSaveFailed"
 msgstr "云备份配置保存失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:541
+#: src/i18n/descriptors/settings.ts:548
 msgid "settings.cloudBackupSaved"
 msgstr "云备份配置已保存"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:539
+#: src/i18n/descriptors/settings.ts:546
 msgid "settings.cloudBackupInvalid"
 msgstr "云备份配置无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:536
+#: src/i18n/descriptors/settings.ts:543
 msgid "settings.cloudBackupUpstreamTitle"
 msgstr "云存储错误详情"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:521
+#: src/i18n/descriptors/settings.ts:528
 msgid "settings.cloudBackupSnapshots"
 msgstr "云端快照"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:523
+#: src/i18n/descriptors/settings.ts:530
 msgid "settings.cloudBackupSnapshotsLoadFailed"
 msgstr "云端快照列表加载失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:549
+#: src/i18n/descriptors/settings.ts:556
 msgid "settings.cloudBackupCreateFailed"
 msgstr "云端快照创建失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:555
+#: src/i18n/descriptors/settings.ts:562
 msgid "settings.cloudBackupDeleteFailed"
 msgstr "云端快照删除失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:548
+#: src/i18n/descriptors/settings.ts:555
 msgid "settings.cloudBackupCreated"
 msgstr "云端快照已创建"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:554
+#: src/i18n/descriptors/settings.ts:561
 msgid "settings.cloudBackupDeleted"
 msgstr "云端快照已删除"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:552
+#: src/i18n/descriptors/settings.ts:559
 msgid "settings.cloudBackupRestoreFailed"
 msgstr "云端快照恢复失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:258
+#: src/i18n/descriptors/settings-display.ts:5
+msgid "settings.showLunarCalendarHelp"
+msgstr "仅在日期选择器中显示公历与中国农历，不改变账单、提醒或日历日期。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:257
 msgid "aiRecognition.thinkingHelp"
 msgstr "仅展示当前平台和模型明确支持的官方思考控制；不支持时保持模型默认行为。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:223
+#: src/i18n/descriptors/settings.ts:222
 msgid "settings.uploadedIconsDeleteBlockedByPaymentMethods"
 msgstr "仍被 {count} 个支付方式使用，请先到支付方式管理里换掉图标。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:222
+#: src/i18n/descriptors/settings.ts:221
 msgid "settings.uploadedIconsDeleteBlockedBySubscriptions"
 msgstr "仍被 {count} 个订阅使用，请先到订阅里换掉 Logo。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:224
+#: src/i18n/descriptors/settings.ts:223
 msgid "settings.uploadedIconsDeleteBlockedByBoth"
 msgstr "仍被 {subscriptionCount} 个订阅和 {paymentMethodCount} 个支付方式使用，请先分别换掉 Logo 和支付方式图标。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:769
+#: src/i18n/descriptors/settings.ts:776
 msgid "settings.barkKeyHelp"
 msgstr "从 Bark iOS 应用中获取的设备 Key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:709
+#: src/i18n/descriptors/settings.ts:716
 msgid "settings.notifyxHelp"
 msgstr "从 Notifyx 平台获取的 API Key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:780
+#: src/i18n/descriptors/settings.ts:787
 msgid "settings.pushplusHelp"
 msgstr "从 PushPlus 获取的消息令牌或用户令牌，Renewlet 使用文本模板发送。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:686
+#: src/i18n/descriptors/settings.ts:693
 msgid "settings.telegramBotCommandsNever"
 msgstr "从未"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:453
+#: src/i18n/descriptors/settings.ts:460
 msgid "settings.publicApiTokenNeverUsed"
 msgstr "从未使用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:481
+#: src/i18n/descriptors/settings.ts:488
 msgid "settings.cloudBackupNeverBackedUp"
 msgstr "从未备份"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:719
+#: src/i18n/descriptors/settings.ts:726
 msgid "settings.dingtalkWebhookHelp"
 msgstr "从钉钉群自定义机器人获取，Renewlet 会按钉钉固定消息结构发送。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:631
+#: src/i18n/descriptors/settings.ts:638
 msgid "settings.partialSaveFailedDescription"
 msgstr "以下内容未保存：{scope}。请检查后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:667
+#: src/i18n/descriptors/settings.ts:674
 msgid "settings.help.wechat"
 msgstr "企业微信机器人文档"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:577
+#: src/i18n/descriptors/settings.ts:584
 msgid "settings.exchangeRateProviderHelp"
 msgstr "优先使用所选来源；失败时会自动尝试其他远端来源，少量缺失币种会用备用汇率补齐。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:755
+#: src/i18n/descriptors/settings.ts:762
 msgid "settings.smtpSecure"
 msgstr "使用 TLS 直连"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:56
+#: src/i18n/descriptors/settings.ts:55
 msgid "settings.passkeyHelp"
 msgstr "使用浏览器、设备生物识别或安全密钥直接登录；通行密钥和身份验证器分开管理。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:48
+#: src/i18n/descriptors/settings.ts:47
 msgid "settings.mfaHelp"
 msgstr "使用身份验证器应用生成 6 位验证码；恢复码只会展示一次。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:241
+#: src/i18n/descriptors/settings.ts:240
 msgid "aiRecognition.modelPlaceholder"
 msgstr "例如 gpt-5.1、gemini-3-pro、claude-sonnet-4-5"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:721
+#: src/i18n/descriptors/settings.ts:728
 msgid "settings.dingtalkTitleTemplatePlaceholder"
 msgstr "例如：'{brand}' · '{title}'"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:723
+#: src/i18n/descriptors/settings.ts:730
 msgid "settings.dingtalkContentTemplatePlaceholder"
 msgstr "例如：'{title}'\n"
 "\n"
@@ -1017,2956 +1022,3046 @@ msgstr "例如：'{title}'\n"
 "'{timestamp}'"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:673
+#: src/i18n/descriptors/settings.ts:680
 msgid "settings.telegramChatPlaceholder"
 msgstr "例如：123456789（可用 @userinfobot 获取）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:69
+#: src/i18n/descriptors/settings.ts:68
 msgid "settings.passkeyNamePlaceholder"
 msgstr "例如：MacBook Touch ID"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:440
+#: src/i18n/descriptors/settings.ts:447
 msgid "settings.publicApiCreateNamePlaceholder"
 msgstr "例如：Telegram Bot"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:469
+#: src/i18n/descriptors/settings.ts:476
 msgid "settings.cloudBackupHelp"
 msgstr "保存可恢复云端快照；恢复时会进入导入预览，不会自动覆盖数据。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:497
+#: src/i18n/descriptors/settings.ts:504
 msgid "settings.cloudBackupSecretPlaceholder"
 msgstr "保存后不再回显"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:627
+#: src/i18n/descriptors/settings.ts:634
 msgid "settings.saveFailed"
 msgstr "保存失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:100
+#: src/i18n/descriptors/settings.ts:99
 msgid "settings.mfaRecoveryCodesTitle"
 msgstr "保存恢复码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:616
+#: src/i18n/descriptors/settings.ts:623
 msgid "settings.saveAll"
 msgstr "保存所有设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:46
+#: src/i18n/descriptors/settings.ts:45
 msgid "settings.saveNewPassword"
 msgstr "保存新密码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:619
+#: src/i18n/descriptors/settings.ts:626
 msgid "settings.saveChanges"
 msgstr "保存更改"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:515
+#: src/i18n/descriptors/settings.ts:522
 msgid "settings.cloudBackupSave"
 msgstr "保存配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:516
+#: src/i18n/descriptors/settings.ts:523
 msgid "settings.cloudBackupSaveAgain"
 msgstr "保存配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:514
+#: src/i18n/descriptors/settings.ts:521
 msgid "settings.cloudBackupRetention"
 msgstr "保留数量"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:38
+#: src/i18n/descriptors/settings.ts:37
 msgid "settings.changePassword"
 msgstr "修改密码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:40
+#: src/i18n/descriptors/settings.ts:39
 msgid "settings.passwordDialogTitle"
 msgstr "修改密码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:350
+#: src/i18n/descriptors/settings.ts:349
 msgid "settings.calendarFeedTabGlobal"
 msgstr "全部续费"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:356
+#: src/i18n/descriptors/settings.ts:355
 msgid "settings.calendarFeedGlobalLoadingBadge"
 msgstr "全部续费 · 加载中"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:354
+#: src/i18n/descriptors/settings.ts:353
 msgid "settings.calendarFeedGlobalEnabledBadge"
 msgstr "全部续费 · 已启用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:358
+#: src/i18n/descriptors/settings.ts:357
 msgid "settings.calendarFeedGlobalEnabledStaleBadge"
 msgstr "全部续费 · 已启用（未更新）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:355
+#: src/i18n/descriptors/settings.ts:354
 msgid "settings.calendarFeedGlobalDisabledBadge"
 msgstr "全部续费 · 未启用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:359
+#: src/i18n/descriptors/settings.ts:358
 msgid "settings.calendarFeedGlobalDisabledStaleBadge"
 msgstr "全部续费 · 未启用（未更新）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:357
+#: src/i18n/descriptors/settings.ts:356
 msgid "settings.calendarFeedGlobalUnknownBadge"
 msgstr "全部续费 · 状态未知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:624
+#: src/i18n/descriptors/settings.ts:631
 msgid "settings.allSettings"
 msgstr "全部设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:25
+#: src/i18n/descriptors/settings.ts:24
 msgid "settings.sectionNav.publicStatus"
 msgstr "公开展示"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:391
+#: src/i18n/descriptors/settings.ts:390
 msgid "settings.publicStatus"
 msgstr "公开展示"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:397
+#: src/i18n/descriptors/settings.ts:396
 msgid "settings.publicStatusUrl"
 msgstr "公开展示 URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:424
+#: src/i18n/descriptors/settings.ts:431
 msgid "settings.publicStatusRevoked"
 msgstr "公开展示已撤销"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:417
+#: src/i18n/descriptors/settings.ts:424
 msgid "settings.publicStatusGenerated"
 msgstr "公开展示已生成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:418
+#: src/i18n/descriptors/settings.ts:425
 msgid "settings.publicStatusRegenerated"
 msgstr "公开展示已重新生成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:422
+#: src/i18n/descriptors/settings.ts:429
 msgid "settings.publicStatusFailed"
 msgstr "公开展示操作失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:400
+#: src/i18n/descriptors/settings.ts:399
 msgid "settings.publicStatusShowPrices"
 msgstr "公开金额"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:416
+#: src/i18n/descriptors/settings.ts:423
 msgid "settings.publicStatusRevokeDescription"
 msgstr "公开链接会立即失效，后续访问将返回 404。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:426
+#: src/i18n/descriptors/settings.ts:433
 msgid "settings.publicStatusPricesEnabled"
 msgstr "公开页会显示价格和币种。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:427
+#: src/i18n/descriptors/settings.ts:434
 msgid "settings.publicStatusPricesDisabled"
 msgstr "公开页将隐藏金额字段。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:402
+#: src/i18n/descriptors/settings.ts:409
 msgid "settings.publicStatusCurrency"
 msgstr "公开页统计货币"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:734
+#: src/i18n/descriptors/settings.ts:741
 msgid "settings.dingtalkTemplateExampleKeyword"
 msgstr "关键词安全"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:264
+#: src/i18n/descriptors/settings.ts:263
 msgid "aiRecognition.thinking.off"
 msgstr "关闭"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:265
+#: src/i18n/descriptors/settings.ts:264
 msgid "aiRecognition.thinking.openai.none"
 msgstr "关闭"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:446
+#: src/i18n/descriptors/settings.ts:453
 msgid "settings.publicApiDismissPlainToken"
 msgstr "关闭一次性 API Token"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:97
+#: src/i18n/descriptors/settings.ts:96
 msgid "settings.mfaDisableDescription"
 msgstr "关闭后不再要求身份验证器验证码；通行密钥不会被删除。当前浏览器会继续登录，其他设备会话会失效。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:80
+#: src/i18n/descriptors/settings.ts:79
 msgid "settings.mfaDisable"
 msgstr "关闭身份验证器"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:96
+#: src/i18n/descriptors/settings.ts:95
 msgid "settings.mfaDisableTitle"
 msgstr "关闭身份验证器？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:679
+#: src/i18n/descriptors/settings.ts:686
 msgid "settings.telegramMessageFormatPlainDescription"
 msgstr "兼容性最好，所有 Telegram 客户端都按原文显示。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:115
+#: src/i18n/descriptors/settings.ts:114
 msgid "settings.iconSourcesSummary"
 msgstr "内置 {enabled}/{total} · 在线{online}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:165
+#: src/i18n/descriptors/settings.ts:164
 msgid "settings.builtInIconSourcesBuiltInTitle"
 msgstr "内置 SVG 图标库"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:581
+#: src/i18n/descriptors/settings.ts:588
 msgid "settings.exchangeRateProvider.builtin"
 msgstr "内置备用汇率"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:45
+#: src/i18n/descriptors/settings.ts:44
 msgid "settings.confirmPasswordPlaceholder"
 msgstr "再输入一次"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:452
+#: src/i18n/descriptors/settings.ts:459
 msgid "settings.publicApiTokenLastUsed"
 msgstr "最后使用 {time}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:685
+#: src/i18n/descriptors/settings.ts:692
 msgid "settings.telegramBotCommandsLastUsedAt"
 msgstr "最后使用：{time}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:150
+#: src/i18n/descriptors/settings.ts:149
 msgid "settings.builtInIconIndexLatestVersion"
 msgstr "最新：{version}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:137
+#: src/i18n/descriptors/settings.ts:136
 msgid "settings.builtInIconIndexLatestVersionLabel"
 msgstr "最新版本"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:139
+#: src/i18n/descriptors/settings.ts:138
 msgid "settings.builtInIconIndexRefreshedAt"
 msgstr "最近更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:138
+#: src/i18n/descriptors/settings.ts:137
 msgid "settings.builtInIconIndexCheckedAt"
 msgstr "最近检查"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:156
+#: src/i18n/descriptors/settings.ts:155
 msgid "settings.builtInIconIndexLastCheckError"
 msgstr "最近检查失败：{message}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:559
+#: src/i18n/descriptors/settings.ts:566
 msgid "settings.categoryManager"
 msgstr "分类管理"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:193
+#: src/i18n/descriptors/settings.ts:192
 msgid "settings.builtInIconSourceVariantsToggle"
 msgstr "切换 {source} 变体"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:178
+#: src/i18n/descriptors/settings.ts:177
 msgid "settings.onlineIconSourceToggle"
 msgstr "切换 {source} 来源"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:191
+#: src/i18n/descriptors/settings.ts:190
 msgid "settings.builtInIconSourceToggle"
 msgstr "切换 {source} 来源"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:664
+#: src/i18n/descriptors/settings.ts:671
 msgid "settings.help.telegram"
 msgstr "创建 Telegram 机器人"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:442
+#: src/i18n/descriptors/settings.ts:449
 msgid "settings.publicApiCreate"
 msgstr "创建 token"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:434
+#: src/i18n/descriptors/settings.ts:441
 msgid "settings.publicApiDialogDescription"
 msgstr "创建、复制和删除只读 token。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:451
+#: src/i18n/descriptors/settings.ts:458
 msgid "settings.publicApiTokenCreated"
 msgstr "创建于 {time}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:430
+#: src/i18n/descriptors/settings.ts:437
 msgid "settings.publicApiHelp"
 msgstr "创建只读 API Token，用于 Telegram Bot、CLI、Shortcuts 或自动化平台查询订阅状态。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:455
+#: src/i18n/descriptors/settings.ts:462
 msgid "settings.publicApiDelete"
 msgstr "删除"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:214
+#: src/i18n/descriptors/settings.ts:213
 msgid "settings.uploadedIconsDeleteAsset"
 msgstr "删除 {name}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:76
+#: src/i18n/descriptors/settings.ts:75
 msgid "settings.deletePasskeyDescription"
 msgstr "删除 {name} 后，它不能再用于登录。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:456
+#: src/i18n/descriptors/settings.ts:463
 msgid "settings.publicApiDeleteNamed"
 msgstr "删除 API Token {name}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:457
+#: src/i18n/descriptors/settings.ts:464
 msgid "settings.publicApiDeleteTitle"
 msgstr "删除 API Token？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:691
+#: src/i18n/descriptors/settings.ts:698
 msgid "settings.telegramBotCommandsDeleteTitle"
 msgstr "删除 Telegram Bot 查询命令？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:530
+#: src/i18n/descriptors/settings.ts:537
 msgid "settings.cloudBackupDeleteNamed"
 msgstr "删除「{name}」"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:534
+#: src/i18n/descriptors/settings.ts:541
 msgid "settings.cloudBackupDeleteTitle"
 msgstr "删除「{name}」？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:215
+#: src/i18n/descriptors/settings.ts:214
 msgid "settings.uploadedIconsDeleteTitle"
 msgstr "删除上传图标？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:218
+#: src/i18n/descriptors/settings.ts:217
 msgid "settings.uploadedIconsDeleting"
 msgstr "删除中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:533
+#: src/i18n/descriptors/settings.ts:540
 msgid "settings.cloudBackupDeleting"
 msgstr "删除中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:702
+#: src/i18n/descriptors/settings.ts:709
 msgid "settings.telegramBotCommandsDeleting"
 msgstr "删除中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:692
+#: src/i18n/descriptors/settings.ts:699
 msgid "settings.telegramBotCommandsDeleteDescription"
 msgstr "删除后 Telegram 菜单命令会失效，需要时可以重新安装。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:690
+#: src/i18n/descriptors/settings.ts:697
 msgid "settings.telegramBotCommandsDelete"
 msgstr "删除命令"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:73
+#: src/i18n/descriptors/settings.ts:72
 msgid "settings.deletePasskey"
 msgstr "删除通行密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:74
+#: src/i18n/descriptors/settings.ts:73
 msgid "settings.deletePasskeyNamed"
 msgstr "删除通行密钥 {name}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:75
+#: src/i18n/descriptors/settings.ts:74
 msgid "settings.deletePasskeyTitle"
 msgstr "删除通行密钥？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:78
+#: src/i18n/descriptors/settings.ts:77
 msgid "settings.passkeyDeleteFailed"
 msgstr "删除通行密钥失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:200
+#: src/i18n/descriptors/settings.ts:199
 msgid "settings.uploadedIconsRefreshKind"
 msgstr "刷新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:524
+#: src/i18n/descriptors/settings.ts:531
 msgid "settings.cloudBackupRefresh"
 msgstr "刷新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:54
+#: src/i18n/descriptors/settings.ts:53
 msgid "settings.mfaRecoveryRemaining"
 msgstr "剩余恢复码：{count} 个"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:743
+#: src/i18n/descriptors/settings.ts:750
 msgid "settings.dingtalkSecret"
 msgstr "加签密钥（可选）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:389
+#: src/i18n/descriptors/settings.ts:388
 msgid "settings.calendarFeedLoadingMore"
 msgstr "加载中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:33
+#: src/i18n/descriptors/settings.ts:32
 msgid "settings.emailLoading"
 msgstr "加载中…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:7
+#: src/i18n/descriptors/settings.ts:6
 msgid "settings.managerLoadFailed"
 msgstr "加载失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:372
+#: src/i18n/descriptors/settings.ts:371
 msgid "settings.calendarFeedLoadFailed"
 msgstr "加载失败。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:211
+#: src/i18n/descriptors/settings.ts:210
 msgid "settings.uploadedIconsLoadMore"
 msgstr "加载更多"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:388
+#: src/i18n/descriptors/settings.ts:387
 msgid "settings.calendarFeedLoadMore"
 msgstr "加载更多"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:286
+#: src/i18n/descriptors/settings.ts:285
 msgid "aiRecognition.thinking.gemini.dynamic"
 msgstr "动态预算"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:351
+#: src/i18n/descriptors/settings.ts:407
+msgid "settings.publicStatusBulkPreview"
+msgstr "匹配 {matched} 项，实际将修改 {changed} 项。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:350
 msgid "settings.calendarFeedTabSubscriptions"
 msgstr "单个订阅"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:366
+#: src/i18n/descriptors/settings.ts:365
 msgid "settings.calendarFeedSubscriptionsSummary"
 msgstr "单个订阅 · {count} 个"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:369
+#: src/i18n/descriptors/settings.ts:368
 msgid "settings.calendarFeedSubscriptionsSummaryStale"
 msgstr "单个订阅 · {count} 个（未更新）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:368
+#: src/i18n/descriptors/settings.ts:367
 msgid "settings.calendarFeedSubscriptionsSummaryFailed"
 msgstr "单个订阅 · 暂不可用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:370
+#: src/i18n/descriptors/settings.ts:369
 msgid "settings.calendarFeedSubscriptionsList"
 msgstr "单个订阅日历链接列表"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:594
+#: src/i18n/descriptors/settings.ts:601
 msgid "settings.subscriptionPriceReference"
 msgstr "单订阅参考价"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:597
+#: src/i18n/descriptors/settings.ts:604
 msgid "settings.subscriptionPriceReferenceCurrency"
 msgstr "单订阅参考货币"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:759
+#: src/i18n/descriptors/settings.ts:766
 msgid "settings.smtpFrom"
 msgstr "发件人"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:716
+#: src/i18n/descriptors/settings.ts:723
 msgid "settings.webhookPayload"
 msgstr "发送负载 (JSON格式，可选)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:724
+#: src/i18n/descriptors/settings.ts:731
 msgid "settings.dingtalkTemplateHelp"
 msgstr "变量：'{brand}'、'{keyword}'、'{title}'、'{content}'、'{timestamp}'、'{itemCount}'。这里只改标题和正文，不是 JSON body 模板；Renewlet 仍会生成钉钉官方 payload。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:168
+#: src/i18n/descriptors/settings.ts:167
 msgid "settings.onlineIconSourcesHelp"
 msgstr "只在手动 Logo 搜索时请求在线来源，不参与自动分配。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:496
+#: src/i18n/descriptors/settings.ts:503
 msgid "settings.cloudBackupPathHelp"
 msgstr "只填写目录前缀，不要包含 .. 或文件名。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:776
+#: src/i18n/descriptors/settings.ts:783
 msgid "settings.discordWebhookHelp"
 msgstr "只支持 Discord 官方 Webhook URL，发送时会禁止 @everyone、用户和角色提及。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:612
+#: src/i18n/descriptors/settings.ts:619
 msgid "settings.channelDisabledHelp"
 msgstr "可以先填写配置，启用并保存后再发送通知。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:256
+#: src/i18n/descriptors/settings.ts:255
 msgid "aiRecognition.apiKeyOptionalPlaceholder"
 msgstr "可选，按兼容服务要求填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:353
+#: src/i18n/descriptors/settings.ts:352
 msgid "settings.calendarFeedGlobalScope"
 msgstr "同步有效订阅的未来续费和到期日期。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:140
+#: src/i18n/descriptors/settings.ts:139
 msgid "settings.builtInIconIndexJobStatusLabel"
 msgstr "后台任务"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:192
+#: src/i18n/descriptors/settings.ts:191
 msgid "settings.builtInIconSourceVariants"
 msgstr "启用变体"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:182
+#: src/i18n/descriptors/settings.ts:181
 msgid "settings.builtInIconSource.thesvg.variantsHelp"
 msgstr "启用后展示 default、mono、wordmark 等上游变体。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:186
+#: src/i18n/descriptors/settings.ts:185
 msgid "settings.builtInIconSource.selfhst.variantsHelp"
 msgstr "启用后展示 light/dark 等主题变体。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:190
+#: src/i18n/descriptors/settings.ts:189
 msgid "settings.builtInIconSource.dashboardIcons.variantsHelp"
 msgstr "启用后展示 light/dark 等主题变体。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:85
+#: src/i18n/descriptors/settings.ts:84
 msgid "settings.mfaConfirmEnable"
 msgstr "启用并生成恢复码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:570
+#: src/i18n/descriptors/settings.ts:577
 msgid "settings.currencyManagerDescription"
 msgstr "启用或禁用可用的货币选项（当前汇率来源共同支持 146 种货币）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:771
+#: src/i18n/descriptors/settings.ts:778
 msgid "settings.barkSilentHelp"
 msgstr "启用该选项后推送通知将不会发出声音"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:49
+#: src/i18n/descriptors/settings.ts:48
 msgid "settings.mfaEnable"
 msgstr "启用身份验证器"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:92
+#: src/i18n/descriptors/settings.ts:91
 msgid "settings.mfaEnableFailed"
 msgstr "启用身份验证器失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:760
+#: src/i18n/descriptors/settings.ts:767
 msgid "settings.smtpReplyTo"
 msgstr "回复地址"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:135
+#: src/i18n/descriptors/settings.ts:134
 msgid "settings.builtInIconIndexIconCountLabel"
 msgstr "图标数量"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:19
+#: src/i18n/descriptors/settings.ts:18
 msgid "settings.sectionNav.iconSources"
 msgstr "图标来源"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:112
+#: src/i18n/descriptors/settings.ts:111
 msgid "settings.builtInIconSources"
 msgstr "图标来源"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:122
+#: src/i18n/descriptors/settings.ts:121
 msgid "settings.builtInIconIndexStatus"
 msgstr "图标索引"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:163
+#: src/i18n/descriptors/settings.ts:162
 msgid "settings.builtInIconIndexRefreshFailed"
 msgstr "图标索引更新失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:746
+#: src/i18n/descriptors/settings.ts:753
 msgid "settings.wechatHelp"
 msgstr "在企业微信群里添加「群机器人」后获取。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:379
+#: src/i18n/descriptors/settings.ts:378
 msgid "settings.calendarFeedOpenSystemFor"
 msgstr "在系统日历中打开「{name}」"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:167
+#: src/i18n/descriptors/settings.ts:166
 msgid "settings.onlineIconSourcesTitle"
 msgstr "在线 App 图标"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:595
+#: src/i18n/descriptors/settings.ts:405
+msgid "settings.publicStatusVisibilityManageHelp"
+msgstr "在订阅列表中选择并批量隐藏或恢复订阅。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:602
 msgid "settings.subscriptionPriceReferenceHelp"
 msgstr "在订阅卡片和详情价格下方显示折算到 {currency} 的小字参考价。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:110
+#: src/i18n/descriptors/settings.ts:109
 msgid "settings.showExpired"
 msgstr "在通知中一起发送已过期订阅"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:728
+#: src/i18n/descriptors/settings.ts:735
 msgid "settings.dingtalkTemplateExampleApplyNamed"
 msgstr "填入{name}模板"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:645
+#: src/i18n/descriptors/settings.ts:652
 msgid "settings.channel.telegramTodo"
 msgstr "填写 Bot Token 和 Chat ID"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:661
+#: src/i18n/descriptors/settings.ts:668
 msgid "settings.channel.discordTodo"
 msgstr "填写 Discord Webhook URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:647
+#: src/i18n/descriptors/settings.ts:654
 msgid "settings.channel.notifyxTodo"
 msgstr "填写 Notifyx API Key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:663
+#: src/i18n/descriptors/settings.ts:670
 msgid "settings.channel.pushplusTodo"
 msgstr "填写 PushPlus Token"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:659
+#: src/i18n/descriptors/settings.ts:666
 msgid "settings.channel.serverchanTodo"
 msgstr "填写 Server酱 SendKey"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:655
+#: src/i18n/descriptors/settings.ts:662
 msgid "settings.channel.emailTodo"
 msgstr "填写 SMTP 与收件人邮箱"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:649
+#: src/i18n/descriptors/settings.ts:656
 msgid "settings.channel.webhookTodo"
 msgstr "填写 Webhook URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:653
+#: src/i18n/descriptors/settings.ts:660
 msgid "settings.channel.wechatTodo"
 msgstr "填写企业微信机器人 Webhook URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:744
+#: src/i18n/descriptors/settings.ts:751
 msgid "settings.dingtalkSecretHelp"
 msgstr "填写后发送前自动生成 timestamp/sign，并覆盖 URL 中已有的签名参数。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:657
+#: src/i18n/descriptors/settings.ts:664
 msgid "settings.channel.barkTodo"
 msgstr "填写服务器地址和设备 Key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:651
+#: src/i18n/descriptors/settings.ts:658
 msgid "settings.channel.dingtalkTodo"
 msgstr "填写钉钉机器人 Webhook URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:520
+#: src/i18n/descriptors/settings.ts:527
 msgid "settings.cloudBackupCreating"
 msgstr "备份中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:499
+#: src/i18n/descriptors/settings.ts:506
 msgid "settings.cloudBackupPolicy"
 msgstr "备份策略"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:329
+#: src/i18n/descriptors/settings.ts:328
 msgid "settings.calendarFeedCopy"
 msgstr "复制"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:445
+#: src/i18n/descriptors/settings.ts:452
 msgid "settings.publicApiCopyToken"
 msgstr "复制 token"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:409
+#: src/i18n/descriptors/settings.ts:416
 msgid "settings.publicStatusCopy"
 msgstr "复制 URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:378
+#: src/i18n/descriptors/settings.ts:377
 msgid "settings.calendarFeedCopyFor"
 msgstr "复制「{name}」的日历订阅 URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:337
+#: src/i18n/descriptors/settings.ts:336
 msgid "settings.calendarFeedCopyFailed"
 msgstr "复制失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:420
+#: src/i18n/descriptors/settings.ts:427
 msgid "settings.publicStatusCopyFailed"
 msgstr "复制失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:463
+#: src/i18n/descriptors/settings.ts:470
 msgid "settings.publicApiCopyFailed"
 msgstr "复制失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:102
+#: src/i18n/descriptors/settings.ts:101
 msgid "settings.mfaCopyRecovery"
 msgstr "复制恢复码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:17
+#: src/i18n/descriptors/settings.ts:16
 msgid "settings.sectionNav.appearance"
 msgstr "外观"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:106
+#: src/i18n/descriptors/settings.ts:105
 msgid "settings.appearance"
 msgstr "外观设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:751
+#: src/i18n/descriptors/settings.ts:758
 msgid "settings.wechatPhonesHelp"
 msgstr "多个手机号用逗号/换行分隔；仅在消息类型为“文本”时生效。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:762
+#: src/i18n/descriptors/settings.ts:769
 msgid "settings.multipleRecipients"
 msgstr "多个收件人"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:144
+#: src/i18n/descriptors/settings.ts:143
 msgid "settings.builtInIconIndexJobStatus.failed"
 msgstr "失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:477
+#: src/i18n/descriptors/settings.ts:484
 msgid "settings.cloudBackupProvider"
 msgstr "存储类型"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:695
+#: src/i18n/descriptors/settings.ts:702
 msgid "settings.telegramBotCommandsStatus.installing"
 msgstr "安装中"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:701
+#: src/i18n/descriptors/settings.ts:708
 msgid "settings.telegramBotCommandsInstalling"
 msgstr "安装中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:682
+#: src/i18n/descriptors/settings.ts:689
 msgid "settings.telegramBotCommandsHelp"
 msgstr "安装后可以在 Telegram 菜单中查看状态、下一条续费、今天、本周、本月和订阅摘要。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:688
+#: src/i18n/descriptors/settings.ts:695
 msgid "settings.telegramBotCommandsInstall"
 msgstr "安装命令"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:684
+#: src/i18n/descriptors/settings.ts:691
 msgid "settings.telegramBotCommandsInstalledAt"
 msgstr "安装时间：{time}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:120
+#: src/i18n/descriptors/settings.ts:119
 msgid "settings.builtInIconSourcesDialogDone"
 msgstr "完成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:204
+#: src/i18n/descriptors/settings.ts:203
 msgid "settings.uploadedIconsManageDone"
 msgstr "完成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:390
+#: src/i18n/descriptors/settings.ts:389
 msgid "settings.calendarFeedManageDone"
 msgstr "完成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:435
+#: src/i18n/descriptors/settings.ts:442
 msgid "settings.publicApiDialogDone"
 msgstr "完成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:253
+#: src/i18n/descriptors/settings.ts:252
 msgid "aiRecognition.baseUrlHelp"
 msgstr "官方平台可留空；OpenAI Compatible 填写对应的 OpenAI Chat Base URL。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:500
+#: src/i18n/descriptors/settings.ts:507
 msgid "settings.cloudBackupSchedule"
 msgstr "定时自动备份"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:487
+#: src/i18n/descriptors/settings.ts:494
 msgid "settings.cloudBackupWebdavPassword"
 msgstr "密码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:41
+#: src/i18n/descriptors/settings.ts:40
 msgid "settings.passwordDialogDescription"
 msgstr "密码将写入本地认证账户。修改成功后不会在页面回显，请妥善保存。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:39
+#: src/i18n/descriptors/settings.ts:38
 msgid "settings.passwordHelp"
 msgstr "密码用于登录系统和 API 访问"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:478
+#: src/i18n/descriptors/settings.ts:485
 msgid "settings.cloudBackupCredential"
 msgstr "密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:678
+#: src/i18n/descriptors/settings.ts:685
 msgid "settings.telegramMessageFormatHtml"
 msgstr "富文本"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:327
+#: src/i18n/descriptors/settings.ts:326
 msgid "settings.calendarFeedHelp"
 msgstr "将未来续费和到期日期持续同步到系统日历。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:60
+#: src/i18n/descriptors/settings.ts:59
 msgid "settings.noPasskeys"
 msgstr "尚未添加通行密钥。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:51
+#: src/i18n/descriptors/settings.ts:50
 msgid "settings.mfaNoMethods"
 msgstr "尚未设置身份验证器。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:405
+#: src/i18n/descriptors/settings.ts:412
 msgid "settings.publicStatusSummary"
 msgstr "展示 {visible} · 隐藏 {hidden}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:407
+#: src/i18n/descriptors/settings.ts:414
 msgid "settings.publicStatusVisibilityStale"
 msgstr "展示 {visible} · 隐藏 {hidden} · 未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:406
+#: src/i18n/descriptors/settings.ts:413
 msgid "settings.publicStatusVisibilityUnknown"
 msgstr "展示状态未知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:637
+#: src/i18n/descriptors/settings.ts:644
 msgid "settings.exchangeRateProviderSwitched"
 msgstr "已优先使用 {provider}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:474
+#: src/i18n/descriptors/settings.ts:481
 msgid "settings.cloudBackupCredentialSaved"
 msgstr "已保存密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:125
+#: src/i18n/descriptors/settings.ts:124
 msgid "settings.builtInIconIndexBadge.upToDate"
 msgstr "已最新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:634
+#: src/i18n/descriptors/settings.ts:641
 msgid "settings.defaultCurrencySwitched"
 msgstr "已切换为 {currency}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:116
+#: src/i18n/descriptors/settings.ts:115
 msgid "settings.onlineIconSourceEnabled"
 msgstr "已启用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:360
+#: src/i18n/descriptors/settings.ts:359
 msgid "settings.calendarFeedStatusEnabled"
 msgstr "已启用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:393
+#: src/i18n/descriptors/settings.ts:392
 msgid "settings.publicStatusEnabled"
 msgstr "已启用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:363
+#: src/i18n/descriptors/settings.ts:362
 msgid "settings.calendarFeedStatusEnabledStale"
 msgstr "已启用 · 未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:696
+#: src/i18n/descriptors/settings.ts:703
 msgid "settings.telegramBotCommandsStatus.installed"
 msgstr "已安装"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:143
+#: src/i18n/descriptors/settings.ts:142
 msgid "settings.builtInIconIndexJobStatus.succeeded"
 msgstr "已完成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:339
+#: src/i18n/descriptors/settings.ts:338
 msgid "settings.calendarFeedOpenSystemResult"
 msgstr "已尝试打开系统日历；若未打开，请复制 URL 手动添加。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:155
+#: src/i18n/descriptors/settings.ts:154
 msgid "settings.builtInIconIndexUpToDate"
 msgstr "已是最新版本"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:551
+#: src/i18n/descriptors/settings.ts:403
+msgid "settings.publicStatusExpiredShown"
+msgstr "已显示过期订阅"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:404
+msgid "settings.publicStatusLifetimeShown"
+msgstr "已显示长期买断订阅"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:408
+msgid "settings.publicStatusBulkVisibilityDone"
+msgstr "已更新 {count} 项订阅"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:558
 msgid "settings.cloudBackupRestoreReadyResult"
 msgstr "已进入导入预览；确认新增、替换和跳过项后再应用恢复。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:600
+#: src/i18n/descriptors/settings.ts:403
+msgid "settings.publicStatusExpiredHidden"
+msgstr "已隐藏过期订阅"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:404
+msgid "settings.publicStatusLifetimeHidden"
+msgstr "已隐藏长期买断订阅"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:607
 msgid "settings.ratesPreview"
 msgstr "常用货币折算为 {currency}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:608
+#: src/i18n/descriptors/settings.ts:615
 msgid "settings.cronTip"
 msgstr "平台 Cron 仍建议每分钟或至少每 5 分钟访问一次接口；应用会按每个用户自己的时区判断是否发送。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:235
+#: src/i18n/descriptors/settings.ts:234
 msgid "aiRecognition.providerType"
 msgstr "平台类型"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:629
+#: src/i18n/descriptors/settings.ts:636
 msgid "settings.appSettingsScope"
 msgstr "应用设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:763
+#: src/i18n/descriptors/settings.ts:770
 msgid "settings.multipleRecipientsHelp"
 msgstr "开启后可用逗号/换行分隔多个邮箱。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:401
+#: src/i18n/descriptors/settings.ts:400
 msgid "settings.publicStatusShowPricesHelp"
 msgstr "开启后显示价格和币种；关闭时只给最小状态。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:438
+#: src/i18n/descriptors/settings.ts:445
 msgid "settings.publicApiSummaryStale"
 msgstr "当前 {count} 个 token · 未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:436
+#: src/i18n/descriptors/settings.ts:443
 msgid "settings.publicApiTokenCount"
 msgstr "当前 {count} 个 token。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:149
+#: src/i18n/descriptors/settings.ts:148
 msgid "settings.builtInIconIndexCurrentVersion"
 msgstr "当前：{version}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:464
+#: src/i18n/descriptors/settings.ts:471
 msgid "settings.publicApiCopyFailedDescription"
 msgstr "当前一键复制不可用，请手动选择并复制 token。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:421
+#: src/i18n/descriptors/settings.ts:428
 msgid "settings.publicStatusCopyFailedDescription"
 msgstr "当前一键复制不可用，请手动选择并复制 URL。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:42
+#: src/i18n/descriptors/settings.ts:41
 msgid "settings.currentPassword"
 msgstr "当前密码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:314
+#: src/i18n/descriptors/settings.ts:313
 msgid "aiRecognition.baseUrlRequired"
 msgstr "当前平台需要填写 Base URL。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:261
+#: src/i18n/descriptors/settings.ts:401
+msgid "settings.publicStatusHideExpiredHelp"
+msgstr "当前有 {count} 项已过期订阅。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:402
+msgid "settings.publicStatusHideLifetimeHelp"
+msgstr "当前有 {count} 项长期买断订阅。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:260
 msgid "aiRecognition.thinkingUnsupportedModel"
 msgstr "当前模型未匹配到官方 thinking 能力，保持模型默认行为。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:105
+#: src/i18n/descriptors/settings.ts:104
 msgid "settings.mfaRecoveryCopyFailedDescription"
 msgstr "当前浏览器不允许一键复制，请手动选择恢复码。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:611
+#: src/i18n/descriptors/settings-display.ts:6
+msgid "settings.showLunarCalendarUnsupported"
+msgstr "当前浏览器不支持中国农历显示。请升级浏览器后再启用。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:618
 msgid "settings.channelEnabledHelp"
 msgstr "当前渠道已启用，保存后会参与通知发送。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:136
+#: src/i18n/descriptors/settings.ts:135
 msgid "settings.builtInIconIndexCurrentVersionLabel"
 msgstr "当前版本"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:643
+#: src/i18n/descriptors/settings.ts:650
 msgid "settings.currencyPolicy.defaultDescription"
 msgstr "当前统计货币（{currency}）用于全站金额换算，请先在「汇率与统计货币」切换后再禁用。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:491
+#: src/i18n/descriptors/settings.ts:498
 msgid "settings.cloudBackupS3RegionHelp"
 msgstr "必填；按存储服务商 S3 API 文档填写 signing region，R2/Tigris 通常为 auto。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:522
+#: src/i18n/descriptors/settings.ts:529
 msgid "settings.cloudBackupSnapshotsHelp"
 msgstr "快照下载前会校验 manifest 与 SHA-256；恢复仍需在导入预览中确认。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:527
+#: src/i18n/descriptors/settings.ts:406
+msgid "settings.publicStatusQuickBulk"
+msgstr "快速批量编辑"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:406
+msgid "settings.publicStatusQuickBulkTitle"
+msgstr "快速批量编辑公开可见性"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:534
 msgid "settings.cloudBackupRestore"
 msgstr "恢复"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:528
+#: src/i18n/descriptors/settings.ts:535
 msgid "settings.cloudBackupRestoreNamed"
 msgstr "恢复「{name}」"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:532
+#: src/i18n/descriptors/settings.ts:539
 msgid "settings.cloudBackupRestoring"
 msgstr "恢复中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:53
+#: src/i18n/descriptors/settings.ts:52
 msgid "settings.mfaMethodRecovery"
 msgstr "恢复码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:104
+#: src/i18n/descriptors/settings.ts:103
 msgid "settings.mfaRecoveryCopyFailed"
 msgstr "恢复码复制失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:103
+#: src/i18n/descriptors/settings.ts:102
 msgid "settings.mfaRecoveryCopied"
 msgstr "恢复码已复制"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:89
+#: src/i18n/descriptors/settings.ts:88
 msgid "settings.mfaRecoveryRegenerated"
 msgstr "恢复码已重新生成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:83
+#: src/i18n/descriptors/settings.ts:82
 msgid "settings.mfaManualSecret"
 msgstr "手动密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:243
+#: src/i18n/descriptors/settings.ts:242
 msgid "aiRecognition.modelModeManual"
 msgstr "手动输入"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:408
+#: src/i18n/descriptors/settings.ts:415
 msgid "settings.publicStatusOpen"
 msgstr "打开公开页"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:328
+#: src/i18n/descriptors/settings.ts:327
 msgid "settings.calendarFeedOpenSystem"
 msgstr "打开系统日历"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:14
+#: src/i18n/descriptors/settings.ts:13
 msgid "settings.sectionNavOpen"
 msgstr "打开设置目录"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:505
+#: src/i18n/descriptors/settings.ts:512
 msgid "settings.cloudBackupScheduleTime"
 msgstr "执行时间"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:82
+#: src/i18n/descriptors/settings.ts:81
 msgid "settings.mfaSetupDescription"
 msgstr "扫描二维码或手动输入密钥，然后填写身份验证器中的 6 位验证码。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:583
+#: src/i18n/descriptors/settings.ts:590
 msgid "settings.exchangeRateReportBasis"
 msgstr "报表口径"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:599
+#: src/i18n/descriptors/settings.ts:606
 msgid "settings.subscriptionPriceReferenceApplyLocalPreference"
 msgstr "按本机偏好设为 {currency}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:141
+#: src/i18n/descriptors/settings.ts:140
 msgid "settings.builtInIconIndexJobStatus.queued"
 msgstr "排队中"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:310
+#: src/i18n/descriptors/settings.ts:309
 msgid "aiRecognition.errorDetailsDescription"
 msgstr "接口返回的原始响应。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:537
+#: src/i18n/descriptors/settings.ts:544
 msgid "settings.cloudBackupUpstreamDescription"
 msgstr "接口返回的原始响应。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:765
+#: src/i18n/descriptors/settings.ts:772
 msgid "settings.recipientEmailHelp"
 msgstr "接收通知的目标邮箱地址（默认回显当前登录邮箱）。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:113
+#: src/i18n/descriptors/settings.ts:112
 msgid "settings.builtInIconSourcesHelp"
 msgstr "控制内置 SVG 图标库，以及手动 Logo 搜索使用的在线 App 图标来源。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:607
+#: src/i18n/descriptors/settings.ts:614
 msgid "settings.tip"
 msgstr "提示"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:323
+#: src/i18n/descriptors/settings.ts:322
 msgid "settings.timezoneSearch"
 msgstr "搜索城市、时区或 UTC 偏移..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:246
+#: src/i18n/descriptors/settings.ts:245
 msgid "aiRecognition.modelSelectSearchPlaceholder"
 msgstr "搜索模型"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:587
+#: src/i18n/descriptors/settings.ts:594
 msgid "settings.currencySearch"
 msgstr "搜索货币、代码或符号..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:333
+#: src/i18n/descriptors/settings.ts:332
 msgid "settings.calendarFeedRevoke"
 msgstr "撤销"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:381
+#: src/i18n/descriptors/settings.ts:380
 msgid "settings.calendarFeedRevokeFor"
 msgstr "撤销「{name}」的日历订阅链接"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:384
+#: src/i18n/descriptors/settings.ts:383
 msgid "settings.calendarFeedRevokeItemTitle"
 msgstr "撤销「{name}」的链接？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:387
+#: src/i18n/descriptors/settings.ts:386
 msgid "settings.calendarFeedRevoking"
 msgstr "撤销中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:415
+#: src/i18n/descriptors/settings.ts:422
 msgid "settings.publicStatusRevokeTitle"
 msgstr "撤销公开展示？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:414
+#: src/i18n/descriptors/settings.ts:421
 msgid "settings.publicStatusRevoke"
 msgstr "撤销公开页"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:344
+#: src/i18n/descriptors/settings.ts:343
 msgid "settings.calendarFeedRevokeFailed"
 msgstr "撤销失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:213
+#: src/i18n/descriptors/settings.ts:212
 msgid "settings.uploadedIconsKindIcon"
 msgstr "支付方式"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:208
+#: src/i18n/descriptors/settings.ts:207
 msgid "settings.uploadedIconsIconTitle"
 msgstr "支付方式图标"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:567
+#: src/i18n/descriptors/settings.ts:574
 msgid "settings.paymentManager"
 msgstr "支付方式管理"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:209
+#: src/i18n/descriptors/settings.ts:208
 msgid "settings.uploadedIconsIconDescription"
 msgstr "支付方式管理里，点「上传」添加的图标。用「搜索」选的在线图标不在这里。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:774
+#: src/i18n/descriptors/settings.ts:781
 msgid "settings.serverchanHelp"
 msgstr "支持 Server酱 Turbo 与 Server酱³ SendKey，默认使用官方推送通道。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:717
+#: src/i18n/descriptors/settings.ts:724
 msgid "settings.webhookPayloadHelp"
 msgstr "支持变量: '{title}', '{content}', '{timestamp}'，使用这些变量会自动替换为发送内容"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:764
+#: src/i18n/descriptors/settings.ts:771
 msgid "settings.recipientEmail"
 msgstr "收件人邮箱"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:654
+#: src/i18n/descriptors/settings.ts:661
 msgid "settings.channel.emailReady"
 msgstr "收件人邮箱已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:623
+#: src/i18n/descriptors/settings.ts:630
 msgid "settings.unsavedLeaveConfirm"
 msgstr "放弃并离开"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:618
+#: src/i18n/descriptors/settings.ts:625
 msgid "settings.discardChanges"
 msgstr "放弃更改"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:589
+#: src/i18n/descriptors/settings.ts:596
 msgid "settings.dataSource"
 msgstr "数据来源"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:22
+#: src/i18n/descriptors/settings.ts:21
 msgid "settings.sectionNav.dataConfig"
 msgstr "数据配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:557
+#: src/i18n/descriptors/settings.ts:564
 msgid "settings.dataConfig"
 msgstr "数据配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:630
+#: src/i18n/descriptors/settings.ts:637
 msgid "settings.customConfigScope"
 msgstr "数据配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:737
+#: src/i18n/descriptors/settings.ts:744
 msgid "settings.dingtalkTemplateExampleCount"
 msgstr "数量摘要"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:748
+#: src/i18n/descriptors/settings.ts:755
 msgid "settings.textMessage"
 msgstr "文本消息"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:206
+#: src/i18n/descriptors/settings.ts:205
 msgid "settings.uploadedIconsLogoDescription"
 msgstr "新增或编辑订阅时，点「上传」添加的 Logo。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:553
+#: src/i18n/descriptors/settings.ts:560
 msgid "settings.cloudBackupRestoreFailedDescription"
 msgstr "无法下载或校验快照，请检查远端文件完整性。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:544
+#: src/i18n/descriptors/settings.ts:551
 msgid "settings.cloudBackupSaveFailedDescription"
 msgstr "无法保存云同步与备份配置，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:638
+#: src/i18n/descriptors/settings.ts:645
 msgid "settings.exchangeRateProviderSaveFailed"
 msgstr "无法保存汇率来源，请稍后重试"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:639
+#: src/i18n/descriptors/settings.ts:646
 msgid "settings.exchangeRateProviderServerOutdated"
 msgstr "无法保存汇率来源。服务端可能还没更新或重启，请重启后端服务后再试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:635
+#: src/i18n/descriptors/settings.ts:642
 msgid "settings.defaultCurrencySaveFailed"
 msgstr "无法保存统计货币，请稍后重试"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:628
+#: src/i18n/descriptors/settings.ts:635
 msgid "settings.saveFailedDescription"
 msgstr "无法保存设置，请稍后重试"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:461
+#: src/i18n/descriptors/settings.ts:468
 msgid "settings.publicApiCreateFailedDescription"
 msgstr "无法创建 API Token，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:467
+#: src/i18n/descriptors/settings.ts:474
 msgid "settings.publicApiDeleteFailedDescription"
 msgstr "无法删除 API Token，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:708
+#: src/i18n/descriptors/settings.ts:715
 msgid "settings.telegramBotCommandsDeleteFailedDescription"
 msgstr "无法删除 Telegram Bot 查询命令，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:221
+#: src/i18n/descriptors/settings.ts:220
 msgid "settings.uploadedIconsDeleteFailedDescription"
 msgstr "无法删除上传图标，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:556
+#: src/i18n/descriptors/settings.ts:563
 msgid "settings.cloudBackupDeleteFailedDescription"
 msgstr "无法删除远端快照，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:705
+#: src/i18n/descriptors/settings.ts:712
 msgid "settings.telegramBotCommandsInstallFailedDescription"
 msgstr "无法安装 Telegram Bot 查询命令，请检查 Bot Token、Chat ID 和 HTTPS 外部访问地址。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:308
+#: src/i18n/descriptors/settings.ts:307
 msgid "aiRecognition.testFailedDescription"
 msgstr "无法完成测试调用，请检查模型、Base URL 和 API Key。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:90
+#: src/i18n/descriptors/settings.ts:89
 msgid "settings.mfaSetupFailed"
 msgstr "无法开始设置身份验证器"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:340
+#: src/i18n/descriptors/settings.ts:339
 msgid "settings.calendarFeedOpenSystemFailed"
 msgstr "无法打开系统日历"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:425
+#: src/i18n/descriptors/settings.ts:432
 msgid "settings.publicStatusRevokeFailedDescription"
 msgstr "无法撤销公开展示，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:164
+#: src/i18n/descriptors/settings.ts:163
 msgid "settings.builtInIconIndexRefreshFailedDescription"
 msgstr "无法更新 {source}，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:428
+#: src/i18n/descriptors/settings.ts:435
 msgid "settings.publicStatusUpdateFailedDescription"
 msgstr "无法更新公开展示设置，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:563
+#: src/i18n/descriptors/settings.ts:570
 msgid "settings.categoryCheckFailed"
 msgstr "无法校验该分类是否被订阅使用（订阅数据加载失败），请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:423
+#: src/i18n/descriptors/settings.ts:430
 msgid "settings.publicStatusFailedDescription"
 msgstr "无法生成公开展示链接，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:550
+#: src/i18n/descriptors/settings.ts:557
 msgid "settings.cloudBackupCreateFailedDescription"
 msgstr "无法生成或上传云端快照，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:250
+#: src/i18n/descriptors/settings.ts:249
 msgid "aiRecognition.modelListFailedDescription"
 msgstr "无法获取模型列表，请检查 Base URL 和 API Key，或手动输入模型 ID。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:24
+#: src/i18n/descriptors/settings.ts:23
 msgid "settings.sectionNav.calendarFeed"
 msgstr "日历订阅"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:326
+#: src/i18n/descriptors/settings.ts:325
 msgid "settings.calendarFeed"
 msgstr "日历订阅"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:349
+#: src/i18n/descriptors/settings.ts:348
 msgid "settings.calendarFeedTabsLabel"
 msgstr "日历订阅管理视图"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:302
+#: src/i18n/descriptors/settings.ts:301
 msgid "aiRecognition.thinking.anthropic.budget.description"
 msgstr "旧 Claude thinking budget_tokens 固定预算。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:413
+#: src/i18n/descriptors/settings.ts:420
 msgid "settings.publicStatusRegenerateDescription"
 msgstr "旧 URL 会立即失效，已经分享出去的公开页需要使用新链接访问。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:99
+#: src/i18n/descriptors/settings.ts:98
 msgid "settings.mfaRegenerateDescription"
 msgstr "旧的未使用恢复码会立即失效，新的恢复码只会展示一次。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:332
+#: src/i18n/descriptors/settings.ts:331
 msgid "settings.calendarFeedRegenerateDescription"
 msgstr "旧链接会立即失效，已添加的日历需要使用新链接重新订阅。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:27
+#: src/i18n/descriptors/settings.ts:26
 msgid "settings.sectionNav.timezone"
 msgstr "时区"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:320
+#: src/i18n/descriptors/settings.ts:319
 msgid "settings.timezone"
 msgstr "时区设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:321
+#: src/i18n/descriptors/settings.ts:320
 msgid "settings.timezoneSelect"
 msgstr "时区选择"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:506
+#: src/i18n/descriptors/settings.ts:513
 msgid "settings.cloudBackupScheduleWeekday"
 msgstr "星期"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:507
+#: src/i18n/descriptors/settings.ts:514
 msgid "settings.cloudBackupWeekdayMonday"
 msgstr "星期一"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:509
+#: src/i18n/descriptors/settings.ts:516
 msgid "settings.cloudBackupWeekdayWednesday"
 msgstr "星期三"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:508
+#: src/i18n/descriptors/settings.ts:515
 msgid "settings.cloudBackupWeekdayTuesday"
 msgstr "星期二"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:511
+#: src/i18n/descriptors/settings.ts:518
 msgid "settings.cloudBackupWeekdayFriday"
 msgstr "星期五"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:512
+#: src/i18n/descriptors/settings.ts:519
 msgid "settings.cloudBackupWeekdaySaturday"
 msgstr "星期六"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:510
+#: src/i18n/descriptors/settings.ts:517
 msgid "settings.cloudBackupWeekdayThursday"
 msgstr "星期四"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:513
+#: src/i18n/descriptors/settings.ts:520
 msgid "settings.cloudBackupWeekdaySunday"
 msgstr "星期日"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:18
+#: src/i18n/descriptors/settings.ts:17
 msgid "settings.sectionNav.display"
 msgstr "显示"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:107
+#: src/i18n/descriptors/settings-display.ts:4
+msgid "settings.showLunarCalendar"
+msgstr "显示中国农历日期"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:106
 msgid "settings.display"
 msgstr "显示设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:255
+#: src/i18n/descriptors/settings.ts:254
 msgid "aiRecognition.apiKeyHelp"
 msgstr "普通备份不会导出 API Key；只有显式选择含密钥备份时才会包含。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:525
+#: src/i18n/descriptors/settings.ts:532
 msgid "settings.cloudBackupSnapshotsEmpty"
 msgstr "暂无云端快照。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:123
+#: src/i18n/descriptors/settings.ts:408
+msgid "settings.publicStatusBulkPreviewUnavailable"
+msgstr "暂时无法获取预览数量。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:122
 msgid "settings.builtInIconIndexUnavailable"
 msgstr "暂时无法读取索引状态。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:50
+#: src/i18n/descriptors/settings.ts:49
 msgid "settings.mfaAddAuthenticator"
 msgstr "更换身份验证器"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:121
+#: src/i18n/descriptors/settings.ts:120
 msgid "settings.builtInIconSourcesPendingHint"
 msgstr "更改会随设置页保存一起生效。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:158
+#: src/i18n/descriptors/settings.ts:157
 msgid "settings.builtInIconIndexRefresh"
 msgstr "更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:127
+#: src/i18n/descriptors/settings.ts:126
 msgid "settings.builtInIconIndexBadge.refreshing"
 msgstr "更新中"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:160
+#: src/i18n/descriptors/settings.ts:159
 msgid "settings.builtInIconIndexRefreshing"
 msgstr "更新中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:129
+#: src/i18n/descriptors/settings.ts:128
 msgid "settings.builtInIconIndexBadge.refreshFailed"
 msgstr "更新失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:373
+#: src/i18n/descriptors/settings.ts:372
 msgid "settings.calendarFeedRefreshFailed"
 msgstr "更新失败，当前内容仍可使用。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:572
+#: src/i18n/descriptors/settings.ts:579
 msgid "settings.refreshRates"
 msgstr "更新汇率"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:317
+#: src/i18n/descriptors/settings.ts:316
 msgid "settings.monthlyBudget"
 msgstr "月度预算金额"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:432
+#: src/i18n/descriptors/settings.ts:439
 msgid "settings.publicApiPendingPlainToken"
 msgstr "有一个一次性 token 等待复制。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:154
+#: src/i18n/descriptors/settings.ts:153
 msgid "settings.builtInIconIndexUpdateAvailable"
 msgstr "有新版本可更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:124
+#: src/i18n/descriptors/settings.ts:123
 msgid "settings.builtInIconIndexBadge.updateAvailable"
 msgstr "有更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:617
+#: src/i18n/descriptors/settings.ts:624
 msgid "settings.unsavedChanges"
 msgstr "有未保存更改"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:766
+#: src/i18n/descriptors/settings.ts:773
 msgid "settings.barkServer"
 msgstr "服务器地址"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:475
+#: src/i18n/descriptors/settings.ts:482
 msgid "settings.cloudBackupCredentialMissing"
 msgstr "未保存密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:622
+#: src/i18n/descriptors/settings.ts:629
 msgid "settings.unsavedLeaveDescription"
 msgstr "未保存的更改会被放弃，确认后将继续前往目标页面。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:117
+#: src/i18n/descriptors/settings.ts:116
 msgid "settings.onlineIconSourceDisabled"
 msgstr "未启用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:361
+#: src/i18n/descriptors/settings.ts:360
 msgid "settings.calendarFeedStatusDisabled"
 msgstr "未启用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:394
+#: src/i18n/descriptors/settings.ts:393
 msgid "settings.publicStatusDisabled"
 msgstr "未启用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:364
+#: src/i18n/descriptors/settings.ts:363
 msgid "settings.calendarFeedStatusDisabledStale"
 msgstr "未启用 · 未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:225
+#: src/i18n/descriptors/settings.ts:224
 msgid "settings.uploadedIconsUnnamedAsset"
 msgstr "未命名资产"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:694
+#: src/i18n/descriptors/settings.ts:701
 msgid "settings.telegramBotCommandsStatus.notInstalled"
 msgstr "未安装"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:324
+#: src/i18n/descriptors/settings.ts:323
 msgid "settings.timezoneEmpty"
 msgstr "未找到时区"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:588
+#: src/i18n/descriptors/settings.ts:595
 msgid "settings.currencyEmpty"
 msgstr "未找到货币"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:8
+#: src/i18n/descriptors/settings.ts:7
 msgid "settings.managerRefreshFailed"
 msgstr "未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:11
+#: src/i18n/descriptors/settings.ts:10
 msgid "settings.notUpdated"
 msgstr "未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:147
+#: src/i18n/descriptors/settings.ts:146
 msgid "settings.builtInIconIndexTimestampUnrefreshed"
 msgstr "未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:396
+#: src/i18n/descriptors/settings.ts:395
 msgid "settings.publicStatusNotUpdated"
 msgstr "未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:130
+#: src/i18n/descriptors/settings.ts:129
 msgid "settings.builtInIconIndexBadge.unchecked"
 msgstr "未检查"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:146
+#: src/i18n/descriptors/settings.ts:145
 msgid "settings.builtInIconIndexTimestampUnchecked"
 msgstr "未检查"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:152
+#: src/i18n/descriptors/settings.ts:151
 msgid "settings.builtInIconIndexVersionUnchecked"
 msgstr "未检查"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:227
+#: src/i18n/descriptors/settings.ts:226
 msgid "settings.uploadedIconsUnknownSize"
 msgstr "未知大小"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:228
+#: src/i18n/descriptors/settings.ts:227
 msgid "settings.uploadedIconsUnknownTime"
 msgstr "未知时间"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:454
+#: src/i18n/descriptors/settings.ts:461
 msgid "settings.publicApiTokenUnknownTime"
 msgstr "未知时间"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:153
+#: src/i18n/descriptors/settings.ts:152
 msgid "settings.builtInIconIndexVersionUnknown"
 msgstr "未知版本"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:226
+#: src/i18n/descriptors/settings.ts:225
 msgid "settings.uploadedIconsUnknownMime"
 msgstr "未知类型"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:593
+#: src/i18n/descriptors/settings.ts:600
 msgid "settings.notFetched"
 msgstr "未获取"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:34
+#: src/i18n/descriptors/settings.ts:33
 msgid "settings.emailMissing"
 msgstr "未获取到邮箱"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:471
+#: src/i18n/descriptors/settings.ts:478
 msgid "settings.cloudBackupStatusIdle"
 msgstr "未运行"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:687
+#: src/i18n/descriptors/settings.ts:694
 msgid "settings.telegramBotCommandsMissing"
 msgstr "未配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:693
+#: src/i18n/descriptors/settings.ts:700
 msgid "settings.telegramBotCommandsStatus.notConfigured"
 msgstr "未配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:259
+#: src/i18n/descriptors/settings.ts:258
 msgid "aiRecognition.thinkingRunHelp"
 msgstr "本次识别可临时覆盖设置页默认值。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:718
+#: src/i18n/descriptors/settings.ts:725
 msgid "settings.dingtalkWebhookUrl"
 msgstr "机器人 Webhook URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:745
+#: src/i18n/descriptors/settings.ts:752
 msgid "settings.wechatUrl"
 msgstr "机器人 Webhook URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:652
+#: src/i18n/descriptors/settings.ts:659
 msgid "settings.channel.wechatReady"
 msgstr "机器人 Webhook URL 已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:674
+#: src/i18n/descriptors/settings.ts:681
 msgid "settings.telegramBotTokenLabel"
 msgstr "机器人令牌"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:778
+#: src/i18n/descriptors/settings.ts:785
 msgid "settings.discordBotAvatarUrl"
 msgstr "机器人头像 URL（可选）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:777
+#: src/i18n/descriptors/settings.ts:784
 msgid "settings.discordBotUsername"
 msgstr "机器人用户名（可选）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:450
+#: src/i18n/descriptors/settings.ts:457
 msgid "settings.publicApiTokenScopes"
 msgstr "权限：{scopes}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:132
+#: src/i18n/descriptors/settings.ts:131
 msgid "settings.builtInIconIndexOpenStatus"
 msgstr "查看 {source} 图标索引状态：{status}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:203
+#: src/i18n/descriptors/settings.ts:202
 msgid "settings.uploadedIconsManageDescription"
 msgstr "查看、分页加载和删除你上传过的订阅 Logo 与支付方式图标。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:312
+#: src/i18n/descriptors/settings.ts:311
 msgid "aiRecognition.errorDetailsOpenLast"
 msgstr "查看上次响应"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:526
+#: src/i18n/descriptors/settings.ts:533
 msgid "settings.cloudBackupSnapshotsViewAll"
 msgstr "查看全部 ({count})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:726
+#: src/i18n/descriptors/settings.ts:733
 msgid "settings.dingtalkTemplateExamplesOpen"
 msgstr "查看模板示例"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:311
+#: src/i18n/descriptors/settings.ts:310
 msgid "aiRecognition.errorDetailsOpen"
 msgstr "查看错误响应"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:538
+#: src/i18n/descriptors/settings.ts:545
 msgid "settings.cloudBackupUpstreamOpen"
 msgstr "查看错误详情"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:729
+#: src/i18n/descriptors/settings.ts:736
 msgid "settings.dingtalkTemplateExampleTitle"
 msgstr "标题"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:680
+#: src/i18n/descriptors/settings.ts:687
 msgid "settings.telegramMessageFormatHtmlDescription"
 msgstr "标题和关键数字更醒目，适合快速扫读。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:720
+#: src/i18n/descriptors/settings.ts:727
 msgid "settings.dingtalkTitleTemplate"
 msgstr "标题模板"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:133
+#: src/i18n/descriptors/settings.ts:132
 msgid "settings.builtInIconIndexCheck"
 msgstr "检查"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:134
+#: src/i18n/descriptors/settings.ts:133
 msgid "settings.builtInIconIndexCheckProvider"
 msgstr "检查 {source} 最新版本"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:126
+#: src/i18n/descriptors/settings.ts:125
 msgid "settings.builtInIconIndexBadge.checking"
 msgstr "检查中"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:159
+#: src/i18n/descriptors/settings.ts:158
 msgid "settings.builtInIconIndexChecking"
 msgstr "检查中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:128
+#: src/i18n/descriptors/settings.ts:127
 msgid "settings.builtInIconIndexBadge.failed"
 msgstr "检查失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:240
+#: src/i18n/descriptors/settings.ts:239
 msgid "aiRecognition.model"
 msgstr "模型"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:249
+#: src/i18n/descriptors/settings.ts:248
 msgid "aiRecognition.modelListTruncated"
 msgstr "模型列表较长，仅显示前 300 个结果；可继续搜索或手动输入。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:242
+#: src/i18n/descriptors/settings.ts:241
 msgid "aiRecognition.modelMode"
 msgstr "模型输入方式"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:262
+#: src/i18n/descriptors/settings.ts:261
 msgid "aiRecognition.thinking.modelDefault"
 msgstr "模型默认"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:725
+#: src/i18n/descriptors/settings.ts:732
 msgid "settings.dingtalkTemplateExamples"
 msgstr "模板示例"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:531
+#: src/i18n/descriptors/settings.ts:538
 msgid "settings.cloudBackupDeletingNamed"
 msgstr "正在删除「{name}」"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:448
+#: src/i18n/descriptors/settings.ts:455
 msgid "settings.publicApiTokensLoading"
 msgstr "正在加载 API token..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:365
+#: src/i18n/descriptors/settings.ts:364
 msgid "settings.calendarFeedGlobalLoading"
 msgstr "正在加载全部续费链接..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:367
+#: src/i18n/descriptors/settings.ts:366
 msgid "settings.calendarFeedSubscriptionsSummaryLoading"
 msgstr "正在加载单个订阅摘要..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:371
+#: src/i18n/descriptors/settings.ts:370
 msgid "settings.calendarFeedSubscriptionsLoading"
 msgstr "正在加载单个订阅链接..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:529
+#: src/i18n/descriptors/settings.ts:536
 msgid "settings.cloudBackupRestoringNamed"
 msgstr "正在恢复「{name}」"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:562
+#: src/i18n/descriptors/settings.ts:569
 msgid "settings.categoryChecking"
 msgstr "正在检查该分类是否被订阅使用，请稍候…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:247
+#: src/i18n/descriptors/settings.ts:246
 msgid "aiRecognition.modelListLoading"
 msgstr "正在获取模型列表..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:730
+#: src/i18n/descriptors/settings.ts:737
 msgid "settings.dingtalkTemplateExampleContent"
 msgstr "正文"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:722
+#: src/i18n/descriptors/settings.ts:729
 msgid "settings.dingtalkContentTemplate"
 msgstr "正文模板"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:504
+#: src/i18n/descriptors/settings.ts:511
 msgid "settings.cloudBackupFrequencyWeekly"
 msgstr "每周"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:503
+#: src/i18n/descriptors/settings.ts:510
 msgid "settings.cloudBackupFrequencyDaily"
 msgstr "每天"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:403
+#: src/i18n/descriptors/settings.ts:410
 msgid "settings.publicStatusCurrencyHelp"
 msgstr "汇总换算为 {currency}，单项保留原账单币种。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:23
+#: src/i18n/descriptors/settings.ts:22
 msgid "settings.sectionNav.exchange"
 msgstr "汇率"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:571
+#: src/i18n/descriptors/settings.ts:578
 msgid "settings.exchange"
 msgstr "汇率与统计货币"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:573
+#: src/i18n/descriptors/settings.ts:580
 msgid "settings.ratesWarning"
 msgstr "汇率已更新，{currencies} 暂用 {sources} 补齐。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:576
+#: src/i18n/descriptors/settings.ts:583
 msgid "settings.exchangeRateProvider"
 msgstr "汇率来源"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:636
+#: src/i18n/descriptors/settings.ts:643
 msgid "settings.exchangeRateProviderSaved"
 msgstr "汇率来源已保存"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:248
+#: src/i18n/descriptors/settings.ts:247
 msgid "aiRecognition.modelSelectEmpty"
 msgstr "没有可选择的模型。请确认 Base URL / API Key 已填写，或切换到手动输入。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:783
+#: src/i18n/descriptors/settings.ts:790
 msgid "settings.testChannel.webhook"
 msgstr "测试 {channel}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:781
+#: src/i18n/descriptors/settings.ts:788
 msgid "settings.testChannel.telegram"
 msgstr "测试 {channel} 通知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:782
+#: src/i18n/descriptors/settings.ts:789
 msgid "settings.testChannel.notifyx"
 msgstr "测试 {channel} 通知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:784
+#: src/i18n/descriptors/settings.ts:791
 msgid "settings.testChannel.dingtalk"
 msgstr "测试 {channel} 通知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:785
+#: src/i18n/descriptors/settings.ts:792
 msgid "settings.testChannel.wechat"
 msgstr "测试 {channel} 通知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:787
+#: src/i18n/descriptors/settings.ts:794
 msgid "settings.testChannel.bark"
 msgstr "测试 {channel} 通知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:788
+#: src/i18n/descriptors/settings.ts:795
 msgid "settings.testChannel.serverchan"
 msgstr "测试 {channel} 通知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:789
+#: src/i18n/descriptors/settings.ts:796
 msgid "settings.testChannel.discord"
 msgstr "测试 {channel} 通知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:790
+#: src/i18n/descriptors/settings.ts:797
 msgid "settings.testChannel.pushplus"
 msgstr "测试 {channel} 通知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:786
+#: src/i18n/descriptors/settings.ts:793
 msgid "settings.testChannel.email"
 msgstr "测试{channel}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:304
+#: src/i18n/descriptors/settings.ts:303
 msgid "aiRecognition.testing"
 msgstr "测试中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:518
+#: src/i18n/descriptors/settings.ts:525
 msgid "settings.cloudBackupTesting"
 msgstr "测试中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:791
+#: src/i18n/descriptors/settings.ts:798
 msgid "settings.testing"
 msgstr "测试中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:303
+#: src/i18n/descriptors/settings.ts:302
 msgid "aiRecognition.testConnection"
 msgstr "测试连接"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:517
+#: src/i18n/descriptors/settings.ts:524
 msgid "settings.cloudBackupTest"
 msgstr "测试连接"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:749
+#: src/i18n/descriptors/settings.ts:756
 msgid "settings.wechatModeTag"
 msgstr "消息前追加「Renewlet」标记"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:747
+#: src/i18n/descriptors/settings.ts:754
 msgid "settings.messageType"
 msgstr "消息类型"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:63
+#: src/i18n/descriptors/settings.ts:62
 msgid "settings.passkeysManageDescription"
 msgstr "添加、查看和删除可用于登录的通行密钥。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:67
+#: src/i18n/descriptors/settings.ts:66
 msgid "settings.passkeyCreatedAt"
 msgstr "添加于 {time}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:64
+#: src/i18n/descriptors/settings.ts:63
 msgid "settings.addPasskey"
 msgstr "添加通行密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:71
+#: src/i18n/descriptors/settings.ts:70
 msgid "settings.passkeyAddFailed"
 msgstr "添加通行密钥失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:700
+#: src/i18n/descriptors/settings.ts:707
 msgid "settings.telegramBotCommandsDemoDisabled"
 msgstr "演示模式下不能安装外部 Telegram 命令。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:792
+#: src/i18n/descriptors/settings.ts:799
 msgid "settings.accountSecurityDemoDisabled"
 msgstr "演示模式仅供浏览，不能修改身份验证器或通行密钥。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:476
+#: src/i18n/descriptors/settings.ts:483
 msgid "settings.cloudBackupStatusActions"
 msgstr "状态与操作"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:10
+#: src/i18n/descriptors/settings.ts:9
 msgid "settings.statusUnknown"
 msgstr "状态未知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:199
+#: src/i18n/descriptors/settings.ts:198
 msgid "settings.uploadedIconsStatusUnknown"
 msgstr "状态未知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:362
+#: src/i18n/descriptors/settings.ts:361
 msgid "settings.calendarFeedStatusUnknown"
 msgstr "状态未知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:395
+#: src/i18n/descriptors/settings.ts:394
 msgid "settings.publicStatusUnknown"
 msgstr "状态未知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:565
+#: src/i18n/descriptors/settings.ts:572
 msgid "settings.statusManager"
 msgstr "状态管理"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:382
+#: src/i18n/descriptors/settings.ts:381
 msgid "settings.calendarFeedGenerateGlobalAction"
 msgstr "生成全部续费日历订阅链接"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:410
+#: src/i18n/descriptors/settings.ts:417
 msgid "settings.publicStatusGenerate"
 msgstr "生成公开链接"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:399
+#: src/i18n/descriptors/settings.ts:398
 msgid "settings.publicStatusDisabledHelp"
 msgstr "生成后展示未隐藏订阅，金额默认隐藏。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:330
+#: src/i18n/descriptors/settings.ts:329
 msgid "settings.calendarFeedGenerate"
 msgstr "生成链接"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:342
+#: src/i18n/descriptors/settings.ts:341
 msgid "settings.calendarFeedCreateFailed"
 msgstr "生成链接失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:166
+#: src/i18n/descriptors/settings.ts:165
 msgid "settings.builtInIconSourcesBuiltInHelp"
 msgstr "用于 Logo、支付方式图标搜索和导入自动 Logo 候选。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:66
+#: src/i18n/descriptors/settings.ts:65
 msgid "settings.addPasskeyPasswordHelp"
 msgstr "用于确认当前管理员身份，不会保存或回显。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:32
+#: src/i18n/descriptors/settings.ts:31
 msgid "settings.username"
 msgstr "用户名"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:486
+#: src/i18n/descriptors/settings.ts:493
 msgid "settings.cloudBackupWebdavUsername"
 msgstr "用户名"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:35
+#: src/i18n/descriptors/settings.ts:34
 msgid "settings.usernameHelp"
 msgstr "用户名为登录邮箱，不可修改"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:252
+#: src/i18n/descriptors/settings.ts:251
 msgid "aiRecognition.baseUrlPlaceholder"
 msgstr "留空使用官方 API"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:498
+#: src/i18n/descriptors/settings.ts:505
 msgid "settings.cloudBackupSecretPlaceholderSaved"
 msgstr "留空保留已保存密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:15
+#: src/i18n/descriptors/settings.ts:14
 msgid "settings.sectionNavCompactTrigger"
 msgstr "目录"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:398
+#: src/i18n/descriptors/settings.ts:397
 msgid "settings.publicStatusOneTimeHelp"
 msgstr "知道链接的人可访问；重新生成会让旧链接失效。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:216
+#: src/i18n/descriptors/settings.ts:215
 msgid "settings.uploadedIconsDeleteDescription"
 msgstr "确定要删除「{name}」吗？删除后不能从 Renewlet 找回。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:217
+#: src/i18n/descriptors/settings.ts:216
 msgid "settings.uploadedIconsDeleteFallback"
 msgstr "确定要删除这个上传图标吗？删除后不能从 Renewlet 找回。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:621
+#: src/i18n/descriptors/settings.ts:628
 msgid "settings.unsavedLeaveTitle"
 msgstr "离开设置页？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:392
+#: src/i18n/descriptors/settings.ts:391
 msgid "settings.publicStatusHelp"
 msgstr "私密链接访问，订阅可单独隐藏。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:376
+#: src/i18n/descriptors/settings.ts:375
 msgid "settings.calendarFeedPrivateUrlHint"
 msgstr "私有链接，请勿分享。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:519
+#: src/i18n/descriptors/settings.ts:526
 msgid "settings.cloudBackupCreateNow"
 msgstr "立即备份"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:613
+#: src/i18n/descriptors/settings.ts:620
 msgid "settings.testPhone"
 msgstr "第三方 API 测试号码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:347
+#: src/i18n/descriptors/settings.ts:346
 msgid "settings.calendarFeedManage"
 msgstr "管理"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:433
+#: src/i18n/descriptors/settings.ts:440
 msgid "settings.publicApiDialogTitle"
 msgstr "管理 Public API token"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:431
+#: src/i18n/descriptors/settings.ts:438
 msgid "settings.publicApiManage"
 msgstr "管理 token"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:201
+#: src/i18n/descriptors/settings.ts:200
 msgid "settings.uploadedIconsManage"
 msgstr "管理上传图标"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:202
+#: src/i18n/descriptors/settings.ts:201
 msgid "settings.uploadedIconsManageTitle"
 msgstr "管理上传图标"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:196
+#: src/i18n/descriptors/settings.ts:195
 msgid "settings.uploadedIconsHelp"
 msgstr "管理你在订阅 Logo 和支付方式里上传的图标。搜索选中的在线图标不会出现在这里。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:348
+#: src/i18n/descriptors/settings.ts:347
 msgid "settings.calendarFeedManageDescription"
 msgstr "管理全部续费和单个订阅的持续同步链接。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:31
+#: src/i18n/descriptors/settings.ts:405
+msgid "settings.publicStatusManageVisibility"
+msgstr "管理公开可见性"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:30
 msgid "settings.account"
 msgstr "管理员账户"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:6
+#: src/i18n/descriptors/settings.ts:5
 msgid "settings.subtitle"
 msgstr "管理您的账户、显示和通知设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:36
+#: src/i18n/descriptors/settings.ts:35
 msgid "settings.manageUsers"
 msgstr "管理用户"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:568
+#: src/i18n/descriptors/settings.ts:575
 msgid "settings.paymentManagerDescription"
 msgstr "管理订阅使用的付款渠道选项，支持上传或搜索图标"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:560
+#: src/i18n/descriptors/settings.ts:567
 msgid "settings.categoryManagerDescription"
 msgstr "管理订阅的分类选项，支持自定义颜色用于可视化区分"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:61
+#: src/i18n/descriptors/settings.ts:60
 msgid "settings.passkeysManage"
 msgstr "管理通行密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:62
+#: src/i18n/descriptors/settings.ts:61
 msgid "settings.passkeysManageTitle"
 msgstr "管理通行密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:5
+#: src/i18n/descriptors/settings.ts:4
 msgid "settings.title"
 msgstr "系统配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:677
+#: src/i18n/descriptors/settings.ts:684
 msgid "settings.telegramMessageFormatPlain"
 msgstr "纯文本"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:683
+#: src/i18n/descriptors/settings.ts:690
 msgid "settings.telegramBotCommandsChat"
 msgstr "绑定 Chat ID：{chatId}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:574
+#: src/i18n/descriptors/settings.ts:581
 msgid "settings.defaultCurrency"
 msgstr "统计货币"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:633
+#: src/i18n/descriptors/settings.ts:640
 msgid "settings.defaultCurrencySaved"
 msgstr "统计货币已保存"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:404
+#: src/i18n/descriptors/settings.ts:411
 msgid "settings.publicStatusCurrencyInherit"
 msgstr "继承统计货币（当前 {currency}）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:590
+#: src/i18n/descriptors/settings.ts:597
 msgid "settings.cachePolicy"
 msgstr "缓存策略"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:675
+#: src/i18n/descriptors/settings.ts:682
 msgid "settings.telegramChatIdLabel"
 msgstr "聊天 ID"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:741
+#: src/i18n/descriptors/settings.ts:748
 msgid "settings.dingtalkKeyword"
 msgstr "自定义关键词（可选）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:558
+#: src/i18n/descriptors/settings.ts:565
 msgid "settings.dataConfigDescription"
 msgstr "自定义订阅的分类、状态、支付方式和货币选项，点击管理各项配置。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:714
+#: src/i18n/descriptors/settings.ts:721
 msgid "settings.webhookHeaders"
 msgstr "自定义请求头 (JSON格式，可选)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:44
+#: src/i18n/descriptors/settings.ts:43
 msgid "settings.newPasswordPlaceholder"
 msgstr "至少 8 位"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:561
+#: src/i18n/descriptors/settings.ts:568
 msgid "settings.categoryKeepOne"
 msgstr "至少保留 1 个分类，否则新增/筛选订阅时将无法选择分类。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:177
+#: src/i18n/descriptors/settings.ts:176
 msgid "settings.onlineIconSource.appStore.storefronts.required"
 msgstr "至少保留一个地区；关闭 App Store 来源请使用上方开关。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:194
+#: src/i18n/descriptors/settings.ts:193
 msgid "settings.builtInIconSourcesRequired"
 msgstr "至少保留一个来源启用，避免 Logo 和图标搜索没有内置候选。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:640
+#: src/i18n/descriptors/settings.ts:647
 msgid "settings.currencyPolicy.noneTitle"
 msgstr "至少启用一种货币"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:582
+#: src/i18n/descriptors/settings.ts:589
 msgid "settings.exchangeRatePartialDataSource"
 msgstr "补齐：{sources}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:205
+#: src/i18n/descriptors/settings.ts:204
 msgid "settings.uploadedIconsLogoTitle"
 msgstr "订阅 Logo"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:197
+#: src/i18n/descriptors/settings.ts:196
 msgid "settings.uploadedIconsSummaryCompact"
 msgstr "订阅 Logo {logoCount} · 支付方式 {iconCount}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:198
+#: src/i18n/descriptors/settings.ts:197
 msgid "settings.uploadedIconsSummaryStale"
 msgstr "订阅 Logo {logoCount} · 支付方式 {iconCount} · 未更新"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:566
+#: src/i18n/descriptors/settings.ts:573
 msgid "settings.statusManagerDescription"
 msgstr "订阅状态与统计相关，仅支持排序调整"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:606
+#: src/i18n/descriptors/settings.ts:613
 msgid "settings.notificationReminderDaysHelp"
 msgstr "订阅选择“默认值从设置中获取”时，会使用这里的提前天数。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:768
+#: src/i18n/descriptors/settings.ts:775
 msgid "settings.barkKey"
 msgstr "设备 Key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:656
+#: src/i18n/descriptors/settings.ts:663
 msgid "settings.channel.barkReady"
 msgstr "设备 Key 已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:12
+#: src/i18n/descriptors/settings.ts:11
 msgid "settings.sectionNavLabel"
 msgstr "设置分区"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:625
+#: src/i18n/descriptors/settings.ts:632
 msgid "settings.saved"
 msgstr "设置已保存"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:319
+#: src/i18n/descriptors/settings.ts:318
 msgid "settings.monthlyBudgetHelp"
 msgstr "设置每月订阅支出预算，用于统计页面的预算使用情况分析"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:13
+#: src/i18n/descriptors/settings.ts:12
 msgid "settings.sectionNavTitle"
 msgstr "设置目录"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:81
+#: src/i18n/descriptors/settings.ts:80
 msgid "settings.mfaSetupTitle"
 msgstr "设置身份验证器"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:620
+#: src/i18n/descriptors/settings.ts:627
 msgid "settings.unsavedLeavePrompt"
 msgstr "设置页还有未保存更改，确定要离开吗？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:564
+#: src/i18n/descriptors/settings.ts:571
 msgid "settings.categoryUsed"
 msgstr "该分类已被 {count} 个订阅使用，无法删除。请先在「订阅列表」把相关订阅的分类修改为其他分类后再删除。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:535
+#: src/i18n/descriptors/settings.ts:542
 msgid "settings.cloudBackupDeleteDescription"
 msgstr "该操作会删除远端 ZIP 和 manifest，删除后无法通过 Renewlet 恢复。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:108
+#: src/i18n/descriptors/settings.ts:107
 msgid "settings.language"
 msgstr "语言"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:109
+#: src/i18n/descriptors/settings.ts:108
 msgid "settings.languageHelp"
 msgstr "语言会立即预览；保存后同步账号偏好，跟随设备不会固定后台内容语言。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:374
+#: src/i18n/descriptors/settings.ts:373
 msgid "settings.calendarFeedSubscriptionsEmpty"
 msgstr "请从订阅的“添加到日历”中生成链接。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:313
+#: src/i18n/descriptors/settings.ts:312
 msgid "aiRecognition.modelRequired"
 msgstr "请先填写 AI 模型。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:315
+#: src/i18n/descriptors/settings.ts:314
 msgid "aiRecognition.apiKeyRequired"
 msgstr "请先填写 API Key。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:697
+#: src/i18n/descriptors/settings.ts:704
 msgid "settings.telegramBotCommandsConfigMissing"
 msgstr "请先填写并保存 Bot Token 和 Chat ID。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:614
+#: src/i18n/descriptors/settings.ts:621
 msgid "settings.testPhonePlaceholder"
 msgstr "请发送测试消息后验证，例如：86xxxxxx"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:341
+#: src/i18n/descriptors/settings.ts:340
 msgid "settings.calendarFeedOpenSystemFailedDescription"
 msgstr "请复制 URL 手动添加。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:338
+#: src/i18n/descriptors/settings.ts:337
 msgid "settings.calendarFeedCopyFailedDescription"
 msgstr "请手动选择并复制 URL。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:540
+#: src/i18n/descriptors/settings.ts:547
 msgid "settings.cloudBackupInvalidDescription"
 msgstr "请检查 HTTPS 地址、Bucket、路径和保留数量。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:547
+#: src/i18n/descriptors/settings.ts:554
 msgid "settings.cloudBackupTestFailedDescription"
 msgstr "请检查地址、路径、Bucket 和密钥权限。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:95
+#: src/i18n/descriptors/settings.ts:94
 msgid "settings.mfaActionFailedDescription"
 msgstr "请检查当前密码后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:93
+#: src/i18n/descriptors/settings.ts:92
 msgid "settings.mfaEnableFailedDescription"
 msgstr "请检查当前密码和身份验证器验证码。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:712
+#: src/i18n/descriptors/settings.ts:719
 msgid "settings.webhookMethod"
 msgstr "请求方法"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:345
+#: src/i18n/descriptors/settings.ts:344
 msgid "settings.calendarFeedOperationFailedDescription"
 msgstr "请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:444
+#: src/i18n/descriptors/settings.ts:451
 msgid "settings.publicApiPlainTokenHelp"
 msgstr "请立即复制保存。关闭后 Renewlet 只会显示 prefix，无法再次查看明文。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:641
+#: src/i18n/descriptors/settings.ts:648
 msgid "settings.currencyPolicy.noneDescription"
 msgstr "请至少保留 1 个启用货币，否则无法选择统计货币/新增订阅货币。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:131
+#: src/i18n/descriptors/settings.ts:130
 msgid "settings.builtInIconIndexBadge.loading"
 msgstr "读取中"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:91
+#: src/i18n/descriptors/settings.ts:90
 msgid "settings.mfaSetupFailedDescription"
 msgstr "账号安全初始化失败，请稍后重试。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:16
+#: src/i18n/descriptors/settings.ts:15
 msgid "settings.sectionNav.account"
 msgstr "账户"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:569
+#: src/i18n/descriptors/settings.ts:576
 msgid "settings.currencyManager"
 msgstr "货币管理"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:598
+#: src/i18n/descriptors/settings.ts:605
 msgid "settings.subscriptionPriceReferenceCurrencyDefault"
 msgstr "跟随统计货币 ({currency})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:47
+#: src/i18n/descriptors/settings.ts:46
 msgid "settings.mfaTitle"
 msgstr "身份验证器"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:52
+#: src/i18n/descriptors/settings.ts:51
 msgid "settings.mfaMethodTotp"
 msgstr "身份验证器"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:88
+#: src/i18n/descriptors/settings.ts:87
 msgid "settings.mfaDisabled"
 msgstr "身份验证器已关闭"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:87
+#: src/i18n/descriptors/settings.ts:86
 msgid "settings.mfaEnabled"
 msgstr "身份验证器已启用"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:94
+#: src/i18n/descriptors/settings.ts:93
 msgid "settings.mfaActionFailed"
 msgstr "身份验证器操作失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:86
+#: src/i18n/descriptors/settings.ts:85
 msgid "settings.mfaSetupMissing"
 msgstr "身份验证器设置已失效，请重新开始。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:84
+#: src/i18n/descriptors/settings.ts:83
 msgid "settings.mfaSetupCode"
 msgstr "身份验证器验证码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:43
+#: src/i18n/descriptors/settings.ts:42
 msgid "settings.currentPasswordPlaceholder"
 msgstr "输入当前密码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:65
+#: src/i18n/descriptors/settings.ts:64
 msgid "settings.addPasskeyDescription"
 msgstr "输入当前密码后，浏览器会引导你使用设备或安全密钥创建通行密钥。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:142
+#: src/i18n/descriptors/settings.ts:141
 msgid "settings.builtInIconIndexJobStatus.running"
 msgstr "运行中"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:449
+#: src/i18n/descriptors/settings.ts:456
 msgid "settings.publicApiTokensEmpty"
 msgstr "还没有 API token。创建后可通过 Authorization Bearer 调用只读 Public API。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:210
+#: src/i18n/descriptors/settings.ts:209
 msgid "settings.uploadedIconsIconEmpty"
 msgstr "还没有上传过支付方式图标"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:207
+#: src/i18n/descriptors/settings.ts:206
 msgid "settings.uploadedIconsLogoEmpty"
 msgstr "还没有上传过订阅 Logo"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:101
+#: src/i18n/descriptors/settings.ts:100
 msgid "settings.mfaRecoveryCodesDescription"
 msgstr "这些恢复码只会展示一次。每个恢复码只能使用一次。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:488
+#: src/i18n/descriptors/settings.ts:495
 msgid "settings.cloudBackupWebdavPath"
 msgstr "远端路径"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:482
+#: src/i18n/descriptors/settings.ts:489
 msgid "settings.cloudBackupConnection"
 msgstr "连接配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:176
+#: src/i18n/descriptors/settings.ts:175
 msgid "settings.onlineIconSource.appStore.storefront.cn.help"
 msgstr "适合微信、哔哩哔哩、爱奇艺等中国区 App。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:325
+#: src/i18n/descriptors/settings.ts:324
 msgid "settings.timezoneHelp"
 msgstr "选择 IANA 时区。系统会按此时区解释通知时间和“今天/未来几天”等日期窗口。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:119
+#: src/i18n/descriptors/settings.ts:118
 msgid "settings.builtInIconSourcesDialogDescription"
 msgstr "选择 Logo 和支付方式图标搜索可使用的来源；在线 App 图标只用于手动 Logo 搜索。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:727
+#: src/i18n/descriptors/settings.ts:734
 msgid "settings.dingtalkTemplateExamplesDescription"
 msgstr "选择一个示例后仍可继续编辑。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:172
+#: src/i18n/descriptors/settings.ts:171
 msgid "settings.onlineIconSource.appStore.storefronts.help"
 msgstr "选择手动 Logo 搜索会请求的 App Store 地区；同时勾选会增加一次 Apple 请求。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:322
+#: src/i18n/descriptors/settings.ts:321
 msgid "settings.timezonePlaceholder"
 msgstr "选择时区"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:244
+#: src/i18n/descriptors/settings.ts:243
 msgid "aiRecognition.modelModeSelect"
 msgstr "选择模型"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:245
+#: src/i18n/descriptors/settings.ts:244
 msgid "aiRecognition.modelSelectPlaceholder"
 msgstr "选择模型"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:604
+#: src/i18n/descriptors/settings.ts:611
 msgid "settings.notificationTimeHelp"
 msgstr "选择每日发送通知的用户本地时间。服务端会结合上方时区换算实际触发时刻。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:586
+#: src/i18n/descriptors/settings.ts:407
+msgid "settings.publicStatusQuickBulkDescription"
+msgstr "选择类别后批量隐藏或恢复公开展示。具体订阅可在订阅列表中管理。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:593
 msgid "settings.currencyPlaceholder"
 msgstr "选择货币"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:181
+#: src/i18n/descriptors/settings.ts:180
 msgid "settings.builtInIconSource.thesvg.help"
 msgstr "通用品牌与技术图标库，默认优先显示。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:28
+#: src/i18n/descriptors/settings.ts:27
 msgid "settings.sectionNav.notifications"
 msgstr "通知"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:609
+#: src/i18n/descriptors/settings.ts:616
 msgid "settings.notificationChannels"
 msgstr "通知方式 (可多选)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:603
+#: src/i18n/descriptors/settings.ts:610
 msgid "settings.notificationTime"
 msgstr "通知时间（本地时间）"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:602
+#: src/i18n/descriptors/settings.ts:609
 msgid "settings.notifications"
 msgstr "通知设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:55
+#: src/i18n/descriptors/settings.ts:54
 msgid "settings.passkeys"
 msgstr "通行密钥"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:59
+#: src/i18n/descriptors/settings.ts:58
 msgid "settings.passkeysSummary"
 msgstr "通行密钥 · {summary}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:68
+#: src/i18n/descriptors/settings.ts:67
 msgid "settings.passkeyName"
 msgstr "通行密钥名称"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:77
+#: src/i18n/descriptors/settings.ts:76
 msgid "settings.passkeyDeleted"
 msgstr "通行密钥已删除"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:70
+#: src/i18n/descriptors/settings.ts:69
 msgid "settings.passkeyAdded"
 msgstr "通行密钥已添加"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:72
+#: src/i18n/descriptors/settings.ts:71
 msgid "settings.passkeyMissing"
 msgstr "通行密钥状态已失效，请重新选择。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:170
+#: src/i18n/descriptors/settings.ts:169
 msgid "settings.onlineIconSource.appStore.help"
 msgstr "通过 Renewlet 后端查询 Apple Search API，返回应用图标 URL；默认只查 US，不会下载或转存图片。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:761
+#: src/i18n/descriptors/settings.ts:768
 msgid "settings.smtpHelp"
 msgstr "邮件通知使用当前账号 SMTP；留空不会使用部署环境 fallback。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:114
+#: src/i18n/descriptors/settings.ts:113
 msgid "settings.builtInIconSourcesConfigure"
 msgstr "配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:542
+#: src/i18n/descriptors/settings.ts:549
 msgid "settings.cloudBackupSavedWithCredential"
 msgstr "配置和密钥已保存，密钥输入框已清空。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:118
+#: src/i18n/descriptors/settings.ts:117
 msgid "settings.builtInIconSourcesDialogTitle"
 msgstr "配置图标来源"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:234
+#: src/i18n/descriptors/settings.ts:233
 msgid "aiRecognition.settingsDescription"
 msgstr "配置用于识别订阅图片、备忘录或表格文本的第三方模型。识别内容和已有标签名会发送到你填写的 AI 平台。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:689
+#: src/i18n/descriptors/settings.ts:696
 msgid "settings.telegramBotCommandsReinstall"
 msgstr "重新安装"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:331
+#: src/i18n/descriptors/settings.ts:330
 msgid "settings.calendarFeedRegenerate"
 msgstr "重新生成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:411
+#: src/i18n/descriptors/settings.ts:418
 msgid "settings.publicStatusRegenerate"
 msgstr "重新生成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:380
+#: src/i18n/descriptors/settings.ts:379
 msgid "settings.calendarFeedRegenerateFor"
 msgstr "重新生成「{name}」的日历订阅链接"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:383
+#: src/i18n/descriptors/settings.ts:382
 msgid "settings.calendarFeedRegenerateItemTitle"
 msgstr "重新生成「{name}」的链接？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:386
+#: src/i18n/descriptors/settings.ts:385
 msgid "settings.calendarFeedRegenerating"
 msgstr "重新生成中..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:412
+#: src/i18n/descriptors/settings.ts:419
 msgid "settings.publicStatusRegenerateTitle"
 msgstr "重新生成公开展示 URL？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:343
+#: src/i18n/descriptors/settings.ts:342
 msgid "settings.calendarFeedRotateFailed"
 msgstr "重新生成失败"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:79
+#: src/i18n/descriptors/settings.ts:78
 msgid "settings.mfaRegenerateRecovery"
 msgstr "重新生成恢复码"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:98
+#: src/i18n/descriptors/settings.ts:97
 msgid "settings.mfaRegenerateTitle"
 msgstr "重新生成恢复码？"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:9
+#: src/i18n/descriptors/settings.ts:8
 msgid "settings.managerRetry"
 msgstr "重试"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:352
+#: src/i18n/descriptors/settings.ts:351
 msgid "settings.calendarFeedRetry"
 msgstr "重试"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:742
+#: src/i18n/descriptors/settings.ts:749
 msgid "settings.dingtalkKeywordHelp"
 msgstr "钉钉关键词校验要求关键词出现在消息正文中；如果填写 Test1 这类随机词，通知里也会显示它。建议使用 Renewlet、订阅提醒、续费这类自然关键词；隐藏式安全校验请使用加签。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:650
+#: src/i18n/descriptors/settings.ts:657
 msgid "settings.channel.dingtalkReady"
 msgstr "钉钉机器人 Webhook URL 已填写"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:666
+#: src/i18n/descriptors/settings.ts:673
 msgid "settings.help.dingtalk"
 msgstr "钉钉机器人安全设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:385
+#: src/i18n/descriptors/settings.ts:384
 msgid "settings.calendarFeedRevokeItemDescription"
 msgstr "链接会立即失效，日历将停止同步。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:346
+#: src/i18n/descriptors/settings.ts:345
 msgid "settings.calendarFeedRevoked"
 msgstr "链接已撤销"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:334
+#: src/i18n/descriptors/settings.ts:333
 msgid "settings.calendarFeedGenerated"
 msgstr "链接已生成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:335
+#: src/i18n/descriptors/settings.ts:334
 msgid "settings.calendarFeedRegenerated"
 msgstr "链接已重新生成"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:770
+#: src/i18n/descriptors/settings.ts:401
+msgid "settings.publicStatusHideExpired"
+msgstr "隐藏已过期订阅"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:402
+msgid "settings.publicStatusHideLifetime"
+msgstr "隐藏长期买断订阅"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:777
 msgid "settings.barkSilent"
 msgstr "静音推送"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:189
+#: src/i18n/descriptors/settings.ts:188
 msgid "settings.builtInIconSource.dashboardIcons.help"
 msgstr "面向 Homarr、Homepage、Dashy 等仪表盘的服务图标库。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:185
+#: src/i18n/descriptors/settings.ts:184
 msgid "settings.builtInIconSource.selfhst.help"
 msgstr "面向自托管服务和仪表盘的图标库。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:615
+#: src/i18n/descriptors/settings.ts:622
 msgid "settings.testPhoneHelp"
 msgstr "预留字段：部分渠道可能需要手机号/收件人 ID；当前版本不会影响已支持渠道。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:21
+#: src/i18n/descriptors/settings.ts:20
 msgid "settings.sectionNav.budget"
 msgstr "预算"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:632
+#: src/i18n/descriptors/settings.ts:639
 msgid "settings.budgetInvalid"
 msgstr "预算必须是 0 到 1,000,000,000 之间的有效数字"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:316
+#: src/i18n/descriptors/settings.ts:315
 msgid "settings.budget"
 msgstr "预算设置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:601
+#: src/i18n/descriptors/settings.ts:608
 msgid "settings.ratesInfo"
 msgstr "预览按 1 个订阅原币折算为统计货币展示，便于估算外币订阅价格。汇率数据每 24 小时自动更新，也可点击右上角按钮手动刷新；所选来源失败或少量缺失时会自动尝试其他来源补齐。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:502
+#: src/i18n/descriptors/settings.ts:509
 msgid "settings.cloudBackupFrequency"
 msgstr "频率"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:575
+#: src/i18n/descriptors/settings.ts:582
 msgid "settings.defaultCurrencyHelp"
 msgstr "首页和统计页面的金额将统一换算为此货币显示，单个订阅仍显示其原始货币"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:767
+#: src/i18n/descriptors/settings.ts:774
 msgid "settings.barkServerHelp"
 msgstr "默认使用官方服务 `https://api.day.app`；如你自建 Bark 服务，请填写你的服务地址。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:501
+#: src/i18n/descriptors/settings.ts:508
 msgid "settings.cloudBackupScheduleHelp"
 msgstr "默认关闭；开启后由服务端定时生成快照并按保留数量清理旧快照。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:174
+#: src/i18n/descriptors/settings.ts:173
 msgid "settings.onlineIconSource.appStore.storefront.us.help"
 msgstr "默认地区，适合 Netflix、Spotify、ChatGPT 等国际 App。"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:257
+#: src/i18n/descriptors/settings.ts:256
 msgid "aiRecognition.defaultThinking"
 msgstr "默认思考控制"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:605
+#: src/i18n/descriptors/settings.ts:612
 msgid "settings.notificationReminderDays"
 msgstr "默认提前提醒天数"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:731
+#: src/i18n/descriptors/settings.ts:738
 msgid "settings.dingtalkTemplateExampleDefault"
 msgstr "默认等价"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:596
+#: src/i18n/descriptors/settings.ts:603
 msgid "settings.subscriptionPriceReferenceDisabledHelp"
 msgstr "默认隐藏；开启后可选择跟随统计货币或固定参考货币。"

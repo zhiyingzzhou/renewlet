@@ -110,6 +110,7 @@ const appSettingsShape = {
   }),
   localePreference: z.enum(LOCALE_PREFERENCES),
   showExpired: z.boolean(),
+  showLunarCalendar: z.boolean(),
   defaultCurrency: z.string().trim().regex(/^[A-Z]{3}$/),
   publicStatusCurrency: publicStatusCurrencySchema,
   // 单订阅参考价由 enabled 控制展示；currency 只保存跟随统计货币或 ISO 代码，是否支持/启用由前端选项和汇率 helper 再收敛。

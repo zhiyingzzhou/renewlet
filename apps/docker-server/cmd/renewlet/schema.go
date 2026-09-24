@@ -602,6 +602,12 @@ func ensurePublicStatusPagesCollection(app core.App, users *core.Collection) err
 		if err := upsertField(c, &core.BoolField{Name: "showPrices"}); err != nil {
 			return err
 		}
+		if err := upsertField(c, &core.BoolField{Name: "hideExpired"}); err != nil {
+			return err
+		}
+		if err := upsertField(c, &core.BoolField{Name: "hideLifetime"}); err != nil {
+			return err
+		}
 		if err := ensureAutodates(c); err != nil {
 			return err
 		}

@@ -25,6 +25,9 @@ type SubscriptionGridProps = {
   onClone: (id: string) => void;
   onTogglePinned: (id: string) => void;
   onTogglePublicHidden: (id: string) => void;
+  selectionMode?: boolean;
+  selectedIds?: ReadonlySet<string>;
+  onSelect?: (id: string, selected: boolean) => void;
   onRenew: (id: string) => void;
   onViewDetails: (id: string) => void;
   onAddToCalendar: (id: string) => void;
@@ -65,6 +68,9 @@ export function SubscriptionGrid({
   onClone,
   onTogglePinned,
   onTogglePublicHidden,
+  selectionMode = false,
+  selectedIds,
+  onSelect,
   onRenew,
   onViewDetails,
   onAddToCalendar,
@@ -100,6 +106,9 @@ export function SubscriptionGrid({
           onClone={onClone}
           onTogglePinned={onTogglePinned}
           onTogglePublicHidden={onTogglePublicHidden}
+          selectionMode={selectionMode}
+          selected={selectedIds?.has(subscription.id) ?? false}
+          onSelect={onSelect}
           onRenew={onRenew}
           onViewDetails={onViewDetails}
           onAddToCalendar={onAddToCalendar}
@@ -118,12 +127,15 @@ export function SubscriptionGrid({
     onEdit,
     onPrefetchDetails,
     onRenew,
+    onSelect,
     onTogglePinned,
     onTogglePublicHidden,
     onViewDetails,
     paymentMethodByValue,
     priceReferenceCurrency,
     rows,
+    selectedIds,
+    selectionMode,
     today,
     viewMode,
   ]);

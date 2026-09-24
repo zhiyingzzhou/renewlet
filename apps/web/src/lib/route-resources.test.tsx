@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => ({
   readProductSession: vi.fn(),
   fetchSubscriptionPage: vi.fn(async (_pageParam?: string | null) => ({ subscriptions: [], nextCursor: null, total: 0 })),
   fetchSubscriptionAnalytics: vi.fn(async () => []),
-  fetchSubscriptionFacets: vi.fn(async () => ({ categories: [], tags: [], categoryCounts: {}, visibleCount: 0, hiddenCount: 0 })),
+  fetchSubscriptionFacets: vi.fn(async () => ({ categories: [], tags: [], categoryCounts: {}, visibleCount: 0, hiddenCount: 0, expiredCount: 0, lifetimeCount: 0 })),
   fetchSettings: vi.fn(async () => ({ defaultCurrency: "CNY" })),
 }));
 

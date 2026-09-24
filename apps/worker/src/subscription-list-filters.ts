@@ -160,14 +160,24 @@ export function publicStatusSubscriptionQueryPlan(
   userId: string,
   today: string,
   limit: number,
+  options: { hideExpired?: boolean; hideLifetime?: boolean } = {},
 ): SubscriptionSqlQueryPlan {
+  const filters: string[] = ["idx.user_id = ?", "idx.public_hidden = 0"];
+  const params: unknown[] = [today, userId];
+  if (options.hideExpired) {
+    filters.push("NOT (idx.status = 'expired' OR (idx.status IN ('active', 'trial') AND idx.next_billing_date < ?))");
+    params.push(today);
+  }
+  if (options.hideLifetime) {
+    filters.push("NOT (idx.billing_cycle = 'one-time' AND COALESCE(idx.one_time_term_count, 0) <= 0)");
+  }
   return {
     sql: `
       WITH ranked AS (
         SELECT idx.subscription_id, idx.user_id, idx.pinned, idx.created_at,
           ${subscriptionInactiveRankSql("idx")} AS inactive
         FROM subscription_list_index AS idx
-        WHERE idx.user_id = ? AND idx.public_hidden = 0
+        WHERE ${filters.join(" AND ")}
       ), page AS MATERIALIZED (
         SELECT *
         FROM ranked AS idx
@@ -179,7 +189,7 @@ export function publicStatusSubscriptionQueryPlan(
       INNER JOIN subscriptions AS sub ON sub.user_id = idx.user_id AND sub.id = idx.subscription_id
       ORDER BY ${DEFAULT_SUBSCRIPTION_ORDER_SQL}
     `,
-    params: [today, userId, limit],
+    params: [...params, limit],
   };
 }
 

@@ -558,8 +558,28 @@ export const subscriptionFacetsPayloadSchema = z.object({
   tags: z.array(z.string().min(1)),
   visibleCount: z.number().int().nonnegative(),
   hiddenCount: z.number().int().nonnegative(),
+  expiredCount: z.number().int().nonnegative(),
+  lifetimeCount: z.number().int().nonnegative(),
 }).strict();
 export const subscriptionFacetsResponseSchema = apiSuccessResponseSchema(subscriptionFacetsPayloadSchema);
+
+const publicVisibilityCategorySchema = z.enum(["expired", "lifetime"]);
+const subscriptionBulkPublicVisibilitySelectionSchema = z.union([
+  z.object({ ids: z.array(z.string().trim().min(1).max(80)).min(1).max(SUBSCRIPTION_INDEX_LIMIT) }).strict(),
+  z.object({ categories: z.array(publicVisibilityCategorySchema).min(1).max(2) }).strict(),
+]);
+export const subscriptionBulkPublicVisibilityRequestSchema = z.object({
+  selection: subscriptionBulkPublicVisibilitySelectionSchema,
+  publicHidden: z.boolean(),
+  dryRun: z.boolean().default(false),
+}).strict();
+export const subscriptionBulkPublicVisibilityPayloadSchema = z.object({
+  matchedCount: z.number().int().nonnegative(),
+  changedCount: z.number().int().nonnegative(),
+  skippedCount: z.number().int().nonnegative(),
+  failedIds: z.array(z.string()),
+}).strict();
+export const subscriptionBulkPublicVisibilityResponseSchema = apiSuccessResponseSchema(subscriptionBulkPublicVisibilityPayloadSchema);
 
 export const subscriptionsExportPayloadSchema = z.object({
   subscriptions: z.array(apiSubscriptionSchema),
@@ -578,6 +598,8 @@ export type SubscriptionsIndexResponse = z.infer<typeof subscriptionsIndexPayloa
 export type SubscriptionsAnalyticsResponse = z.infer<typeof subscriptionsAnalyticsPayloadSchema>;
 export type SubscriptionsCalendarResponse = z.infer<typeof subscriptionsCalendarPayloadSchema>;
 export type SubscriptionFacetsResponse = z.infer<typeof subscriptionFacetsPayloadSchema>;
+export type SubscriptionBulkPublicVisibilityRequest = z.infer<typeof subscriptionBulkPublicVisibilityRequestSchema>;
+export type SubscriptionBulkPublicVisibilityResponse = z.infer<typeof subscriptionBulkPublicVisibilityPayloadSchema>;
 export type SubscriptionsExportResponse = z.infer<typeof subscriptionsExportPayloadSchema>;
 export type SubscriptionResponse = z.infer<typeof subscriptionPayloadSchema>;
 export type SubscriptionRenewBody = z.infer<typeof subscriptionRenewBodySchema>;

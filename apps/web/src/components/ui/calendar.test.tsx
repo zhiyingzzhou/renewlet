@@ -29,4 +29,18 @@ describe("Calendar mobile sheet layout", () => {
     expect(container.querySelector(".h5-calendar-day")).not.toBeNull();
     expect(container.querySelector(".h5-calendar-day-button")).not.toBeNull();
   });
+
+  it("keeps Gregorian day numbers primary and adds a lunar description when enabled", () => {
+    const { container } = render(
+      <Calendar showLunarCalendar mode="single" defaultMonth={new Date(2024, 1, 1)} />,
+    );
+
+    expect(container.querySelector(".h5-calendar-lunar")).not.toBeNull();
+    expect(container.querySelectorAll(".h5-calendar-week")).toHaveLength(6);
+    expect(container.querySelectorAll(".h5-calendar-day-button")).toHaveLength(42);
+    const lunarDescription = container.querySelector("[aria-description]");
+    expect(lunarDescription).not.toBeNull();
+    expect(lunarDescription?.getAttribute("aria-description")).toContain("date.chineseLunarDescription");
+    expect(lunarDescription?.querySelector("span[aria-hidden='true']")).not.toBeNull();
+  });
 });

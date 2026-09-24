@@ -7,6 +7,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useI18n } from "@/i18n/I18nProvider";
 import { dateOnlyToLocalDate, dateToDateOnly, type DateOnly } from "@/lib/time/date-only";
+import { formatChineseLunarDateOnly } from "@/lib/time/chinese-lunar";
+import { useLunarCalendar } from "@/contexts/CustomConfigContext";
 import { cn } from "@/lib/utils";
 
 type DateOnlyPickerFieldSize = "default" | "large";
@@ -55,7 +57,8 @@ export function DateOnlyPickerField({
   buttonClassName,
   testId,
 }: DateOnlyPickerFieldProps) {
-  const { formatDateOnly } = useI18n();
+  const { formatDateOnly, locale, t } = useI18n();
+  const lunarCalendar = useLunarCalendar();
   const [open, setOpen] = useState(false);
   const selectedDate = value ? dateOnlyToLocalDate(value) : undefined;
   const fallbackMonth = value ?? defaultMonth ?? minDate ?? maxDate;
@@ -63,6 +66,8 @@ export function DateOnlyPickerField({
   const triggerLabelledBy = labelId && valueId ? `${labelId} ${valueId}` : undefined;
   const heightClassName = size === "large" ? "h-11" : "h-10";
   const clearSizeClassName = size === "large" ? "h-11 w-11" : "h-10 w-10";
+  const lunarDate = value && lunarCalendar.enabled ? formatChineseLunarDateOnly(value, locale) : null;
+  const formattedValue = value ? formatDateOnly(value, displayStyle) : null;
   const disabledMatchers = useMemo<Matcher[] | undefined>(() => {
     const matchers: Matcher[] = [];
     // DayPicker 的 before/after 是排他边界：min/max 当天仍可选，范围外才禁用。
@@ -99,15 +104,20 @@ export function DateOnlyPickerField({
           >
             <CalendarIcon className="h-4 w-4 shrink-0" />
             <span id={valueId} className="min-w-0 truncate">
-              {value ? formatDateOnly(value, displayStyle) : placeholder}
+              {formattedValue
+                ? lunarDate
+                  ? t("date.gregorianWithLunar", { gregorian: formattedValue, lunar: lunarDate })
+                  : formattedValue
+                : placeholder}
             </span>
           </Button>
         </PopoverTrigger>
         {/* 日期浮层跟随统一 portal 容器归属；不要在单个日期控件里硬编码 z-index 绕过 Drawer/Dialog。 */}
         <PopoverContent
-          className="w-auto border-border bg-card p-0"
+          className="h5-calendar-popover w-auto border-border bg-card p-0"
+          side="top"
           align="start"
-          mobileDetent="compact"
+          mobileDetent="large"
           mobileKind="calendar"
         >
           <Calendar

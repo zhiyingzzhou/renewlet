@@ -30,6 +30,28 @@ func TestTelegramMessageFormatDefaultsAndRecoversPersistedValue(t *testing.T) {
 	}
 }
 
+func TestLunarCalendarSettingDefaultsAndRoundTrips(t *testing.T) {
+	if defaultAppSettings().ShowLunarCalendar {
+		t.Fatal("expected Chinese lunar calendar display to be disabled by default")
+	}
+
+	settings, err := settingsFromValue(json.RawMessage(`{"localePreference":"auto","showLunarCalendar":true}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !settings.ShowLunarCalendar {
+		t.Fatal("expected persisted lunar calendar preference to survive settings normalization")
+	}
+
+	settings, err = settingsFromValue(json.RawMessage(`{"localePreference":"auto"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if settings.ShowLunarCalendar {
+		t.Fatal("expected historical settings without the field to use the false default")
+	}
+}
+
 func TestSubscriptionPriceReferenceSettingsDefaultRecoverAndWriteValidation(t *testing.T) {
 	defaults := defaultAppSettings()
 	if defaults.SubscriptionPriceReferenceEnabled {

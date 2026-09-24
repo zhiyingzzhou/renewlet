@@ -35,6 +35,8 @@ const forbiddenStartupModules = [
   ["完整 settings 模型", (id) => id.endsWith("apps/web/src/types/subscription.ts")],
 ];
 const forbiddenLazyDialogShellModules = [
+  ["高级筛选面板", (id) => id.endsWith("apps/web/src/components/subscription-advanced-filter-content.tsx")],
+  ["批量公开可见性工具栏", (id) => id.endsWith("apps/web/src/components/subscription-bulk-visibility-toolbar.tsx")],
   ["react-image-crop", (id) => id.includes("node_modules/react-image-crop/")],
   ["qrcode.react", (id) => id.includes("node_modules/qrcode.react/")],
   ["AI 草稿编辑器", (id) => id.endsWith("apps/web/src/components/ai-recognition/ai-draft-editor-panel.tsx")],

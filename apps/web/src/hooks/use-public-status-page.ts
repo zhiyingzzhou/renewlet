@@ -32,7 +32,7 @@ export function useCreatePublicStatusPage() {
 export function useUpdatePublicStatusPage() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (showPrices: boolean) => publicStatusService.updatePage({ showPrices }),
+    mutationFn: (body: { showPrices: boolean; hideExpired: boolean; hideLifetime: boolean }) => publicStatusService.updatePage(body),
     onSuccess: (page) => {
       queryClient.setQueryData(PUBLIC_STATUS_PAGE_QUERY_KEY, page);
     },
@@ -45,7 +45,7 @@ export function useDeletePublicStatusPage() {
   return useMutation({
     mutationFn: () => publicStatusService.deletePage(),
     onSuccess: () => {
-      queryClient.setQueryData(PUBLIC_STATUS_PAGE_QUERY_KEY, { enabled: false, showPrices: false });
+      queryClient.setQueryData(PUBLIC_STATUS_PAGE_QUERY_KEY, { enabled: false, showPrices: false, hideExpired: false, hideLifetime: false });
     },
   });
 }

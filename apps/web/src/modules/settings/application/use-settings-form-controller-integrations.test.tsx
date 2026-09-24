@@ -66,7 +66,7 @@ const mocks = vi.hoisted(() => ({
   syncRemoteLocalePreference: vi.fn(),
   testConnection: vi.fn(),
   refetchNotificationHistory: vi.fn<() => Promise<void>>(),
-  publicStatusPageStatus: { data: { enabled: false, pageUrl: undefined as string | undefined, showPrices: false }, isLoading: false },
+  publicStatusPageStatus: { data: { enabled: false, pageUrl: undefined as string | undefined, showPrices: false, hideExpired: false, hideLifetime: false }, isLoading: false },
   createPublicStatusPageMutateAsync: vi.fn(),
   updatePublicStatusPageMutateAsync: vi.fn(),
   deletePublicStatusPageMutateAsync: vi.fn(),
@@ -156,7 +156,7 @@ vi.mock("@/hooks/use-report-exchange-rates", () => ({
 
 vi.mock("@/hooks/use-subscriptions", () => ({
   useSubscriptionFacets: () => ({
-    data: { total: 0, categoryCounts: {}, tags: [], visibleCount: 0, hiddenCount: 0 },
+    data: { total: 0, categoryCounts: {}, tags: [], visibleCount: 0, hiddenCount: 0, expiredCount: 0, lifetimeCount: 0 },
     isPending: false,
     status: "success",
   }),
@@ -351,7 +351,7 @@ describe("useSettingsFormController integrations", () => {
     localStorage.removeItem(APPEARANCE_PENDING_STORAGE_KEY);
     localStorage.removeItem(SETTINGS_APPEARANCE_PENDING_STORAGE_KEY);
     localStorage.removeItem(SETTINGS_THEME_MODE_STORAGE_KEY);
-    mocks.publicStatusPageStatus = { data: { enabled: false, pageUrl: undefined, showPrices: false }, isLoading: false };
+    mocks.publicStatusPageStatus = { data: { enabled: false, pageUrl: undefined, showPrices: false, hideExpired: false, hideLifetime: false }, isLoading: false };
     mocks.publicApiTokens = { data: [], isLoading: false };
     mocks.telegramBotCommands = { data: undefined, isLoading: false, refetch: vi.fn().mockResolvedValue(undefined) };
     mocks.builtInIconIndexStatus = {
@@ -382,14 +382,14 @@ describe("useSettingsFormController integrations", () => {
       createdAt: "2026-06-07T00:00:00Z",
       updatedAt: "2026-06-07T00:00:00Z",
       pageUrl: "https://example.com/status/secret",
-      showPrices: false,
+      showPrices: false, hideExpired: false, hideLifetime: false,
     });
     mocks.updatePublicStatusPageMutateAsync.mockResolvedValue({
       enabled: true,
       createdAt: "2026-06-07T00:00:00Z",
       updatedAt: "2026-06-07T00:00:00Z",
       pageUrl: "https://example.com/status/secret",
-      showPrices: true,
+      showPrices: true, hideExpired: false, hideLifetime: false,
     });
     mocks.deletePublicStatusPageMutateAsync.mockResolvedValue({});
     mocks.createPublicApiTokenMutateAsync.mockResolvedValue({
@@ -626,7 +626,7 @@ describe("useSettingsFormController integrations", () => {
       data: {
         enabled: true,
         pageUrl: "https://example.com/status/secret",
-        showPrices: false,
+        showPrices: false, hideExpired: false, hideLifetime: false,
       },
       isLoading: false,
     };
@@ -643,7 +643,7 @@ describe("useSettingsFormController integrations", () => {
     await act(async () => {
       await enabledResult.current.publicStatusPage.updateShowPrices(true);
     });
-    expect(mocks.updatePublicStatusPageMutateAsync).toHaveBeenCalledWith(true);
+    expect(mocks.updatePublicStatusPageMutateAsync).toHaveBeenCalledWith({ showPrices: true, hideExpired: false, hideLifetime: false });
     await act(async () => {
       await enabledResult.current.publicStatusPage.regenerate();
     });
@@ -657,3 +657,7 @@ describe("useSettingsFormController integrations", () => {
   });
 
 });
+
+vi.mock("@/hooks/use-bulk-public-visibility", () => ({
+  useBulkPublicVisibility: () => ({ mutateAsync: vi.fn(), isPending: false }),
+}));

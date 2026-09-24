@@ -369,6 +369,63 @@ describe("SubscriptionCard", () => {
     expect(onViewDetails).toHaveBeenCalledWith("sub-1");
   });
 
+  it("selects from the whole card in public visibility management mode", async () => {
+    vi.useRealTimers();
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    renderSubscriptionCard({ name: "Fastmail" }, { onSelect }, { selectionMode: true });
+
+    const card = screen.getByTestId("subscription-card");
+    await user.click(card);
+    expect(onSelect).toHaveBeenCalledWith("sub-1", true);
+    expect(card).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("supports keyboard selection without turning the card into a nested button", async () => {
+    vi.useRealTimers();
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    renderSubscriptionCard({}, { onSelect, onTogglePinned: vi.fn() }, { selectionMode: true });
+
+    const card = screen.getByTestId("subscription-card");
+    card.focus();
+    await user.keyboard(" ");
+
+    expect(onSelect).toHaveBeenCalledWith("sub-1", true);
+    expect(card.querySelector("button")).toBeInTheDocument();
+  });
+
+  it("keeps card menu actions separate from selection", async () => {
+    vi.useRealTimers();
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    const onEdit = vi.fn();
+    renderSubscriptionCard({}, { onSelect, onEdit }, { selectionMode: true });
+
+    await user.click(screen.getByRole("button", { name: "更多操作" }));
+    await user.click(screen.getByRole("menuitem", { name: "编辑" }));
+
+    expect(onEdit).toHaveBeenCalledWith("sub-1");
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it("opens details from the menu while management mode reserves the card body for selection", async () => {
+    vi.useRealTimers();
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    const onViewDetails = vi.fn();
+    renderSubscriptionCard({ name: "Fastmail" }, { onSelect, onViewDetails }, { selectionMode: true });
+
+    await user.click(screen.getByRole("button", { name: "更多操作" }));
+    const viewDetailsItem = screen.getByRole("menuitem", { name: "查看详情" });
+    expect(viewDetailsItem).not.toHaveTextContent("Fastmail");
+    await user.click(viewDetailsItem);
+
+    expect(onViewDetails).toHaveBeenCalledWith("sub-1");
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("subscription-card-primary-action")).not.toBeInTheDocument();
+  });
+
   it("orders overflow menu actions with matching icons and separates the destructive action", () => {
     renderSubscriptionCard({}, { onTogglePinned: vi.fn() });
 

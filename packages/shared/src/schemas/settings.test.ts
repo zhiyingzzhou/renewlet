@@ -38,6 +38,13 @@ describe("settings schema", () => {
     expect(settingsUpdateBodySchema.safeParse({ subscriptionPriceReferenceEnabled: "true" }).success).toBe(false);
   });
 
+  it("defaults the Chinese lunar calendar helper to off and validates boolean patches", () => {
+    expect(createDefaultAppSettings().showLunarCalendar).toBe(false);
+    expect(settingsUpdateBodySchema.parse({ showLunarCalendar: true }).showLunarCalendar).toBe(true);
+    expect(settingsUpdateBodySchema.safeParse({ showLunarCalendar: "true" }).success).toBe(false);
+    expect(persistedSettingsBackupSchema.parse({ localePreference: "auto" }).showLunarCalendar).toBeUndefined();
+  });
+
   it("accepts online App icon source settings with App Store enabled by default", () => {
     const defaults = createDefaultAppSettings();
     expect(defaults.onlineIconSources.appStore.enabled).toBe(true);
