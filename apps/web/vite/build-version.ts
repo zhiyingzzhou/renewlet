@@ -11,7 +11,8 @@ interface PackageVersionFile {
 
 export function resolveClientBuildVersion(repoRoot: string, loadedEnv: Record<string, string | undefined> = process.env): string {
   const packageVersion = readPackageVersion(repoRoot);
-  const rawVersion = loadedEnv["VITE_RENEWLET_VERSION"] ?? loadedEnv["RENEWLET_VERSION"];
+  // Worker 部署元数据由 RENEWLET_VERSION 注入 Worker；客户端只接受显式 VITE 覆盖，避免把部署 SHA 带进 Static Assets 的压缩预算。
+  const rawVersion = loadedEnv["VITE_RENEWLET_VERSION"];
   return normalizeClientBuildVersion(rawVersion, packageVersion);
 }
 
