@@ -322,7 +322,7 @@ function CalendarDayButton({ day, className, modifiers, children, ...props }: Ca
       className={cn(
         buttonVariants({ variant: isPrimarySelected ? "default" : "ghost" }),
         "h5-calendar-day-button font-normal",
-        lunarDate ? "h-12 w-12 px-0.5 py-1" : "h-9 w-9 p-0",
+        lunarDate ? "h-10 w-10 px-0.5 py-0.5" : "h-9 w-9 p-0",
         isOutside && "text-muted-foreground opacity-50",
         isDisabled && "text-muted-foreground opacity-50",
         isToday && !isSelected && "bg-accent text-accent-foreground",
@@ -364,7 +364,7 @@ function CalendarDay({ className, modifiers, ...props }: CalendarDayProps) {
       modifiers={modifiers}
       className={cn(
         "text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
-        showLunarCalendar ? "h-12 w-12" : "h-9 w-9",
+        showLunarCalendar ? "h-10 w-10" : "h-9 w-9",
         "h5-calendar-day",
         isRangeSelected && "bg-accent",
         isOutsideSelected && "bg-accent/50",

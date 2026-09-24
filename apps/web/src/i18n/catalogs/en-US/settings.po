@@ -913,7 +913,7 @@ msgid "settings.cloudBackupRestoreFailed"
 msgstr "Cloud snapshot restore failed"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:801
+#: src/i18n/descriptors/settings-display.ts:5
 msgid "settings.showLunarCalendarHelp"
 msgstr "Shows Gregorian and Chinese lunar dates only in date pickers; billing, reminder, and calendar dates stay unchanged."
 
@@ -2102,7 +2102,7 @@ msgid "settings.mfaRecoveryCopyFailedDescription"
 msgstr "This browser does not allow one-click copy. Select the recovery codes manually."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:802
+#: src/i18n/descriptors/settings-display.ts:6
 msgid "settings.showLunarCalendarUnsupported"
 msgstr "This browser does not support Chinese lunar dates. Upgrade your browser before enabling this option."
 
@@ -2592,7 +2592,7 @@ msgid "settings.sectionNav.display"
 msgstr "Display"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/settings.ts:800
+#: src/i18n/descriptors/settings-display.ts:4
 msgid "settings.showLunarCalendar"
 msgstr "Show Chinese lunar dates"
 

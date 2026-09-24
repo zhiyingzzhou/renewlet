@@ -134,13 +134,22 @@
     .h5-floating-content.h5-calendar-popover {
       max-height: min(
         32rem,
-        var(--radix-popover-content-available-height, 32rem),
         calc(var(--app-viewport-height) - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom))
       );
       overflow-x: hidden;
       overflow-y: auto;
       overscroll-behavior-y: contain;
       scroll-padding-block: 0.75rem;
+    }
+
+    /* 六周农历网格需在日期字段靠近底部时翻到上方；紧凑周距保留两行信息的可读空间。 */
+    .h5-calendar-lunar .h5-calendar-week {
+      margin-top: 0.25rem;
+    }
+
+    .h5-calendar-popover .h5-calendar-lunar {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
     }
   }
 

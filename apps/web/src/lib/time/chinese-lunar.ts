@@ -10,7 +10,7 @@ function formatterForLocale(locale: Locale, style: LunarDisplayStyle = "full"): 
   const cached = formatterCache.get(cacheKey);
   if (cached !== undefined) return cached;
 
-  let formatter: Intl.DateTimeFormat | null = null;
+  let formatter: Intl.DateTimeFormat | null;
   try {
     const candidate = new Intl.DateTimeFormat(locale, {
       calendar: "chinese",

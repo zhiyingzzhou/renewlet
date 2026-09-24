@@ -115,6 +115,7 @@ export function DateOnlyPickerField({
         {/* 日期浮层跟随统一 portal 容器归属；不要在单个日期控件里硬编码 z-index 绕过 Drawer/Dialog。 */}
         <PopoverContent
           className="h5-calendar-popover w-auto border-border bg-card p-0"
+          side="top"
           align="start"
           mobileDetent="large"
           mobileKind="calendar"
