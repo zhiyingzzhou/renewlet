@@ -218,7 +218,10 @@ vi.mock("@/components/header", () => ({
 
 vi.mock("@/contexts/CustomConfigContext", async () => {
   const { DEFAULT_CUSTOM_CONFIG: defaultConfig } = await import("@/types/config");
-  return { useCustomConfigState: () => ({ config: defaultConfig }) };
+  return {
+    useCustomConfigState: () => ({ config: defaultConfig }),
+    useLunarCalendar: () => ({ enabled: false, supported: true }),
+  };
 });
 
 vi.mock("./settings-advanced-sections-loader", async () => {

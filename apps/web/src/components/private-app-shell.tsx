@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import { CustomConfigProvider } from "@/contexts/CustomConfigContext";
+import { CustomConfigProvider, LunarCalendarProvider } from "@/contexts/CustomConfigContext";
 import PrivateAppearanceSync from "@/components/private-appearance-sync";
 import PrivateLocaleSync from "@/components/private-locale-sync";
 
@@ -7,9 +7,11 @@ import PrivateLocaleSync from "@/components/private-locale-sync";
 export default function PrivateAppShell() {
   return (
     <CustomConfigProvider>
-      <PrivateAppearanceSync />
-      <PrivateLocaleSync />
-      <Outlet />
+      <LunarCalendarProvider>
+        <PrivateAppearanceSync />
+        <PrivateLocaleSync />
+        <Outlet />
+      </LunarCalendarProvider>
     </CustomConfigProvider>
   );
 }

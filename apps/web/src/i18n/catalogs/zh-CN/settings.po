@@ -913,6 +913,11 @@ msgid "settings.cloudBackupRestoreFailed"
 msgstr "云端快照恢复失败"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:801
+msgid "settings.showLunarCalendarHelp"
+msgstr "仅在日期选择器中显示公历与中国农历，不改变账单、提醒或日历日期。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings.ts:257
 msgid "aiRecognition.thinkingHelp"
 msgstr "仅展示当前平台和模型明确支持的官方思考控制；不支持时保持模型默认行为。"
@@ -2097,6 +2102,11 @@ msgid "settings.mfaRecoveryCopyFailedDescription"
 msgstr "当前浏览器不允许一键复制，请手动选择恢复码。"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:802
+msgid "settings.showLunarCalendarUnsupported"
+msgstr "当前浏览器不支持中国农历显示。请升级浏览器后再启用。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings.ts:618
 msgid "settings.channelEnabledHelp"
 msgstr "当前渠道已启用，保存后会参与通知发送。"
@@ -2580,6 +2590,11 @@ msgstr "星期日"
 #: src/i18n/descriptors/settings.ts:17
 msgid "settings.sectionNav.display"
 msgstr "显示"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:800
+msgid "settings.showLunarCalendar"
+msgstr "显示中国农历日期"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings.ts:106

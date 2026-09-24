@@ -27,6 +27,13 @@ describe("settings normalization", () => {
     expect(settings.subscriptionPriceReferenceCurrency).toBe("default");
   });
 
+  it("fills the lunar display default when reading historical settings", () => {
+    const settings = normalizeSettingsValue({ localePreference: "auto", defaultCurrency: "USD" }, createDefaultAppSettings());
+
+    expect(settings.showLunarCalendar).toBe(false);
+    expect(normalizeSettingsValue({ localePreference: "auto", showLunarCalendar: true }, createDefaultAppSettings()).showLunarCalendar).toBe(true);
+  });
+
   it("merges nested settings patches from one shared source", () => {
     const current = createDefaultAppSettings();
     const settings = mergeAppSettingsPatch(current, {

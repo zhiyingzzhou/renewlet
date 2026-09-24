@@ -129,6 +129,21 @@
     max-height: min(24rem, calc(var(--app-viewport-height) - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
   }
 
+  /* 日期网格固定六周，普通浮层的 24rem 菜单预算不足；只有日期变体扩大上限并在短视口自持滚动。 */
+  @media (min-width: 768px) {
+    .h5-floating-content.h5-calendar-popover {
+      max-height: min(
+        32rem,
+        var(--radix-popover-content-available-height, 32rem),
+        calc(var(--app-viewport-height) - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom))
+      );
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      scroll-padding-block: 0.75rem;
+    }
+  }
+
   /* Media Candidate 弹层只约束外框；搜索区和结果滚动区各自接在同一条高度链上。 */
   .media-candidate-popover {
     --media-candidate-popover-max-height: 28rem;
@@ -542,11 +557,14 @@
       opacity: 0.5;
     }
 
-    /* 日历 sheet 强制 7 列 Grid，表格默认布局在窄屏会把日期按钮挤成奇怪的长条。 */
+    /* 日历优先按内容收高；六周网格在普通手机视口内完整展示，极短视口才交给 sheet 的滚动边界。 */
     .h5-mobile-sheet-calendar {
+      --h5-calendar-day-size: 2.25rem;
+      --h5-calendar-week-gap: 0.25rem;
       width: min(100vw, 32rem) !important;
       padding-right: 1rem !important;
       padding-left: 1rem !important;
+      padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
     }
 
     /* react-day-picker 输出 table 结构；这里先统一宽度，后面再拆成可控的 Grid 周行。 */
@@ -567,6 +585,11 @@
       display: block;
     }
 
+    /* 标题与网格只保留一个紧凑间距；额外空白会直接挤掉第六周。 */
+    .h5-mobile-sheet-calendar .h5-calendar-month {
+      gap: 0.5rem;
+    }
+
     /* repeat(7,minmax(0,1fr)) 保证每周七列等宽，长本地化星期名也不能把列撑爆。 */
     .h5-mobile-sheet-calendar .h5-calendar-weekdays,
     .h5-mobile-sheet-calendar .h5-calendar-week {
@@ -574,6 +597,10 @@
       width: 100%;
       grid-template-columns: repeat(7, minmax(0, 1fr));
       gap: 0.25rem;
+    }
+
+    .h5-mobile-sheet-calendar .h5-calendar-week {
+      margin-top: var(--h5-calendar-week-gap);
     }
 
     /* 日期格自己居中，按钮负责正方形触控目标；职责混了就会出现椭圆日期。 */
@@ -586,11 +613,52 @@
       justify-content: center;
     }
 
+    .h5-mobile-sheet-calendar .h5-calendar-day {
+      height: var(--h5-calendar-day-size);
+    }
+
     .h5-mobile-sheet-calendar .h5-calendar-day-button {
-      width: min(100%, 2.75rem);
-      height: auto;
-      min-height: 2.5rem;
+      width: min(100%, var(--h5-calendar-day-size));
+      height: var(--h5-calendar-day-size);
+      min-height: var(--h5-calendar-day-size);
       aspect-ratio: 1 / 1;
+    }
+
+    /* 双行农历格保持 40px 高并铺满列宽，主日号与副标签共享同一触控目标。 */
+    .h5-mobile-sheet-calendar .h5-calendar-lunar .h5-calendar-day-button {
+      width: 100%;
+      height: 2.5rem;
+      min-height: 2.5rem;
+      aspect-ratio: auto;
+      padding: 0.25rem 0.125rem;
+    }
+
+    .h5-mobile-sheet-calendar .h5-calendar-lunar .h5-calendar-day {
+      height: 2.5rem;
+    }
+
+    /* 480px 以下的极短视口仍维持 36px 格子；只有内容确实超出时才允许这一层滚动。 */
+    @media (max-height: 30rem) {
+      .h5-mobile-sheet-calendar {
+        --h5-calendar-day-size: 2.25rem;
+        --h5-calendar-week-gap: 0.125rem;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .h5-mobile-sheet-calendar .h5-calendar-month {
+        gap: 0.25rem;
+      }
+
+      .h5-mobile-sheet-calendar .h5-calendar-lunar .h5-calendar-day-button {
+        height: 2.25rem;
+        min-height: 2.25rem;
+      }
+
+      .h5-mobile-sheet-calendar .h5-calendar-lunar .h5-calendar-day {
+        height: 2.25rem;
+      }
     }
   }
 

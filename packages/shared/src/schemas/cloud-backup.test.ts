@@ -475,6 +475,17 @@ describe("renewlet export schema", () => {
     expect(fromRenewletExportSettingsV1(exported)).toEqual({ localePreference, defaultCurrency: "USD" });
   });
 
+  it("preserves the optional lunar display preference in v1 backups", () => {
+    const exported = toRenewletExportSettingsV1({
+      localePreference: "auto",
+      defaultCurrency: "USD",
+      showLunarCalendar: true,
+    });
+
+    expect(exported.showLunarCalendar).toBe(true);
+    expect(fromRenewletExportSettingsV1({ defaultCurrency: "CNY" })).toEqual({ defaultCurrency: "CNY" });
+  });
+
   it("omits auto from v1 exports and leaves an absent v1 locale out of the import patch", () => {
     expect(toRenewletExportSettingsV1({ localePreference: "auto", defaultCurrency: "USD" })).toEqual({
       defaultCurrency: "USD",

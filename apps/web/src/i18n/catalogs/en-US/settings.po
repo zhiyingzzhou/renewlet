@@ -913,6 +913,11 @@ msgid "settings.cloudBackupRestoreFailed"
 msgstr "Cloud snapshot restore failed"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:801
+msgid "settings.showLunarCalendarHelp"
+msgstr "Shows Gregorian and Chinese lunar dates only in date pickers; billing, reminder, and calendar dates stay unchanged."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings.ts:257
 msgid "aiRecognition.thinkingHelp"
 msgstr "Only official thinking controls clearly supported by the selected platform and model are shown. Unsupported models keep their default behavior."
@@ -2097,6 +2102,11 @@ msgid "settings.mfaRecoveryCopyFailedDescription"
 msgstr "This browser does not allow one-click copy. Select the recovery codes manually."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:802
+msgid "settings.showLunarCalendarUnsupported"
+msgstr "This browser does not support Chinese lunar dates. Upgrade your browser before enabling this option."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings.ts:618
 msgid "settings.channelEnabledHelp"
 msgstr "This channel is enabled and will send notifications after saving."
@@ -2580,6 +2590,11 @@ msgstr "Sunday"
 #: src/i18n/descriptors/settings.ts:17
 msgid "settings.sectionNav.display"
 msgstr "Display"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:800
+msgid "settings.showLunarCalendar"
+msgstr "Show Chinese lunar dates"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings.ts:106

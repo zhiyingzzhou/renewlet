@@ -28,8 +28,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useLunarCalendar } from "@/contexts/CustomConfigContext";
+import { dateToDateOnly } from "@/lib/time/date-only";
+import {
+  formatChineseLunarDateOnly,
+  formatChineseLunarDateOnlyCompact,
+} from "@/lib/time/chinese-lunar";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  showLunarCalendar?: boolean;
+};
 
 type CalendarCaptionProps = {
   calendarMonth: CalendarMonth;
@@ -62,6 +70,7 @@ type CalendarNavContextValue = {
 };
 
 const CalendarNavContext = React.createContext<CalendarNavContextValue | null>(null);
+const CalendarLunarContext = React.createContext(false);
 
 function useCalendarNav() {
   const ctx = React.useContext(CalendarNavContext);
@@ -291,7 +300,7 @@ function CalendarCaption({
  * - react-day-picker v9 默认不会把 selected/today 等样式 class 直接应用到 button 上
  * - 为了 1:1 复刻原项目（v8 + shadcn）按钮观感，这里根据 modifiers 在按钮上手动套用 Tailwind 样式
  */
-function CalendarDayButton({ className, modifiers, ...props }: CalendarDayButtonProps) {
+function CalendarDayButton({ day, className, modifiers, children, ...props }: CalendarDayButtonProps) {
   const isSelected = modifiers["selected"] === true;
   const isRangeMiddle = modifiers["range_middle"] === true;
   const isToday = modifiers["today"] === true;
@@ -299,14 +308,21 @@ function CalendarDayButton({ className, modifiers, ...props }: CalendarDayButton
   const isDisabled = modifiers["disabled"] === true;
   const isOutsideSelected = isOutside && isSelected;
   const isPrimarySelected = isSelected && !isRangeMiddle && !isOutsideSelected;
+  const showLunarCalendar = React.useContext(CalendarLunarContext);
+  const { locale, t } = useI18n();
+  const dateOnly = showLunarCalendar ? dateToDateOnly(day.date) : null;
+  const lunarDate = dateOnly ? formatChineseLunarDateOnlyCompact(dateOnly, locale) : null;
+  const lunarDescription = dateOnly ? formatChineseLunarDateOnly(dateOnly, locale) : null;
 
   return (
     <DayButton
       {...props}
+      day={day}
       modifiers={modifiers}
       className={cn(
         buttonVariants({ variant: isPrimarySelected ? "default" : "ghost" }),
-        "h5-calendar-day-button h-9 w-9 p-0 font-normal",
+        "h5-calendar-day-button font-normal",
+        lunarDate ? "h-12 w-12 px-0.5 py-1" : "h-9 w-9 p-0",
         isOutside && "text-muted-foreground opacity-50",
         isDisabled && "text-muted-foreground opacity-50",
         isToday && !isSelected && "bg-accent text-accent-foreground",
@@ -315,7 +331,17 @@ function CalendarDayButton({ className, modifiers, ...props }: CalendarDayButton
           "bg-accent/50 text-muted-foreground hover:bg-accent/50 hover:text-muted-foreground focus:bg-accent/50 focus:text-muted-foreground opacity-30",
         className,
       )}
-    />
+      aria-description={lunarDescription ? t("date.chineseLunarDescription", { lunar: lunarDescription }) : undefined}
+    >
+      <span className="flex min-w-0 max-w-full flex-col items-center justify-center leading-none">
+        <span className="text-base tabular-nums leading-5">{children}</span>
+        {lunarDate ? (
+          <span aria-hidden="true" className="max-w-full truncate whitespace-nowrap text-[10px] leading-3 tracking-tight text-current opacity-70">
+            {lunarDate}
+          </span>
+        ) : null}
+      </span>
+    </DayButton>
   );
 }
 
@@ -330,13 +356,15 @@ function CalendarDay({ className, modifiers, ...props }: CalendarDayProps) {
   const isRangeEnd = modifiers["range_end"] === true;
   const isRangeSelected = isRangeStart || isRangeMiddle || isRangeEnd;
   const isOutsideSelected = modifiers["outside"] === true && isRangeSelected;
+  const showLunarCalendar = React.useContext(CalendarLunarContext);
 
   return (
     <Day
       {...props}
       modifiers={modifiers}
       className={cn(
-        "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+        "text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+        showLunarCalendar ? "h-12 w-12" : "h-9 w-9",
         "h5-calendar-day",
         isRangeSelected && "bg-accent",
         isOutsideSelected && "bg-accent/50",
@@ -352,12 +380,15 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  showLunarCalendar,
   month: controlledMonth,
   onMonthChange,
   locale: dayPickerLocale,
   ...props
 }: CalendarProps) {
   const { locale } = useI18n();
+  const lunarCalendar = useLunarCalendar();
+  const lunarEnabled = showLunarCalendar ?? lunarCalendar.enabled;
   const [internalMonth, setInternalMonth] = useState(
     controlledMonth || props.defaultMonth || new Date(),
   );
@@ -414,33 +445,35 @@ function Calendar({
 
   return (
     <CalendarNavContext.Provider value={navCtx}>
-      <DayPicker
-        {...props}
-        showOutsideDays={showOutsideDays}
-        fixedWeeks
-        hideNavigation
-        locale={dayPickerLocale ?? (locale === "zh-CN" ? zhCN : enUS)}
-        month={displayMonth}
-        onMonthChange={handleMonthChange}
-        className={cn("h5-calendar-root p-3", className)}
-        classNames={{
-          months: "h5-calendar-months flex flex-col gap-4 sm:flex-row",
-          month: "h5-calendar-month grid gap-4",
-          month_caption: "h5-calendar-month-caption flex justify-center pt-1 relative items-center",
-          caption_label: "text-sm font-medium hidden",
-          nav: "flex items-center gap-1",
-          month_grid: "h5-calendar-month-grid w-full border-collapse",
-          weekdays: "h5-calendar-weekdays flex",
-          weekday: "h5-calendar-weekday text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-          week: "h5-calendar-week flex w-full mt-2",
-          ...classNames,
-        }}
-        components={{
-          MonthCaption: CalendarCaption,
-          Day: CalendarDay,
-          DayButton: CalendarDayButton,
-        }}
-      />
+      <CalendarLunarContext.Provider value={lunarEnabled}>
+        <DayPicker
+          {...props}
+          showOutsideDays={showOutsideDays}
+          fixedWeeks
+          hideNavigation
+          locale={dayPickerLocale ?? (locale === "zh-CN" ? zhCN : enUS)}
+          month={displayMonth}
+          onMonthChange={handleMonthChange}
+          className={cn("h5-calendar-root p-3", lunarEnabled && "h5-calendar-lunar", className)}
+          classNames={{
+            months: "h5-calendar-months flex flex-col gap-4 sm:flex-row",
+            month: "h5-calendar-month grid gap-4",
+            month_caption: "h5-calendar-month-caption flex justify-center pt-1 relative items-center",
+            caption_label: "text-sm font-medium hidden",
+            nav: "flex items-center gap-1",
+            month_grid: "h5-calendar-month-grid w-full border-collapse",
+            weekdays: "h5-calendar-weekdays flex",
+            weekday: "h5-calendar-weekday text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+            week: "h5-calendar-week flex w-full mt-2",
+            ...classNames,
+          }}
+          components={{
+            MonthCaption: CalendarCaption,
+            Day: CalendarDay,
+            DayButton: CalendarDayButton,
+          }}
+        />
+      </CalendarLunarContext.Provider>
     </CalendarNavContext.Provider>
   );
 }

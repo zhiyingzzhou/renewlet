@@ -112,4 +112,6 @@ export const messages = [
   msg({ id: "date.monthDay", message: "{month}月{day}日" }),
   msg({ id: "date.full", message: "{year}年{month}月{day}日" }),
   msg({ id: "date.short", message: "{year}/{month}/{day}" }),
+  msg({ id: "date.gregorianWithLunar", message: "{gregorian} · 农历 {lunar}" }),
+  msg({ id: "date.chineseLunarDescription", message: "中国农历 {lunar}" }),
 ] as const;

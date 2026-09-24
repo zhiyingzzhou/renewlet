@@ -20,6 +20,7 @@ export function createDefaultAppSettings(options: DefaultSettingsOptions = {}): 
     themeCustomColor: DEFAULT_CUSTOM_THEME_COLOR,
     localePreference: DEFAULT_LOCALE_PREFERENCE,
     showExpired: true,
+    showLunarCalendar: false,
     defaultCurrency: "CNY",
     publicStatusCurrency: "inherit",
     subscriptionPriceReferenceEnabled: false,

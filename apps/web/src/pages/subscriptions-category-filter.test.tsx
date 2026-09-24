@@ -111,6 +111,7 @@ vi.mock("@/hooks/use-exchange-rates", () => ({
 
 vi.mock("@/contexts/CustomConfigContext", () => ({
   useCustomConfigState: () => ({ config: mocks.customConfig }),
+  useLunarCalendar: () => ({ enabled: false, supported: true }),
 }));
 
 vi.mock("@/modules/subscriptions/application/use-subscription-crud", () => ({
