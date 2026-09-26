@@ -18,6 +18,7 @@ import {
 } from "react-day-picker";
 import { addMonths, subMonths, setMonth, setYear } from "date-fns";
 import { enUS, zhCN } from "date-fns/locale";
+import type { Locale as DateFnsLocale } from "date-fns";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -28,12 +29,44 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useI18n } from "@/i18n/I18nProvider";
+import type { Locale } from "@/i18n/locales";
 import { useLunarCalendar } from "@/contexts/CustomConfigContext";
 import { dateToDateOnly } from "@/lib/time/date-only";
 import {
   formatChineseLunarDateOnly,
   formatChineseLunarDateOnlyCompact,
 } from "@/lib/time/chinese-lunar";
+
+// Non-default date-fns locales stay out of the shared route bundle.
+const DAY_PICKER_LOCALES = {
+  "zh-CN": zhCN,
+  "en-US": enUS,
+  "ru-RU": () => import("date-fns/locale/ru").then((module) => module.ru),
+} satisfies Record<Locale, DateFnsLocale | (() => Promise<DateFnsLocale>)>;
+
+const loadedDayPickerLocales = new Map<Locale, DateFnsLocale>();
+
+function useDayPickerLocale(locale: Locale): DateFnsLocale {
+  const source = DAY_PICKER_LOCALES[locale];
+  const [, setLoadedLocale] = useState<Locale | null>(null);
+
+  useEffect(() => {
+    if (typeof source !== "function" || loadedDayPickerLocales.has(locale)) return;
+    let active = true;
+    source()
+      .then((value) => {
+        loadedDayPickerLocales.set(locale, value);
+        if (active) setLoadedLocale(locale);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [locale, source]);
+
+  if (typeof source !== "function") return source;
+  return loadedDayPickerLocales.get(locale) ?? enUS;
+}
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   showLunarCalendar?: boolean;
@@ -387,6 +420,7 @@ function Calendar({
   ...props
 }: CalendarProps) {
   const { locale } = useI18n();
+  const localeDayPickerLocale = useDayPickerLocale(locale);
   const lunarCalendar = useLunarCalendar();
   const lunarEnabled = showLunarCalendar ?? lunarCalendar.enabled;
   const [internalMonth, setInternalMonth] = useState(
@@ -451,7 +485,7 @@ function Calendar({
           showOutsideDays={showOutsideDays}
           fixedWeeks
           hideNavigation
-          locale={dayPickerLocale ?? (locale === "zh-CN" ? zhCN : enUS)}
+          locale={dayPickerLocale ?? localeDayPickerLocale}
           month={displayMonth}
           onMonthChange={handleMonthChange}
           className={cn("h5-calendar-root p-3", lunarEnabled && "h5-calendar-lunar", className)}

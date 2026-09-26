@@ -1,0 +1,354 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-25 00:00+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru-RU\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:24
+msgid "admin.passkeyCount"
+msgstr "{count, plural, one {# ключ доступа} few {# ключа доступа} many {# ключей доступа} other {# ключа доступа}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:21
+msgid "admin.mfaMethodCount"
+msgstr "{count, plural, one {# способ} few {# способа} many {# способов} other {# способа}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:67
+msgid "admin.currentUserProtected"
+msgstr "Нельзя отключить, понизить или удалить аккаунт, под которым вы сейчас вошли"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:64
+msgid "admin.resetDescription"
+msgstr "Задайте новый пароль для {name} ({email})."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:65
+msgid "admin.resetFallback"
+msgstr "Задайте новый пароль для пользователя."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:8
+msgid "admin.createDescription"
+msgstr "Создайте аккаунт для входа. Начальный пароль больше не будет показан, поэтому проверьте его перед отправкой."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:7
+msgid "admin.createUser"
+msgstr "Создать пользователя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:50
+msgid "admin.createFailed"
+msgstr "Не удалось создать пользователя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:51
+msgid "admin.createFailedDescription"
+msgstr "Не удалось создать пользователя. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:6
+msgid "admin.subtitle"
+msgstr "Создание и отключение аккаунтов, сброс паролей"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:47
+msgid "admin.initialPassword"
+msgstr "Начальный пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:71
+msgid "admin.validation.initialPasswordLength"
+msgstr "Начальный пароль должен содержать не менее 8 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:46
+msgid "admin.deleting"
+msgstr "Удаление..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:42
+msgid "admin.deleteUser"
+msgstr "Удалить пользователя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:59
+msgid "admin.deleteFailed"
+msgstr "Не удалось удалить пользователя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:60
+msgid "admin.deleteFailedDescription"
+msgstr "Не удалось удалить пользователя. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:52
+msgid "admin.loadFailed"
+msgstr "Не удалось загрузить пользователей"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:53
+msgid "admin.loadFailedDescription"
+msgstr "Не удалось загрузить пользователей. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:17
+msgid "admin.enabled"
+msgstr "Включён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:61
+msgid "admin.resetSuccess"
+msgstr "Пароль сброшен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:28
+msgid "admin.resetMfaDescription"
+msgstr "Аутентификатор для {name} ({email}) будет отключён, а коды восстановления аннулированы. Ключи доступа не будут удалены."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:29
+msgid "admin.resetMfaFallback"
+msgstr "Аутентификатор этого пользователя будет отключён, а коды восстановления аннулированы. Ключи доступа не будут удалены."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:36
+msgid "admin.resetPasskeysDescription"
+msgstr "Все ключи доступа для {name} ({email}) будут удалены, а текущие сеансы завершены."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:37
+msgid "admin.resetPasskeysFallback"
+msgstr "Все ключи доступа этого пользователя будут удалены, а текущие сеансы завершены."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:43
+msgid "admin.deleteDescription"
+msgstr "Пользователь {name} ({email}) будет удалён навсегда вместе с аккаунтом, подписками, настройками и загруженными файлами. Это действие нельзя отменить."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:44
+msgid "admin.deleteFallback"
+msgstr "Аккаунт этого пользователя, его подписки, настройки и загруженные файлы будут удалены навсегда. Это действие нельзя отменить."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:19
+msgid "admin.mfaEnabled"
+msgstr "Включено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:22
+msgid "admin.passkeysEnabled"
+msgstr "Добавлены"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:14
+msgid "admin.actions"
+msgstr "Действия"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:56
+msgid "admin.updateStatusFailed"
+msgstr "Не удалось изменить статус"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:57
+msgid "admin.updateStatusFailedDescription"
+msgstr "Не удалось изменить статус. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:54
+msgid "admin.updateRoleFailed"
+msgstr "Не удалось изменить роль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:55
+msgid "admin.updateRoleFailedDescription"
+msgstr "Не удалось изменить роль. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:20
+msgid "admin.mfaDisabled"
+msgstr "Выключено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:23
+msgid "admin.passkeysDisabled"
+msgstr "Не добавлены"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:11
+msgid "admin.status"
+msgstr "Статус"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:9
+msgid "admin.user"
+msgstr "Пользователь"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:15
+msgid "admin.roleUser"
+msgstr "Пользователь"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:49
+msgid "admin.createSuccess"
+msgstr "Пользователь создан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:58
+msgid "admin.deleteSuccess"
+msgstr "Пользователь удалён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:5
+msgid "admin.title"
+msgstr "Управление пользователями"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:45
+msgid "admin.confirmDelete"
+msgstr "Подтвердить удаление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:48
+msgid "admin.confirmInitialPassword"
+msgstr "Подтвердите пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:30
+msgid "admin.confirmResetMfa"
+msgstr "Подтвердить сброс аутентификатора"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:38
+msgid "admin.confirmResetPasskeys"
+msgstr "Подтвердить сброс ключей доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:18
+msgid "admin.banned"
+msgstr "Отключён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:16
+msgid "admin.roleAdmin"
+msgstr "Администратор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:66
+msgid "admin.lastAdmin"
+msgstr "Должен остаться хотя бы один активный администратор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:10
+msgid "admin.role"
+msgstr "Роль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:72
+msgid "admin.validation.confirmInitial"
+msgstr "Введите начальный пароль ещё раз"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:70
+msgid "admin.validation.emailInvalid"
+msgstr "Введите корректный адрес электронной почты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:68
+msgid "admin.validation.nameRequired"
+msgstr "Введите имя пользователя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:69
+msgid "admin.validation.emailRequired"
+msgstr "Введите адрес электронной почты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:12
+msgid "admin.mfa"
+msgstr "Аутентификатор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:31
+msgid "admin.resetMfaSuccess"
+msgstr "Аутентификатор сброшен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:13
+msgid "admin.passkeys"
+msgstr "Ключи доступа (passkey)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:39
+msgid "admin.resetPasskeysSuccess"
+msgstr "Ключи доступа сброшены"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:33
+msgid "admin.resetMfaFailedDescription"
+msgstr "Сброс не выполнен. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:41
+msgid "admin.resetPasskeysFailedDescription"
+msgstr "Сброс не выполнен. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:25
+msgid "admin.resetPassword"
+msgstr "Сбросить пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:62
+msgid "admin.resetFailed"
+msgstr "Не удалось сбросить пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:63
+msgid "admin.resetFailedDescription"
+msgstr "Не удалось сбросить пароль. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:26
+msgid "admin.resetMfa"
+msgstr "Сбросить аутентификатор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:27
+msgid "admin.resetMfaTitle"
+msgstr "Сбросить аутентификатор?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:32
+msgid "admin.resetMfaFailed"
+msgstr "Не удалось сбросить аутентификатор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:34
+msgid "admin.resetPasskeys"
+msgstr "Сбросить ключи доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:35
+msgid "admin.resetPasskeysTitle"
+msgstr "Сбросить ключи доступа?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/admin.ts:40
+msgid "admin.resetPasskeysFailed"
+msgstr "Не удалось сбросить ключи доступа"

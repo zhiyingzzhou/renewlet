@@ -18,6 +18,9 @@ const builtInLabelsPath = path.join(rootDir, "apps/web/src/i18n/built-in-labels.
 const clientSourceDir = path.join(rootDir, "apps/web/src");
 const labelMessagesModule = "@/i18n/label-messages";
 const locales = i18nConfig.supportedLocales;
+// Must match LABEL_LOCALES in apps/web/src/i18n/locales.ts: persisted custom-config labels stay bilingual,
+// other UI locales translate built-in labels through their Lingui catalog at display time.
+const PERSISTED_LABEL_LOCALES = ["zh-CN", "en-US"];
 const sourceLocale = i18nConfig.sourceLocale;
 const domains = [
   "common",
@@ -159,7 +162,7 @@ function builtInLabelsSource() {
     "",
     "export const BUILT_IN_LABELS = {",
     ...keys.map((key) => {
-      const localized = locales.map((locale) => `${JSON.stringify(locale)}: ${JSON.stringify(catalogs[locale][key] ?? "")}`).join(", ");
+      const localized = PERSISTED_LABEL_LOCALES.map((locale) => `${JSON.stringify(locale)}: ${JSON.stringify(catalogs[locale][key] ?? "")}`).join(", ");
       return `  ${JSON.stringify(key)}: { ${localized} },`;
     }),
     "} as const satisfies Record<string, LocalizedLabels>;",

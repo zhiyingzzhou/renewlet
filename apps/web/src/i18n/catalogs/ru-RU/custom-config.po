@@ -1,0 +1,119 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-25 00:00+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru-RU\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:11
+msgid "customConfig.enabledCount"
+msgstr "Включено {enabled} из {total}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:7
+msgid "customConfig.labelZhPlaceholder"
+msgstr "Название на китайском"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:14
+msgid "customConfig.dragSortOnly"
+msgstr "Только сортировка перетаскиванием"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:22
+msgid "customConfig.saveNamed"
+msgstr "Сохранить «{label}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:16
+msgid "customConfig.totalItems"
+msgstr "Всего {count, plural, one {# элемент} few {# элемента} many {# элементов} other {# элемента}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:21
+msgid "customConfig.deleteNamed"
+msgstr "Удалить «{label}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:24
+msgid "customConfig.confirmDeleteTitle"
+msgstr "Удалить «{label}»?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:23
+msgid "customConfig.cancelEditNamed"
+msgstr "Отменить изменение «{label}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:19
+msgid "customConfig.toggleNamed"
+msgstr "Включить или выключить «{label}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:5
+msgid "customConfig.iconLabel"
+msgstr "Значок:"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:25
+msgid "customConfig.confirmDeleteDescription"
+msgstr "Данные подписок сохранятся, но этот вариант больше нельзя будет выбрать. Это может повлиять на отображение и фильтры."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:18
+msgid "customConfig.dragNamed"
+msgstr "Переместить «{label}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:15
+msgid "customConfig.dragSort"
+msgstr "Перетащите для сортировки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:13
+msgid "customConfig.dragSortEnabled"
+msgstr "Перетащите для сортировки · включено {enabled} из {total}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:10
+msgid "customConfig.empty"
+msgstr "Нет элементов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:17
+msgid "customConfig.addOption"
+msgstr "Добавить вариант"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:12
+msgid "customConfig.srDescription"
+msgstr "Управление вариантами, их порядком и включением для раздела «{title}»."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:20
+msgid "customConfig.editNamed"
+msgstr "Изменить «{label}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:9
+msgid "customConfig.customColorPlaceholder"
+msgstr "Свой цвет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:8
+msgid "customConfig.labelEnPlaceholder"
+msgstr "Название на английском"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/custom-config.ts:6
+msgid "customConfig.valuePlaceholder"
+msgstr "Значение"

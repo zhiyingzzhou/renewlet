@@ -11,7 +11,7 @@ import { formatTimeZoneOffset } from "@/lib/time/time-zone";
 import { getIntlCurrencyIdentityLabel } from "@/lib/currency-data";
 import type { ConfigItem } from "@/types/config";
 import type { CurrencyOption, CurrencyRegion } from "@/types/subscription";
-import { DEFAULT_LOCALE, localizedLabel, type Locale } from "@/i18n/locales";
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES, localizedLabel, type Locale } from "@/i18n/locales";
 import { translate } from "@/i18n/messages";
 
 /** 可搜索 Select/Command 组件使用的通用选项结构。 */
@@ -192,6 +192,9 @@ export function createCurrencyKeywords(
   const enLabel = localizedLabel(currency.labels, "en-US");
   const zhIdentity = getIntlCurrencyIdentityLabel(currency.value, "zh-CN");
   const enIdentity = getIntlCurrencyIdentityLabel(currency.value, "en-US");
+  const otherIdentities = SUPPORTED_LOCALES
+    .filter((locale) => locale !== "zh-CN" && locale !== "en-US")
+    .map((locale) => getIntlCurrencyIdentityLabel(currency.value, locale));
   return uniq([
     currency.value,
     currency.value.toLowerCase(),
@@ -203,6 +206,7 @@ export function createCurrencyKeywords(
     enIdentity.symbol,
     zhIdentity.name,
     enIdentity.name,
+    ...otherIdentities.flatMap((identity) => [identity.label, identity.symbol, identity.name]),
     ...CURRENCY_REGION_KEYWORDS[currency.region],
   ]);
 }

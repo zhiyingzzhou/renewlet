@@ -1,0 +1,164 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-25 00:00+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru-RU\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:6
+msgid "publicStatus.headerMeta"
+msgstr "Renewlet · Обновлено {time}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:11
+msgid "publicStatus.moneySubtitleLocked"
+msgstr "По зафиксированному курсу за {month}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:25
+msgid "publicStatus.listLabel"
+msgstr "Публичный список подписок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:31
+msgid "publicStatus.notFoundTitle"
+msgstr "Публичная страница недоступна"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:15
+msgid "publicStatus.visibleMoneySubtitle"
+msgstr "{count, plural, one {# учтена} few {# учтены} many {# учтены} other {# учтены}} в итогах"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:28
+msgid "publicStatus.nextBillingDate"
+msgstr "Оплата/продление: {date}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:18
+msgid "publicStatus.upcomingSubtitle"
+msgstr "Скоро оплата или продление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:14
+msgid "publicStatus.visibleCount"
+msgstr "Видимые подписки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:9
+msgid "publicStatus.annualTotal"
+msgstr "Итого за год"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:26
+msgid "publicStatus.startDate"
+msgstr "Начало: {date}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:30
+msgid "publicStatus.subscriptionDailyCostToDate"
+msgstr "В день на сегодня {amount}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:12
+msgid "publicStatus.moneySubtitleLive"
+msgstr "Сумма в {currency} по текущему курсу"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:10
+msgid "publicStatus.moneySubtitle"
+msgstr "Сумма в {currency}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:33
+msgid "publicStatus.errorTitle"
+msgstr "Не удалось загрузить публичную страницу"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:29
+msgid "publicStatus.subscriptionDailyAverage"
+msgstr "В день {amount}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:8
+msgid "publicStatus.monthlyTotalSubtitle"
+msgstr "В день {amount} · {basis}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:24
+msgid "publicStatus.emptyTitle"
+msgstr "Нет видимых подписок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:21
+msgid "publicStatus.generatedAt"
+msgstr "Обновлено {time}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:7
+msgid "publicStatus.monthlyTotal"
+msgstr "Итого в месяц"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:17
+msgid "publicStatus.upcomingCount"
+msgstr "Ближайшие 7 дней"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:13
+msgid "publicStatus.ratesLoading"
+msgstr "Обновление курсов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:16
+msgid "publicStatus.activeCount"
+msgstr "Активные/пробные"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:23
+msgid "publicStatus.truncated"
+msgstr "Подписок слишком много; показаны только первые 500."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:5
+msgid "publicStatus.title"
+msgstr "Статус подписок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:22
+msgid "publicStatus.updatedAt"
+msgstr "Запись обновлена: {time}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:34
+msgid "publicStatus.errorDescription"
+msgstr "Обновите страницу и попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:27
+msgid "publicStatus.purchaseDate"
+msgstr "Куплено {date}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:20
+msgid "publicStatus.inactiveSubtitle"
+msgstr "Истекшие, приостановленные или отменённые"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:32
+msgid "publicStatus.notFoundDescription"
+msgstr "Эта ссылка не существует, отозвана или была создана заново."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/public-status.ts:19
+msgid "publicStatus.inactiveCount"
+msgstr "Неактивные"

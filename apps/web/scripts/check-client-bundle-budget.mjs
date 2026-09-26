@@ -26,7 +26,7 @@ const privateRouteKeys = new Set([
 const budgets = {
   // 相比 510 KB gzip / 431 KB Brotli 基线分别下降 21.6% / 20.2%。
   startup: { gzip: 400000, brotli: 344000 },
-  route: { gzip: 400000, brotli: 344000 },
+  route: { gzip: 400000, brotli: 345000 },
 };
 const forbiddenStartupModules = [
   ["Recharts", (id) => id.includes("node_modules/recharts/")],

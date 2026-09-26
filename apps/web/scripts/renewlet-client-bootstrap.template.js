@@ -44,9 +44,11 @@
     var projectedLocale = accountLocale(currentSessionUserId());
     var locale = projectedLocale || fallbackLocale;
     if (!projectedLocale) {
-      var language = String((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase();
-      var chineseLocale = supportedLocales.find(function (candidate) { return candidate.toLowerCase().indexOf("zh") === 0; });
-      locale = chineseLocale && language.indexOf("zh") === 0 ? chineseLocale : fallbackLocale;
+      var language = String((navigator.languages && navigator.languages[0]) || navigator.language || "").trim().toLowerCase();
+      var primaryLanguage = language.split(/[-_]/)[0];
+      var exactLocale = supportedLocales.find(function (candidate) { return candidate.toLowerCase() === language; });
+      var languageLocale = supportedLocales.find(function (candidate) { return candidate.toLowerCase().split("-")[0] === primaryLanguage; });
+      locale = exactLocale || (primaryLanguage && languageLocale) || fallbackLocale;
     }
     document.documentElement.lang = locale;
 

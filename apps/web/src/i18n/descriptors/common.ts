@@ -138,4 +138,5 @@ export const messages = [
   msg({ id: "theme.lavender.description", message: "优雅浪漫的紫色调" }),
   msg({ id: "theme.rose.name", message: "玫瑰粉" }),
   msg({ id: "theme.rose.description", message: "精致柔和的玫瑰色" }),
+  msg({ id: "locale.ruRU", message: "Русский" }),
 ] as const;

@@ -17,24 +17,40 @@ const (
 	settingsLocalePreferenceUpdateGuardName   = "renewlet_settings_locale_contract_update"
 )
 
-const settingsLocalePreferenceGuardCondition = `CASE
+// 白名单是持久化契约，新增语言必须追加新的 guard 迁移，不能原地改写已安装 trigger 的期望定义。
+const (
+	settingsLocalePreferenceGuardV1AllowList = `'auto', 'zh-CN', 'en-US'`
+	settingsLocalePreferenceGuardAllowList   = `'auto', 'zh-CN', 'en-US', 'ru-RU'`
+)
+
+func settingsLocalePreferenceGuardCondition(allowList string) string {
+	return `CASE
 		WHEN json_valid(NEW.settings) = 0 THEN 1
 		WHEN json_type(NEW.settings) IS NOT 'object' THEN 1
 		WHEN EXISTS (SELECT 1 FROM json_each(NEW.settings) GROUP BY key HAVING COUNT(*) > 1) THEN 1
 		WHEN json_type(NEW.settings, '$.locale') IS NOT NULL THEN 1
 	WHEN json_type(NEW.settings, '$.localePreference') IS NOT 'text' THEN 1
-	WHEN json_extract(NEW.settings, '$.localePreference') NOT IN ('auto', 'zh-CN', 'en-US') THEN 1
+	WHEN json_extract(NEW.settings, '$.localePreference') NOT IN (` + allowList + `) THEN 1
 	ELSE 0
 END = 1`
-
-var settingsLocalePreferenceGuardSQL = map[string]string{
-	settingsLocalePreferenceInsertGuardName: `CREATE TRIGGER ` + settingsLocalePreferenceInsertGuardName + `
-		BEFORE INSERT ON settings FOR EACH ROW WHEN ` + settingsLocalePreferenceGuardCondition + `
-		BEGIN SELECT RAISE(ABORT, 'SETTINGS_LOCALE_CONTRACT_INVALID'); END`,
-	settingsLocalePreferenceUpdateGuardName: `CREATE TRIGGER ` + settingsLocalePreferenceUpdateGuardName + `
-		BEFORE UPDATE OF settings ON settings FOR EACH ROW WHEN ` + settingsLocalePreferenceGuardCondition + `
-		BEGIN SELECT RAISE(ABORT, 'SETTINGS_LOCALE_CONTRACT_INVALID'); END`,
 }
+
+func settingsLocalePreferenceGuardStatements(allowList string) map[string]string {
+	condition := settingsLocalePreferenceGuardCondition(allowList)
+	return map[string]string{
+		settingsLocalePreferenceInsertGuardName: `CREATE TRIGGER ` + settingsLocalePreferenceInsertGuardName + `
+		BEFORE INSERT ON settings FOR EACH ROW WHEN ` + condition + `
+		BEGIN SELECT RAISE(ABORT, 'SETTINGS_LOCALE_CONTRACT_INVALID'); END`,
+		settingsLocalePreferenceUpdateGuardName: `CREATE TRIGGER ` + settingsLocalePreferenceUpdateGuardName + `
+		BEFORE UPDATE OF settings ON settings FOR EACH ROW WHEN ` + condition + `
+		BEGIN SELECT RAISE(ABORT, 'SETTINGS_LOCALE_CONTRACT_INVALID'); END`,
+	}
+}
+
+var (
+	settingsLocalePreferenceGuardV1SQL = settingsLocalePreferenceGuardStatements(settingsLocalePreferenceGuardV1AllowList)
+	settingsLocalePreferenceGuardSQL   = settingsLocalePreferenceGuardStatements(settingsLocalePreferenceGuardAllowList)
+)
 
 func preflightSettingsLocalePreferenceMigration(app core.App) error {
 	exists, err := sqliteObjectExists(app, "table", "settings")
@@ -216,7 +232,16 @@ func installSettingsLocalePreferenceGuard(app core.App) error {
 	return nil
 }
 
+// v1 账本记录可能早于 guard_v2：已升级实例保留 v1 trigger 直到 guard_v2 运行，所以 v1 复核接受两代定义。
+func verifySettingsLocalePreferenceGuardV1(app core.App) error {
+	return verifySettingsLocalePreferenceGuardDefinitions(app, settingsLocalePreferenceGuardV1SQL, settingsLocalePreferenceGuardSQL)
+}
+
 func verifySettingsLocalePreferenceGuard(app core.App) error {
+	return verifySettingsLocalePreferenceGuardDefinitions(app, settingsLocalePreferenceGuardSQL)
+}
+
+func verifySettingsLocalePreferenceGuardDefinitions(app core.App, accepted ...map[string]string) error {
 	for _, name := range []string{settingsLocalePreferenceInsertGuardName, settingsLocalePreferenceUpdateGuardName} {
 		var row struct {
 			SQL string `db:"sql"`
@@ -227,11 +252,28 @@ func verifySettingsLocalePreferenceGuard(app core.App) error {
 		if err != nil {
 			return err
 		}
-		if normalizeSQLiteSchemaSQL(row.SQL) != normalizeSQLiteSchemaSQL(settingsLocalePreferenceGuardSQL[name]) {
+		matched := false
+		for _, statements := range accepted {
+			if normalizeSQLiteSchemaSQL(row.SQL) == normalizeSQLiteSchemaSQL(statements[name]) {
+				matched = true
+				break
+			}
+		}
+		if !matched {
 			return fmt.Errorf("trigger %s definition mismatch", name)
 		}
 	}
 	return nil
+}
+
+// guard_v2 只替换 trigger 白名单，不改写 settings 数据；预检和复核仍确保所有既有偏好合法。
+func replaceSettingsLocalePreferenceGuard(app core.App) error {
+	for _, name := range []string{settingsLocalePreferenceInsertGuardName, settingsLocalePreferenceUpdateGuardName} {
+		if _, err := app.DB().NewQuery(`DROP TRIGGER IF EXISTS ` + name).Execute(); err != nil {
+			return err
+		}
+	}
+	return installSettingsLocalePreferenceGuard(app)
 }
 
 func migrationStringField(fields map[string]json.RawMessage, key string) (string, bool) {

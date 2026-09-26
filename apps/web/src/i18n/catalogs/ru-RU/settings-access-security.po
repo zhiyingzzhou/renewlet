@@ -1,0 +1,179 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-25 00:00+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru-RU\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:11
+msgid "settings.turnstileSiteKeyPlaceholder"
+msgstr "0x4AAAA..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:6
+msgid "settings.turnstileTitle"
+msgstr "Cloudflare Turnstile"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:13
+msgid "settings.turnstileSecret"
+msgstr "Secret key"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:10
+msgid "settings.turnstileSiteKey"
+msgstr "Site key"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:36
+msgid "settings.turnstileSecretClearedDescription"
+msgstr "Проверка Turnstile выключена. Сохраните новый Secret key, прежде чем включать её снова."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:35
+msgid "settings.turnstileSecretCleared"
+msgstr "Секретный ключ Turnstile очищен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:32
+msgid "settings.turnstileSaveFailed"
+msgstr "Не удалось сохранить настройки Turnstile"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:31
+msgid "settings.turnstileSaved"
+msgstr "Настройки Turnstile сохранены"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:26
+msgid "settings.turnstileTestFailed"
+msgstr "Проверка настроек Turnstile не пройдена"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:25
+msgid "settings.turnstileTestPassed"
+msgstr "Проверка настроек Turnstile пройдена"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:19
+msgid "settings.turnstileSave"
+msgstr "Сохранить настройки Turnstile"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:20
+msgid "settings.turnstileSaving"
+msgstr "Сохранение..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:12
+msgid "settings.turnstileSiteKeyHelp"
+msgstr "Передаётся странице входа для отображения виджета Turnstile."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:16
+msgid "settings.turnstileSecretHelp"
+msgstr "Хранится только на сервере и используется для Cloudflare Siteverify."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:34
+msgid "settings.turnstileIncomplete"
+msgstr "Чтобы включить Turnstile, нужны и Site key, и Secret key."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:7
+msgid "settings.turnstileHelp"
+msgstr "Если включено, Renewlet проверяет Turnstile перед входом по email и паролю, чтобы снизить риск подбора паролей и атак с украденными учётными данными. Ключи доступа, второй шаг через приложение-аутентификатор и первоначальная настройка не затрагиваются."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:9
+msgid "settings.turnstileEnableHelp"
+msgstr "Для работы проверки необходимо заполнить и Site key, и Secret key."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:24
+msgid "settings.turnstileTestDialogDescription"
+msgstr "Пройдите проверку ниже. Затем Renewlet проверит, работают ли текущие Site key и Secret key."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:18
+msgid "settings.turnstileSecretConfigured"
+msgstr "Ключ настроен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:15
+msgid "settings.turnstileSecretConfiguredPlaceholder"
+msgstr "Сохранён; оставьте пустым, чтобы не менять"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:28
+msgid "settings.turnstileDiscard"
+msgstr "Отменить изменения"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:33
+msgid "settings.turnstileSaveFailedDescription"
+msgstr "Не удалось сохранить настройки Turnstile. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:27
+msgid "settings.turnstileTestFailedDescription"
+msgstr "Не удалось проверить настройки Turnstile. Проверьте Site key и Secret key и попробуйте снова."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:21
+msgid "settings.turnstileTest"
+msgstr "Проверить настройки Turnstile"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:23
+msgid "settings.turnstileTestDialogTitle"
+msgstr "Проверка настроек Turnstile"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:22
+msgid "settings.turnstileTesting"
+msgstr "Проверка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:30
+msgid "settings.turnstileClearing"
+msgstr "Очистка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:29
+msgid "settings.turnstileClearSecret"
+msgstr "Очистить ключ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:17
+msgid "settings.turnstileSecretKeepHelp"
+msgstr "Оставьте пустым, чтобы сохранить текущий ключ, или введите новое значение для замены."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:8
+msgid "settings.turnstileEnable"
+msgstr "Требовать проверку на человека при входе по email и паролю"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:4
+msgid "settings.sectionNav.accessSecurity"
+msgstr "Безопасность доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:5
+msgid "settings.accessSecurity"
+msgstr "Безопасность доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:14
+msgid "settings.turnstileSecretPlaceholder"
+msgstr "Введите Secret key Cloudflare Turnstile"

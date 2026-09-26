@@ -697,6 +697,7 @@ export const MESSAGE_KEYS = [
   "legal.terms.title",
   "locale.auto",
   "locale.enUS",
+  "locale.ruRU",
   "locale.zhCN",
   "media.appStoreIcons",
   "media.builtInIcons",

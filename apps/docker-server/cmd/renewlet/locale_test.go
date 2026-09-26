@@ -39,6 +39,9 @@ func TestAcceptLanguageLocaleUsesHighestQualitySupportedLanguage(t *testing.T) {
 	if got := acceptLanguageLocale("en-US;q=0.7, zh-CN;q=0.9"); got != localeZhCN {
 		t.Fatalf("expected zh-CN, got %s", got)
 	}
+	if got := acceptLanguageLocale("ru, en;q=0.8"); got != appLocale("ru-RU") {
+		t.Fatalf("expected ru-RU for primary language ru, got %s", got)
+	}
 	if got := acceptLanguageLocale("fr-FR, en;q=0.8"); got != localeEnUS {
 		t.Fatalf("expected en-US, got %s", got)
 	}

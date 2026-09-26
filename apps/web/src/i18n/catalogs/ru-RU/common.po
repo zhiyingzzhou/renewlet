@@ -5,7 +5,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
-"Language: zh-CN\n"
+"Language: ru-RU\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "PO-Revision-Date: \n"
@@ -16,17 +16,17 @@ msgstr ""
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:46
 msgid "common.options"
-msgstr "{count} 个选项"
+msgstr "{count, plural, one {# вариант} few {# варианта} many {# вариантов} other {# варианта}}"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:45
 msgid "common.items"
-msgstr "{count} 项"
+msgstr "{count, plural, one {# элемент} few {# элемента} many {# элементов} other {# элемента}}"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:47
 msgid "common.optionDisabled"
-msgstr "{label}（已禁用）"
+msgstr "{label} (выключено)"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:72
@@ -36,7 +36,7 @@ msgstr "Cloudflare"
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:86
 msgid "system.cloudflareDeployGuide"
-msgstr "Cloudflare 部署说明"
+msgstr "Руководство по развёртыванию в Cloudflare"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:71
@@ -51,7 +51,7 @@ msgstr "English"
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:118
 msgid "theme.hexColor"
-msgstr "Hex 颜色"
+msgstr "HEX-цвет"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:61
@@ -66,17 +66,17 @@ msgstr "Русский"
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:24
 msgid "common.uploading"
-msgstr "上传中…"
+msgstr "Загрузка..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:25
 msgid "common.uploadFailed"
-msgstr "上传失败"
+msgstr "Не удалось загрузить"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:107
 msgid "time.noon"
-msgstr "中午"
+msgstr "Полдень"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:100
@@ -86,614 +86,614 @@ msgstr "中文"
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:115
 msgid "theme.variant"
-msgstr "主题风格"
+msgstr "Стиль темы"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:121
 msgid "theme.lightness"
-msgstr "亮度 (L)"
+msgstr "Светлота (L)"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:29
 msgid "common.today"
-msgstr "今天"
+msgstr "Сегодня"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:51
 msgid "nav.dashboard"
-msgstr "仪表盘"
+msgstr "Обзор"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:138
 msgid "theme.lavender.description"
-msgstr "优雅浪漫的紫色调"
+msgstr "Изящные романтичные фиолетовые оттенки"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:16
 msgid "common.save"
-msgstr "保存"
+msgstr "Сохранить"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:18
 msgid "common.saving"
-msgstr "保存中..."
+msgstr "Сохранение..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:108
 msgid "time.evening"
-msgstr "傍晚"
+msgstr "Вечер"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:13
 msgid "common.close"
-msgstr "关闭"
+msgstr "Закрыть"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:37
 msgid "common.dismissNotification"
-msgstr "关闭通知"
+msgstr "Скрыть уведомление"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:35
 msgid "common.builtIn"
-msgstr "内置"
+msgstr "Встроенный"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:7
 msgid "exchangeRates.updated"
-msgstr "最新汇率数据已获取"
+msgstr "Актуальные курсы валют получены"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:68
 msgid "system.latestVersion"
-msgstr "最新版本"
+msgstr "Последняя версия"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:105
 msgid "time.minute"
-msgstr "分"
+msgstr "Минута"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:56
 msgid "header.toggleTheme"
-msgstr "切换主题"
+msgstr "Сменить тему"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:19
 msgid "common.creating"
-msgstr "创建中..."
+msgstr "Создание..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:14
 msgid "common.delete"
-msgstr "删除"
+msgstr "Удалить"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:6
 msgid "exchangeRates.refreshing"
-msgstr "刷新中..."
+msgstr "Обновление..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:11
 msgid "appError.reload"
-msgstr "刷新页面"
+msgstr "Перезагрузить страницу"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:17
 msgid "common.loading"
-msgstr "加载中..."
+msgstr "Загрузка..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:84
 msgid "system.releaseLink"
-msgstr "发布页"
+msgstr "Страница релиза"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:80
 msgid "system.updateAvailableTitle"
-msgstr "发现新版本"
+msgstr "Доступна новая версия"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:10
 msgid "appError.description"
-msgstr "发生了一个未预期的界面错误。你可以刷新页面重新加载，已保存的数据不会受到影响。"
+msgstr "Произошла непредвиденная ошибка интерфейса. Можно перезагрузить страницу — сохранённые данные не пострадают."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:12
 msgid "common.cancel"
-msgstr "取消"
+msgstr "Отмена"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:81
 msgid "system.updateAvailableDescription"
-msgstr "可以更新到 v{version}。更新会替换 Docker 运行二进制。"
+msgstr "Доступно обновление до v{version}. Обновление заменит исполняемый файл в Docker."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:82
 msgid "system.deployUpdateAvailableDescription"
-msgstr "可以更新到 v{version}。请通过部署流程升级。"
+msgstr "Доступно обновление до v{version}. Обновите приложение через процесс развёртывания."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:62
 msgid "system.badgeUpdate"
-msgstr "可更新到 v{version}"
+msgstr "Обновить до v{version}"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:32
 msgid "common.enable"
-msgstr "启用"
+msgstr "Включить"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:50
 msgid "common.backToTop"
-msgstr "回到顶部"
+msgstr "Наверх"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:43
 msgid "rawErrorResponse.copyFailed"
-msgstr "复制失败"
+msgstr "Не удалось скопировать"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:41
 msgid "rawErrorResponse.copy"
-msgstr "复制错误详情"
+msgstr "Копировать сведения об ошибке"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:30
 msgid "common.enabled"
-msgstr "已启用"
+msgstr "Включено"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:42
 msgid "rawErrorResponse.copied"
-msgstr "已复制"
+msgstr "Скопировано"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:83
 msgid "system.noUpdateTitle"
-msgstr "已是最新版本"
+msgstr "Установлена последняя версия"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:58
 msgid "header.logoutSuccessTitle"
-msgstr "已退出登录"
+msgstr "Вы вышли из аккаунта"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:76
 msgid "system.checkDeferredDescription"
-msgstr "当前显示的是本机版本；请稍后重新检查。"
+msgstr "Пока показана установленная версия. Попробуйте проверить позже."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:67
 msgid "system.currentVersion"
-msgstr "当前版本"
+msgstr "Текущая версия"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:77
 msgid "system.unsupportedTitle"
-msgstr "当前部署不支持一键更新"
+msgstr "Обновление из приложения здесь не поддерживается"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:40
 msgid "rawErrorResponse.responseUnavailable"
-msgstr "当前错误没有可回显的响应正文。"
+msgstr "У этой ошибки нет тела ответа."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:122
 msgid "theme.quickPick"
-msgstr "快速选择"
+msgstr "Быстрый выбор"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:60
 msgid "system.openUpdateDialog"
-msgstr "打开系统更新"
+msgstr "Открыть обновление системы"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:39
 msgid "rawErrorResponse.description"
-msgstr "接口返回的原始响应。"
+msgstr "Исходный ответ, полученный от API."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:85
 msgid "system.commitLink"
-msgstr "提交"
+msgstr "Коммит"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:103
 msgid "reminder.days"
-msgstr "提前 {days} 天"
+msgstr "За {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:22
 msgid "common.searchPlaceholder"
-msgstr "搜索..."
+msgstr "Поиск..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:27
 msgid "common.none"
-msgstr "无"
+msgstr "Нет"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:53
 msgid "nav.calendar"
-msgstr "日历"
+msgstr "Календарь"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:135
 msgid "theme.sunset.name"
-msgstr "日落橙"
+msgstr "Закат"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:106
 msgid "time.morning"
-msgstr "早晨"
+msgstr "Утро"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:104
 msgid "time.hour"
-msgstr "时"
+msgstr "Час"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:111
 msgid "theme.mode"
-msgstr "明暗模式"
+msgstr "Режим оформления"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:109
 msgid "time.night"
-msgstr "晚上"
+msgstr "Ночь"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:26
 msgid "common.noData"
-msgstr "暂无数据"
+msgstr "Нет данных"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:75
 msgid "system.checkDeferredTitle"
-msgstr "暂时无法检查更新"
+msgstr "Не удалось проверить обновления"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:90
 msgid "system.updating"
-msgstr "更新中..."
+msgstr "Обновление..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:92
 msgid "system.updateFailedTitle"
-msgstr "更新失败"
+msgstr "Ошибка обновления"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:93
 msgid "system.updateFailedDescription"
-msgstr "更新失败，请稍后重试。"
+msgstr "Не удалось обновить. Попробуйте позже."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:91
 msgid "system.updateComplete"
-msgstr "更新完成"
+msgstr "Обновление завершено"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:31
 msgid "common.disabled"
-msgstr "未启用"
+msgstr "Выключено"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:28
 msgid "common.unknown"
-msgstr "未知"
+msgstr "Неизвестно"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:70
 msgid "system.buildType"
-msgstr "构建类型"
+msgstr "Тип сборки"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:87
 msgid "system.viewChangelog"
-msgstr "查看更新日志"
+msgstr "Список изменений"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:44
 msgid "rawErrorResponse.open"
-msgstr "查看错误响应"
+msgstr "Показать ответ с ошибкой"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:74
 msgid "system.warningTitle"
-msgstr "检查提示"
+msgstr "Предупреждение проверки"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:124
 msgid "theme.color.orange"
-msgstr "橙"
+msgstr "Оранжевый"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:20
 msgid "common.searching"
-msgstr "正在搜索..."
+msgstr "Поиск..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:64
 msgid "system.checking"
-msgstr "正在检查版本..."
+msgstr "Проверка версии..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:97
 msgid "system.restarting"
-msgstr "正在重启..."
+msgstr "Перезапуск..."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:8
 msgid "exchangeRates.failedWithFallback"
-msgstr "汇率获取失败，当前使用备用汇率。{error}"
+msgstr "Не удалось получить курсы валют. Сейчас используются резервные курсы. {error}"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:134
 msgid "theme.ocean.description"
-msgstr "沉稳优雅的海洋蓝"
+msgstr "Спокойный элегантный морской синий"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:23
 msgid "common.noMatches"
-msgstr "没有匹配结果"
+msgstr "Ничего не найдено"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:112
 msgid "theme.light"
-msgstr "浅色"
+msgstr "Светлая"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:133
 msgid "theme.ocean.name"
-msgstr "深海蓝"
+msgstr "Океан"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:113
 msgid "theme.dark"
-msgstr "深色"
+msgstr "Тёмная"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:132
 msgid "theme.emerald.description"
-msgstr "清新自然的翡翠色调"
+msgstr "Свежие природные изумрудные оттенки"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:136
 msgid "theme.sunset.description"
-msgstr "温暖活力的日落色"
+msgstr "Тёплые энергичные закатные тона"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:73
 msgid "system.runtime.source"
-msgstr "源码/手动部署"
+msgstr "Из исходников / вручную"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:65
 msgid "system.checkFailedTitle"
-msgstr "版本检查失败"
+msgstr "Не удалось проверить версию"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:139
 msgid "theme.rose.name"
-msgstr "玫瑰粉"
+msgstr "Роза"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:33
 msgid "common.disable"
-msgstr "禁用"
+msgstr "Выключить"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:89
 msgid "system.updateNow"
-msgstr "立即更新"
+msgstr "Обновить сейчас"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:96
 msgid "system.restartNow"
-msgstr "立即重启"
+msgstr "Перезапустить сейчас"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:130
 msgid "theme.color.pink"
-msgstr "粉"
+msgstr "Розовый"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:140
 msgid "theme.rose.description"
-msgstr "精致柔和的玫瑰色"
+msgstr "Нежный утончённый розовый"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:63
 msgid "system.updateTitle"
-msgstr "系统更新"
+msgstr "Обновление системы"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:123
 msgid "theme.color.red"
-msgstr "红"
+msgstr "Красный"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:129
 msgid "theme.color.purple"
-msgstr "紫"
+msgstr "Фиолетовый"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:54
 msgid "nav.statistics"
-msgstr "统计"
+msgstr "Статистика"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:126
 msgid "theme.color.green"
-msgstr "绿"
+msgstr "Зелёный"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:15
 msgid "common.edit"
-msgstr "编辑"
+msgstr "Изменить"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:131
 msgid "theme.emerald.name"
-msgstr "翡翠绿"
+msgstr "Изумруд"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:116
 msgid "theme.custom"
-msgstr "自定义"
+msgstr "Свой"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:119
 msgid "theme.hue"
-msgstr "色相 (H)"
+msgstr "Тон (H)"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:128
 msgid "theme.color.blue"
-msgstr "蓝"
+msgstr "Синий"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:137
 msgid "theme.lavender.name"
-msgstr "薰衣草紫"
+msgstr "Лаванда"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:52
 msgid "nav.subscriptions"
-msgstr "订阅列表"
+msgstr "Подписки"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:5
 msgid "app.tagline"
-msgstr "订阅管理助手"
+msgstr "Менеджер подписок"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:55
 msgid "nav.settings"
-msgstr "设置"
+msgstr "Настройки"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:79
 msgid "system.unsupportedDescription"
-msgstr "请使用原部署方式升级。"
+msgstr "Обновите приложение тем же способом, которым оно было развёрнуто."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:66
 msgid "system.checkFailedDescription"
-msgstr "请稍后重试，或打开 GitHub Release 手动查看。"
+msgstr "Попробуйте позже или откройте GitHub Releases вручную."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:21
 msgid "common.selectPlaceholder"
-msgstr "请选择"
+msgstr "Выберите"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:95
 msgid "system.restartRequired"
-msgstr "请重启服务以应用更新"
+msgstr "Перезапустите сервис, чтобы применить обновление"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:102
 msgid "locale.auto"
-msgstr "跟随当前设备"
+msgstr "Как на устройстве"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:114
 msgid "theme.system"
-msgstr "跟随系统"
+msgstr "Системная"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:69
 msgid "system.runtime"
-msgstr "运行面"
+msgstr "Среда выполнения"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:48
 msgid "common.backToLogin"
-msgstr "返回登录"
+msgstr "Вернуться ко входу"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:49
 msgid "common.backHome"
-msgstr "返回首页"
+msgstr "На главную"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:99
 msgid "notFound.home"
-msgstr "返回首页"
+msgstr "На главную"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:59
 msgid "header.logoutFailedTitle"
-msgstr "退出失败"
+msgstr "Не удалось выйти"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:57
 msgid "header.logout"
-msgstr "退出登录"
+msgstr "Выйти"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:117
 msgid "theme.customDescription"
-msgstr "选择你喜欢的颜色"
+msgstr "Выберите любимый цвет"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:36
 msgid "common.notifications"
-msgstr "通知"
+msgstr "Уведомления"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:110
 msgid "time.notificationAria"
-msgstr "通知时间，当前 {time}"
+msgstr "Время уведомления, сейчас {time}"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:34
 msgid "common.configure"
-msgstr "配置"
+msgstr "Настроить"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:88
 msgid "system.recheck"
-msgstr "重新检查"
+msgstr "Проверить снова"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:94
 msgid "system.retry"
-msgstr "重试"
+msgstr "Повторить"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:38
 msgid "rawErrorResponse.title"
-msgstr "错误响应详情"
+msgstr "Сведения об ответе с ошибкой"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:127
 msgid "theme.color.cyan"
-msgstr "青"
+msgstr "Бирюзовый"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:78
 msgid "system.updateUnavailableTitle"
-msgstr "页面内更新不可用"
+msgstr "Обновление из приложения недоступно"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:9
 msgid "appError.title"
-msgstr "页面暂时无法显示"
+msgstr "Сейчас не удаётся отобразить эту страницу"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:98
 msgid "notFound.title"
-msgstr "页面未找到"
+msgstr "Страница не найдена"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:120
 msgid "theme.saturation"
-msgstr "饱和度 (S)"
+msgstr "Насыщенность (S)"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:125
 msgid "theme.color.yellow"
-msgstr "黄"
+msgstr "Жёлтый"

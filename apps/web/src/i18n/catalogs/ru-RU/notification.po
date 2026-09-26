@@ -1,0 +1,749 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-25 00:00+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru-RU\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:115
+msgid "notification.content.itemLine"
+msgstr "- {name}: {date}, {amount} {currency} ({extra})"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:123
+msgid "notification.items"
+msgstr "{count, plural, one {# элемент} few {# элемента} many {# элементов} other {# элемента}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:127
+msgid "notification.targetCostSharingReminder"
+msgstr "{date} · получить {amount} с {member} · за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:125
+msgid "notification.targetReminder"
+msgstr "{date} · за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:126
+msgid "notification.targetRepeatReminder"
+msgstr "{date} · повтор каждые {hours, plural, one {# час} few {# часа} many {# часов} other {# часа}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:114
+msgid "notification.content.extraWithRepeat"
+msgstr "{extra}; {repeat}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:49
+msgid "media.providerVariantCandidateLabel"
+msgstr "{label} - {provider} / {variant}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:48
+msgid "media.variantCandidateLabel"
+msgstr "{label} - {variant}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:57
+msgid "media.variant.16"
+msgstr "16px"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:58
+msgid "media.variant.32"
+msgstr "32px"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:59
+msgid "media.variant.64"
+msgstr "64px"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:46
+msgid "media.appStoreIcons"
+msgstr "App Store:"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:56
+msgid "media.providerFilter.dashboardIcons"
+msgstr "Dashboard"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:52
+msgid "media.provider.dashboardIcons"
+msgstr "Dashboard Icons"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:62
+msgid "media.variant.default"
+msgstr "По умолчанию"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:39
+msgid "media.logoLinkHttpIpBlocked"
+msgstr "HTTPS-страницы не загружают изображения по HTTP с IP-адреса."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:63
+msgid "media.variant.icon"
+msgstr "Значок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:66
+msgid "media.variant.lockup"
+msgstr "Логоблок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:67
+msgid "media.variant.lockupDark"
+msgstr "Логоблок, тёмный"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:9
+msgid "media.logo"
+msgstr "Логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:82
+msgid "media.logoUploadFailed"
+msgstr "Не удалось загрузить логотип. Попробуйте снова или выберите результат поиска."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:28
+msgid "media.logoLink"
+msgstr "Ссылка на логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:35
+msgid "media.logoLinkUserInfoInvalid"
+msgstr "Ссылка на логотип не может содержать имя пользователя или пароль."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:31
+msgid "media.logoLinkTooLong"
+msgstr "Ссылка на логотип не может быть длиннее {max, plural, one {# символа} few {# символов} many {# символов} other {# символа}}."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:33
+msgid "media.logoLinkSchemeInvalid"
+msgstr "Ссылка на логотип должна начинаться с http:// или https://."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:34
+msgid "media.logoLinkHostInvalid"
+msgstr "Ссылка на логотип должна содержать домен или хост."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:36
+msgid "media.logoLinkPreviewAlt"
+msgstr "Предпросмотр логотипа по ссылке"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:68
+msgid "media.variant.mono"
+msgstr "Монохромный"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:106
+msgid "notification.content.testTitle"
+msgstr "Тестовое уведомление Renewlet"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:105
+msgid "notification.content.title"
+msgstr "Напоминание о подписках Renewlet"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:55
+msgid "media.providerFilter.selfhst"
+msgstr "selfh.st"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:51
+msgid "media.provider.selfhst"
+msgstr "selfh.st icons"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:50
+msgid "media.provider.thesvg"
+msgstr "TheSVG"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:69
+msgid "media.variant.wordmark"
+msgstr "Надпись"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:70
+msgid "media.variant.wordmarkDark"
+msgstr "Надпись, тёмная"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:71
+msgid "media.variant.wordmarkLight"
+msgstr "Надпись, светлая"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:6
+msgid "media.upload"
+msgstr "Загрузить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:10
+msgid "media.uploadLogo"
+msgstr "Загрузить логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:11
+msgid "media.uploadLogoImage"
+msgstr "Загрузить изображение логотипа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:20
+msgid "media.noUploadedLogoHint"
+msgstr "Загрузите его один раз, и он будет доступен здесь."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:7
+msgid "media.uploadIcon"
+msgstr "Загрузить значок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:88
+msgid "media.uploadFailed"
+msgstr "Не удалось загрузить. Попробуйте снова."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:85
+msgid "media.uploadFailedRetry"
+msgstr "Не удалось загрузить. Попробуйте снова или выберите другое изображение."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:139
+msgid "notification.nextContent"
+msgstr "Следующее содержимое"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:138
+msgid "notification.nextCheck"
+msgstr "Следующая проверка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:86
+msgid "media.imageTypeInvalid"
+msgstr "Поддерживаются только изображения PNG, JPG, WebP, SVG и ICO."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:104
+msgid "notification.content.empty"
+msgstr "Сегодня напоминать не о чем. Ежедневные уведомления можно отключить в настройках или изменить дни напоминаний для подписок."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:29
+msgid "media.useLogoLink"
+msgstr "Использовать ссылку"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:53
+msgid "media.providerFilter.all"
+msgstr "Все"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:121
+msgid "notification.filter.all"
+msgstr "Все"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:45
+msgid "media.builtInIcons"
+msgstr "Встроенные значки:"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:74
+msgid "media.builtInSearchFailed"
+msgstr "Не удалось найти встроенные значки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:73
+msgid "media.noBuiltInMatch"
+msgstr "Встроенных значков не найдено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:140
+msgid "notification.latestRun"
+msgstr "Последний запуск"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:129
+msgid "notification.createdAt"
+msgstr "Создано"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:133
+msgid "notification.historyEmpty"
+msgstr "Записи появятся здесь, когда наступит время уведомлений."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:149
+msgid "notification.refresh"
+msgstr "Обновить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:23
+msgid "media.loadMoreUploadedLogo"
+msgstr "Загрузить ещё"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:151
+msgid "notification.loadMore"
+msgstr "Загрузить ещё"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:150
+msgid "notification.historyLoadFailed"
+msgstr "Не удалось загрузить историю уведомлений. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:109
+msgid "notification.content.expiryBeforeDays"
+msgstr "скоро истекает, за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:100
+msgid "notification.content.expiryBlock"
+msgstr "Скоро истекают:"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:145
+msgid "notification.upcomingTab"
+msgstr "Ближайшие"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:99
+msgid "notification.content.renewalBlock"
+msgstr "Ближайшие продления:"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:117
+msgid "notification.status.sending"
+msgstr "Отправляется"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:147
+msgid "notification.historyTab"
+msgstr "История"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:148
+msgid "notification.executionSnapshotsDescription"
+msgstr "История отправок хранит снимок настроек и результата каждого запуска."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:98
+msgid "notification.testFailedDescription"
+msgstr "Ошибка отправки. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:144
+msgid "notification.historyDetailTitle"
+msgstr "Подробности отправки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:112
+msgid "notification.content.costSharingBeforeDays"
+msgstr "получить с {member}, за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:8
+msgid "media.icon"
+msgstr "Значок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:83
+msgid "media.iconUploadFailed"
+msgstr "Не удалось загрузить значок. Попробуйте снова или выберите результат поиска."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:87
+msgid "media.imageTooLarge"
+msgstr "Изображение слишком большое. Выберите файл меньше {size} МБ."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:119
+msgid "notification.status.failed"
+msgstr "Ошибка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:107
+msgid "notification.content.testBody"
+msgstr "Если вы получили это сообщение, канал уведомлений работает."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:103
+msgid "notification.content.costSharingBlock"
+msgstr "Сбор средств по разделению расходов:"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:37
+msgid "media.logoLinkPreviewReady"
+msgstr "Логотип будет загружаться по этой ссылке."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:16
+msgid "media.uploaded"
+msgstr "Загруженные"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:17
+msgid "media.uploadedLogo"
+msgstr "Загруженный логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:24
+msgid "media.uploadedLogoOption"
+msgstr "Загруженный логотип {index}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:21
+msgid "media.uploadedLogoLoadFailed"
+msgstr "Не удалось загрузить сохранённый логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:120
+msgid "notification.status.skipped"
+msgstr "Пропущено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:111
+msgid "notification.content.expiredStatus"
+msgstr "истекла"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:102
+msgid "notification.content.expiredBlock"
+msgstr "Истекли (дата следующей оплаты не обновлена):"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:38
+msgid "media.logoLinkPreviewUpgraded"
+msgstr "На HTTPS-странице предпросмотр временно идёт через HTTPS; сохранённое значение не меняется."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:60
+msgid "media.variant.color"
+msgstr "Цветной"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:118
+msgid "notification.status.sent"
+msgstr "Отправлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:146
+msgid "notification.upcomingDescription"
+msgstr "Рассчитывается на лету по текущим настройкам уведомлений на ближайшие 30 дней."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:108
+msgid "notification.content.beforeDays"
+msgstr "за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:25
+msgid "media.search"
+msgstr "Поиск"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:27
+msgid "media.searchLogo"
+msgstr "Найти логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:41
+msgid "media.searchIcon"
+msgstr "Найти значок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:75
+msgid "media.searchFailed"
+msgstr "Ошибка поиска. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:93
+msgid "media.rotate"
+msgstr "Повернуть"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:137
+msgid "notification.noHistory"
+msgstr "Записей пока нет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:12
+msgid "media.changeLogo"
+msgstr "Изменить логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:14
+msgid "media.changeIcon"
+msgstr "Изменить значок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:130
+msgid "notification.updatedAt"
+msgstr "Обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:134
+msgid "notification.blocker.noChannels"
+msgstr "Нет включённых каналов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:79
+msgid "media.iconNotFound"
+msgstr "Значок не найден. Загрузите свой."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:77
+msgid "media.logoNotFound"
+msgstr "Подходящий логотип не найден"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:135
+msgid "notification.blocker.noUpcoming"
+msgstr "В ближайшие 30 дней ничего нет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:122
+msgid "notification.upcoming.empty"
+msgstr "В ближайшие 30 дней автоматических напоминаний не будет."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:141
+msgid "notification.viewScheduleHistory"
+msgstr "Расписание и история"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:143
+msgid "notification.historyDescription"
+msgstr "Ближайшие напоминания рассчитываются по текущим настройкам. История отправок хранит снимок каждого запуска."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:18
+msgid "media.loadingUploadedLogo"
+msgstr "Загрузка логотипа..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:44
+msgid "media.searching"
+msgstr "Поиск..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:72
+msgid "media.searchingBuiltIn"
+msgstr "Поиск встроенных значков..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:76
+msgid "media.loadingMore"
+msgstr "Загрузка результатов..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:124
+msgid "notification.dailyIncluded"
+msgstr "В ежедневной сводке"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:64
+msgid "media.variant.light"
+msgstr "Светлый"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:97
+msgid "notification.testFailed"
+msgstr "Не удалось отправить тестовое уведомление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:96
+msgid "notification.testSuccessForChannel"
+msgstr "Тестовое уведомление отправлено · {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:61
+msgid "media.variant.dark"
+msgstr "Тёмный"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:13
+msgid "media.clearLogo"
+msgstr "Очистить логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:15
+msgid "media.clearIcon"
+msgstr "Очистить значок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:5
+msgid "notification.channel"
+msgstr "Канал"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:95
+msgid "media.confirmCrop"
+msgstr "Подтвердить обрезку"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:116
+msgid "notification.status.pending"
+msgstr "Ожидает"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:54
+msgid "media.providerFilter.ariaLabel"
+msgstr "Фильтр источников встроенных значков"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:131
+msgid "notification.attemptedChannels"
+msgstr "Задействованные каналы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:132
+msgid "notification.succeededChannels"
+msgstr "Успешные каналы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:65
+msgid "media.variant.line"
+msgstr "Контурный"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:92
+msgid "media.zoom"
+msgstr "Масштаб"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:47
+msgid "media.faviconFallback"
+msgstr "Запасной вариант (сайт/favicon):"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:89
+msgid "media.cropTitle"
+msgstr "Обрезка логотипа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:91
+msgid "media.cropPreview"
+msgstr "Предпросмотр обрезки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:110
+msgid "notification.content.trialBeforeDays"
+msgstr "пробный период заканчивается, за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:101
+msgid "notification.content.trialBlock"
+msgstr "Заканчивается пробный период:"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:78
+msgid "media.logoNotFoundHint"
+msgstr "Попробуйте другое название или загрузите свой логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:30
+msgid "media.logoLinkRequired"
+msgstr "Введите ссылку на логотип."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:32
+msgid "media.logoLinkInvalid"
+msgstr "Введите полную ссылку http:// или https://."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:84
+msgid "media.readImageFailed"
+msgstr "Не удалось прочитать изображение. Выберите файл ещё раз."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:128
+msgid "notification.attempts"
+msgstr "{count, plural, one {# попытка} few {# попытки} many {# попыток} other {# попытки}} по расписанию"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:90
+msgid "media.cropDescription"
+msgstr "Настройте область обрезки, масштаб и поворот, затем подтвердите результат."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:43
+msgid "media.searchIconPlaceholder"
+msgstr "Введите название..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:81
+msgid "media.searchIconPrompt"
+msgstr "Введите название и запустите поиск"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:42
+msgid "media.searchLogoPlaceholder"
+msgstr "Введите сервис, бренд или URL..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:80
+msgid "media.searchLogoPrompt"
+msgstr "Введите сервис, бренд или URL и запустите поиск"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:19
+msgid "media.noUploadedLogo"
+msgstr "Вы ещё не загрузили свой логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:142
+msgid "notification.historyTitle"
+msgstr "Расписание и история уведомлений"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:136
+msgid "notification.blocker.ok"
+msgstr "Настройки в порядке"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:113
+msgid "notification.content.repeatEvery"
+msgstr "повтор напоминания каждые {hours, plural, one {# час} few {# часа} many {# часов} other {# часа}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:94
+msgid "media.reset"
+msgstr "Сбросить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:22
+msgid "media.retryUploadedLogo"
+msgstr "Повторить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:26
+msgid "media.link"
+msgstr "Ссылка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/notification.ts:40
+msgid "media.logoLinkPreviewFailed"
+msgstr "Не удалось показать предпросмотр. Сохранённая ссылка всё равно будет использоваться для отображения."

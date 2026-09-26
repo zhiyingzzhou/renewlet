@@ -1,0 +1,459 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-25 00:00+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru-RU\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:25
+msgid "auth.mfaCodePlaceholder"
+msgstr "6-значный код"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:26
+msgid "auth.mfaRecoveryPlaceholder"
+msgstr "XXXX-XXXX-XXXX"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:83
+msgid "passwordReset.passwordMismatch"
+msgstr "Пароли не совпадают"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:19
+msgid "auth.turnstileFailed"
+msgstr "Проверка на человека не пройдена. Попробуйте снова."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:21
+msgid "auth.mfaSubtitle"
+msgstr "Введите код из приложения-аутентификатора или код восстановления."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:12
+msgid "auth.passkeyLogin"
+msgstr "Войти с ключом доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:74
+msgid "passwordReset.newSubtitle"
+msgstr "Завершите сброс пароля по ссылке из письма"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:92
+msgid "passwordReset.saveNew"
+msgstr "Сохранить новый пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:86
+msgid "passwordReset.changeFailed"
+msgstr "Не удалось изменить пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:87
+msgid "passwordReset.changeFailedDescription"
+msgstr "Не удалось изменить пароль. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:42
+msgid "auth.heroAnalyzeSpending"
+msgstr "Анализируйте динамику расходов и оптимизируйте набор сервисов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:49
+msgid "setup.subtitle"
+msgstr "Создайте первый аккаунт администратора"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:53
+msgid "setup.createAdmin"
+msgstr "Создать администратора"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:48
+msgid "setup.title"
+msgstr "Первоначальная настройка Renewlet"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:55
+msgid "setup.failed"
+msgstr "Ошибка настройки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:56
+msgid "setup.failedDescription"
+msgstr "Не удалось выполнить настройку. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:50
+msgid "setup.completedTitle"
+msgstr "Настройка завершена"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:44
+msgid "auth.setupAdminLink"
+msgstr "созданию администратора"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:41
+msgid "auth.heroRenewalReminder"
+msgstr "Получайте напоминания до продления, чтобы ничего не упустить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:52
+msgid "setup.goToLogin"
+msgstr "Перейти ко входу"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:71
+msgid "passwordReset.sending"
+msgstr "Отправка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:64
+msgid "passwordReset.sendFailed"
+msgstr "Не удалось отправить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:72
+msgid "passwordReset.sendLink"
+msgstr "Отправить ссылку для сброса"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:45
+msgid "setup.name"
+msgstr "Имя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:68
+msgid "passwordReset.successMessage"
+msgstr "Если такой адрес зарегистрирован, на него будет отправлена ссылка для сброса. Проверьте почту."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:20
+msgid "auth.mfaTitle"
+msgstr "Подтверждение входа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:6
+msgid "auth.password"
+msgstr "Пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:85
+msgid "passwordReset.passwordUpdatedWithNextLogin"
+msgstr "Пароль обновлён. При следующем входе используйте новый пароль."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:77
+msgid "passwordReset.updatedLogin"
+msgstr "Пароль обновлён. Войдите с новым паролем."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:31
+msgid "auth.mfaRequiredDescription"
+msgstr "Пароль принят. Выполните следующий шаг подтверждения входа."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:89
+msgid "passwordReset.passwordMinShort"
+msgstr "Пароль должен содержать не менее 8 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:59
+msgid "setup.validation.passwordLength"
+msgstr "Пароль должен содержать не менее 8 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:66
+msgid "passwordReset.smtpUnavailable1"
+msgstr "Сброс пароля по почте не включён в этом развёртывании."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:7
+msgid "auth.forgotPassword"
+msgstr "Забыли пароль?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:23
+msgid "auth.mfaRecoveryCode"
+msgstr "Код восстановления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:60
+msgid "passwordReset.forgotTitle"
+msgstr "Восстановление пароля"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:78
+msgid "passwordReset.newPassword"
+msgstr "Новый пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:81
+msgid "passwordReset.passwordLength"
+msgstr "Новый пароль должен содержать не менее 8 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:47
+msgid "setup.displayName"
+msgstr "Отображаемое имя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:8
+msgid "auth.showPassword"
+msgstr "Показать пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:37
+msgid "auth.welcomeBack"
+msgstr "С возвращением"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:17
+msgid "auth.turnstileLoading"
+msgstr "Загрузка проверки на человека..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:13
+msgid "auth.passkeyLoggingIn"
+msgstr "Проверка ключа доступа..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:10
+msgid "auth.login"
+msgstr "Войти"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:11
+msgid "auth.loggingIn"
+msgstr "Вход..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:38
+msgid "auth.loginSubtitle"
+msgstr "Войдите, чтобы продолжить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:14
+msgid "auth.loginFailed"
+msgstr "Не удалось войти"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:46
+msgid "setup.loginEmail"
+msgstr "Почта для входа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:79
+msgid "passwordReset.confirmPassword"
+msgstr "Подтвердите пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:54
+msgid "setup.adminCreated"
+msgstr "Администратор создан. Войдите, используя свою почту."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:84
+msgid "passwordReset.passwordHelp"
+msgstr "Не менее 8 символов. Рекомендуется использовать буквы, цифры и символы."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:15
+msgid "auth.rememberEmail"
+msgstr "Запомнить почту"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:73
+msgid "passwordReset.newTitle"
+msgstr "Новый пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:93
+msgid "auth.loginRequired"
+msgstr "Сначала войдите в аккаунт"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:82
+msgid "passwordReset.confirmRequired"
+msgstr "Введите новый пароль ещё раз"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:16
+msgid "auth.turnstileRequired"
+msgstr "Пройдите проверку на человека"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:51
+msgid "setup.completedDescription"
+msgstr "Войдите, используя свою почту."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:65
+msgid "passwordReset.sendFailedDescription"
+msgstr "Не удалось отправить. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:67
+msgid "passwordReset.smtpUnavailable2"
+msgstr "Попросите администратора сбросить пароль в разделе управления пользователями."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:32
+msgid "auth.mfaInvalidTotp"
+msgstr "Введите 6-значный код"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:36
+msgid "auth.validation.passwordRequired"
+msgstr "Введите пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:88
+msgid "passwordReset.currentRequired"
+msgstr "Введите текущий пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:33
+msgid "auth.mfaInvalidRecovery"
+msgstr "Введите код восстановления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:80
+msgid "passwordReset.passwordRequired"
+msgstr "Введите новый пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:57
+msgid "setup.validation.nameRequired"
+msgstr "Введите отображаемое имя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:35
+msgid "auth.validation.emailInvalid"
+msgstr "Введите корректный адрес электронной почты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:58
+msgid "setup.validation.emailInvalid"
+msgstr "Введите корректный адрес электронной почты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:63
+msgid "passwordReset.emailInvalid"
+msgstr "Введите корректный адрес электронной почты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:34
+msgid "auth.validation.emailRequired"
+msgstr "Введите адрес электронной почты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:62
+msgid "passwordReset.emailRequired"
+msgstr "Введите адрес электронной почты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:76
+msgid "passwordReset.tokenMissing2"
+msgstr "Запросите сброс пароля ещё раз или убедитесь, что ссылка из письма не обрезана."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:91
+msgid "passwordReset.resetFailedDescription"
+msgstr "Не удалось сбросить пароль. Запросите новую ссылку."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:22
+msgid "auth.mfaTotp"
+msgstr "Код аутентификатора"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:39
+msgid "auth.heroTitle"
+msgstr "Легко управляйте всеми подписками"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:70
+msgid "passwordReset.emailHelp"
+msgstr "Введите почту, указанную при входе, и мы отправим одноразовую ссылку для сброса."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:40
+msgid "auth.heroTrackCosts"
+msgstr "Отслеживайте расходы по всем сервисам подписок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:61
+msgid "passwordReset.forgotSubtitle"
+msgstr "Получите ссылку для сброса по почте"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:5
+msgid "auth.email"
+msgstr "Электронная почта"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:90
+msgid "passwordReset.resetFailed"
+msgstr "Не удалось сбросить пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:75
+msgid "passwordReset.tokenMissing1"
+msgstr "В ссылке для сброса отсутствует токен, поэтому задать новый пароль нельзя."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:69
+msgid "passwordReset.successHint"
+msgstr "Ссылка действует 1 час. Если письмо не пришло, попробуйте позже или проверьте папку «Спам»."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:9
+msgid "auth.hidePassword"
+msgstr "Скрыть пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:30
+msgid "auth.mfaRequired"
+msgstr "Требуется подтверждение входа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:43
+msgid "auth.firstDeploy"
+msgstr "Первое развёртывание? Перейдите к"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:28
+msgid "auth.mfaVerifying"
+msgstr "Проверка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:29
+msgid "auth.mfaFailed"
+msgstr "Проверка не пройдена"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:18
+msgid "auth.turnstileExpired"
+msgstr "Срок проверки истёк. Пройдите её ещё раз."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:27
+msgid "auth.mfaVerify"
+msgstr "Подтвердить и войти"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:24
+msgid "auth.mfaCode"
+msgstr "Код"

@@ -77,4 +77,22 @@ describe("settings locale preference migration", () => {
       .run(JSON.stringify({ localePreference: "en-US", locale: "zh-CN" }))).toThrow(/SETTINGS_LOCALE_CONTRACT_INVALID/);
     database.close();
   });
+
+  it("widens the guard to ru-RU without touching existing settings", () => {
+    const database = openInitialDatabase(["existing", "russian", "invalid"]);
+    database.exec(readFileSync(migrationUrl, "utf8"));
+    const insert = database.prepare("INSERT INTO settings (user_id, settings_json, created_at, updated_at) VALUES (?, ?, '', '')");
+    const existingSettings = JSON.stringify({ localePreference: "zh-CN", monthlyBudget: "42" });
+    insert.run("existing", existingSettings);
+    expect(() => insert.run("russian", JSON.stringify({ localePreference: "ru-RU" }))).toThrow(/SETTINGS_LOCALE_CONTRACT_INVALID/);
+
+    database.exec(readFileSync(new URL("../migrations/0043_settings_locale_preference_ru_ru.sql", import.meta.url), "utf8"));
+
+    expect(() => insert.run("russian", JSON.stringify({ localePreference: "ru-RU" }))).not.toThrow();
+    expect(() => insert.run("invalid", JSON.stringify({ localePreference: "fr-FR" }))).toThrow(/SETTINGS_LOCALE_CONTRACT_INVALID/);
+    expect(() => database.prepare("UPDATE settings SET settings_json = ? WHERE user_id = 'russian'")
+      .run(JSON.stringify({ localePreference: "ru-RU", locale: "ru-RU" }))).toThrow(/SETTINGS_LOCALE_CONTRACT_INVALID/);
+    expect(database.prepare("SELECT settings_json FROM settings WHERE user_id = 'existing'").get()).toEqual({ settings_json: existingSettings });
+    database.close();
+  });
 });
