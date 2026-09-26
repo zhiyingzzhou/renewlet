@@ -7,11 +7,13 @@ type appLocalePreference string
 const (
 	localeZhCN           appLocale           = "zh-CN"
 	localeEnUS           appLocale           = "en-US"
+	localeRuRU           appLocale           = "ru-RU"
 	sourceAppLocale      appLocale           = localeZhCN
 	defaultAppLocale     appLocale           = localeEnUS
 	autoLocalePreference appLocalePreference = "auto"
 	preferenceZhCN       appLocalePreference = "zh-CN"
 	preferenceEnUS       appLocalePreference = "en-US"
+	preferenceRuRU       appLocalePreference = "ru-RU"
 )
 
-var supportedAppLocales = []appLocale{localeZhCN, localeEnUS}
+var supportedAppLocales = []appLocale{localeZhCN, localeEnUS, localeRuRU}

@@ -59,6 +59,11 @@ msgid "system.badgeVersion"
 msgstr "v{version}"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/common.ts:141
+msgid "locale.ruRU"
+msgstr "Русский"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/common.ts:24
 msgid "common.uploading"
 msgstr "Uploading..."

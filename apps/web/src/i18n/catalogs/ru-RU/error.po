@@ -1,0 +1,504 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-25 00:00+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru-RU\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:98
+msgid "error.code.AI_RECOGNITION_EMPTY"
+msgstr "ИИ не нашёл подписок, которые можно импортировать."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:99
+msgid "error.code.AI_RECOGNITION_FAILED"
+msgstr "Не удалось распознать с помощью ИИ. Проверьте входные данные и настройки модели."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:100
+msgid "error.code.AI_RECOGNITION_SCHEMA_MISMATCH"
+msgstr "Не удалось превратить ответ ИИ в черновики подписок. Попробуйте более мощную модель или добавьте больше подробностей."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:101
+msgid "error.code.AI_RECOGNITION_TEST_FAILED"
+msgstr "Проверка подключения к ИИ не прошла. Проверьте настройки модели."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:39
+msgid "error.code.LOGO_URL_USERINFO_INVALID"
+msgstr "URL логотипа не может содержать имя пользователя или пароль."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:37
+msgid "error.code.LOGO_URL_TOO_LONG"
+msgstr "URL логотипа не может быть длиннее 2048 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:38
+msgid "error.code.LOGO_URL_SCHEME_INVALID"
+msgstr "URL логотипа должен начинаться с http:// или https://."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:36
+msgid "error.code.LOGO_URL_INVALID"
+msgstr "Неверный URL логотипа."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:20
+msgid "error.code.TURNSTILE_TEST_FAILED"
+msgstr "Проверка настроек Turnstile не прошла. Проверьте Site key и Secret key."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:63
+msgid "error.code.ASSET_FILE_TOO_MANY"
+msgstr "За раз можно загрузить только одно изображение."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:31
+msgid "error.code.NEXT_BILLING_DATE_DATE_FORMAT"
+msgstr "Дата следующего списания должна быть в формате YYYY-MM-DD."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:32
+msgid "error.code.NEXT_BILLING_DATE_DATE_INVALID"
+msgstr "Неверная дата следующего списания."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:17
+msgid "error.turnstileFailed"
+msgstr "Проверка на человека не пройдена. Пройдите её снова, чтобы войти."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:65
+msgid "error.code.ASSET_FILE_TYPE_INVALID"
+msgstr "Поддерживаются только изображения PNG, JPG, WebP, SVG и ICO."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:83
+msgid "error.code.IMPORT_CONFLICT_MODE_INVALID"
+msgstr "Неверный режим разрешения конфликтов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:33
+msgid "error.code.NEXT_BILLING_DATE_BEFORE_START_DATE"
+msgstr "Дата продления не может быть раньше даты начала."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:44
+msgid "error.code.TAG_TOO_LONG"
+msgstr "Тег не может быть длиннее 40 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:91
+msgid "error.code.IMPORT_SOURCE_ID_DUPLICATE"
+msgstr "В файле импорта повторяются ID источника."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:64
+msgid "error.code.ASSET_FILE_SIZE_INVALID"
+msgstr "Размер изображения должен быть от 1 байта до 2 МБ."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:62
+msgid "error.code.ASSET_KIND_INVALID"
+msgstr "Неверное назначение изображения."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:97
+msgid "error.code.AI_IMAGE_TYPE_INVALID"
+msgstr "Неверный тип изображения. Поддерживаются только PNG, JPG и WebP."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:41
+msgid "error.code.WEBSITE_URL_SCHEME_INVALID"
+msgstr "URL сайта должен начинаться с http:// или https://."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:40
+msgid "error.code.WEBSITE_URL_INVALID"
+msgstr "Неверный URL сайта."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:76
+msgid "error.code.USER_PASSWORD_INVALID"
+msgstr "Недопустимая длина пароля."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:81
+msgid "error.code.IMPORT_PREVIEW_FAILED"
+msgstr "В данных импорта есть ошибки. Сначала исправьте ошибки в предпросмотре."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:89
+msgid "error.code.IMPORT_CONFIDENCE_INVALID"
+msgstr "Неверные данные сопоставления при импорте."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:88
+msgid "error.code.IMPORT_SOURCE_ID_INVALID"
+msgstr "Неверный ID источника импорта."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:87
+msgid "error.code.IMPORT_KEY_REQUIRED"
+msgstr "Нет данных сопоставления источника импорта."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:84
+msgid "error.code.IMPORT_SOURCE_INVALID"
+msgstr "Неверный источник импорта."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:85
+msgid "error.code.IMPORT_TOO_MANY_SUBSCRIPTIONS"
+msgstr "Слишком много подписок для импорта."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:14
+msgid "error.tooManyAttempts"
+msgstr "Слишком много попыток. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:29
+msgid "error.code.START_DATE_DATE_FORMAT"
+msgstr "Дата начала должна быть в формате YYYY-MM-DD."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:30
+msgid "error.code.START_DATE_DATE_INVALID"
+msgstr "Неверная дата начала."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:96
+msgid "error.code.AI_THINKING_PROVIDER_MISMATCH"
+msgstr "Настройка режима рассуждений не подходит для выбранной платформы или протокола."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:47
+msgid "error.code.COST_SHARING_MEMBER_JOINED_DATE_OUT_OF_RANGE"
+msgstr "Даты присоединения участников должны быть в пределах срока подписки."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:45
+msgid "error.code.REMINDER_DAYS_OUT_OF_RANGE"
+msgstr "Для напоминания выберите «Не напоминать», «По умолчанию из настроек» или число дней от 0 до 3650."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:5
+msgid "error.generic"
+msgstr "Что-то пошло не так. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:66
+msgid "error.code.ASSET_FILE_READ_FAILED"
+msgstr "Не удалось прочитать загруженный файл."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:11
+msgid "error.invalidResponse"
+msgstr "Неверный ответ сервера"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:43
+msgid "error.code.TAGS_TOO_MANY"
+msgstr "Можно указать не более 100 тегов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:42
+msgid "error.code.TAGS_MUST_BE_STRING_ARRAY"
+msgstr "Теги должны быть массивом строк."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:8
+msgid "error.exchangeRatesContract"
+msgstr "Неверный формат ответа с курсами валют."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:74
+msgid "error.code.USER_NAME_TOO_LONG"
+msgstr "Имя пользователя не может быть длиннее 80 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:15
+msgid "error.loginUnavailable"
+msgstr "Вход временно недоступен. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:102
+msgid "error.code.SUBSCRIPTION_COLLECTION_LIMIT_EXCEEDED"
+msgstr "Результат превышает лимит обработки. Уточните поиск или фильтры."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:6
+msgid "error.network"
+msgstr "Ошибка сетевого запроса"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:28
+msgid "error.code.CUSTOM_CYCLE_UNIT_INVALID"
+msgstr "Неверная единица своего периода."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:27
+msgid "error.code.CUSTOM_DAYS_NEGATIVE"
+msgstr "Длительность своего периода не может быть отрицательной."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:26
+msgid "error.code.CUSTOM_DAYS_REQUIRED"
+msgstr "Длительность своего периода должна быть больше 0."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:52
+msgid "error.code.CUSTOM_CONFIG_GROUP_TOO_LARGE"
+msgstr "В группе пользовательских настроек может быть не более 200 элементов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:51
+msgid "error.code.CUSTOM_CONFIG_GROUP_NOT_ARRAY"
+msgstr "Группа пользовательских настроек должна быть массивом."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:50
+msgid "error.code.CUSTOM_CONFIG_JSON_INVALID"
+msgstr "Неверные данные пользовательских настроек."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:53
+msgid "error.code.CUSTOM_CONFIG_ITEM_INVALID"
+msgstr "Неверный элемент пользовательских настроек."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:24
+msgid "error.code.SUBSCRIPTION_PRICE_NEGATIVE"
+msgstr "Цена подписки не может быть отрицательной."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:25
+msgid "error.code.SUBSCRIPTION_PRICE_TOO_HIGH"
+msgstr "Цена подписки не может превышать 1 000 000 000."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:22
+msgid "error.code.SUBSCRIPTION_NAME_TOO_LONG"
+msgstr "Название подписки не может быть длиннее 120 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:90
+msgid "error.code.IMPORT_SOURCE_MISMATCH"
+msgstr "Источник импорта подписок не совпадает с данными."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:86
+msgid "error.code.IMPORT_SETTINGS_INVALID"
+msgstr "Неверные данные импорта настроек."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:49
+msgid "error.code.SETTINGS_JSON_INVALID"
+msgstr "Неверные данные настроек."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:34
+msgid "error.code.TRIAL_END_DATE_DATE_FORMAT"
+msgstr "Дата окончания пробного периода должна быть в формате YYYY-MM-DD."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:35
+msgid "error.code.TRIAL_END_DATE_DATE_INVALID"
+msgstr "Неверная дата окончания пробного периода."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:46
+msgid "error.code.COST_SHARING_COLLECTION_ANCHOR_REQUIRED"
+msgstr "Укажите даты присоединения участников или сначала заполните дату начала подписки."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:94
+msgid "error.code.AI_API_KEY_REQUIRED"
+msgstr "Сначала укажите API-ключ ИИ."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:93
+msgid "error.code.AI_BASE_URL_REQUIRED"
+msgstr "Сначала укажите базовый URL ИИ."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:92
+msgid "error.code.AI_MODEL_REQUIRED"
+msgstr "Сначала укажите модель ИИ."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:16
+msgid "error.turnstileRequired"
+msgstr "Сначала пройдите проверку на человека"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:95
+msgid "error.code.AI_RECOGNITION_INPUT_REQUIRED"
+msgstr "Сначала вставьте текст или загрузите изображения."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:18
+msgid "error.code.TURNSTILE_CONFIG_INCOMPLETE"
+msgstr "Укажите и Site key, и Secret key."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:19
+msgid "error.code.TURNSTILE_REQUIRED"
+msgstr "Пройдите проверку на человека."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:77
+msgid "error.code.INVALID_JSON"
+msgstr "Тело запроса не является корректным JSON."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:78
+msgid "error.code.EMPTY_BODY"
+msgstr "Тело запроса не может быть пустым."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:79
+msgid "error.code.BODY_TOO_LARGE"
+msgstr "Слишком большое тело запроса."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:10
+msgid "error.invalidParams"
+msgstr "Неверные параметры запроса"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:80
+msgid "error.code.INVALID_PAYLOAD"
+msgstr "Неверные параметры запроса."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:9
+msgid "error.aborted"
+msgstr "Запрос отменён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:7
+msgid "error.timeout"
+msgstr "Время ожидания запроса истекло. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:61
+msgid "error.code.BUILT_IN_ICON_SOURCE_REQUIRED"
+msgstr "Включите хотя бы один встроенный источник значков."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:73
+msgid "error.code.USER_NAME_REQUIRED"
+msgstr "Введите имя пользователя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:21
+msgid "error.code.SUBSCRIPTION_NAME_REQUIRED"
+msgstr "Введите название подписки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:23
+msgid "error.code.CURRENCY_CODE_INVALID"
+msgstr "Код валюты должен состоять из 3 заглавных букв."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:82
+msgid "error.code.IMPORT_SKIP_INDEX_INVALID"
+msgstr "Неверный индекс пропущенного элемента."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:12
+msgid "error.moreErrors"
+msgstr "Ещё {count, plural, one {# ошибка} few {# ошибки} many {# ошибок} other {# ошибки}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:71
+msgid "error.code.NOTIFICATION_UTC_TIME_INVALID"
+msgstr "Неверное время уведомления в UTC."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:72
+msgid "error.code.NOTIFICATION_ATTEMPTS_NEGATIVE"
+msgstr "Число попыток отправки уведомления не может быть отрицательным."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:70
+msgid "error.code.NOTIFICATION_TIMEZONE_INVALID"
+msgstr "Неверный часовой пояс уведомления."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:67
+msgid "error.code.NOTIFICATION_LOCAL_DATE_DATE_FORMAT"
+msgstr "Локальная дата уведомления должна быть в формате YYYY-MM-DD."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:68
+msgid "error.code.NOTIFICATION_LOCAL_DATE_DATE_INVALID"
+msgstr "Неверная локальная дата уведомления."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:69
+msgid "error.code.NOTIFICATION_LOCAL_TIME_INVALID"
+msgstr "Неверное локальное время уведомления."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:13
+msgid "error.loginGeneric"
+msgstr "Неверный email или пароль. Проверьте данные и попробуйте снова."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:75
+msgid "error.code.USER_EMAIL_INVALID"
+msgstr "Неверный формат email."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:55
+msgid "error.code.CONFIG_ITEM_LABELS_INVALID"
+msgstr "Неверные названия элемента."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:60
+msgid "error.code.CONFIG_ITEM_ENABLED_NOT_BOOLEAN"
+msgstr "Состояние включения элемента должно быть логическим значением."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:59
+msgid "error.code.CONFIG_ITEM_ICON_NOT_STRING"
+msgstr "Значок элемента должен быть строкой."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:57
+msgid "error.code.CONFIG_ITEM_FIELDS_TOO_LONG"
+msgstr "Поля элемента не могут быть длиннее 128 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:54
+msgid "error.code.CONFIG_ITEM_LABELS_REQUIRED"
+msgstr "У элемента должны быть названия на китайском и английском."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:56
+msgid "error.code.CONFIG_ITEM_REQUIRED_FIELDS"
+msgstr "Для элемента обязательны значение, название на китайском и название на английском."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:58
+msgid "error.code.CONFIG_ITEM_COLOR_NOT_STRING"
+msgstr "Цвет элемента должен быть строкой."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:48
+msgid "error.code.COST_SHARING_COLLECTION_REMINDER_ONE_TIME_BUYOUT_INVALID"
+msgstr "Для бессрочных разовых покупок напоминания о сборе платежей недоступны."

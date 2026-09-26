@@ -28,7 +28,7 @@ import {
 import { getProductCurrentUserId, subscribeProductSession } from "@/services/product-session";
 import { activateLoadedLocale, linguiI18n, loadLocaleCatalog, translate, type MessageKey, type MessageParams } from "@/i18n/messages";
 import { formatCurrency as formatCurrencyValue } from "@/lib/currency";
-import { toPlainDate, type DateOnly } from "@/lib/time/date-only";
+import { dateOnlyMessageParams, type DateOnly } from "@/lib/time/date-only";
 import { reportClientError } from "@/lib/report-client-error";
 
 interface I18nContextValue {
@@ -62,12 +62,7 @@ function createFallbackI18nValue(): I18nContextValue {
     syncRemoteLocalePreference: () => undefined,
     t,
     formatDateOnly: (date, style = "short") => {
-      const value = toPlainDate(date);
-      const parts = {
-        year: value.year,
-        month: String(value.month).padStart(style === "full" && locale === "en-US" ? 2 : 1, "0"),
-        day: String(value.day).padStart(style === "full" && locale === "en-US" ? 2 : 1, "0"),
-      };
+      const parts = dateOnlyMessageParams(date, locale, style);
       if (style === "monthDay") return t("date.monthDay", parts);
       if (style === "full") return t("date.full", parts);
       return t("date.short", parts);
@@ -161,12 +156,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       syncRemoteLocalePreference,
       t,
       formatDateOnly: (date, style = "short") => {
-        const value = toPlainDate(date);
-        const parts = {
-          year: value.year,
-          month: String(value.month).padStart(style === "full" && localeState.locale === "en-US" ? 2 : 1, "0"),
-          day: String(value.day).padStart(style === "full" && localeState.locale === "en-US" ? 2 : 1, "0"),
-        };
+        const parts = dateOnlyMessageParams(date, localeState.locale, style);
         if (style === "monthDay") return t("date.monthDay", parts);
         if (style === "full") return t("date.full", parts);
         return t("date.short", parts);

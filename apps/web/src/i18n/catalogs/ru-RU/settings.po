@@ -1,0 +1,4067 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-25 00:00+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru-RU\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:745
+msgid "settings.dingtalkTemplateExampleCountTitle"
+msgstr "'{brand}' · напоминаний: '{itemCount}'"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:742
+msgid "settings.dingtalkTemplateExampleKeywordTitle"
+msgstr "'{brand}' · '{title}'"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:739
+msgid "settings.dingtalkTemplateExampleDefaultTitle"
+msgstr "'{title}'"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:740
+msgid "settings.dingtalkTemplateExampleDefaultContent"
+msgstr "'{title}'\n"
+"\n"
+"'{content}'\n"
+"\n"
+"'{timestamp}'"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:743
+msgid "settings.dingtalkTemplateExampleKeywordContent"
+msgstr "'{title}'\n"
+"\n"
+"'{content}'\n"
+"\n"
+"'{timestamp}'\n"
+"\n"
+"'{brand}' · '{keyword}'"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:617
+msgid "settings.channelConfig"
+msgstr "Настройка {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:56
+msgid "settings.passkeyCount"
+msgstr "{count}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:57
+msgid "settings.passkeyCountStale"
+msgstr "{count} · Не обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:147
+msgid "settings.builtInIconIndexProviderIconCount"
+msgstr "{count, plural, one {# значок} few {# значка} many {# значков} other {# значка}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:655
+msgid "settings.channel.webhookReady"
+msgstr "{method} Webhook URL указан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:228
+msgid "settings.uploadedIconsMeta"
+msgstr "{mimeType} · {size} · обновлено {updated}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:591
+msgid "settings.exchangeRateReportBasisLocked"
+msgstr "{month} зафиксирован (курсы на {date})"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:592
+msgid "settings.exchangeRateReportBasisLive"
+msgstr "{month} ещё не зафиксирован — используются текущие курсы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:477
+msgid "settings.cloudBackupSummary"
+msgstr "{provider} · {credential} · {status}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:633
+msgid "settings.sectionSaved"
+msgstr "Раздел «{section}» обновлён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:229
+msgid "settings.uploadedIconsSizeBytes"
+msgstr "{size} Б"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:230
+msgid "settings.uploadedIconsSizeKb"
+msgstr "{size} КБ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:231
+msgid "settings.uploadedIconsSizeMb"
+msgstr "{size} МБ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:161
+msgid "settings.builtInIconIndexUpdateQueued"
+msgstr "{source} обновится в фоне; проверка статуса остановится автоматически после успеха или ошибки."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:160
+msgid "settings.builtInIconIndexUpdated"
+msgstr "{source} обновлён; для поиска логотипов и значков {count, plural, one {доступен # значок} few {доступно # значка} many {доступно # значков} other {доступно # значка}}."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:374
+msgid "settings.calendarFeedSubscriptionMeta"
+msgstr "{status} · {date}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:144
+msgid "settings.builtInIconIndexJobStatusValue"
+msgstr "{status} · {attempts, plural, one {# попытка} few {# попытки} many {# попыток} other {# попытки}} · {time}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:150
+msgid "settings.builtInIconIndexVersionWithTime"
+msgstr "{time} · {version}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:465
+msgid "settings.publicApiDeleteDescription"
+msgstr "«{name}» будет удалён навсегда. Внешние интеграции при следующих запросах будут получать ответ об отказе в авторизации."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:218
+msgid "settings.uploadedIconsDeleted"
+msgstr "{name} удалён из загруженных значков."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:376
+msgid "settings.calendarFeedUrlFor"
+msgstr "URL подписки на календарь для «{name}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:746
+msgid "settings.dingtalkTemplateExampleCountContent"
+msgstr "['{title}']\n"
+"\n"
+"'{content}'\n"
+"\n"
+"Отправлено: '{timestamp}'"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:759
+msgid "settings.wechatAtAll"
+msgstr "@ всех участников"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:757
+msgid "settings.wechatPhones"
+msgstr "@ номера телефонов (необязательно)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:317
+msgid "settings.perMonth"
+msgstr "/ мес."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:288
+msgid "aiRecognition.thinking.budget.1024"
+msgstr "1024 токена"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:598
+msgid "settings.cachePolicyValue"
+msgstr "Локальный кеш на 24 часа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:289
+msgid "aiRecognition.thinking.budget.4096"
+msgstr "4096 токенов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:763
+msgid "settings.smtpSecureHelp"
+msgstr "Для порта 465 обычно включено; для 587/2525 обычно выключено и используется STARTTLS. Cloudflare Workers не поддерживает порт 25."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:290
+msgid "aiRecognition.thinking.budget.8192"
+msgstr "8192 токена"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:501
+msgid "settings.cloudBackupS3AccessKey"
+msgstr "Access Key"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:28
+msgid "settings.sectionNav.aiRecognition"
+msgstr "Распознавание с помощью ИИ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:232
+msgid "aiRecognition.settingsTitle"
+msgstr "Распознавание с помощью ИИ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:305
+msgid "aiRecognition.testSucceeded"
+msgstr "Подключение к ИИ работает"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:306
+msgid "aiRecognition.testFailed"
+msgstr "Не удалось подключиться к ИИ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:304
+msgid "aiRecognition.testBlockedTitle"
+msgstr "Настройки ИИ заполнены не полностью"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:308
+msgid "aiRecognition.errorDetailsTitle"
+msgstr "Подробности ошибки ИИ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:253
+msgid "aiRecognition.apiKey"
+msgstr "API-ключ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:653
+msgid "settings.channel.notifyxReady"
+msgstr "API-ключ указан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:467
+msgid "settings.publicApiCreateFailed"
+msgstr "Не удалось создать API-токен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:473
+msgid "settings.publicApiDeleteFailed"
+msgstr "Не удалось удалить API-токен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:466
+msgid "settings.publicApiCreated"
+msgstr "API-токен создан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:472
+msgid "settings.publicApiDeleted"
+msgstr "API-токен удалён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:717
+msgid "settings.apiKeyLabel"
+msgstr "API-ключ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:168
+msgid "settings.onlineIconSource.appStore"
+msgstr "App Store"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:170
+msgid "settings.onlineIconSource.appStore.storefronts"
+msgstr "Регионы App Store"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:675
+msgid "settings.help.bark"
+msgstr "Приложение Bark для iOS"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:250
+msgid "aiRecognition.baseUrl"
+msgstr "Base URL"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:651
+msgid "settings.channel.telegramReady"
+msgstr "Bot Token и Chat ID указаны"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:688
+msgid "settings.telegramBotCommands"
+msgstr "Команды бота для запросов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:499
+msgid "settings.cloudBackupS3Bucket"
+msgstr "Бакет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:237
+msgid "aiRecognition.providerType.anthropic"
+msgstr "Claude"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:298
+msgid "aiRecognition.thinking.anthropic.high.description"
+msgstr "Claude effort=high."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:296
+msgid "aiRecognition.thinking.anthropic.low.description"
+msgstr "Claude effort=low."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:300
+msgid "aiRecognition.thinking.anthropic.max.description"
+msgstr "Claude effort=max."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:297
+msgid "aiRecognition.thinking.anthropic.medium.description"
+msgstr "Claude effort=medium."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:299
+msgid "aiRecognition.thinking.anthropic.xhigh.description"
+msgstr "Claude effort=xhigh."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:174
+msgid "settings.onlineIconSource.appStore.storefront.cn"
+msgstr "CN"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:187
+msgid "settings.builtInIconSourceShort.dashboardIcons"
+msgstr "Dashboard"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:186
+msgid "settings.builtInIconSource.dashboardIcons"
+msgstr "Dashboard Icons"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:678
+msgid "settings.help.discord"
+msgstr "Документация Discord Webhook"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:496
+msgid "settings.cloudBackupS3Endpoint"
+msgstr "Endpoint"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:586
+msgid "settings.exchangeRateProvider.exchangeApi"
+msgstr "Exchange API"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:587
+msgid "settings.exchangeRateProvider.floatrates"
+msgstr "FloatRates JSON Feeds"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:585
+msgid "settings.exchangeRateProvider.frankfurter"
+msgstr "Frankfurter"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:236
+msgid "aiRecognition.providerType.gemini"
+msgstr "Gemini"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:287
+msgid "aiRecognition.thinking.gemini.budget.description"
+msgstr "Фиксированный thinkingBudget для Gemini."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:286
+msgid "aiRecognition.thinking.gemini.dynamic.description"
+msgstr "Gemini thinkingBudget=-1: модель сама определяет бюджет."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:284
+msgid "aiRecognition.thinking.gemini.off.description"
+msgstr "Gemini thinkingBudget=0: отключает рассуждения у моделей с управлением бюджетом."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:283
+msgid "aiRecognition.thinking.gemini.level.high.description"
+msgstr "Gemini thinkingLevel=high."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:281
+msgid "aiRecognition.thinking.gemini.level.low.description"
+msgstr "Gemini thinkingLevel=low."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:282
+msgid "aiRecognition.thinking.gemini.level.medium.description"
+msgstr "Gemini thinkingLevel=medium."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:280
+msgid "aiRecognition.thinking.gemini.level.minimal.description"
+msgstr "Gemini thinkingLevel=minimal."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:720
+msgid "settings.webhookGetPostHelp"
+msgstr "GET передаёт title/content/timestamp как параметры запроса. POST по умолчанию отправляет JSON или использует шаблон ниже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:268
+msgid "aiRecognition.thinking.openai.high"
+msgstr "Высокий"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:279
+msgid "aiRecognition.thinking.gemini.level.high"
+msgstr "Высокий"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:293
+msgid "aiRecognition.thinking.anthropic.high"
+msgstr "Высокий"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:722
+msgid "settings.webhookHeadersHelp"
+msgstr "Пользовательские заголовки в формате JSON. Оставьте пустым, чтобы использовать значения по умолчанию."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:211
+msgid "settings.uploadedIconsKindLogo"
+msgstr "Логотип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:266
+msgid "aiRecognition.thinking.openai.low"
+msgstr "Низкий"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:277
+msgid "aiRecognition.thinking.gemini.level.low"
+msgstr "Низкий"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:291
+msgid "aiRecognition.thinking.anthropic.low"
+msgstr "Низкий"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:295
+msgid "aiRecognition.thinking.anthropic.max"
+msgstr "Максимальный"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:267
+msgid "aiRecognition.thinking.openai.medium"
+msgstr "Средний"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:278
+msgid "aiRecognition.thinking.gemini.level.medium"
+msgstr "Средний"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:292
+msgid "aiRecognition.thinking.anthropic.medium"
+msgstr "Средний"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:265
+msgid "aiRecognition.thinking.openai.minimal"
+msgstr "Минимальный"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:276
+msgid "aiRecognition.thinking.gemini.level.minimal"
+msgstr "Минимальный"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:676
+msgid "settings.help.notifyx"
+msgstr "Справка Notifyx"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:235
+msgid "aiRecognition.providerType.openai"
+msgstr "OpenAI"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:238
+msgid "aiRecognition.providerType.openaiCompatible"
+msgstr "OpenAI Compatible"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:259
+msgid "aiRecognition.thinkingUnsupportedCompatible"
+msgstr "У OpenAI Compatible нет единого стандарта рассуждений, поэтому Renewlet не передаёт эти настройки."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:274
+msgid "aiRecognition.thinking.openai.high.description"
+msgstr "OpenAI reasoning_effort=high."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:272
+msgid "aiRecognition.thinking.openai.low.description"
+msgstr "OpenAI reasoning_effort=low."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:273
+msgid "aiRecognition.thinking.openai.medium.description"
+msgstr "OpenAI reasoning_effort=medium."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:271
+msgid "aiRecognition.thinking.openai.minimal.description"
+msgstr "OpenAI reasoning_effort=minimal."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:270
+msgid "aiRecognition.thinking.openai.none.description"
+msgstr "OpenAI reasoning_effort=none, доступно только для моделей, где рассуждения можно отключить."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:275
+msgid "aiRecognition.thinking.openai.xhigh.description"
+msgstr "OpenAI reasoning_effort=xhigh, доступно только для поддерживаемых моделей."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:36
+msgid "settings.pocketBaseAdmin"
+msgstr "Админка PocketBase"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:500
+msgid "settings.cloudBackupS3Prefix"
+msgstr "Префикс"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:25
+msgid "settings.sectionNav.publicApi"
+msgstr "Публичный API"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:436
+msgid "settings.publicApi"
+msgstr "Публичный API"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:454
+msgid "settings.publicApiTokens"
+msgstr "Список токенов публичного API"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:786
+msgid "settings.pushplusToken"
+msgstr "Токен PushPlus"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:679
+msgid "settings.help.pushplus"
+msgstr "API сообщений PushPlus"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:497
+msgid "settings.cloudBackupS3Region"
+msgstr "Регион"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:747
+msgid "settings.dingtalkKeywordPlaceholder"
+msgstr "Renewlet"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:491
+msgid "settings.cloudBackupProviderS3"
+msgstr "S3-совместимое хранилище"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:780
+msgid "settings.serverchanSendKeyPlaceholder"
+msgstr "SCTxxxxxxxxxxxxxxxx или sctp123tabc"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:502
+msgid "settings.cloudBackupS3Secret"
+msgstr "Secret Key"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:183
+msgid "settings.builtInIconSourceShort.selfhst"
+msgstr "selfh.st"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:182
+msgid "settings.builtInIconSource.selfhst"
+msgstr "selfh.st icons"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:779
+msgid "settings.serverchanSendKey"
+msgstr "SendKey"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:665
+msgid "settings.channel.serverchanReady"
+msgstr "SendKey указан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:677
+msgid "settings.help.serverchan"
+msgstr "Документация ServerChan"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:765
+msgid "settings.smtpPassword"
+msgstr "Пароль SMTP"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:760
+msgid "settings.smtpHost"
+msgstr "SMTP-сервер"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:764
+msgid "settings.smtpUser"
+msgstr "Имя пользователя SMTP"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:761
+msgid "settings.smtpPort"
+msgstr "Порт SMTP"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:706
+msgid "settings.telegramBotCommandsHttpsRequired"
+msgstr "Для Webhook Telegram нужен публичный URL с HTTPS."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:705
+msgid "settings.telegramBotCommandsSaveFirst"
+msgstr "В данных Telegram есть несохранённые изменения. Сначала сохраните настройки."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:714
+msgid "settings.telegramBotCommandsDeleteFailed"
+msgstr "Не удалось удалить команды Telegram"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:711
+msgid "settings.telegramBotCommandsInstallFailed"
+msgstr "Не удалось установить команды Telegram"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:713
+msgid "settings.telegramBotCommandsDeleted"
+msgstr "Команды Telegram удалены"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:710
+msgid "settings.telegramBotCommandsInstalled"
+msgstr "Команды Telegram установлены"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:683
+msgid "settings.telegramMessageFormat"
+msgstr "Стиль сообщений Telegram"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:178
+msgid "settings.builtInIconSource.thesvg"
+msgstr "TheSVG"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:179
+msgid "settings.builtInIconSourceShort.thesvg"
+msgstr "TheSVG"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:444
+msgid "settings.publicApiTokensLoadFailed"
+msgstr "Не удалось загрузить токены"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:448
+msgid "settings.publicApiCreateHelp"
+msgstr "Токены могут только читать списки подписок, сведения о них, сводки статусов и ближайшие платежи. Они не дают сеанса входа и права на запись."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:446
+msgid "settings.publicApiCreateName"
+msgstr "Название токена"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:669
+msgid "settings.channel.pushplusReady"
+msgstr "Токен указан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:469
+msgid "settings.publicApiTokenCopied"
+msgstr "Токен скопирован"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:335
+msgid "settings.calendarFeedCopied"
+msgstr "URL скопирован"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:426
+msgid "settings.publicStatusCopied"
+msgstr "URL скопирован"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:172
+msgid "settings.onlineIconSource.appStore.storefront.us"
+msgstr "US"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:490
+msgid "settings.cloudBackupProviderWebdav"
+msgstr "WebDAV"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:492
+msgid "settings.cloudBackupWebdavUrl"
+msgstr "WebDAV URL"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:782
+msgid "settings.discordWebhookUrl"
+msgstr "Webhook URL"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:667
+msgid "settings.channel.discordReady"
+msgstr "Webhook URL указан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:718
+msgid "settings.webhookUrlLabel"
+msgstr "Webhook URL"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:672
+msgid "settings.help.webhook"
+msgstr "Обзор Webhook"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:269
+msgid "aiRecognition.thinking.openai.xhigh"
+msgstr "Очень высокий"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:294
+msgid "aiRecognition.thinking.anthropic.xhigh"
+msgstr "Очень высокий"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:450
+msgid "settings.publicApiPlainToken"
+msgstr "Одноразовый API-токен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:19
+msgid "settings.sectionNav.uploadedIcons"
+msgstr "Загруженные значки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:194
+msgid "settings.uploadedIcons"
+msgstr "Загруженные значки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:219
+msgid "settings.uploadedIconsDeleteFailed"
+msgstr "Не удалось удалить загруженный значок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:487
+msgid "settings.cloudBackupLastBackupAt"
+msgstr "Последняя копия"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:480
+msgid "settings.cloudBackupStatusFailed"
+msgstr "Последняя попытка неудачна"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:479
+msgid "settings.cloudBackupStatusSuccess"
+msgstr "Последняя попытка успешна"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:599
+msgid "settings.lastUpdated"
+msgstr "Последнее обновление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:156
+msgid "settings.builtInIconIndexLastRefreshError"
+msgstr "Последнее обновление не удалось: {message}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:486
+msgid "settings.cloudBackupLastStatus"
+msgstr "Последний статус"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:262
+msgid "aiRecognition.thinking.noExplicitControl"
+msgstr "Без явной настройки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:649
+msgid "settings.currencyPolicy.defaultTitle"
+msgstr "Валюту отчётов нельзя выключить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:110
+msgid "settings.showExpiredHelp"
+msgstr "Отключите, чтобы уведомления были короче."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:29
+msgid "settings.sectionNav.cloudBackup"
+msgstr "Облачная синхронизация и резервное копирование"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:475
+msgid "settings.cloudBackup"
+msgstr "Облачная синхронизация и резервное копирование"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:552
+msgid "settings.cloudBackupTestSucceeded"
+msgstr "Подключение к облачному хранилищу работает"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:553
+msgid "settings.cloudBackupTestFailed"
+msgstr "Не удалось подключиться к облачному хранилищу"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:550
+msgid "settings.cloudBackupSaveFailed"
+msgstr "Не удалось сохранить настройки облачного резервного копирования"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:548
+msgid "settings.cloudBackupSaved"
+msgstr "Настройки облачного резервного копирования сохранены"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:546
+msgid "settings.cloudBackupInvalid"
+msgstr "Неверные настройки облачного резервного копирования"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:543
+msgid "settings.cloudBackupUpstreamTitle"
+msgstr "Подробности ошибки облачного хранилища"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:528
+msgid "settings.cloudBackupSnapshots"
+msgstr "Облачные снимки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:530
+msgid "settings.cloudBackupSnapshotsLoadFailed"
+msgstr "Не удалось загрузить список облачных снимков"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:556
+msgid "settings.cloudBackupCreateFailed"
+msgstr "Не удалось создать облачный снимок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:562
+msgid "settings.cloudBackupDeleteFailed"
+msgstr "Не удалось удалить облачный снимок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:555
+msgid "settings.cloudBackupCreated"
+msgstr "Облачный снимок создан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:561
+msgid "settings.cloudBackupDeleted"
+msgstr "Облачный снимок удалён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:559
+msgid "settings.cloudBackupRestoreFailed"
+msgstr "Не удалось восстановить облачный снимок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-display.ts:5
+msgid "settings.showLunarCalendarHelp"
+msgstr "Григорианские и китайские лунные даты показываются только в окне выбора даты; даты оплаты, напоминаний и календаря не меняются."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:257
+msgid "aiRecognition.thinkingHelp"
+msgstr "Показаны только официальные настройки рассуждений, которые точно поддерживают выбранная платформа и модель. Для остальных моделей сохраняется поведение по умолчанию."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:222
+msgid "settings.uploadedIconsDeleteBlockedByPaymentMethods"
+msgstr "Ещё используется в {count, plural, one {# способе оплаты} few {# способах оплаты} many {# способах оплаты} other {# способа оплаты}}. Сначала замените значок в управлении способами оплаты."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:221
+msgid "settings.uploadedIconsDeleteBlockedBySubscriptions"
+msgstr "Ещё используется в {count, plural, one {# подписке} few {# подписках} many {# подписках} other {# подписки}}. Сначала замените логотип в этих подписках."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:223
+msgid "settings.uploadedIconsDeleteBlockedByBoth"
+msgstr "Ещё используется в {subscriptionCount, plural, one {# подписке} few {# подписках} many {# подписках} other {# подписки}} и {paymentMethodCount, plural, one {# способе оплаты} few {# способах оплаты} many {# способах оплаты} other {# способа оплаты}}. Сначала замените логотипы и значки способов оплаты."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:776
+msgid "settings.barkKeyHelp"
+msgstr "Device Key из приложения Bark для iOS"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:716
+msgid "settings.notifyxHelp"
+msgstr "API-ключ с платформы Notifyx"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:787
+msgid "settings.pushplusHelp"
+msgstr "Токен сообщений или токен пользователя из PushPlus. Renewlet отправляет сообщения в текстовом шаблоне."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:693
+msgid "settings.telegramBotCommandsNever"
+msgstr "Никогда"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:460
+msgid "settings.publicApiTokenNeverUsed"
+msgstr "Не использовался"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:488
+msgid "settings.cloudBackupNeverBackedUp"
+msgstr "Копий ещё не было"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:726
+msgid "settings.dingtalkWebhookHelp"
+msgstr "Используйте URL пользовательского бота из группы DingTalk. Renewlet отправляет сообщения в формате, который требует DingTalk."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:638
+msgid "settings.partialSaveFailedDescription"
+msgstr "Не сохранены изменения: {scope}. Проверьте их и попробуйте снова."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:674
+msgid "settings.help.wechat"
+msgstr "Документация ботов WeCom"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:584
+msgid "settings.exchangeRateProviderHelp"
+msgstr "Сначала используется выбранный источник. Если он недоступен, пробуются другие удалённые источники; небольшие пробелы по валютам заполняются резервными курсами."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:762
+msgid "settings.smtpSecure"
+msgstr "Использовать прямой TLS"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:55
+msgid "settings.passkeyHelp"
+msgstr "Входите с помощью браузера, биометрии устройства или ключа безопасности. Ключи доступа управляются отдельно от аутентификатора."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:47
+msgid "settings.mfaHelp"
+msgstr "Используйте приложение-аутентификатор для получения 6-значных кодов. Коды восстановления показываются один раз."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:240
+msgid "aiRecognition.modelPlaceholder"
+msgstr "например, gpt-5.1, gemini-3-pro, claude-sonnet-4-5"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:728
+msgid "settings.dingtalkTitleTemplatePlaceholder"
+msgstr "например, '{brand}' · '{title}'"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:730
+msgid "settings.dingtalkContentTemplatePlaceholder"
+msgstr "например, '{title}'\n"
+"\n"
+"'{content}'\n"
+"\n"
+"'{timestamp}'"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:680
+msgid "settings.telegramChatPlaceholder"
+msgstr "Например, 123456789 (можно узнать у @userinfobot)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:68
+msgid "settings.passkeyNamePlaceholder"
+msgstr "Например: MacBook Touch ID"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:447
+msgid "settings.publicApiCreateNamePlaceholder"
+msgstr "например, Telegram Bot"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:476
+msgid "settings.cloudBackupHelp"
+msgstr "Сохраняйте облачные снимки для восстановления. Восстановление открывает предпросмотр импорта и никогда не перезаписывает данные автоматически."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:504
+msgid "settings.cloudBackupSecretPlaceholder"
+msgstr "Не отображается после сохранения"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:634
+msgid "settings.saveFailed"
+msgstr "Не удалось сохранить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:99
+msgid "settings.mfaRecoveryCodesTitle"
+msgstr "Сохраните коды восстановления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:623
+msgid "settings.saveAll"
+msgstr "Сохранить все настройки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:45
+msgid "settings.saveNewPassword"
+msgstr "Сохранить новый пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:626
+msgid "settings.saveChanges"
+msgstr "Сохранить изменения"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:522
+msgid "settings.cloudBackupSave"
+msgstr "Сохранить настройки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:523
+msgid "settings.cloudBackupSaveAgain"
+msgstr "Сохранить настройки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:521
+msgid "settings.cloudBackupRetention"
+msgstr "Хранить копий"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:37
+msgid "settings.changePassword"
+msgstr "Изменить пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:39
+msgid "settings.passwordDialogTitle"
+msgstr "Сменить пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:349
+msgid "settings.calendarFeedTabGlobal"
+msgstr "Все продления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:355
+msgid "settings.calendarFeedGlobalLoadingBadge"
+msgstr "Все продления · Загрузка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:353
+msgid "settings.calendarFeedGlobalEnabledBadge"
+msgstr "Все продления · Включено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:357
+msgid "settings.calendarFeedGlobalEnabledStaleBadge"
+msgstr "Все продления · Включено (не обновлено)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:354
+msgid "settings.calendarFeedGlobalDisabledBadge"
+msgstr "Все продления · Выключено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:358
+msgid "settings.calendarFeedGlobalDisabledStaleBadge"
+msgstr "Все продления · Выключено (не обновлено)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:356
+msgid "settings.calendarFeedGlobalUnknownBadge"
+msgstr "Все продления · Статус неизвестен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:631
+msgid "settings.allSettings"
+msgstr "Все настройки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:24
+msgid "settings.sectionNav.publicStatus"
+msgstr "Публичная страница"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:390
+msgid "settings.publicStatus"
+msgstr "Публичная страница"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:396
+msgid "settings.publicStatusUrl"
+msgstr "URL публичной страницы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:431
+msgid "settings.publicStatusRevoked"
+msgstr "Публичная страница отозвана"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:424
+msgid "settings.publicStatusGenerated"
+msgstr "Публичная страница создана"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:425
+msgid "settings.publicStatusRegenerated"
+msgstr "Публичная страница создана заново"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:429
+msgid "settings.publicStatusFailed"
+msgstr "Не удалось выполнить действие с публичной страницей"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:399
+msgid "settings.publicStatusShowPrices"
+msgstr "Показывать суммы публично"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:423
+msgid "settings.publicStatusRevokeDescription"
+msgstr "Публичная ссылка сразу перестанет работать, а при переходе по ней будет возвращаться ошибка 404."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:433
+msgid "settings.publicStatusPricesEnabled"
+msgstr "На публичной странице будут показаны цены и валюты."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:434
+msgid "settings.publicStatusPricesDisabled"
+msgstr "На публичной странице суммы будут скрыты."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:409
+msgid "settings.publicStatusCurrency"
+msgstr "Валюта отчётов на публичной странице"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:741
+msgid "settings.dingtalkTemplateExampleKeyword"
+msgstr "С ключевым словом"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:263
+msgid "aiRecognition.thinking.off"
+msgstr "Выключено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:264
+msgid "aiRecognition.thinking.openai.none"
+msgstr "Выключено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:453
+msgid "settings.publicApiDismissPlainToken"
+msgstr "Закрыть одноразовый API-токен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:96
+msgid "settings.mfaDisableDescription"
+msgstr "Коды из приложения-аутентификатора больше не будут запрашиваться. Ключи доступа не удалятся. В этом браузере вы останетесь в системе, а сеансы на других устройствах будут завершены."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:79
+msgid "settings.mfaDisable"
+msgstr "Отключить 2FA"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:95
+msgid "settings.mfaDisableTitle"
+msgstr "Отключить аутентификатор?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:686
+msgid "settings.telegramMessageFormatPlainDescription"
+msgstr "Максимальная совместимость. Любой клиент Telegram покажет сообщение как обычный текст."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:114
+msgid "settings.iconSourcesSummary"
+msgstr "Встроенные {enabled}/{total} · Онлайн {online}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:164
+msgid "settings.builtInIconSourcesBuiltInTitle"
+msgstr "Встроенные библиотеки SVG-значков"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:588
+msgid "settings.exchangeRateProvider.builtin"
+msgstr "Встроенные резервные курсы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:44
+msgid "settings.confirmPasswordPlaceholder"
+msgstr "Введите ещё раз"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:459
+msgid "settings.publicApiTokenLastUsed"
+msgstr "Последнее использование: {time}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:692
+msgid "settings.telegramBotCommandsLastUsedAt"
+msgstr "Последнее использование: {time}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:149
+msgid "settings.builtInIconIndexLatestVersion"
+msgstr "Последняя: {version}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:136
+msgid "settings.builtInIconIndexLatestVersionLabel"
+msgstr "Последняя версия"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:138
+msgid "settings.builtInIconIndexRefreshedAt"
+msgstr "Последнее обновление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:137
+msgid "settings.builtInIconIndexCheckedAt"
+msgstr "Последняя проверка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:155
+msgid "settings.builtInIconIndexLastCheckError"
+msgstr "Последняя проверка не удалась: {message}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:566
+msgid "settings.categoryManager"
+msgstr "Категории"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:192
+msgid "settings.builtInIconSourceVariantsToggle"
+msgstr "Переключить варианты {source}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:177
+msgid "settings.onlineIconSourceToggle"
+msgstr "Переключить источник {source}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:190
+msgid "settings.builtInIconSourceToggle"
+msgstr "Переключить источник {source}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:671
+msgid "settings.help.telegram"
+msgstr "Создать бота Telegram"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:449
+msgid "settings.publicApiCreate"
+msgstr "Создать токен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:441
+msgid "settings.publicApiDialogDescription"
+msgstr "Создавайте, копируйте и удаляйте токены только для чтения."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:458
+msgid "settings.publicApiTokenCreated"
+msgstr "Создан {time}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:437
+msgid "settings.publicApiHelp"
+msgstr "Создавайте API-токены только для чтения, чтобы Telegram Bot, CLI, Shortcuts или платформы автоматизации могли запрашивать статус подписок."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:462
+msgid "settings.publicApiDelete"
+msgstr "Удалить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:213
+msgid "settings.uploadedIconsDeleteAsset"
+msgstr "Удалить {name}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:75
+msgid "settings.deletePasskeyDescription"
+msgstr "После удаления {name} больше нельзя будет использовать для входа."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:463
+msgid "settings.publicApiDeleteNamed"
+msgstr "Удалить API-токен {name}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:464
+msgid "settings.publicApiDeleteTitle"
+msgstr "Удалить API-токен?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:698
+msgid "settings.telegramBotCommandsDeleteTitle"
+msgstr "Удалить команды бота Telegram?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:537
+msgid "settings.cloudBackupDeleteNamed"
+msgstr "Удалить «{name}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:541
+msgid "settings.cloudBackupDeleteTitle"
+msgstr "Удалить «{name}»?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:214
+msgid "settings.uploadedIconsDeleteTitle"
+msgstr "Удалить загруженный значок?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:217
+msgid "settings.uploadedIconsDeleting"
+msgstr "Удаление..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:540
+msgid "settings.cloudBackupDeleting"
+msgstr "Удаление..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:709
+msgid "settings.telegramBotCommandsDeleting"
+msgstr "Удаление..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:699
+msgid "settings.telegramBotCommandsDeleteDescription"
+msgstr "После удаления команды в меню Telegram перестанут работать. Их можно установить снова позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:697
+msgid "settings.telegramBotCommandsDelete"
+msgstr "Удалить команды"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:72
+msgid "settings.deletePasskey"
+msgstr "Удалить ключ доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:73
+msgid "settings.deletePasskeyNamed"
+msgstr "Удалить ключ доступа {name}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:74
+msgid "settings.deletePasskeyTitle"
+msgstr "Удалить ключ доступа (passkey)?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:77
+msgid "settings.passkeyDeleteFailed"
+msgstr "Не удалось удалить ключ доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:199
+msgid "settings.uploadedIconsRefreshKind"
+msgstr "Обновить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:531
+msgid "settings.cloudBackupRefresh"
+msgstr "Обновить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:53
+msgid "settings.mfaRecoveryRemaining"
+msgstr "Осталось кодов восстановления: {count}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:750
+msgid "settings.dingtalkSecret"
+msgstr "Секрет подписи (необязательно)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:388
+msgid "settings.calendarFeedLoadingMore"
+msgstr "Загрузка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:32
+msgid "settings.emailLoading"
+msgstr "Загрузка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:6
+msgid "settings.managerLoadFailed"
+msgstr "Не удалось загрузить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:371
+msgid "settings.calendarFeedLoadFailed"
+msgstr "Не удалось загрузить."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:210
+msgid "settings.uploadedIconsLoadMore"
+msgstr "Загрузить ещё"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:387
+msgid "settings.calendarFeedLoadMore"
+msgstr "Загрузить ещё"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:285
+msgid "aiRecognition.thinking.gemini.dynamic"
+msgstr "Динамический бюджет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:407
+msgid "settings.publicStatusBulkPreview"
+msgstr "Совпадений: {matched}; будет изменено: {changed}."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:350
+msgid "settings.calendarFeedTabSubscriptions"
+msgstr "Отдельные подписки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:365
+msgid "settings.calendarFeedSubscriptionsSummary"
+msgstr "Отдельные подписки · {count}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:368
+msgid "settings.calendarFeedSubscriptionsSummaryStale"
+msgstr "Отдельные подписки · {count} (не обновлено)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:367
+msgid "settings.calendarFeedSubscriptionsSummaryFailed"
+msgstr "Отдельные подписки · Недоступно"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:369
+msgid "settings.calendarFeedSubscriptionsList"
+msgstr "Список ссылок календаря для отдельных подписок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:601
+msgid "settings.subscriptionPriceReference"
+msgstr "Справочная цена для подписок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:604
+msgid "settings.subscriptionPriceReferenceCurrency"
+msgstr "Справочная валюта для подписок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:766
+msgid "settings.smtpFrom"
+msgstr "Отправитель"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:723
+msgid "settings.webhookPayload"
+msgstr "Тело запроса (необязательно, JSON)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:731
+msgid "settings.dingtalkTemplateHelp"
+msgstr "Переменные: '{brand}', '{keyword}', '{title}', '{content}', '{timestamp}', '{itemCount}'. Настраиваются только заголовок и текст, а не тело JSON; Renewlet по-прежнему формирует официальный payload DingTalk."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:167
+msgid "settings.onlineIconSourcesHelp"
+msgstr "Используется только для ручного поиска логотипа, не для автоматического назначения."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:503
+msgid "settings.cloudBackupPathHelp"
+msgstr "Укажите только префикс каталога, без .. и имени файла."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:783
+msgid "settings.discordWebhookHelp"
+msgstr "Поддерживаются только официальные Discord Webhook URL. При отправке упоминания @everyone, пользователей и ролей отключаются."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:619
+msgid "settings.channelDisabledHelp"
+msgstr "Можно сначала заполнить настройки, а затем включить канал и сохранить перед проверкой."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:255
+msgid "aiRecognition.apiKeyOptionalPlaceholder"
+msgstr "Необязательно, заполните в зависимости от совместимого сервиса"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:352
+msgid "settings.calendarFeedGlobalScope"
+msgstr "Синхронизирует будущие даты продления и окончания активных подписок."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:139
+msgid "settings.builtInIconIndexJobStatusLabel"
+msgstr "Фоновая задача"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:191
+msgid "settings.builtInIconSourceVariants"
+msgstr "Включить варианты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:181
+msgid "settings.builtInIconSource.thesvg.variantsHelp"
+msgstr "Показывает исходные варианты, например default, mono и wordmark."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:185
+msgid "settings.builtInIconSource.selfhst.variantsHelp"
+msgstr "Показывает варианты для тем, например светлый и тёмный."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:189
+msgid "settings.builtInIconSource.dashboardIcons.variantsHelp"
+msgstr "Показывает варианты для тем, например светлый и тёмный."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:84
+msgid "settings.mfaConfirmEnable"
+msgstr "Включить и создать коды восстановления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:577
+msgid "settings.currencyManagerDescription"
+msgstr "Включайте и выключайте доступные валюты. Общий источник курсов поддерживает 146 валют."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:778
+msgid "settings.barkSilentHelp"
+msgstr "Если включено, push-уведомления приходят без звука."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:48
+msgid "settings.mfaEnable"
+msgstr "Включить аутентификатор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:91
+msgid "settings.mfaEnableFailed"
+msgstr "Не удалось включить аутентификатор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:767
+msgid "settings.smtpReplyTo"
+msgstr "Reply-To"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:134
+msgid "settings.builtInIconIndexIconCountLabel"
+msgstr "Количество значков"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:18
+msgid "settings.sectionNav.iconSources"
+msgstr "Источники значков"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:111
+msgid "settings.builtInIconSources"
+msgstr "Источники значков"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:121
+msgid "settings.builtInIconIndexStatus"
+msgstr "Индекс значков"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:162
+msgid "settings.builtInIconIndexRefreshFailed"
+msgstr "Не удалось обновить индекс значков"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:753
+msgid "settings.wechatHelp"
+msgstr "Можно получить после добавления группового бота в группу WeCom."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:378
+msgid "settings.calendarFeedOpenSystemFor"
+msgstr "Открыть «{name}» в системном календаре"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:166
+msgid "settings.onlineIconSourcesTitle"
+msgstr "Значки приложений онлайн"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:405
+msgid "settings.publicStatusVisibilityManageHelp"
+msgstr "Выберите подписки в списке подписок, чтобы скрыть их на публичной странице или вернуть."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:602
+msgid "settings.subscriptionPriceReferenceHelp"
+msgstr "Показывать под ценой в карточке и сведениях подписки небольшую справочную цену в {currency}."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:109
+msgid "settings.showExpired"
+msgstr "Включать истекшие подписки в уведомления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:735
+msgid "settings.dingtalkTemplateExampleApplyNamed"
+msgstr "Использовать шаблон «{name}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:652
+msgid "settings.channel.telegramTodo"
+msgstr "Укажите Bot Token и Chat ID"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:668
+msgid "settings.channel.discordTodo"
+msgstr "Укажите Discord Webhook URL"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:654
+msgid "settings.channel.notifyxTodo"
+msgstr "Укажите API-ключ Notifyx"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:670
+msgid "settings.channel.pushplusTodo"
+msgstr "Укажите токен PushPlus"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:666
+msgid "settings.channel.serverchanTodo"
+msgstr "Укажите SendKey ServerChan"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:662
+msgid "settings.channel.emailTodo"
+msgstr "Укажите SMTP и email получателя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:656
+msgid "settings.channel.webhookTodo"
+msgstr "Укажите Webhook URL"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:660
+msgid "settings.channel.wechatTodo"
+msgstr "Укажите Webhook URL бота WeCom"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:751
+msgid "settings.dingtalkSecretHelp"
+msgstr "Если задан, Renewlet перед отправкой генерирует timestamp/sign и перезаписывает существующие параметры подписи в запросе."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:664
+msgid "settings.channel.barkTodo"
+msgstr "Укажите URL сервера и Device Key"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:658
+msgid "settings.channel.dingtalkTodo"
+msgstr "Укажите Webhook URL бота DingTalk"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:527
+msgid "settings.cloudBackupCreating"
+msgstr "Создание копии..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:506
+msgid "settings.cloudBackupPolicy"
+msgstr "Политика резервного копирования"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:328
+msgid "settings.calendarFeedCopy"
+msgstr "Копировать"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:452
+msgid "settings.publicApiCopyToken"
+msgstr "Копировать токен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:416
+msgid "settings.publicStatusCopy"
+msgstr "Копировать URL"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:377
+msgid "settings.calendarFeedCopyFor"
+msgstr "Копировать URL подписки на календарь для «{name}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:336
+msgid "settings.calendarFeedCopyFailed"
+msgstr "Не удалось скопировать"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:427
+msgid "settings.publicStatusCopyFailed"
+msgstr "Не удалось скопировать"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:470
+msgid "settings.publicApiCopyFailed"
+msgstr "Не удалось скопировать"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:101
+msgid "settings.mfaCopyRecovery"
+msgstr "Копировать коды восстановления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:16
+msgid "settings.sectionNav.appearance"
+msgstr "Оформление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:105
+msgid "settings.appearance"
+msgstr "Внешний вид"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:758
+msgid "settings.wechatPhonesHelp"
+msgstr "Разделяйте номера запятыми или переносами строк. Действует только для текстовых сообщений."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:769
+msgid "settings.multipleRecipients"
+msgstr "Несколько получателей"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:143
+msgid "settings.builtInIconIndexJobStatus.failed"
+msgstr "Ошибка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:484
+msgid "settings.cloudBackupProvider"
+msgstr "Хранилище"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:702
+msgid "settings.telegramBotCommandsStatus.installing"
+msgstr "Установка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:708
+msgid "settings.telegramBotCommandsInstalling"
+msgstr "Установка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:689
+msgid "settings.telegramBotCommandsHelp"
+msgstr "Установите команды, чтобы из меню Telegram смотреть статус, следующее продление, платежи на сегодня, неделю и месяц, а также сводку подписок."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:695
+msgid "settings.telegramBotCommandsInstall"
+msgstr "Установить команды"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:691
+msgid "settings.telegramBotCommandsInstalledAt"
+msgstr "Установлено: {time}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:119
+msgid "settings.builtInIconSourcesDialogDone"
+msgstr "Готово"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:203
+msgid "settings.uploadedIconsManageDone"
+msgstr "Готово"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:389
+msgid "settings.calendarFeedManageDone"
+msgstr "Готово"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:442
+msgid "settings.publicApiDialogDone"
+msgstr "Готово"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:252
+msgid "aiRecognition.baseUrlHelp"
+msgstr "Для официальных платформ оставьте пустым. Для OpenAI Compatible укажите соответствующий Base URL OpenAI Chat."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:507
+msgid "settings.cloudBackupSchedule"
+msgstr "Автоматическое копирование по расписанию"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:494
+msgid "settings.cloudBackupWebdavPassword"
+msgstr "Пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:40
+msgid "settings.passwordDialogDescription"
+msgstr "Пароль будет записан в локальную учётную запись. После успешной смены он не будет показан, поэтому сохраните его в надёжном месте."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:38
+msgid "settings.passwordHelp"
+msgstr "Пароль используется для входа и доступа к API."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:485
+msgid "settings.cloudBackupCredential"
+msgstr "Секрет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:685
+msgid "settings.telegramMessageFormatHtml"
+msgstr "Форматированный текст"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:326
+msgid "settings.calendarFeedHelp"
+msgstr "Постоянная синхронизация будущих дат продления и окончания с системным календарём."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:59
+msgid "settings.noPasskeys"
+msgstr "Ключи доступа ещё не добавлены."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:50
+msgid "settings.mfaNoMethods"
+msgstr "Аутентификатор ещё не настроен."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:412
+msgid "settings.publicStatusSummary"
+msgstr "Показано {visible} · Скрыто {hidden}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:414
+msgid "settings.publicStatusVisibilityStale"
+msgstr "Видно {visible} · Скрыто {hidden} · Не обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:413
+msgid "settings.publicStatusVisibilityUnknown"
+msgstr "Видимость неизвестна"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:644
+msgid "settings.exchangeRateProviderSwitched"
+msgstr "Теперь первым используется {provider}."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:481
+msgid "settings.cloudBackupCredentialSaved"
+msgstr "Секрет сохранён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:124
+msgid "settings.builtInIconIndexBadge.upToDate"
+msgstr "Актуально"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:641
+msgid "settings.defaultCurrencySwitched"
+msgstr "Выбрана валюта {currency}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:115
+msgid "settings.onlineIconSourceEnabled"
+msgstr "включено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:359
+msgid "settings.calendarFeedStatusEnabled"
+msgstr "Включено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:392
+msgid "settings.publicStatusEnabled"
+msgstr "Включено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:362
+msgid "settings.calendarFeedStatusEnabledStale"
+msgstr "Включено · Не обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:703
+msgid "settings.telegramBotCommandsStatus.installed"
+msgstr "Установлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:142
+msgid "settings.builtInIconIndexJobStatus.succeeded"
+msgstr "Завершено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:338
+msgid "settings.calendarFeedOpenSystemResult"
+msgstr "Выполнена попытка открыть системный календарь; если он не открылся, скопируйте URL и добавьте его вручную."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:154
+msgid "settings.builtInIconIndexUpToDate"
+msgstr "Обновление не требуется"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:403
+msgid "settings.publicStatusExpiredShown"
+msgstr "Истекшие подписки показаны"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:404
+msgid "settings.publicStatusLifetimeShown"
+msgstr "Бессрочные подписки показаны"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:408
+msgid "settings.publicStatusBulkVisibilityDone"
+msgstr "Обновлено: {count, plural, one {# подписка} few {# подписки} many {# подписок} other {# подписки}}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:558
+msgid "settings.cloudBackupRestoreReadyResult"
+msgstr "Открыт предпросмотр импорта; проверьте создаваемые, заменяемые и пропускаемые элементы, прежде чем применить восстановление."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:403
+msgid "settings.publicStatusExpiredHidden"
+msgstr "Истекшие подписки скрыты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:404
+msgid "settings.publicStatusLifetimeHidden"
+msgstr "Бессрочные подписки скрыты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:607
+msgid "settings.ratesPreview"
+msgstr "Популярные валюты в {currency}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:615
+msgid "settings.cronTip"
+msgstr "Cron по-прежнему должен вызывать эндпоинт каждую минуту или хотя бы раз в 5 минут. Приложение само решает, отправлять ли уведомление, с учётом часового пояса пользователя."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:234
+msgid "aiRecognition.providerType"
+msgstr "Тип платформы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:636
+msgid "settings.appSettingsScope"
+msgstr "Настройки приложения"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:770
+msgid "settings.multipleRecipientsHelp"
+msgstr "Если включено, разделяйте адреса email запятыми или переносами строк."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:400
+msgid "settings.publicStatusShowPricesHelp"
+msgstr "Если включено, показываются цены и валюты; иначе — только минимальный статус."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:445
+msgid "settings.publicApiSummaryStale"
+msgstr "{count, plural, one {# токен} few {# токена} many {# токенов} other {# токена}} · Не обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:443
+msgid "settings.publicApiTokenCount"
+msgstr "Сейчас {count, plural, one {# токен} few {# токена} many {# токенов} other {# токена}}."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:148
+msgid "settings.builtInIconIndexCurrentVersion"
+msgstr "Текущая: {version}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:471
+msgid "settings.publicApiCopyFailedDescription"
+msgstr "Копирование в один клик недоступно. Выделите и скопируйте токен вручную."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:428
+msgid "settings.publicStatusCopyFailedDescription"
+msgstr "Копирование в один клик недоступно. Выделите и скопируйте URL вручную."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:41
+msgid "settings.currentPassword"
+msgstr "Текущий пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:313
+msgid "aiRecognition.baseUrlRequired"
+msgstr "Для этой платформы нужен Base URL."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:401
+msgid "settings.publicStatusHideExpiredHelp"
+msgstr "{count, plural, one {Есть # истекшая подписка} few {Есть # истекшие подписки} many {Есть # истекших подписок} other {Есть # истекшей подписки}}."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:402
+msgid "settings.publicStatusHideLifetimeHelp"
+msgstr "{count, plural, one {Есть # бессрочная подписка} few {Есть # бессрочные подписки} many {Есть # бессрочных подписок} other {Есть # бессрочной подписки}}."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:260
+msgid "aiRecognition.thinkingUnsupportedModel"
+msgstr "Для текущей модели официальная поддержка рассуждений не найдена, поэтому используется значение по умолчанию."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:104
+msgid "settings.mfaRecoveryCopyFailedDescription"
+msgstr "Этот браузер не поддерживает копирование в один клик. Выделите коды восстановления вручную."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-display.ts:6
+msgid "settings.showLunarCalendarUnsupported"
+msgstr "Этот браузер не поддерживает даты китайского лунного календаря. Обновите браузер, чтобы включить эту опцию."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:618
+msgid "settings.channelEnabledHelp"
+msgstr "Канал включён и после сохранения будет отправлять уведомления."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:135
+msgid "settings.builtInIconIndexCurrentVersionLabel"
+msgstr "Текущая версия"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:650
+msgid "settings.currencyPolicy.defaultDescription"
+msgstr "{currency} используется для пересчёта сумм во всём приложении. Сначала смените валюту отчётов, затем выключите эту."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:498
+msgid "settings.cloudBackupS3RegionHelp"
+msgstr "Обязательно. Укажите регион подписи из документации S3 API вашего хранилища; для R2/Tigris обычно используется auto."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:529
+msgid "settings.cloudBackupSnapshotsHelp"
+msgstr "При скачивании перед восстановлением проверяются манифест и SHA-256. Изменения всё равно нужно подтвердить в предпросмотре импорта."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:406
+msgid "settings.publicStatusQuickBulk"
+msgstr "Быстрое массовое изменение"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:406
+msgid "settings.publicStatusQuickBulkTitle"
+msgstr "Быстрое изменение видимости"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:534
+msgid "settings.cloudBackupRestore"
+msgstr "Восстановить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:535
+msgid "settings.cloudBackupRestoreNamed"
+msgstr "Восстановить «{name}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:539
+msgid "settings.cloudBackupRestoring"
+msgstr "Восстановление..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:52
+msgid "settings.mfaMethodRecovery"
+msgstr "Коды восстановления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:103
+msgid "settings.mfaRecoveryCopyFailed"
+msgstr "Не удалось скопировать коды восстановления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:102
+msgid "settings.mfaRecoveryCopied"
+msgstr "Коды восстановления скопированы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:88
+msgid "settings.mfaRecoveryRegenerated"
+msgstr "Коды восстановления созданы заново"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:82
+msgid "settings.mfaManualSecret"
+msgstr "Секретный ключ для ручного ввода"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:242
+msgid "aiRecognition.modelModeManual"
+msgstr "Ввести вручную"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:415
+msgid "settings.publicStatusOpen"
+msgstr "Открыть публичную страницу"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:327
+msgid "settings.calendarFeedOpenSystem"
+msgstr "Открыть системный календарь"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:13
+msgid "settings.sectionNavOpen"
+msgstr "Открыть меню настроек"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:512
+msgid "settings.cloudBackupScheduleTime"
+msgstr "Время запуска"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:81
+msgid "settings.mfaSetupDescription"
+msgstr "Отсканируйте QR-код или введите секретный ключ вручную, затем введите 6-значный код из аутентификатора."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:590
+msgid "settings.exchangeRateReportBasis"
+msgstr "Основа для отчётов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:606
+msgid "settings.subscriptionPriceReferenceApplyLocalPreference"
+msgstr "Использовать локальную настройку ({currency})"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:140
+msgid "settings.builtInIconIndexJobStatus.queued"
+msgstr "В очереди"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:309
+msgid "aiRecognition.errorDetailsDescription"
+msgstr "Исходный ответ, полученный от API."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:544
+msgid "settings.cloudBackupUpstreamDescription"
+msgstr "Исходный ответ, возвращённый API."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:772
+msgid "settings.recipientEmailHelp"
+msgstr "Адрес для уведомлений. По умолчанию — email текущего аккаунта."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:112
+msgid "settings.builtInIconSourcesHelp"
+msgstr "Управление встроенными библиотеками SVG-значков и онлайн-источником значков приложений для ручного поиска логотипа."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:614
+msgid "settings.tip"
+msgstr "Совет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:322
+msgid "settings.timezoneSearch"
+msgstr "Поиск по городу, часовому поясу или смещению UTC..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:245
+msgid "aiRecognition.modelSelectSearchPlaceholder"
+msgstr "Поиск моделей"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:594
+msgid "settings.currencySearch"
+msgstr "Поиск по валюте, коду или символу..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:332
+msgid "settings.calendarFeedRevoke"
+msgstr "Отозвать"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:380
+msgid "settings.calendarFeedRevokeFor"
+msgstr "Отозвать ссылку подписки на календарь для «{name}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:383
+msgid "settings.calendarFeedRevokeItemTitle"
+msgstr "Отозвать ссылку для «{name}»?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:386
+msgid "settings.calendarFeedRevoking"
+msgstr "Отзыв..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:422
+msgid "settings.publicStatusRevokeTitle"
+msgstr "Отозвать публичную страницу статуса?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:421
+msgid "settings.publicStatusRevoke"
+msgstr "Отозвать публичную страницу"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:343
+msgid "settings.calendarFeedRevokeFailed"
+msgstr "Не удалось отозвать"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:212
+msgid "settings.uploadedIconsKindIcon"
+msgstr "Способ оплаты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:207
+msgid "settings.uploadedIconsIconTitle"
+msgstr "Значки способов оплаты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:574
+msgid "settings.paymentManager"
+msgstr "Способы оплаты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:208
+msgid "settings.uploadedIconsIconDescription"
+msgstr "Значки, загруженные в управлении способами оплаты. Значки, выбранные через поиск, здесь не отображаются."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:781
+msgid "settings.serverchanHelp"
+msgstr "Поддерживаются SendKey для ServerChan Turbo и ServerChan 3; по умолчанию используется официальный канал отправки."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:724
+msgid "settings.webhookPayloadHelp"
+msgstr "Поддерживаются переменные: '{title}', '{content}', '{timestamp}'. Они заменяются отправляемым содержимым."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:771
+msgid "settings.recipientEmail"
+msgstr "Email получателя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:661
+msgid "settings.channel.emailReady"
+msgstr "Email получателя указан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:630
+msgid "settings.unsavedLeaveConfirm"
+msgstr "Отменить и уйти"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:625
+msgid "settings.discardChanges"
+msgstr "Отменить изменения"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:596
+msgid "settings.dataSource"
+msgstr "Источник данных"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:21
+msgid "settings.sectionNav.dataConfig"
+msgstr "Настройка данных"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:564
+msgid "settings.dataConfig"
+msgstr "Настройка данных"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:637
+msgid "settings.customConfigScope"
+msgstr "Настройка данных"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:744
+msgid "settings.dingtalkTemplateExampleCount"
+msgstr "Сводка с количеством"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:755
+msgid "settings.textMessage"
+msgstr "Текстовое сообщение"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:205
+msgid "settings.uploadedIconsLogoDescription"
+msgstr "Логотипы, загруженные при добавлении или изменении подписок."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:560
+msgid "settings.cloudBackupRestoreFailedDescription"
+msgstr "Не удалось скачать или проверить снимок. Проверьте целостность удалённого файла."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:551
+msgid "settings.cloudBackupSaveFailedDescription"
+msgstr "Не удалось сохранить настройки облачной синхронизации и резервного копирования. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:645
+msgid "settings.exchangeRateProviderSaveFailed"
+msgstr "Не удалось сохранить источник курсов. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:646
+msgid "settings.exchangeRateProviderServerOutdated"
+msgstr "Не удалось сохранить источник курсов. Возможно, сервер не обновлён или не перезапущен. Перезапустите сервер и попробуйте снова."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:642
+msgid "settings.defaultCurrencySaveFailed"
+msgstr "Не удалось сохранить валюту отчётов. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:635
+msgid "settings.saveFailedDescription"
+msgstr "Не удалось сохранить настройки. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:468
+msgid "settings.publicApiCreateFailedDescription"
+msgstr "Не удалось создать API-токен. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:474
+msgid "settings.publicApiDeleteFailedDescription"
+msgstr "Не удалось удалить API-токен. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:715
+msgid "settings.telegramBotCommandsDeleteFailedDescription"
+msgstr "Не удалось удалить команды бота Telegram. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:220
+msgid "settings.uploadedIconsDeleteFailedDescription"
+msgstr "Не удалось удалить загруженный значок. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:563
+msgid "settings.cloudBackupDeleteFailedDescription"
+msgstr "Не удалось удалить удалённый снимок. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:712
+msgid "settings.telegramBotCommandsInstallFailedDescription"
+msgstr "Не удалось установить команды бота Telegram. Проверьте Bot Token, Chat ID и публичный URL с HTTPS."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:307
+msgid "aiRecognition.testFailedDescription"
+msgstr "Не удалось выполнить тестовый запрос. Проверьте модель, Base URL и API-ключ."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:89
+msgid "settings.mfaSetupFailed"
+msgstr "Не удалось начать настройку аутентификатора"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:339
+msgid "settings.calendarFeedOpenSystemFailed"
+msgstr "Не удалось открыть системный календарь"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:432
+msgid "settings.publicStatusRevokeFailedDescription"
+msgstr "Не удалось отозвать публичную страницу. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:163
+msgid "settings.builtInIconIndexRefreshFailedDescription"
+msgstr "Не удалось обновить {source}. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:435
+msgid "settings.publicStatusUpdateFailedDescription"
+msgstr "Не удалось обновить настройки публичной страницы. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:570
+msgid "settings.categoryCheckFailed"
+msgstr "Не удалось проверить, используется ли категория: подписки не загрузились. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:430
+msgid "settings.publicStatusFailedDescription"
+msgstr "Не удалось создать публичную ссылку. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:557
+msgid "settings.cloudBackupCreateFailedDescription"
+msgstr "Не удалось создать или загрузить облачный снимок. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:249
+msgid "aiRecognition.modelListFailedDescription"
+msgstr "Не удалось загрузить список моделей. Проверьте Base URL и API-ключ или введите ID модели вручную."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:23
+msgid "settings.sectionNav.calendarFeed"
+msgstr "Подписка на календарь"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:325
+msgid "settings.calendarFeed"
+msgstr "Подписки на календарь"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:348
+msgid "settings.calendarFeedTabsLabel"
+msgstr "Разделы управления подписками на календарь"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:301
+msgid "aiRecognition.thinking.anthropic.budget.description"
+msgstr "Фиксированный budget_tokens для рассуждений старых моделей Claude."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:420
+msgid "settings.publicStatusRegenerateDescription"
+msgstr "Старый URL сразу перестанет работать. Всем, с кем вы им делились, понадобится новая ссылка."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:98
+msgid "settings.mfaRegenerateDescription"
+msgstr "Старые неиспользованные коды восстановления сразу перестанут действовать. Новые коды показываются один раз."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:331
+msgid "settings.calendarFeedRegenerateDescription"
+msgstr "Старая ссылка сразу перестанет работать. Календари, которые её используют, нужно будет подписать заново по новой ссылке."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:26
+msgid "settings.sectionNav.timezone"
+msgstr "Часовой пояс"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:319
+msgid "settings.timezone"
+msgstr "Часовой пояс"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:320
+msgid "settings.timezoneSelect"
+msgstr "Выберите часовой пояс"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:513
+msgid "settings.cloudBackupScheduleWeekday"
+msgstr "День недели"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:514
+msgid "settings.cloudBackupWeekdayMonday"
+msgstr "Понедельник"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:516
+msgid "settings.cloudBackupWeekdayWednesday"
+msgstr "Среда"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:515
+msgid "settings.cloudBackupWeekdayTuesday"
+msgstr "Вторник"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:518
+msgid "settings.cloudBackupWeekdayFriday"
+msgstr "Пятница"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:519
+msgid "settings.cloudBackupWeekdaySaturday"
+msgstr "Суббота"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:517
+msgid "settings.cloudBackupWeekdayThursday"
+msgstr "Четверг"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:520
+msgid "settings.cloudBackupWeekdaySunday"
+msgstr "Воскресенье"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:17
+msgid "settings.sectionNav.display"
+msgstr "Отображение"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-display.ts:4
+msgid "settings.showLunarCalendar"
+msgstr "Показывать даты китайского лунного календаря"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:106
+msgid "settings.display"
+msgstr "Отображение"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:254
+msgid "aiRecognition.apiKeyHelp"
+msgstr "Обычные резервные копии не содержат API-ключ. Он включается, только если вы явно выберете резервную копию с секретами."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:532
+msgid "settings.cloudBackupSnapshotsEmpty"
+msgstr "Облачных снимков пока нет."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:408
+msgid "settings.publicStatusBulkPreviewUnavailable"
+msgstr "Предварительный подсчёт временно недоступен."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:122
+msgid "settings.builtInIconIndexUnavailable"
+msgstr "Не удалось получить статус индекса значков."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:49
+msgid "settings.mfaAddAuthenticator"
+msgstr "Заменить аутентификатор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:120
+msgid "settings.builtInIconSourcesPendingHint"
+msgstr "Изменения вступят в силу после сохранения страницы настроек."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:157
+msgid "settings.builtInIconIndexRefresh"
+msgstr "Обновить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:126
+msgid "settings.builtInIconIndexBadge.refreshing"
+msgstr "Обновление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:159
+msgid "settings.builtInIconIndexRefreshing"
+msgstr "Обновление..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:128
+msgid "settings.builtInIconIndexBadge.refreshFailed"
+msgstr "Ошибка обновления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:372
+msgid "settings.calendarFeedRefreshFailed"
+msgstr "Не удалось обновить. Текущие данные по-прежнему доступны."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:579
+msgid "settings.refreshRates"
+msgstr "Обновить курсы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:316
+msgid "settings.monthlyBudget"
+msgstr "Бюджет на месяц"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:439
+msgid "settings.publicApiPendingPlainToken"
+msgstr "Одноразовый токен ожидает копирования."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:153
+msgid "settings.builtInIconIndexUpdateAvailable"
+msgstr "Доступно обновление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:123
+msgid "settings.builtInIconIndexBadge.updateAvailable"
+msgstr "Есть обновление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:624
+msgid "settings.unsavedChanges"
+msgstr "Несохранённые изменения"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:773
+msgid "settings.barkServer"
+msgstr "URL сервера"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:482
+msgid "settings.cloudBackupCredentialMissing"
+msgstr "Секрет не задан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:629
+msgid "settings.unsavedLeaveDescription"
+msgstr "Несохранённые изменения будут потеряны. Подтвердите, чтобы перейти на выбранную страницу."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:116
+msgid "settings.onlineIconSourceDisabled"
+msgstr "выключено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:360
+msgid "settings.calendarFeedStatusDisabled"
+msgstr "Выключено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:393
+msgid "settings.publicStatusDisabled"
+msgstr "Не включено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:363
+msgid "settings.calendarFeedStatusDisabledStale"
+msgstr "Выключено · Не обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:224
+msgid "settings.uploadedIconsUnnamedAsset"
+msgstr "Файл без названия"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:701
+msgid "settings.telegramBotCommandsStatus.notInstalled"
+msgstr "Не установлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:323
+msgid "settings.timezoneEmpty"
+msgstr "Часовой пояс не найден"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:595
+msgid "settings.currencyEmpty"
+msgstr "Валюта не найдена"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:7
+msgid "settings.managerRefreshFailed"
+msgstr "Не обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:10
+msgid "settings.notUpdated"
+msgstr "Не обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:146
+msgid "settings.builtInIconIndexTimestampUnrefreshed"
+msgstr "Не обновлялось"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:395
+msgid "settings.publicStatusNotUpdated"
+msgstr "Не обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:129
+msgid "settings.builtInIconIndexBadge.unchecked"
+msgstr "Не проверено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:145
+msgid "settings.builtInIconIndexTimestampUnchecked"
+msgstr "Не проверялось"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:151
+msgid "settings.builtInIconIndexVersionUnchecked"
+msgstr "Не проверялось"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:226
+msgid "settings.uploadedIconsUnknownSize"
+msgstr "Неизвестный размер"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:227
+msgid "settings.uploadedIconsUnknownTime"
+msgstr "Неизвестное время"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:461
+msgid "settings.publicApiTokenUnknownTime"
+msgstr "Время неизвестно"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:152
+msgid "settings.builtInIconIndexVersionUnknown"
+msgstr "Версия неизвестна"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:225
+msgid "settings.uploadedIconsUnknownMime"
+msgstr "Неизвестный тип"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:600
+msgid "settings.notFetched"
+msgstr "Не загружено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:33
+msgid "settings.emailMissing"
+msgstr "Email недоступен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:478
+msgid "settings.cloudBackupStatusIdle"
+msgstr "Не запускалось"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:694
+msgid "settings.telegramBotCommandsMissing"
+msgstr "Не настроено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:700
+msgid "settings.telegramBotCommandsStatus.notConfigured"
+msgstr "Не настроено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:258
+msgid "aiRecognition.thinkingRunHelp"
+msgstr "Для этого распознавания можно временно изменить значение по умолчанию из настроек."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:725
+msgid "settings.dingtalkWebhookUrl"
+msgstr "Webhook URL бота"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:752
+msgid "settings.wechatUrl"
+msgstr "Webhook URL бота"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:659
+msgid "settings.channel.wechatReady"
+msgstr "Webhook URL бота указан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:681
+msgid "settings.telegramBotTokenLabel"
+msgstr "Токен бота"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:785
+msgid "settings.discordBotAvatarUrl"
+msgstr "URL аватара бота (необязательно)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:784
+msgid "settings.discordBotUsername"
+msgstr "Имя бота (необязательно)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:457
+msgid "settings.publicApiTokenScopes"
+msgstr "Области доступа: {scopes}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:131
+msgid "settings.builtInIconIndexOpenStatus"
+msgstr "Статус индекса значков {source}: {status}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:202
+msgid "settings.uploadedIconsManageDescription"
+msgstr "Просмотр, постраничная навигация и удаление загруженных логотипов подписок и значков способов оплаты."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:311
+msgid "aiRecognition.errorDetailsOpenLast"
+msgstr "Показать последний ответ"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:533
+msgid "settings.cloudBackupSnapshotsViewAll"
+msgstr "Показать все ({count})"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:733
+msgid "settings.dingtalkTemplateExamplesOpen"
+msgstr "Показать примеры шаблонов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:310
+msgid "aiRecognition.errorDetailsOpen"
+msgstr "Показать ответ с ошибкой"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:545
+msgid "settings.cloudBackupUpstreamOpen"
+msgstr "Подробности ошибки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:736
+msgid "settings.dingtalkTemplateExampleTitle"
+msgstr "Заголовок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:687
+msgid "settings.telegramMessageFormatHtmlDescription"
+msgstr "Заголовки и ключевые цифры легче заметить."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:727
+msgid "settings.dingtalkTitleTemplate"
+msgstr "Шаблон заголовка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:132
+msgid "settings.builtInIconIndexCheck"
+msgstr "Проверить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:133
+msgid "settings.builtInIconIndexCheckProvider"
+msgstr "Проверить последнюю версию {source}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:125
+msgid "settings.builtInIconIndexBadge.checking"
+msgstr "Проверка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:158
+msgid "settings.builtInIconIndexChecking"
+msgstr "Проверка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:127
+msgid "settings.builtInIconIndexBadge.failed"
+msgstr "Ошибка проверки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:239
+msgid "aiRecognition.model"
+msgstr "Модель"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:248
+msgid "aiRecognition.modelListTruncated"
+msgstr "Список моделей слишком длинный, показаны только первые 300. Уточните поиск или введите модель вручную."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:241
+msgid "aiRecognition.modelMode"
+msgstr "Способ выбора модели"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:261
+msgid "aiRecognition.thinking.modelDefault"
+msgstr "По умолчанию для модели"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:732
+msgid "settings.dingtalkTemplateExamples"
+msgstr "Примеры шаблонов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:538
+msgid "settings.cloudBackupDeletingNamed"
+msgstr "Удаление «{name}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:455
+msgid "settings.publicApiTokensLoading"
+msgstr "Загрузка API-токенов..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:364
+msgid "settings.calendarFeedGlobalLoading"
+msgstr "Загрузка ссылки для всех продлений..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:366
+msgid "settings.calendarFeedSubscriptionsSummaryLoading"
+msgstr "Загрузка сводки по отдельным подпискам..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:370
+msgid "settings.calendarFeedSubscriptionsLoading"
+msgstr "Загрузка ссылок отдельных подписок..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:536
+msgid "settings.cloudBackupRestoringNamed"
+msgstr "Восстановление «{name}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:569
+msgid "settings.categoryChecking"
+msgstr "Проверяем, используется ли категория. Подождите..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:246
+msgid "aiRecognition.modelListLoading"
+msgstr "Загрузка списка моделей..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:737
+msgid "settings.dingtalkTemplateExampleContent"
+msgstr "Текст"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:729
+msgid "settings.dingtalkContentTemplate"
+msgstr "Шаблон текста"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:511
+msgid "settings.cloudBackupFrequencyWeekly"
+msgstr "Еженедельно"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:510
+msgid "settings.cloudBackupFrequencyDaily"
+msgstr "Ежедневно"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:410
+msgid "settings.publicStatusCurrencyHelp"
+msgstr "Итоги пересчитываются в {currency}; каждая позиция остаётся в своей валюте оплаты."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:22
+msgid "settings.sectionNav.exchange"
+msgstr "Курсы валют"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:578
+msgid "settings.exchange"
+msgstr "Курсы валют и валюта отчётов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:580
+msgid "settings.ratesWarning"
+msgstr "Курсы обновлены. {currencies} временно взяты из {sources}."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:583
+msgid "settings.exchangeRateProvider"
+msgstr "Источник курсов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:643
+msgid "settings.exchangeRateProviderSaved"
+msgstr "Источник курсов сохранён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:247
+msgid "aiRecognition.modelSelectEmpty"
+msgstr "Нет доступных моделей. Проверьте Base URL / API-ключ или переключитесь на ручной ввод."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:790
+msgid "settings.testChannel.webhook"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:788
+msgid "settings.testChannel.telegram"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:789
+msgid "settings.testChannel.notifyx"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:791
+msgid "settings.testChannel.dingtalk"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:792
+msgid "settings.testChannel.wechat"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:794
+msgid "settings.testChannel.bark"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:795
+msgid "settings.testChannel.serverchan"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:796
+msgid "settings.testChannel.discord"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:797
+msgid "settings.testChannel.pushplus"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:793
+msgid "settings.testChannel.email"
+msgstr "Тестовое уведомление {channel}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:303
+msgid "aiRecognition.testing"
+msgstr "Проверка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:525
+msgid "settings.cloudBackupTesting"
+msgstr "Проверка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:798
+msgid "settings.testing"
+msgstr "Проверка..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:302
+msgid "aiRecognition.testConnection"
+msgstr "Проверить подключение"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:524
+msgid "settings.cloudBackupTest"
+msgstr "Проверить подключение"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:756
+msgid "settings.wechatModeTag"
+msgstr "Добавлять метку Renewlet в начало сообщений"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:754
+msgid "settings.messageType"
+msgstr "Тип сообщения"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:62
+msgid "settings.passkeysManageDescription"
+msgstr "Добавляйте, просматривайте и удаляйте ключи доступа для входа."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:66
+msgid "settings.passkeyCreatedAt"
+msgstr "Добавлен {time}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:63
+msgid "settings.addPasskey"
+msgstr "Добавить ключ доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:70
+msgid "settings.passkeyAddFailed"
+msgstr "Не удалось добавить ключ доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:707
+msgid "settings.telegramBotCommandsDemoDisabled"
+msgstr "В демо-режиме нельзя установить внешние команды Telegram."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:799
+msgid "settings.accountSecurityDemoDisabled"
+msgstr "Демо-режим доступен только для просмотра. Настройки аутентификатора и ключей доступа изменить нельзя."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:483
+msgid "settings.cloudBackupStatusActions"
+msgstr "Статус и действия"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:9
+msgid "settings.statusUnknown"
+msgstr "Статус неизвестен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:198
+msgid "settings.uploadedIconsStatusUnknown"
+msgstr "Статус неизвестен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:361
+msgid "settings.calendarFeedStatusUnknown"
+msgstr "Статус неизвестен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:394
+msgid "settings.publicStatusUnknown"
+msgstr "Статус неизвестен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:572
+msgid "settings.statusManager"
+msgstr "Статусы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:381
+msgid "settings.calendarFeedGenerateGlobalAction"
+msgstr "Создать ссылку подписки на календарь для всех продлений"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:417
+msgid "settings.publicStatusGenerate"
+msgstr "Создать публичную ссылку"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:398
+msgid "settings.publicStatusDisabledHelp"
+msgstr "На созданной странице показываются нескрытые подписки. Суммы по умолчанию скрыты."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:329
+msgid "settings.calendarFeedGenerate"
+msgstr "Создать ссылку"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:341
+msgid "settings.calendarFeedCreateFailed"
+msgstr "Не удалось создать ссылку"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:165
+msgid "settings.builtInIconSourcesBuiltInHelp"
+msgstr "Используются для поиска логотипов, значков способов оплаты и подбора логотипов при автоматическом импорте."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:65
+msgid "settings.addPasskeyPasswordHelp"
+msgstr "Подтверждает личность текущего администратора; пароль не сохраняется и больше не отображается."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:31
+msgid "settings.username"
+msgstr "Имя пользователя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:493
+msgid "settings.cloudBackupWebdavUsername"
+msgstr "Имя пользователя"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:34
+msgid "settings.usernameHelp"
+msgstr "Имя пользователя — это email для входа, его нельзя изменить."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:251
+msgid "aiRecognition.baseUrlPlaceholder"
+msgstr "Оставьте пустым, чтобы использовать официальный API"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:505
+msgid "settings.cloudBackupSecretPlaceholderSaved"
+msgstr "Оставьте пустым, чтобы сохранить текущий секрет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:14
+msgid "settings.sectionNavCompactTrigger"
+msgstr "Содержание"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:397
+msgid "settings.publicStatusOneTimeHelp"
+msgstr "Открыть страницу может любой, у кого есть ссылка. Создайте ссылку заново, чтобы старая перестала работать."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:215
+msgid "settings.uploadedIconsDeleteDescription"
+msgstr "Удалить «{name}»? После удаления восстановить его через Renewlet будет нельзя."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:216
+msgid "settings.uploadedIconsDeleteFallback"
+msgstr "Удалить этот загруженный значок? После удаления восстановить его через Renewlet будет нельзя."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:628
+msgid "settings.unsavedLeaveTitle"
+msgstr "Покинуть настройки?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:391
+msgid "settings.publicStatusHelp"
+msgstr "Доступ по приватной ссылке. Подписки можно скрывать по отдельности."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:375
+msgid "settings.calendarFeedPrivateUrlHint"
+msgstr "Личная ссылка. Не передавайте её другим."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:526
+msgid "settings.cloudBackupCreateNow"
+msgstr "Создать копию сейчас"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:620
+msgid "settings.testPhone"
+msgstr "Тестовый номер для стороннего API"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:346
+msgid "settings.calendarFeedManage"
+msgstr "Управлять"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:440
+msgid "settings.publicApiDialogTitle"
+msgstr "Токены публичного API"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:438
+msgid "settings.publicApiManage"
+msgstr "Управление токенами"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:200
+msgid "settings.uploadedIconsManage"
+msgstr "Управление загруженными значками"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:201
+msgid "settings.uploadedIconsManageTitle"
+msgstr "Управление загруженными значками"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:195
+msgid "settings.uploadedIconsHelp"
+msgstr "Управляйте значками, загруженными для логотипов подписок и способов оплаты. Значки, выбранные через поиск, здесь не отображаются."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:347
+msgid "settings.calendarFeedManageDescription"
+msgstr "Управление ссылками постоянной синхронизации для всех продлений и отдельных подписок."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:405
+msgid "settings.publicStatusManageVisibility"
+msgstr "Управление видимостью"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:30
+msgid "settings.account"
+msgstr "Аккаунт администратора"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:5
+msgid "settings.subtitle"
+msgstr "Управление аккаунтом, отображением и уведомлениями"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:35
+msgid "settings.manageUsers"
+msgstr "Управление пользователями"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:575
+msgid "settings.paymentManagerDescription"
+msgstr "Управляйте вариантами способов оплаты с загруженными или найденными значками."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:567
+msgid "settings.categoryManagerDescription"
+msgstr "Управление категориями подписок и их цветами."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:60
+msgid "settings.passkeysManage"
+msgstr "Управление ключами доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:61
+msgid "settings.passkeysManageTitle"
+msgstr "Управление ключами доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:4
+msgid "settings.title"
+msgstr "Системные настройки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:684
+msgid "settings.telegramMessageFormatPlain"
+msgstr "Обычный текст"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:690
+msgid "settings.telegramBotCommandsChat"
+msgstr "Привязанный Chat ID: {chatId}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:581
+msgid "settings.defaultCurrency"
+msgstr "Валюта отчётов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:640
+msgid "settings.defaultCurrencySaved"
+msgstr "Валюта отчётов сохранена"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:411
+msgid "settings.publicStatusCurrencyInherit"
+msgstr "Как валюта отчётов (сейчас {currency})"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:597
+msgid "settings.cachePolicy"
+msgstr "Политика кеширования"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:682
+msgid "settings.telegramChatIdLabel"
+msgstr "Chat ID"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:748
+msgid "settings.dingtalkKeyword"
+msgstr "Своё ключевое слово (необязательно)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:565
+msgid "settings.dataConfigDescription"
+msgstr "Настройте категории, статусы, способы оплаты и валюты подписок."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:721
+msgid "settings.webhookHeaders"
+msgstr "Свои заголовки (необязательно, JSON)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:43
+msgid "settings.newPasswordPlaceholder"
+msgstr "Не менее 8 символов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:568
+msgid "settings.categoryKeepOne"
+msgstr "Оставьте хотя бы одну категорию, чтобы её можно было выбрать для новых подписок и в фильтрах."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:176
+msgid "settings.onlineIconSource.appStore.storefronts.required"
+msgstr "Оставьте выбранным хотя бы один регион. Чтобы отключить результаты App Store, используйте переключатель выше."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:193
+msgid "settings.builtInIconSourcesRequired"
+msgstr "Оставьте включённым хотя бы один источник, чтобы поиск логотипов и значков возвращал встроенные варианты."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:647
+msgid "settings.currencyPolicy.noneTitle"
+msgstr "Включите хотя бы одну валюту"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:589
+msgid "settings.exchangeRatePartialDataSource"
+msgstr "Дополнено из: {sources}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:204
+msgid "settings.uploadedIconsLogoTitle"
+msgstr "Логотипы подписок"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:196
+msgid "settings.uploadedIconsSummaryCompact"
+msgstr "Логотипы подписок: {logoCount} · Способы оплаты: {iconCount}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:197
+msgid "settings.uploadedIconsSummaryStale"
+msgstr "Логотипы подписок: {logoCount} · Способы оплаты: {iconCount} · Не обновлено"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:573
+msgid "settings.statusManagerDescription"
+msgstr "Статусы подписок влияют на статистику; их можно только сортировать."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:613
+msgid "settings.notificationReminderDaysHelp"
+msgstr "Для подписок с напоминанием «по умолчанию» используется это количество дней до продления."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:775
+msgid "settings.barkKey"
+msgstr "Device Key"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:663
+msgid "settings.channel.barkReady"
+msgstr "Device Key указан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:11
+msgid "settings.sectionNavLabel"
+msgstr "Разделы настроек"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:632
+msgid "settings.saved"
+msgstr "Настройки сохранены"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:318
+msgid "settings.monthlyBudgetHelp"
+msgstr "Задайте месячный бюджет на подписки для анализа бюджета на странице статистики."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:12
+msgid "settings.sectionNavTitle"
+msgstr "Меню настроек"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:80
+msgid "settings.mfaSetupTitle"
+msgstr "Настройка аутентификатора"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:627
+msgid "settings.unsavedLeavePrompt"
+msgstr "Есть несохранённые изменения настроек. Покинуть страницу?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:571
+msgid "settings.categoryUsed"
+msgstr "Эта категория используется в {count, plural, one {# подписке} few {# подписках} many {# подписках} other {# подписках}}. Перед удалением переведите эти подписки в другую категорию."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:542
+msgid "settings.cloudBackupDeleteDescription"
+msgstr "Будут удалены удалённый ZIP-архив и манифест. После удаления восстановить их через Renewlet будет нельзя."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:107
+msgid "settings.language"
+msgstr "Язык"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:108
+msgid "settings.languageHelp"
+msgstr "Язык меняется сразу для предпросмотра. При сохранении он синхронизируется с настройками аккаунта; режим «как на устройстве» не привязывает фоновый контент к языку устройства."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:373
+msgid "settings.calendarFeedSubscriptionsEmpty"
+msgstr "Создайте ссылку через «Добавить в календарь» в карточке подписки."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:312
+msgid "aiRecognition.modelRequired"
+msgstr "Сначала укажите модель ИИ."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:314
+msgid "aiRecognition.apiKeyRequired"
+msgstr "Сначала укажите API-ключ."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:704
+msgid "settings.telegramBotCommandsConfigMissing"
+msgstr "Сначала заполните и сохраните Bot Token и Chat ID."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:621
+msgid "settings.testPhonePlaceholder"
+msgstr "Отправьте тестовое сообщение для проверки, например 86xxxxxx"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:340
+msgid "settings.calendarFeedOpenSystemFailedDescription"
+msgstr "Скопируйте URL и добавьте его вручную."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:337
+msgid "settings.calendarFeedCopyFailedDescription"
+msgstr "Выделите и скопируйте URL вручную."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:547
+msgid "settings.cloudBackupInvalidDescription"
+msgstr "Проверьте HTTPS URL, бакет, путь и количество хранимых копий."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:554
+msgid "settings.cloudBackupTestFailedDescription"
+msgstr "Проверьте URL, путь, бакет и права секрета."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:94
+msgid "settings.mfaActionFailedDescription"
+msgstr "Проверьте текущий пароль и попробуйте снова."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:92
+msgid "settings.mfaEnableFailedDescription"
+msgstr "Проверьте текущий пароль и код из аутентификатора."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:719
+msgid "settings.webhookMethod"
+msgstr "Метод запроса"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:344
+msgid "settings.calendarFeedOperationFailedDescription"
+msgstr "Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:451
+msgid "settings.publicApiPlainTokenHelp"
+msgstr "Скопируйте и сохраните его сейчас. После закрытия Renewlet будет показывать только префикс и не сможет снова отобразить токен целиком."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:648
+msgid "settings.currencyPolicy.noneDescription"
+msgstr "Оставьте включённой хотя бы одну валюту, иначе отчёты и выбор валюты для новых подписок будут недоступны."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:130
+msgid "settings.builtInIconIndexBadge.loading"
+msgstr "Загрузка"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:90
+msgid "settings.mfaSetupFailedDescription"
+msgstr "Не удалось инициализировать защиту аккаунта. Попробуйте позже."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:15
+msgid "settings.sectionNav.account"
+msgstr "Аккаунт"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:576
+msgid "settings.currencyManager"
+msgstr "Валюты"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:605
+msgid "settings.subscriptionPriceReferenceCurrencyDefault"
+msgstr "Как валюта отчётов ({currency})"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:46
+msgid "settings.mfaTitle"
+msgstr "Приложение-аутентификатор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:51
+msgid "settings.mfaMethodTotp"
+msgstr "Приложение-аутентификатор"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:87
+msgid "settings.mfaDisabled"
+msgstr "Аутентификатор отключён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:86
+msgid "settings.mfaEnabled"
+msgstr "Аутентификатор включён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:93
+msgid "settings.mfaActionFailed"
+msgstr "Не удалось выполнить действие с аутентификатором"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:85
+msgid "settings.mfaSetupMissing"
+msgstr "Время настройки аутентификатора истекло. Начните заново."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:83
+msgid "settings.mfaSetupCode"
+msgstr "Код из аутентификатора"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:42
+msgid "settings.currentPasswordPlaceholder"
+msgstr "Введите текущий пароль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:64
+msgid "settings.addPasskeyDescription"
+msgstr "Введите текущий пароль, а затем следуйте подсказкам браузера, чтобы создать ключ доступа (passkey) на этом устройстве или на ключе безопасности."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:141
+msgid "settings.builtInIconIndexJobStatus.running"
+msgstr "Выполняется"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:456
+msgid "settings.publicApiTokensEmpty"
+msgstr "API-токенов пока нет. Создайте токен и обращайтесь к публичному API только для чтения с заголовком Authorization Bearer."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:209
+msgid "settings.uploadedIconsIconEmpty"
+msgstr "Значков способов оплаты пока нет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:206
+msgid "settings.uploadedIconsLogoEmpty"
+msgstr "Логотипов подписок пока нет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:100
+msgid "settings.mfaRecoveryCodesDescription"
+msgstr "Эти коды восстановления показываются только один раз. Каждый код можно использовать однократно."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:495
+msgid "settings.cloudBackupWebdavPath"
+msgstr "Удалённый путь"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:489
+msgid "settings.cloudBackupConnection"
+msgstr "Подключение"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:175
+msgid "settings.onlineIconSource.appStore.storefront.cn.help"
+msgstr "Подходит для китайских приложений, например WeChat, Bilibili и iQIYI."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:324
+msgid "settings.timezoneHelp"
+msgstr "Выберите часовой пояс IANA. По нему определяются время уведомлений и периоды дат вроде «сегодня» и «ближайшие дни»."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:118
+msgid "settings.builtInIconSourcesDialogDescription"
+msgstr "Выберите источники для поиска логотипов и значков способов оплаты; онлайн-значки приложений используются только при ручном поиске логотипа."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:734
+msgid "settings.dingtalkTemplateExamplesDescription"
+msgstr "Выберите пример и продолжите его редактировать."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:171
+msgid "settings.onlineIconSource.appStore.storefronts.help"
+msgstr "Выберите регионы App Store для ручного поиска логотипа. При выборе обоих выполняется один дополнительный запрос к Apple."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:321
+msgid "settings.timezonePlaceholder"
+msgstr "Выберите часовой пояс"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:243
+msgid "aiRecognition.modelModeSelect"
+msgstr "Выбрать модель"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:244
+msgid "aiRecognition.modelSelectPlaceholder"
+msgstr "Выберите модель"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:611
+msgid "settings.notificationTimeHelp"
+msgstr "Выберите местное время ежедневных уведомлений. Сервер учитывает его вместе с часовым поясом, указанным выше."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:407
+msgid "settings.publicStatusQuickBulkDescription"
+msgstr "Выберите категории, чтобы скрыть или вернуть их разом. Отдельными подписками можно управлять в списке подписок."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:593
+msgid "settings.currencyPlaceholder"
+msgstr "Выберите валюту"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:180
+msgid "settings.builtInIconSource.thesvg.help"
+msgstr "Общая библиотека значков брендов и технологий, по умолчанию показывается первой."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:27
+msgid "settings.sectionNav.notifications"
+msgstr "Уведомления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:616
+msgid "settings.notificationChannels"
+msgstr "Каналы уведомлений (можно выбрать несколько)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:610
+msgid "settings.notificationTime"
+msgstr "Время уведомлений (местное)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:609
+msgid "settings.notifications"
+msgstr "Уведомления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:54
+msgid "settings.passkeys"
+msgstr "Ключи доступа (passkey)"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:58
+msgid "settings.passkeysSummary"
+msgstr "Ключи доступа · {summary}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:67
+msgid "settings.passkeyName"
+msgstr "Название ключа доступа"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:76
+msgid "settings.passkeyDeleted"
+msgstr "Ключ доступа удалён"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:69
+msgid "settings.passkeyAdded"
+msgstr "Ключ доступа добавлен"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:71
+msgid "settings.passkeyMissing"
+msgstr "Выбранный ключ доступа больше недоступен. Выберите его снова."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:169
+msgid "settings.onlineIconSource.appStore.help"
+msgstr "Запрашивает Apple Search API через сервер Renewlet и возвращает URL значков приложений. По умолчанию используется регион US; изображения не скачиваются и не размещаются повторно."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:768
+msgid "settings.smtpHelp"
+msgstr "Уведомления по email отправляются через SMTP текущего аккаунта. Если поля не заполнены, резервные настройки развёртывания не используются."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:113
+msgid "settings.builtInIconSourcesConfigure"
+msgstr "Настроить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:549
+msgid "settings.cloudBackupSavedWithCredential"
+msgstr "Настройки и секрет сохранены. Поля секретов очищены."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:117
+msgid "settings.builtInIconSourcesDialogTitle"
+msgstr "Настройка источников значков"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:233
+msgid "aiRecognition.settingsDescription"
+msgstr "Настройте стороннюю модель для распознавания изображений подписок, заметок или текста таблиц. Распознаваемые данные и существующие названия тегов отправляются на выбранную вами платформу ИИ."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:696
+msgid "settings.telegramBotCommandsReinstall"
+msgstr "Переустановить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:330
+msgid "settings.calendarFeedRegenerate"
+msgstr "Создать заново"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:418
+msgid "settings.publicStatusRegenerate"
+msgstr "Создать заново"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:379
+msgid "settings.calendarFeedRegenerateFor"
+msgstr "Создать заново ссылку подписки на календарь для «{name}»"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:382
+msgid "settings.calendarFeedRegenerateItemTitle"
+msgstr "Создать заново ссылку для «{name}»?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:385
+msgid "settings.calendarFeedRegenerating"
+msgstr "Создание..."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:419
+msgid "settings.publicStatusRegenerateTitle"
+msgstr "Создать новый URL публичной страницы?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:342
+msgid "settings.calendarFeedRotateFailed"
+msgstr "Не удалось создать ссылку заново"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:78
+msgid "settings.mfaRegenerateRecovery"
+msgstr "Создать новые коды восстановления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:97
+msgid "settings.mfaRegenerateTitle"
+msgstr "Создать новые коды восстановления?"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:8
+msgid "settings.managerRetry"
+msgstr "Повторить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:351
+msgid "settings.calendarFeedRetry"
+msgstr "Повторить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:749
+msgid "settings.dingtalkKeywordHelp"
+msgstr "Проверка по ключевому слову в DingTalk требует, чтобы оно присутствовало в тексте сообщения. Если указать случайное слово вроде Test1, оно тоже появится в уведомлениях. Используйте естественные слова, например Renewlet, «напоминание о подписке» или «продление»; для скрытой проверки безопасности используйте подпись."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:657
+msgid "settings.channel.dingtalkReady"
+msgstr "Webhook URL бота DingTalk указан"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:673
+msgid "settings.help.dingtalk"
+msgstr "Настройки безопасности бота DingTalk"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:384
+msgid "settings.calendarFeedRevokeItemDescription"
+msgstr "Ссылка сразу перестанет работать, и календарь прекратит синхронизацию."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:345
+msgid "settings.calendarFeedRevoked"
+msgstr "Ссылка отозвана"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:333
+msgid "settings.calendarFeedGenerated"
+msgstr "Ссылка создана"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:334
+msgid "settings.calendarFeedRegenerated"
+msgstr "Ссылка создана заново"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:401
+msgid "settings.publicStatusHideExpired"
+msgstr "Скрыть истекшие подписки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:402
+msgid "settings.publicStatusHideLifetime"
+msgstr "Скрыть бессрочные подписки"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:777
+msgid "settings.barkSilent"
+msgstr "Беззвучные уведомления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:188
+msgid "settings.builtInIconSource.dashboardIcons.help"
+msgstr "Библиотека значков сервисов для дашбордов, таких как Homarr, Homepage и Dashy."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:184
+msgid "settings.builtInIconSource.selfhst.help"
+msgstr "Библиотека значков для self-hosted сервисов и дашбордов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:622
+msgid "settings.testPhoneHelp"
+msgstr "Резервное поле для каналов, которым может понадобиться номер телефона или ID получателя. На поддерживаемые сейчас каналы не влияет."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:20
+msgid "settings.sectionNav.budget"
+msgstr "Бюджет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:639
+msgid "settings.budgetInvalid"
+msgstr "Бюджет должен быть числом от 0 до 1 000 000 000."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:315
+msgid "settings.budget"
+msgstr "Бюджет"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:608
+msgid "settings.ratesInfo"
+msgstr "В предпросмотре показано, сколько стоит 1 единица каждой валюты подписок в вашей валюте отчётов — так проще оценить цены в иностранной валюте. Курсы обновляются автоматически каждые 24 часа или вручную кнопкой выше; если выбранный источник недоступен или в нём есть небольшие пробелы, недостающие данные берутся из других источников."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:509
+msgid "settings.cloudBackupFrequency"
+msgstr "Частота"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:582
+msgid "settings.defaultCurrencyHelp"
+msgstr "Суммы в обзоре и статистике пересчитываются в эту валюту. Отдельные подписки сохраняют свою исходную валюту."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:774
+msgid "settings.barkServerHelp"
+msgstr "По умолчанию используется официальный сервис `https://api.day.app`. Если у вас свой сервер Bark, укажите его URL."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:508
+msgid "settings.cloudBackupScheduleHelp"
+msgstr "По умолчанию выключено. Если включить, сервер будет создавать снимки по расписанию и удалять старые согласно настройке хранения."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:173
+msgid "settings.onlineIconSource.appStore.storefront.us.help"
+msgstr "Регион по умолчанию, подходит для международных приложений, например Netflix, Spotify и ChatGPT."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:256
+msgid "aiRecognition.defaultThinking"
+msgstr "Режим рассуждений по умолчанию"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:612
+msgid "settings.notificationReminderDays"
+msgstr "Срок напоминания по умолчанию"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:738
+msgid "settings.dingtalkTemplateExampleDefault"
+msgstr "Как по умолчанию"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings.ts:603
+msgid "settings.subscriptionPriceReferenceDisabledHelp"
+msgstr "По умолчанию скрыто. Включите, чтобы использовать валюту отчётов или закрепить справочную валюту."

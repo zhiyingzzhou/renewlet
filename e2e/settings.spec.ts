@@ -112,6 +112,10 @@ test("settings save, language switch, and floating layer layout stability", asyn
   await page.getByRole("option", { name: "English" }).click();
   await expect(page.getByRole("heading", { name: "System settings" })).toBeVisible();
   await page.getByRole("combobox", { name: "Language" }).click();
+  await page.getByRole("option", { name: "Русский" }).click();
+  await expect(page.getByRole("heading", { name: "Системные настройки" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru-RU");
+  await page.getByRole("combobox", { name: "Язык" }).click();
   await page.getByRole("option", { name: "中文" }).click();
   await expect(page.getByRole("heading", { name: "系统配置" })).toBeVisible();
 

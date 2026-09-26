@@ -38,6 +38,7 @@ const EXCLUDED_PATHS = [
   /(^|\/)pb_data\//,
   /^apps\/docker-server\/internal\/static\//,
   /^apps\/web\/src\/i18n\/catalog-keys\.ts$/,
+  /^apps\/worker\/src\/server-i18n-catalog\.ts$/,
   /^apps\/worker\/src\/worker-configuration\.d\.ts$/,
   /^docs\/public-api\.openapi\.json$/,
   /^packages\/shared\/data\/currency-region-hints\.json$/,

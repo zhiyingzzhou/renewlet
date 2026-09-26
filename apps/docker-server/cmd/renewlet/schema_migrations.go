@@ -15,6 +15,8 @@ const schemaDataMigrationsTable = "renewlet_schema_data_migrations"
 const (
 	settingsLocalePreferenceMigrationName = "settings_locale_preference_v1"
 	settingsLocalePreferenceRecoveryPoint = "renewlet_pre_settings_locale_preference_v1.zip"
+
+	settingsLocalePreferenceGuardV2MigrationName = "settings_locale_preference_guard_v2"
 )
 
 type schemaDataMigration struct {
@@ -39,6 +41,16 @@ func runSchemaDataMigrations(app core.App) error {
 				Preflight:    preflightSettingsLocalePreferenceMigration,
 				Verify:       verifySettingsLocalePreferenceInvariant,
 				InstallGuard: installSettingsLocalePreferenceGuard,
+				VerifyGuard:  verifySettingsLocalePreferenceGuardV1,
+			},
+		},
+		{
+			Name: settingsLocalePreferenceGuardV2MigrationName,
+			Run:  func(core.App) error { return nil },
+			Exclusive: &exclusiveSchemaDataMigration{
+				Preflight:    preflightSettingsLocalePreferenceMigration,
+				Verify:       verifySettingsLocalePreferenceInvariant,
+				InstallGuard: replaceSettingsLocalePreferenceGuard,
 				VerifyGuard:  verifySettingsLocalePreferenceGuard,
 			},
 		},

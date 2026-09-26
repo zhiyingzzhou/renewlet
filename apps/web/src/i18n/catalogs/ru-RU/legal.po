@@ -1,0 +1,184 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-25 00:00+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru-RU\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:27
+msgid "legal.terms.scope.title"
+msgstr "1. Область использования"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:8
+msgid "legal.privacy.data.title"
+msgstr "1. Какие данные мы обрабатываем"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:12
+msgid "legal.privacy.usage.title"
+msgstr "2. Как используются данные"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:30
+msgid "legal.terms.account.title"
+msgstr "2. Аккаунты и данные"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:33
+msgid "legal.terms.thirdParty.title"
+msgstr "3. Сторонние сервисы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:15
+msgid "legal.privacy.thirdParty.title"
+msgstr "3. Запросы к сторонним сервисам"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:21
+msgid "legal.privacy.control.title"
+msgstr "4. Ваш контроль"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:36
+msgid "legal.terms.disclaimer.title"
+msgstr "4. Отказ от ответственности"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:19
+msgid "legal.privacy.thirdParty.ai"
+msgstr "Распознавание с помощью ИИ: когда вы добавляете подписки через распознавание с помощью ИИ, вставленный текст, загруженные изображения и названия существующих тегов отправляются сторонней ИИ-платформе, указанной в настройках."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:7
+msgid "legal.privacy.intro"
+msgstr "По умолчанию Renewlet не добавляет пользовательский HTML в head. Оператор экземпляра может включить доверенный фрагмент, который выполняется с правами кода того же источника. Если вы пользуетесь развёрнутым экземпляром, за этот фрагмент и всю обработку данных в нём отвечает оператор — возможно, это вы."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:26
+msgid "legal.terms.intro"
+msgstr "Renewlet (renewlet) — инструмент для управления подписками с открытым исходным кодом. На этой странице описаны основные правила использования проекта или развёрнутого экземпляра."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:10
+msgid "legal.privacy.data.business"
+msgstr "Данные приложения: подписки, настройки категорий, способов оплаты и валют, пользовательские настройки и связанные данные SQLite."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:28
+msgid "legal.terms.scope.lawful"
+msgstr "Вы можете использовать проект, в том числе на собственном сервере, если это законно и не нарушает применимых правил."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:22
+msgid "legal.privacy.control.settings"
+msgstr "Вы можете в любой момент изменить настройки каналов уведомлений или отключить уведомления в настройках."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:29
+msgid "legal.terms.scope.accuracy"
+msgstr "Вы отвечаете за точность введённых данных о подписках, ценах, курсах валют и т. п. Проект только предоставляет функции управления и отображения."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:25
+msgid "legal.terms.subtitle"
+msgstr "Последнее обновление: 2026-01-12"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:6
+msgid "legal.privacy.subtitle"
+msgstr "Последнее обновление: 2026-08-24"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:38
+msgid "legal.terms.disclaimer.loss"
+msgstr "Вы несёте ответственность за любые убытки, связанные с использованием проекта или развёрнутого экземпляра."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:17
+msgid "legal.privacy.thirdParty.icons"
+msgstr "Поиск значков: при ручном поиске логотипа название сервиса может отправляться через сервер Renewlet в Apple Search API для выбранных регионов App Store (по умолчанию — США). Браузер также может загружать значки с Apple CDN и запасные варианты favicon или логотипов с внешних сайтов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:32
+msgid "legal.terms.account.operator"
+msgstr "Если вы пользуетесь экземпляром, которым управляет кто-то другой, учитывайте, что у оператора может быть административный доступ к серверу и базе данных."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:23
+msgid "legal.privacy.control.selfHost"
+msgstr "Если вы развернули приложение сами, данными можно управлять, делать их резервные копии или удалять через админ-панель PocketBase и `/pb_data`."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:24
+msgid "legal.terms.title"
+msgstr "Условия использования"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:37
+msgid "legal.terms.disclaimer.asIs"
+msgstr "Проект предоставляется «как есть», без каких-либо гарантий, в том числе точности, актуальности или пригодности для конкретной цели."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:31
+msgid "legal.terms.account.localAuth"
+msgstr "По умолчанию проект использует локальную аутентификацию. Данные хранятся в SQLite и в локальной папке загрузок."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:16
+msgid "legal.privacy.thirdParty.rates"
+msgstr "Курсы валют: данные можно получать из Frankfurter, Exchange API или FloatRates JSON Feeds. Если удалённый источник недоступен или в нём не хватает отдельных валют, сначала пробуются другие источники, а затем встроенные запасные курсы."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:13
+msgid "legal.privacy.usage.core"
+msgstr "Для основных функций: управления подписками, статистики, календаря и персональных настроек."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:14
+msgid "legal.privacy.usage.notifications"
+msgstr "Для необязательных уведомлений: если каналы уведомлений включены, содержимое уведомлений отправляется в настроенные вами сторонние каналы."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:35
+msgid "legal.terms.thirdParty.responsibility"
+msgstr "За доступность, ограничения частоты запросов и точность данных сторонних сервисов отвечают сами эти сервисы."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:9
+msgid "legal.privacy.data.account"
+msgstr "Данные аккаунта: управляются аутентификацией PocketBase, например email и cookie сеанса браузера с флагом HttpOnly."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:11
+msgid "legal.privacy.data.files"
+msgstr "Файлы ресурсов: загруженные логотипы, значки и похожие файлы, которые хранятся локально."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:18
+msgid "legal.privacy.thirdParty.notifications"
+msgstr "Уведомления: Telegram, WeCom, Webhook, почта через SMTP, Bark, ServerChan и похожие каналы получают содержимое уведомлений, которое вы настроили."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:34
+msgid "legal.terms.thirdParty.features"
+msgstr "Некоторые функции обращаются к сторонним сервисам, например API курсов валют, каналам уведомлений и сайтам поиска значков."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:20
+msgid "legal.privacy.thirdParty.customScript"
+msgstr "HTML в head от оператора: скрипты аналитики, записи сеансов и другие сторонние скрипты могут собирать и отправлять данные о страницах и действиях пользователя. За уведомление пользователей, политику конфиденциальности и получение согласия, если оно требуется по закону, отвечает оператор экземпляра. В Renewlet нет специальной логики для Clarity и платформы управления согласием."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/legal.ts:5
+msgid "legal.privacy.title"
+msgstr "Политика конфиденциальности"

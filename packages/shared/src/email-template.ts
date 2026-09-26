@@ -1,5 +1,6 @@
 import zhCatalog from "../data/server-i18n/active.zh-CN.json";
 import enCatalog from "../data/server-i18n/active.en-US.json";
+import ruCatalog from "../data/server-i18n/active.ru-RU.json";
 import { FALLBACK_LOCALE, type Locale, type RepeatReminderInterval, type RepeatReminderWindow } from "./runtime";
 import { renderEmailTemplate } from "./email-template-render";
 import { moneyToNumber, type MoneyString } from "./money";
@@ -12,6 +13,7 @@ type ServerCatalog = Record<string, string>;
 const SERVER_CATALOGS: Record<Locale, ServerCatalog> = {
   "zh-CN": zhCatalog,
   "en-US": enCatalog,
+  "ru-RU": ruCatalog,
 };
 
 export interface NotificationEmailSettings {

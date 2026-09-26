@@ -1,5 +1,5 @@
 // 由 scripts/generate-server-i18n.mjs 生成；源语言、运行时回退和账号偏好是三个独立契约。
-export const SUPPORTED_LOCALES = ["zh-CN", "en-US"] as const;
+export const SUPPORTED_LOCALES = ["zh-CN", "en-US", "ru-RU"] as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 

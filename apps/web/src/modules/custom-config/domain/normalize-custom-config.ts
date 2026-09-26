@@ -18,7 +18,7 @@ import {
   type ConfigItem,
   type CustomConfig,
 } from "@/types/config";
-import { isLocale, type LocalizedLabels } from "@/i18n/locales";
+import { LABEL_LOCALES, type Locale, type LocalizedLabels } from "@/i18n/locales";
 
 /** 判断 value 是否为普通对象（排除数组）。 */
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -49,7 +49,7 @@ function asConfigItemArray(value: unknown, fallback: ConfigItem[]): ConfigItem[]
 
 function isLocalizedLabels(value: unknown): value is LocalizedLabels {
   if (!isRecord(value)) return false;
-  return Object.entries(value).every(([locale, label]) => isLocale(locale) && typeof label === "string" && label.length > 0)
+  return Object.entries(value).every(([locale, label]) => (LABEL_LOCALES as readonly string[]).includes(locale) && typeof label === "string" && label.length > 0)
     && typeof value["zh-CN"] === "string"
     && typeof value["en-US"] === "string";
 }
@@ -70,6 +70,6 @@ export function normalizeCustomConfig(value: unknown): CustomConfig {
   };
 }
 
-export function getConfigItemDisplayLabel(item: ConfigItem, locale: "zh-CN" | "en-US"): string {
+export function getConfigItemDisplayLabel(item: ConfigItem, locale: Locale): string {
   return getConfigItemLabel(item, locale);
 }

@@ -191,6 +191,7 @@ export function SettingsScreen() {
                         <SelectItem value="auto">{t("locale.auto")}</SelectItem>
                         <SelectItem value="zh-CN">{t("locale.zhCN")}</SelectItem>
                         <SelectItem value="en-US">{t("locale.enUS")}</SelectItem>
+                        <SelectItem value="ru-RU">{t("locale.ruRU")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground">{t("settings.languageHelp")}</p>

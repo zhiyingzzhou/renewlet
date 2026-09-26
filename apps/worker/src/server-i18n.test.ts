@@ -37,6 +37,8 @@ describe("server locale resolution", () => {
     ["zh-$$$;q=0.9, en-US;q=0.8", "en-US"],
     ["*;q=0.9, zh-CN;q=0.8", "en-US"],
     ["zh-CN;q=0.5, en-US;q=0.5", "zh-CN"],
+    ["ru-RU,ru;q=0.9,en;q=0.8", "ru-RU"],
+    ["ru, en;q=0.8", "ru-RU"],
   ] as const)("resolves Accept-Language %j as %s", (acceptLanguage, expected) => {
     expect(requestLocale(localeRequest({ "Accept-Language": acceptLanguage }))).toBe(expected);
   });
@@ -44,6 +46,7 @@ describe("server locale resolution", () => {
   it("uses explicit account preferences and English for auto background content", () => {
     expect(accountContentLocale("zh-CN")).toBe("zh-CN");
     expect(accountContentLocale("en-US")).toBe("en-US");
+    expect(accountContentLocale("ru-RU")).toBe("ru-RU");
     expect(accountContentLocale("auto")).toBe("en-US");
   });
 });

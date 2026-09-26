@@ -90,31 +90,37 @@ export function isSameMonthDateOnly(date: DateOnly | string, month: DateOnly | s
   return left.year === right.year && left.month === right.month;
 }
 
+export type DateOnlyDisplayStyle = "short" | "monthDay" | "full";
+
+// 数字日期习惯按语言区分：英文只有完整日期补零，俄文 dd.MM.yyyy 全部补零，中文不补零。
+const ZERO_PADDED_DATE_STYLES: Partial<Record<Locale, readonly DateOnlyDisplayStyle[]>> = {
+  "en-US": ["full"],
+  "ru-RU": ["short", "monthDay", "full"],
+};
+
+/** 生成日期 catalog 消息参数；只影响展示，DateOnly 值本身不变。 */
+export function dateOnlyMessageParams(date: DateOnly | string, locale: Locale, style: DateOnlyDisplayStyle) {
+  const value = toPlainDate(date);
+  const width = ZERO_PADDED_DATE_STYLES[locale]?.includes(style) ? 2 : 1;
+  return {
+    year: value.year,
+    month: String(value.month).padStart(width, "0"),
+    day: String(value.day).padStart(width, "0"),
+  };
+}
+
 /** 格式化为简洁展示日期。 */
 export function formatDateOnlyForDisplay(date: DateOnly | string, locale: Locale = DEFAULT_LOCALE): string {
-  const value = toPlainDate(date);
-  return translate(locale, "date.short", {
-    year: value.year,
-    month: value.month,
-    day: value.day,
-  });
+  return translate(locale, "date.short", dateOnlyMessageParams(date, locale, "short"));
 }
 
 /** 格式化为月日短格式，用于即将续费等紧凑 UI。 */
 export function formatDateOnlyMonthDay(date: DateOnly | string, locale: Locale = DEFAULT_LOCALE): string {
-  const value = toPlainDate(date);
-  return translate(locale, "date.monthDay", {
-    month: value.month,
-    day: value.day,
-  });
+  const { month, day } = dateOnlyMessageParams(date, locale, "monthDay");
+  return translate(locale, "date.monthDay", { month, day });
 }
 
 /** 格式化为当前语言的完整日期。 */
 export function formatDateOnlyChinese(date: DateOnly | string, locale: Locale = DEFAULT_LOCALE): string {
-  const value = toPlainDate(date);
-  return translate(locale, "date.full", {
-    year: value.year,
-    month: locale === "en-US" ? String(value.month).padStart(2, "0") : value.month,
-    day: locale === "en-US" ? String(value.day).padStart(2, "0") : value.day,
-  });
+  return translate(locale, "date.full", dateOnlyMessageParams(date, locale, "full"));
 }
