@@ -50,7 +50,19 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run Playwright E2E
+        id: playwright
         run: pnpm test:e2e
+
+      - name: Capture E2E port diagnostics
+        if: ${{ failure() && steps.playwright.outcome == 'failure' }}
+        # 启动失败可能没有浏览器 trace；保留 LISTEN/TIME_WAIT 等状态，不杀进程或复用未知服务。
+        run: |
+          mkdir -p test-results
+          {
+            cat /proc/sys/net/ipv4/ip_local_port_range
+            ss --tcp --all --numeric --processes '( sport = :19090 or sport = :15173 )'
+          } > test-results/e2e-ports.txt
+          cat test-results/e2e-ports.txt
 
       - name: Upload Playwright artifacts
         if: failure()

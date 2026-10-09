@@ -41,8 +41,9 @@ const proxyEnv = {
   no_proxy: env.no_proxy ?? "",
 };
 
-const e2eServerPort = 43190;
-const e2eClientPort = 45173;
+// 避开 Linux 默认临时端口段 32768–60999，避免服务监听前被出站连接占用；仍拒绝复用已有服务。
+const e2eServerPort = 19090;
+const e2eClientPort = 15173;
 const e2eServerURL = `http://127.0.0.1:${e2eServerPort}`;
 const e2eClientURL = `http://127.0.0.1:${e2eClientPort}`;
 const adminStorageState = "e2e/.auth/admin.json";
@@ -50,7 +51,7 @@ const browserExecutablePath = env.RENEWLET_E2E_BROWSER_EXECUTABLE?.trim();
 // 本地可能遇到 Playwright CDN/TLS 被代理拦截；只在显式传入时用系统浏览器，CI 仍使用 hermetic 浏览器。
 const localBrowserFallback = browserExecutablePath ? { launchOptions: { executablePath: browserExecutablePath } } : {};
 
-// 端口必须保持拆分：43190 只给 PocketBase/Go API，浏览器页面只从 45173 的 Vite 入口进入。
+// 端口必须保持拆分：后端只给 PocketBase/Go API，浏览器页面只从前端的 Vite 入口进入。
 // 如果把 baseURL 指到后端端口，headed 调试会看到 PocketBase UI 而不是 Renewlet 前端。
 export default defineConfig({
   testDir: "./e2e",

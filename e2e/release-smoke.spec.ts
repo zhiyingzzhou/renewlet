@@ -132,6 +132,7 @@ test.describe("release smoke", () => {
   });
 
   test("release smoke @release changes a managed user password and signs in again", async ({ page, browser, baseURL }, testInfo) => {
+    if (!baseURL) throw new Error("Release smoke requires the Playwright frontend baseURL");
     const suffix = uniqueE2EName(testInfo, "release-user").toLowerCase();
     const email = `${suffix}@example.com`;
     const initialPassword = "password123";
@@ -146,7 +147,7 @@ test.describe("release smoke", () => {
     });
 
     const userContext = await browser.newContext({
-      baseURL: baseURL ?? "http://127.0.0.1:45173",
+      baseURL,
       locale: "zh-CN",
       // 新用户旅程必须从空浏览器态开始；继承管理员 storageState 会把改密测试伪装成已登录。
       storageState: { cookies: [], origins: [] },
