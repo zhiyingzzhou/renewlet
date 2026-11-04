@@ -72,6 +72,10 @@ If Docker Hub is unavailable, use GHCR:
 RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.34"
 ```
 
+## One-Click Deploy
+
+<a href="https://repocloud.io/details/Renewlet/"><img src="https://d16t0pc4846x52.cloudfront.net/deploylobe.svg" alt="Deploy on RepoCloud" height="39"></a>
+
 ## Cloudflare Workers
 
 <a href="https://deploy.workers.cloudflare.com/?url=https://github.com/zhiyingzzhou/renewlet"><img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare"></a>
