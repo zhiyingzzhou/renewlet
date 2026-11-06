@@ -18,6 +18,10 @@ const promptSpecSchema = z.object({
   system: z.array(z.string().min(1)).min(1),
   outputContract: z.array(z.string().min(1)).min(1),
   fieldRules: z.array(z.string().min(1)).min(1),
+  outputLanguages: z.record(z.string().min(1), z.object({
+    label: z.string().min(1),
+    nativeInstruction: z.string().min(1),
+  }).strict()).refine((languages) => Boolean(languages["en-US"])),
   examples: z.array(promptExampleSchema).min(1),
 }).strict();
 
@@ -40,8 +44,21 @@ export interface AIRecognitionPromptConfigContext {
   tags: readonly string[];
 }
 
+function aiRecognitionOutputLanguage(locale: string): { label: string; nativeInstruction: string } {
+  return aiRecognitionPromptSpec.outputLanguages[locale] ?? aiRecognitionPromptSpec.outputLanguages["en-US"]!;
+}
+
+function aiRecognitionOutputLanguageRules(locale: string): string[] {
+  const language = aiRecognitionOutputLanguage(locale);
+  return [
+    "Output language (authoritative):",
+    `- Generated user-facing metadata must use ${language.label}.`,
+    `- ${language.nativeInstruction}`,
+  ];
+}
+
 /** 系统 prompt 固定来自版本化 JSON，便于 Go/Worker diagnostics 回显同一个 promptVersion。 */
-export function buildAIRecognitionSystemPrompt(): string {
+export function buildAIRecognitionSystemPrompt(locale = "en-US"): string {
   const examples = aiRecognitionPromptSpec.examples.map((example, index) => [
     `Example ${index + 1} input:`,
     example.input,
@@ -50,6 +67,7 @@ export function buildAIRecognitionSystemPrompt(): string {
   ].join("\n")).join("\n\n");
   return [
     ...aiRecognitionPromptSpec.system,
+    ...aiRecognitionOutputLanguageRules(locale),
     "Output contract:",
     ...aiRecognitionPromptSpec.outputContract.map((rule) => `- ${rule}`),
     "Field rules:",
@@ -88,6 +106,9 @@ export function buildAIRecognitionUserPrompt({
     `- User locale: ${locale}`,
     `- Attached image count: ${imageCount}`,
     "",
+    ...aiRecognitionOutputLanguageRules(locale),
+    "- Keep service names, URLs, explicit source=input text, existing labels, and existing tags in their original form; do not translate evidence.",
+    "",
     "User context:",
     "Existing user tags:",
     ...formatTagsForPrompt(configContext.tags),
@@ -118,10 +139,12 @@ export function buildAIRecognitionRepairUserPrompt({
   originalUserPrompt,
   previousObject,
   missingNoteNames,
+  locale,
 }: {
   originalUserPrompt: string;
   previousObject: unknown;
   missingNoteNames: readonly string[];
+  locale: string;
 }): string {
   return [
     "Repair task:",
@@ -129,6 +152,8 @@ export function buildAIRecognitionRepairUserPrompt({
     "- Regenerate the complete JSON object with the same output contract and preserve every existing billing fact exactly.",
     "- Only fill notes for the listed subscriptions; do not change price, currency, cycle, dates, status, category, payment method, website, tags, or warnings.",
     "- For each listed subscription, notes.value must be a concise neutral description of the official service, site, or product. Use source=suggested for that description.",
+    ...aiRecognitionOutputLanguageRules(locale),
+    "- Keep service names, URLs, explicit source=input text, existing labels, and existing tags in their original form; do not translate evidence.",
     "- Use the original input/images, one official web search when the provider supports it, high-confidence public knowledge, and the existing service name/website.",
     "- Do not use a hardcoded service table, local fallback, plan, price, region, route, specification, date, duration, promotion, import advice, confirmation reminder, or AI process text.",
     ...missingNoteNames.map((name) => `  - ${name}`),

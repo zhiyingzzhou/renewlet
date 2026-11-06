@@ -782,20 +782,4 @@ describe("AIRecognizeSubscriptionDialog", () => {
     expect(prepared.payload.customConfig?.paymentMethods.some((item) => item.labels["zh-CN"] === "Personal card")).toBe(true);
   });
 
-  it("AI 识别预览隐藏通用导入设置并静默使用 skip 冲突策略", async () => {
-    const user = userEvent.setup();
-    mocks.recognizeSubscriptionsStream.mockResolvedValue(makeResponse([makeDraft()]));
-    renderDialog();
-
-    await user.type(screen.getByPlaceholderText("粘贴记事本、备忘录或从 Excel 复制出的订阅列表..."), "apple 50刀 1年");
-    await user.click(screen.getByRole("button", { name: "生成订阅草稿" }));
-    await screen.findByText("Apple Music");
-    await user.click(screen.getByRole("button", { name: "生成导入预览" }));
-
-    expect(await screen.findByTestId("import-preview-panel")).toBeInTheDocument();
-    const previewCall = mocks.previewPrepared.mock.calls[0];
-    expect(previewCall?.[1]).toBe("skip");
-    expect(previewCall?.[2]).toBeInstanceOf(AbortSignal);
-    expect(mocks.importPreviewPanel).toHaveBeenLastCalledWith(expect.objectContaining({ showImportOptions: false }));
-  });
 });

@@ -143,7 +143,7 @@ async function runAIRecognitionSingle({
 }): Promise<AiRecognizeResponse> {
   const maxOutputTokens = outputTokenBudgetForChunk(input, thinkingControl);
   const providerOptions = providerOptionsForThinking(settings, thinkingControl);
-  const systemPrompt = buildAIRecognitionSystemPrompt();
+  const systemPrompt = buildAIRecognitionSystemPrompt(locale);
   const userPrompt = buildAIRecognitionUserPrompt({
     text: input.text,
     timezone,
@@ -335,7 +335,7 @@ async function runAIRecognitionStreamSingle({
 }): Promise<AiRecognizeResponse> {
   const maxOutputTokens = outputTokenBudgetForChunk(input, thinkingControl);
   const providerOptions = providerOptionsForThinking(settings, thinkingControl);
-  const systemPrompt = buildAIRecognitionSystemPrompt();
+  const systemPrompt = buildAIRecognitionSystemPrompt(locale);
   const userPrompt = buildAIRecognitionUserPrompt({
     text: input.text,
     timezone,
@@ -471,6 +471,7 @@ async function finalizeAIRecognitionGeneration({
       originalUserPrompt,
       previousObject: initialGeneration.object,
       missingNoteNames: missingNames,
+      locale,
     });
     try {
       const repairedGeneration = await generateForPrompt(repairPrompt);

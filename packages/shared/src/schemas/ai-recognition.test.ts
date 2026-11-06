@@ -145,7 +145,7 @@ describe("AI recognition prompt contract", () => {
       ...aiRecognitionPromptSpec.fieldRules,
     ].join("\n");
 
-    expect(aiRecognitionPromptSpec.version).toBe("2026-11-06.service-description-v6");
+    expect(aiRecognitionPromptSpec.version).toBe("2026-11-06.service-description-v7");
     expect(buildAIRecognitionSystemPrompt().length).toBeLessThanOrEqual(4500);
     expect(promptText).toContain("Return exactly one strict JSON object");
     expect(promptText).toContain("Billing facts come only from input/image.");

@@ -115,7 +115,7 @@ func (goaiRecognitionRunner) recognizeSingle(
 	if err != nil {
 		return aiRecognizeResponse{}, err
 	}
-	systemPrompt := buildAIRecognitionSystemPrompt()
+	systemPrompt := buildAIRecognitionSystemPrompt(locale)
 	userPrompt := buildAIRecognitionUserPrompt(input.Text, timezone, len(input.Images), locale, configContext)
 	generateForPrompt := func(nextUserPrompt string) (aiRecognitionGeneration, error) {
 		return generateAIRecognitionObjectForRunner(ctx, model, input, systemPrompt, nextUserPrompt)
@@ -136,7 +136,7 @@ func (goaiRecognitionRunner) recognizeSingle(
 			return aiRecognizeResponse{}, &aiRecognitionRunError{cause: err, diagnostics: diagnostics}
 		}
 	}
-	return finalizeAIRecognitionGeneration(settings, input, configContext, systemPrompt, userPrompt, generation, todayDateOnly(time.Now().UTC(), timezone), nil, generateForPrompt)
+	return finalizeAIRecognitionGeneration(settings, input, locale, configContext, systemPrompt, userPrompt, generation, todayDateOnly(time.Now().UTC(), timezone), nil, generateForPrompt)
 }
 
 func (goaiRecognitionRunner) Stream(
@@ -257,7 +257,7 @@ func (goaiRecognitionRunner) streamSingle(
 	if err != nil {
 		return aiRecognizeResponse{}, err
 	}
-	systemPrompt := buildAIRecognitionSystemPrompt()
+	systemPrompt := buildAIRecognitionSystemPrompt(locale)
 	userPrompt := buildAIRecognitionUserPrompt(input.Text, timezone, len(input.Images), locale, configContext)
 	if err := sink.Progress(aiRecognitionStreamStageModelStart); err != nil {
 		return aiRecognizeResponse{}, err
@@ -281,14 +281,14 @@ func (goaiRecognitionRunner) streamSingle(
 			return aiRecognizeResponse{}, &aiRecognitionRunError{cause: err, diagnostics: diagnostics}
 		}
 	}
-	response, err := finalizeAIRecognitionGeneration(settings, input, configContext, systemPrompt, userPrompt, generation, todayDateOnly(time.Now().UTC(), timezone), sink.Progress, generateForPrompt)
+	response, err := finalizeAIRecognitionGeneration(settings, input, locale, configContext, systemPrompt, userPrompt, generation, todayDateOnly(time.Now().UTC(), timezone), sink.Progress, generateForPrompt)
 	if err != nil {
 		return aiRecognizeResponse{}, err
 	}
 	return response, nil
 }
 
-func finalizeAIRecognitionGeneration(settings aiRecognitionSettings, input aiRecognitionInput, configContext aiRecognitionConfigContext, systemPrompt string, userPrompt string, generation aiRecognitionGeneration, currentDate string, progress func(string) error, generateForPrompt func(string) (aiRecognitionGeneration, error)) (aiRecognizeResponse, error) {
+func finalizeAIRecognitionGeneration(settings aiRecognitionSettings, input aiRecognitionInput, locale appLocale, configContext aiRecognitionConfigContext, systemPrompt string, userPrompt string, generation aiRecognitionGeneration, currentDate string, progress func(string) error, generateForPrompt func(string) (aiRecognitionGeneration, error)) (aiRecognizeResponse, error) {
 	if progress != nil {
 		if err := progress(aiRecognitionStreamStageValidating); err != nil {
 			return aiRecognizeResponse{}, err
@@ -301,7 +301,7 @@ func finalizeAIRecognitionGeneration(settings aiRecognitionSettings, input aiRec
 	}
 	missingNames := missingDescribableAINoteNames(response.Subscriptions)
 	if len(missingNames) > 0 {
-		repairPrompt := buildAIRecognitionRepairUserPrompt(userPrompt, generation.result.Object, missingNames)
+		repairPrompt := buildAIRecognitionRepairUserPrompt(userPrompt, generation.result.Object, missingNames, locale)
 		if repairedGeneration, repairErr := generateForPrompt(repairPrompt); repairErr == nil {
 			repairDiagnostics := buildAIRecognitionDiagnosticsForGeneration(settings, input, systemPrompt, repairPrompt, repairedGeneration)
 			if repairedResponse, normalizeErr := normalizeAIGeneratedRecognizeResponse(repairedGeneration.result.Object, settings.ProviderType, settings.TransportProtocol, settings.Model, repairDiagnostics, configContext, currentDate); normalizeErr == nil {

@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   previewPrepared: vi.fn(),
   resetImportPreview: vi.fn(),
   handleApply: vi.fn(),
+  importPreviewPanel: vi.fn(),
   previewState: {
     prepared: null as PreparedImport | null,
     preview: null as ImportPreviewResponse | null,
@@ -51,7 +52,10 @@ vi.mock("@/modules/import-export/application/use-import-preview-apply", () => ({
 }));
 
 vi.mock("@/components/import-preview-panel", () => ({
-  ImportPreviewPanel: () => <div data-testid="import-preview-panel" />,
+  ImportPreviewPanel: (props: { showImportOptions?: boolean }) => {
+    mocks.importPreviewPanel(props);
+    return <div data-testid="import-preview-panel" />;
+  },
 }));
 
 vi.mock("@/components/ui/virtualized-list", () => ({
@@ -96,6 +100,7 @@ describe("AIRecognizeSubscriptionDialog preview gating", () => {
     mocks.previewPrepared.mockReset();
     mocks.resetImportPreview.mockReset();
     mocks.handleApply.mockReset();
+    mocks.importPreviewPanel.mockReset();
     mocks.previewState.prepared = null;
     mocks.previewState.preview = null;
     mocks.nextPreview = makePreview();
@@ -171,5 +176,22 @@ describe("AIRecognizeSubscriptionDialog preview gating", () => {
 
     expect(await screen.findByRole("button", { name: "确认添加" })).toBeDisabled();
     expect(mocks.handleApply).not.toHaveBeenCalled();
+  });
+
+  it("AI 识别预览隐藏通用导入设置并静默使用 skip 冲突策略", async () => {
+    const user = userEvent.setup();
+    mocks.recognizeSubscriptionsStream.mockResolvedValue(makeResponse([makeDraft()]));
+    renderDialog();
+
+    await user.type(screen.getByPlaceholderText("粘贴记事本、备忘录或从 Excel 复制出的订阅列表..."), "apple 50刀 1年");
+    await user.click(screen.getByRole("button", { name: "生成订阅草稿" }));
+    await screen.findByText("Apple Music");
+    await user.click(screen.getByRole("button", { name: "生成导入预览" }));
+
+    expect(await screen.findByTestId("import-preview-panel")).toBeInTheDocument();
+    const previewCall = mocks.previewPrepared.mock.calls[0];
+    expect(previewCall?.[1]).toBe("skip");
+    expect(previewCall?.[2]).toBeInstanceOf(AbortSignal);
+    expect(mocks.importPreviewPanel).toHaveBeenLastCalledWith(expect.objectContaining({ showImportOptions: false }));
   });
 });

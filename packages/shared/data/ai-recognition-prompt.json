@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-06.service-description-v6",
+  "version": "2026-11-06.service-description-v7",
   "schemaName": "renewlet_ai_subscription_recognition",
   "system": [
     "Extract subscriptions from invoices, receipts, tables, text, images.",
@@ -24,10 +24,24 @@
     "status is active, trial, expired, paused, cancelled, or null. Do not default to active: payment proves payment, not access. Use null plus AI_WARNING_STATUS_UNCERTAIN when status evidence is absent; fixed-term status is resolved by the runtime from its purchase date and term.",
     "Reuse matching provided category/payment options; unknown values are suggestions requiring confirmation before import.",
     "Prefer existing tags; otherwise suggest 0-3 stable labels supported by input. Never use price, date, plan, region, provider, or payment as tags.",
-    "Generated user-facing metadata follows the user locale; source=input text and existing labels/tags stay unchanged.",
+    "Generated user-facing metadata follows the user locale and the request's authoritative Output language directive; source=suggested notes.value must use that language and must never fall back to English. source=input text and existing labels/tags stay unchanged.",
     "For an explicit merchant note or visible description use source=input. For a known service/product/merchant, source=suggested MUST contain a non-empty neutral description; never infer use from plan, specs, tags, or keywords. Keep price, plan, region, specs, dates, duration, promotion, and AI/import commentary out of notes. Use source=none/value=null only when identity is ambiguous. Examples: DMIT provides VPS and cloud hosting; YouTube is a video and streaming platform.",
     "Warnings use stable codes: AI_WARNING_PRICE_UNCERTAIN, AI_WARNING_CURRENCY_UNCERTAIN, AI_WARNING_DATE_UNCERTAIN, AI_WARNING_CYCLE_UNCERTAIN, AI_WARNING_STATUS_UNCERTAIN, AI_WARNING_CATEGORY_UNCERTAIN, AI_WARNING_PAYMENT_METHOD_UNCERTAIN, AI_WARNING_CONFIG_SUGGESTED, AI_WARNING_LOW_CONFIDENCE."
   ],
+  "outputLanguages": {
+    "zh-CN": {
+      "label": "Simplified Chinese (简体中文)",
+      "nativeInstruction": "生成的 notes.value（source=suggested）必须使用简体中文；不要因为服务名称或官网是英文就回退到英文。"
+    },
+    "en-US": {
+      "label": "English (US)",
+      "nativeInstruction": "Generate notes.value (source=suggested) in English; do not switch to another language because the service name or website uses a different language."
+    },
+    "ru-RU": {
+      "label": "Russian (русский язык)",
+      "nativeInstruction": "Поле notes.value (source=suggested) должно быть написано на русском языке; не переходи на английский из-за названия сервиса или сайта."
+    }
+  },
   "examples": [
     {
       "input": "DMIT 159.88 USD · purchased 2026-01-06 · valid for 2 years",

@@ -44,6 +44,8 @@ func TestAIRecognitionPromptUsesSharedJSONContract(t *testing.T) {
 		"Runtime context:",
 		"- Attached image count: 2",
 		"- User locale: zh-CN",
+		"Output language (authoritative):",
+		"生成的 notes.value（source=suggested）必须使用简体中文",
 		"User context:",
 		"Task:",
 		"<<<renewlet-user-input",
@@ -94,6 +96,9 @@ func TestAIRecognitionPromptUsesSharedJSONContract(t *testing.T) {
 		if !strings.Contains(russianPrompt, want) {
 			t.Fatalf("Russian user prompt missing %q:\n%s", want, russianPrompt)
 		}
+	}
+	if !strings.Contains(russianPrompt, "Поле notes.value (source=suggested) должно быть написано на русском языке") {
+		t.Fatalf("Russian prompt missing locale-specific notes language rule:\n%s", russianPrompt)
 	}
 }
 

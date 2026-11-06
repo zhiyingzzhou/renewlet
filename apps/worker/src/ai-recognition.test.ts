@@ -386,6 +386,8 @@ describe("Cloudflare AI recognition", () => {
 
     expect(response.status).toBe(200);
     expect(body.diagnostics.prompt.user.value).toContain("- User locale: en-US");
+    expect(body.diagnostics.prompt.user.value).toContain("Generate notes.value (source=suggested) in English");
+    expect(body.diagnostics.prompt.system.value).toContain("Generated user-facing metadata must use English (US)");
     expect(body.diagnostics.prompt.system.value).toContain("Generated user-facing metadata follows the user locale");
     expect(body.diagnostics.prompt.system.value).toContain("source=input text and existing labels/tags stay unchanged");
   });
@@ -428,6 +430,8 @@ describe("Cloudflare AI recognition", () => {
 
     expect(response.status).toBe(200);
     expect(body.diagnostics.prompt.user.value).toContain("- User locale: ru-RU");
+    expect(body.diagnostics.prompt.user.value).toContain("Поле notes.value (source=suggested) должно быть написано на русском языке");
+    expect(body.diagnostics.prompt.system.value).toContain("Generated user-facing metadata must use Russian (русский язык)");
     expect(body.diagnostics.prompt.system.value).toContain("Generated user-facing metadata follows the user locale");
     expect(body.diagnostics.prompt.system.value).toContain("source=input text and existing labels/tags stay unchanged");
   });
