@@ -22,7 +22,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { colorWithAlpha } from '@/lib/color';
-import { Calendar, MoreHorizontal, CalendarClock, Bell, CreditCard, CalendarPlus, Copy, Eye, EyeOff, Gauge, Pencil, Pin, PinOff, RotateCw, Trash2 } from 'lucide-react';
+import { Wallet, Calendar, MoreHorizontal, CalendarClock, Bell, CreditCard, CalendarPlus, Copy, Eye, EyeOff, Gauge, Pencil, Pin, PinOff, RotateCw, Trash2 } from 'lucide-react';
 import {
   daysBetweenDateOnly,
   type DateOnly,
@@ -52,7 +52,7 @@ import {
 import { useI18n } from '@/i18n/I18nProvider';
 import { SubscriptionLogo } from '@/components/subscription-logo';
 import { SubscriptionStatusBadge } from '@/components/subscription-status-badge';
-import { formatCompactCurrencyAmount } from '@/lib/currency';
+import { formatCurrency as formatPreciseCurrency, formatCompactCurrencyAmount } from '@/lib/currency';
 import {
   formatBillingCycleLabel,
   isOneTimeBuyout,
@@ -316,6 +316,15 @@ function SubscriptionCardComponent({
           text: paymentMethodLabel,
           tone: "muted" as const,
           truncate: true,
+        }]
+      : []),
+    ...(subscription.balance !== undefined && subscription.balanceCurrency
+      ? [{
+          key: "balance",
+          icon: <Wallet className="h-3.5 w-3.5 shrink-0" />,
+          text: `${t("subscription.field.balance")} ${formatPreciseCurrency(subscription.balance, subscription.balanceCurrency, locale, 6)}`,
+          tone: "muted" as const,
+          tabular: true,
         }]
       : []),
     ...(costSharingSummary.enabled

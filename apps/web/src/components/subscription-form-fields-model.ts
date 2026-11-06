@@ -13,6 +13,8 @@ export interface SubscriptionFormFieldsProps {
   setFormData: Dispatch<SetStateAction<SubscriptionFormState>>;
   /** 由表单宿主统一生成，字段组件不能重建货币列表，否则会绕开设置页货币管理顺序。 */
   currencyOptions: SearchableSelectOption[];
+  balanceCurrencyOptions: SearchableSelectOption[];
+  hasStoredBalance?: boolean | undefined;
   availableTags?: readonly string[] | undefined;
   showLogoField?: boolean | undefined;
   onLogoUploadStatusChange: (status: LogoUploadStatus) => void;
@@ -38,6 +40,8 @@ export const errorFieldByFormKey: Partial<Record<keyof SubscriptionFormState, Su
   name: "name",
   price: "price",
   currency: "currency",
+  balance: "balance",
+  balanceCurrency: "balanceCurrency",
   billingCycle: "billingCycle",
   customDays: "customDays",
   oneTimeMode: "oneTimeTerm",
@@ -58,6 +62,7 @@ const structuralErrorFieldsByFormKey: Partial<Record<keyof SubscriptionFormState
   billingCycle: ["billingCycle", "dates", "customDays", "oneTimeTerm", "reminderDays", "costSharing"],
   oneTimeMode: ["dates", "oneTimeTerm", "reminderDays", "costSharing"],
   autoCalculate: ["dates"],
+  balanceEnabled: ["balance", "balanceCurrency"],
 };
 
 export function getErrorFieldsToClearForFormChange(

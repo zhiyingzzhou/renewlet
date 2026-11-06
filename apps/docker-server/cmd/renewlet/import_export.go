@@ -50,34 +50,36 @@ type importPayload struct {
 }
 
 type importSubscription struct {
-	Name                         string                 `json:"name"`
-	Logo                         *string                `json:"logo,omitempty"`
-	Price                        string                 `json:"price"`
-	Currency                     string                 `json:"currency"`
-	BillingCycle                 string                 `json:"billingCycle"`
-	CustomDays                   *int                   `json:"customDays,omitempty"`
-	CustomCycleUnit              *string                `json:"customCycleUnit,omitempty"`
-	OneTimeTermCount             *int                   `json:"oneTimeTermCount,omitempty"`
-	OneTimeTermUnit              *string                `json:"oneTimeTermUnit,omitempty"`
-	Category                     string                 `json:"category"`
-	Status                       string                 `json:"status"`
-	Pinned                       bool                   `json:"pinned"`
-	PublicHidden                 bool                   `json:"publicHidden"`
-	PaymentMethod                *string                `json:"paymentMethod,omitempty"`
-	StartDate                    *string                `json:"startDate"`
-	NextBillingDate              string                 `json:"nextBillingDate"`
-	AutoRenew                    bool                   `json:"autoRenew"`
-	AutoCalculateNextBillingDate bool                   `json:"autoCalculateNextBillingDate"`
-	TrialEndDate                 *string                `json:"trialEndDate,omitempty"`
-	Website                      *string                `json:"website,omitempty"`
-	Notes                        *string                `json:"notes,omitempty"`
-	Tags                         []string               `json:"tags,omitempty"`
-	ReminderDays                 int                    `json:"reminderDays"`
-	RepeatReminderEnabled        bool                   `json:"repeatReminderEnabled"`
-	RepeatReminderInterval       string                 `json:"repeatReminderInterval"`
-	RepeatReminderWindow         string                 `json:"repeatReminderWindow"`
-	CostSharing                  map[string]interface{} `json:"costSharing,omitempty"`
-	Extra                        map[string]interface{} `json:"extra"`
+	Balance                      optionalJSONField[string] `json:"balance"`
+	BalanceCurrency              optionalJSONField[string] `json:"balanceCurrency"`
+	Name                         string                    `json:"name"`
+	Logo                         *string                   `json:"logo,omitempty"`
+	Price                        string                    `json:"price"`
+	Currency                     string                    `json:"currency"`
+	BillingCycle                 string                    `json:"billingCycle"`
+	CustomDays                   *int                      `json:"customDays,omitempty"`
+	CustomCycleUnit              *string                   `json:"customCycleUnit,omitempty"`
+	OneTimeTermCount             *int                      `json:"oneTimeTermCount,omitempty"`
+	OneTimeTermUnit              *string                   `json:"oneTimeTermUnit,omitempty"`
+	Category                     string                    `json:"category"`
+	Status                       string                    `json:"status"`
+	Pinned                       bool                      `json:"pinned"`
+	PublicHidden                 bool                      `json:"publicHidden"`
+	PaymentMethod                *string                   `json:"paymentMethod,omitempty"`
+	StartDate                    *string                   `json:"startDate"`
+	NextBillingDate              string                    `json:"nextBillingDate"`
+	AutoRenew                    bool                      `json:"autoRenew"`
+	AutoCalculateNextBillingDate bool                      `json:"autoCalculateNextBillingDate"`
+	TrialEndDate                 *string                   `json:"trialEndDate,omitempty"`
+	Website                      *string                   `json:"website,omitempty"`
+	Notes                        *string                   `json:"notes,omitempty"`
+	Tags                         []string                  `json:"tags,omitempty"`
+	ReminderDays                 int                       `json:"reminderDays"`
+	RepeatReminderEnabled        bool                      `json:"repeatReminderEnabled"`
+	RepeatReminderInterval       string                    `json:"repeatReminderInterval"`
+	RepeatReminderWindow         string                    `json:"repeatReminderWindow"`
+	CostSharing                  map[string]interface{}    `json:"costSharing,omitempty"`
+	Extra                        map[string]interface{}    `json:"extra"`
 }
 
 type importPreviewResponse struct {
@@ -390,6 +392,9 @@ func applyImportPayload(app core.App, user *core.Record, payload importPayload, 
 }
 
 func validateImportSubscription(app core.App, user *core.Record, subscription importSubscription) error {
+	if err := validateSubscriptionBalanceWrite(subscription.Balance, subscription.BalanceCurrency); err != nil {
+		return err
+	}
 	collection, err := app.FindCollectionByNameOrId("subscriptions")
 	if err != nil {
 		return err
@@ -410,6 +415,9 @@ func setImportSubscriptionRecord(record *core.Record, userID string, subscriptio
 	record.Set("user", userID)
 	record.Set("name", subscription.Name)
 	record.Set("logo", optionalString(subscription.Logo))
+	// replace 是完整快照；缺席余额必须清空旧值，不能继承目标账号的资金记录。
+	record.Set("balance", subscription.Balance.Value)
+	record.Set("balanceCurrency", subscription.BalanceCurrency.Value)
 	record.Set("price", subscription.Price)
 	record.Set("currency", subscription.Currency)
 	record.Set("billingCycle", subscription.BillingCycle)

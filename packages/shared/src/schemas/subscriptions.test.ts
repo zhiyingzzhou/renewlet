@@ -5,6 +5,7 @@ import {
   apiSubscriptionCollectionItemSchema,
   apiSubscriptionSchema,
   subscriptionCreateBodySchema,
+  subscriptionUpdateBodySchema,
   subscriptionRenewBodySchema,
   subscriptionsAnalyticsPayloadSchema,
   subscriptionsCalendarPayloadSchema,
@@ -518,5 +519,33 @@ describe("subscription custom cycle write contract", () => {
       customDays: 45,
       customCycleUnit: "day",
     }).success).toBe(true);
+  });
+});
+
+
+describe("optional account balance contract", () => {
+  it.each([{}, { balance: null, balanceCurrency: null }, { balance: "0", balanceCurrency: "USD" },
+    { balance: "0.000001", balanceCurrency: "EUR" }, { balance: "1000000000", balanceCurrency: "CNY" }])(
+    "accepts paired write %j", (fields) => {
+      expect(subscriptionCreateBodySchema.safeParse({ ...recurringBody, ...fields }).success).toBe(true);
+      expect(subscriptionUpdateBodySchema.safeParse({ pinned: true, ...fields }).success).toBe(true);
+    },
+  );
+  it.each([
+    { balance: "0" }, { balanceCurrency: "USD" }, { balance: null }, { balanceCurrency: null },
+    { balance: "0", balanceCurrency: null }, { balance: null, balanceCurrency: "USD" },
+    ...[0, "", "-1", "1000000000.000001", "0.0000001", "1e3", {}, false].map((balance) => ({ balance, balanceCurrency: "USD" })),
+    { balance: "1", balanceCurrency: "usd" },
+  ])("rejects invalid write %j", (fields) => {
+    expect(subscriptionCreateBodySchema.safeParse({ ...recurringBody, ...fields }).success).toBe(false);
+    expect(subscriptionUpdateBodySchema.safeParse({ pinned: true, ...fields }).success).toBe(false);
+  });
+  it("requires paired optional values in collection and detail responses", () => {
+    for (const [schema, response] of [[apiSubscriptionCollectionItemSchema, recurringCollectionItem], [apiSubscriptionSchema, recurringResponse]] as const) {
+      expect(schema.safeParse(response).success).toBe(true);
+      expect(schema.parse({ ...response, balance: "0", balanceCurrency: "USD" })).toMatchObject({ balance: "0", balanceCurrency: "USD" });
+      expect(schema.safeParse({ ...response, balance: "0" }).success).toBe(false);
+      expect(schema.safeParse({ ...response, balance: null, balanceCurrency: null }).success).toBe(false);
+    }
   });
 });

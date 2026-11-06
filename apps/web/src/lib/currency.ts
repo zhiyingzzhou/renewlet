@@ -9,18 +9,18 @@ import { DEFAULT_LOCALE } from "@/i18n/locales";
 import { getIntlCurrencyNarrowSymbol } from "@/lib/currency-data";
 import { moneyToNumber } from "@renewlet/shared/money";
 
-// 走势无障碍摘要会连续格式化大量同语言金额；只复用一个 Intl 实例，不保存金额或账号数据。
-let numberFormatter: { locale: string; value: Intl.NumberFormat } | undefined;
+// 同语言/精度的价格和余额共享 Intl 实例，缓存不持有金额或账号数据。
+const numberFormatters = new Map<number, { locale: string; value: Intl.NumberFormat }>();
 
 /** currency 来自用户配置和导入数据，非法值只能降级展示，不能让统计页崩溃。 */
-export function formatCurrency(amount: number | string, currency: string, locale = DEFAULT_LOCALE): string {
+export function formatCurrency(amount: number | string, currency: string, locale = DEFAULT_LOCALE, maximumFractionDigits = 2): string {
   const currencyCode = normalizeCurrencyCode(currency);
-  return `${formatCurrencySymbolAmount(amount, currencyCode, locale)} ${currencyCode}`;
+  return `${formatCurrencySymbolAmount(amount, currencyCode, locale, maximumFractionDigits)} ${currencyCode}`;
 }
 
-export function formatCurrencySymbolAmount(amount: number | string, currency: string, locale = DEFAULT_LOCALE): string {
+export function formatCurrencySymbolAmount(amount: number | string, currency: string, locale = DEFAULT_LOCALE, maximumFractionDigits = 2): string {
   const numericAmount = moneyToNumber(amount);
-  const formattedAmount = formatCurrencyNumber(numericAmount, locale);
+  const formattedAmount = formatCurrencyNumber(numericAmount, locale, maximumFractionDigits);
   const prefix = getCurrencyAmountPrefix(currency, locale);
   // 金额前缀只取窄符号；ISO code 由 `formatCurrency` 或相邻货币选择器承担，避免恢复 `US$`/`AU$` 这类地区前缀。
   return prefix ? `${prefix}${formattedAmount}` : formattedAmount;
@@ -46,19 +46,16 @@ function normalizeCurrencyCode(currency: string): string {
   return currency.trim().toUpperCase() || currency;
 }
 
-function formatCurrencyNumber(amount: number, locale: string): string {
+function formatCurrencyNumber(amount: number, locale: string, maximumFractionDigits: number): string {
+  const precision = Math.max(0, Math.min(6, Math.trunc(maximumFractionDigits)));
   try {
-    if (numberFormatter?.locale !== locale) {
-      numberFormatter = {
-        locale,
-        value: new Intl.NumberFormat(locale, {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2,
-        }),
-      };
+    let formatter = numberFormatters.get(precision);
+    if (formatter?.locale !== locale) {
+      formatter = { locale, value: new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: precision }) };
+      numberFormatters.set(precision, formatter);
     }
-    return numberFormatter.value.format(amount);
+    return formatter.value.format(amount);
   } catch {
-    return Number.isInteger(amount) ? amount.toFixed(0) : amount.toFixed(2);
+    return Number.isInteger(amount) ? amount.toFixed(0) : amount.toFixed(precision);
   }
 }

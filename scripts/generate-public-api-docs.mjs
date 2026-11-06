@@ -24,7 +24,7 @@ const markdownPath = path.join(rootDir, "docs/public-api.md");
 const goRoutesPath = path.join(rootDir, "apps/docker-server/cmd/renewlet/routes.go");
 const workerRoutesPath = path.join(rootDir, "apps/worker/src/index.ts");
 const publicApiTag = "Public API";
-const publicApiMoneyPropertyNames = new Set(["price", "customAmount"]);
+const publicApiMoneyPropertyNames = new Set(["price", "balance", "customAmount"]);
 const publicApiDateOnlyPropertyNames = new Set(["joinedDate"]);
 const allowedEmptyComponentSchemaPaths = new Set([
   "components.schemas.PublicApiErrorResponse.properties.error.properties.details",

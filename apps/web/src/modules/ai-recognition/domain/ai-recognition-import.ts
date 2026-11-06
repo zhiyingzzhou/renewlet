@@ -87,6 +87,8 @@ function buildAIImportSubscription(item: AIImportDraft, state: AIImportBuildStat
     logo: submission.logo ?? null,
     price: submission.price,
     currency: submission.currency,
+    balance: submission.balance,
+    balanceCurrency: submission.balanceCurrency,
     billingCycle: submission.billingCycle,
     customDays: submission.billingCycle === "custom" ? submission.customDays : null,
     customCycleUnit: submission.billingCycle === "custom" ? submission.customCycleUnit : null,

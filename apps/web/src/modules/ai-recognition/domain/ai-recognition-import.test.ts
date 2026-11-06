@@ -77,6 +77,14 @@ describe("AI recognition import mapping", () => {
     expect(prepared.assets).toEqual([]);
   });
 
+  it("only includes balances explicitly entered in the manual editor", () => {
+    expect(buildPreparedImportFromAIDrafts([item()], context).payload.subscriptions[0]?.balance).toBeUndefined();
+    const subscription = buildPreparedImportFromAIDrafts([item(draft(), {
+      balanceEnabled: true, balance: "0.000001", balanceCurrency: "EUR",
+    })], context).payload.subscriptions[0];
+    expect(subscription).toMatchObject({ balance: "0.000001", balanceCurrency: "EUR" });
+  });
+
   it("keeps the immutable AI trial date outside the editable form state", () => {
     const subscription = buildPreparedImportFromAIDrafts([item(draft({
       status: "trial",

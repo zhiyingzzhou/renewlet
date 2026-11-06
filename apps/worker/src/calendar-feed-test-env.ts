@@ -121,6 +121,8 @@ export function subscriptionRow(
     name,
     logo: null,
     price: "12.5",
+    balance: null,
+    balance_currency: null,
     currency: "USD",
     billing_cycle: billingCycle,
     custom_days: null,

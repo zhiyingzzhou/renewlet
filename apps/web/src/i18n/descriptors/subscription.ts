@@ -2,6 +2,16 @@
 import { msg } from "@lingui/core/macro";
 
 export const messages = [
+  msg({ id: "subscription.balanceEnabled", message: "记录账户余额" }),
+  msg({ id: "subscription.balanceDescription", message: "手动记录预付余额，不会自动扣减或计入支出。" }),
+  msg({ id: "subscription.balanceRemoveHint", message: "保存后将移除已记录的余额。" }),
+  msg({ id: "subscription.field.balance", message: "账户余额" }),
+  msg({ id: "subscription.field.balanceCurrency", message: "余额币种" }),
+  msg({ id: "subscription.validation.balanceRequired", message: "请输入账户余额，余额为零时请输入 0。" }),
+  msg({ id: "subscription.validation.balanceInvalid", message: "请输入 0 至 10 亿之间的金额，最多保留六位小数。" }),
+  msg({ id: "subscription.validation.balanceCurrencyInvalid", message: "请选择余额币种。" }),
+  msg({ id: "subscription.saveError", message: "未能确认保存结果。输入已保留，请检查连接并核对订阅后再试。" }),
+
   msg({ id: "subscription.add", message: "添加订阅" }),
   msg({ id: "subscription.addToCalendar", message: "添加到日历" }),
   msg({ id: "subscription.addToCalendarTitle", message: "添加到日历" }),
@@ -430,7 +440,7 @@ export const messages = [
   msg({ id: "import.loading", message: "正在解析和生成预览..." }),
   msg({ id: "import.wallosUser", message: "Wallos 用户" }),
   msg({ id: "import.conflictTitle", message: "已有同源订阅" }),
-  msg({ id: "import.conflictDescription", message: "命中相同导入来源和来源 ID 时，可以替换当前记录或跳过。" }),
+  msg({ id: "import.conflictDescription", message: "命中相同导入来源和来源 ID 时，可以替换当前记录或跳过。替换会覆盖完整记录，来源未记录余额时会清空现有余额。" }),
   msg({ id: "import.conflictMode", message: "冲突处理" }),
   msg({ id: "import.conflictSkip", message: "跳过已有记录" }),
   msg({ id: "import.conflictReplace", message: "替换已有记录" }),

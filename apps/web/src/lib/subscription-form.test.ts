@@ -537,3 +537,12 @@ describe("subscription-form", () => {
     expect(toSubscriptionFormSubmission(form)?.costSharing).toEqual(form.costSharing);
   });
 });
+
+it("validates only enabled balance and distinguishes zero from empty", () => {
+  const form = createSubscriptionFormState({ name: "Prepaid", price: "15", nextBillingDate: assertDateOnly("2027-01-01"), balance: "invalid", balanceCurrency: "USD" });
+  expect(toSubscriptionFormSubmission(form)?.balance).toBeUndefined();
+  expect(getSubscriptionFormValidationIssues({ ...form, balanceEnabled: true, balance: "" })).toEqual([
+    expect.objectContaining({ field: "balance", code: "balanceRequired" }),
+  ]);
+  expect(toSubscriptionFormSubmission({ ...form, balanceEnabled: true, balance: "0" })).toMatchObject({ balance: "0", balanceCurrency: "USD" });
+});

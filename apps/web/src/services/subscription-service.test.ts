@@ -344,3 +344,13 @@ describe("subscription service API calls", () => {
     expect(mocks.apiFetch.mock.calls[1]?.[2]).toMatchObject({ method: "DELETE" });
   });
 });
+
+it("maps zero balance and emits paired clearing only for full form writes", async () => {
+  const subscription = fromApiSubscription({ ...apiSubscription, balance: "0", balanceCurrency: "EUR" });
+  expect(subscription).toMatchObject({ balance: "0", balanceCurrency: "EUR" });
+  expect(toSubscriptionUpdatePayload(subscription)).toMatchObject({ balance: "0", balanceCurrency: "EUR" });
+  expect(toSubscriptionUpdatePayload({ ...subscription, balance: undefined, balanceCurrency: undefined })).toMatchObject({ balance: null, balanceCurrency: null });
+  mocks.apiFetch.mockResolvedValueOnce({ subscription: apiSubscription });
+  await subscriptionService.patch(subscription.id, { pinned: true });
+  expect(mocks.apiFetch.mock.lastCall?.[2]?.body).toBe(JSON.stringify({ pinned: true }));
+});

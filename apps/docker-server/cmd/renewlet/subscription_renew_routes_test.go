@@ -22,6 +22,8 @@ func TestSubscriptionRenewRouteAdvancesManualSubscription(t *testing.T) {
 	expectedNextBillingDate := addDateOnly(today, 7)
 	record := createRouteTestSubscription(t, app, user.Id, map[string]interface{}{
 		"name":                         "Manual Renew",
+		"balance":                      "0",
+		"balanceCurrency":              "JPY",
 		"status":                       "expired",
 		"billingCycle":                 "weekly",
 		"startDate":                    originalStartDate,
@@ -55,6 +57,9 @@ func TestSubscriptionRenewRouteAdvancesManualSubscription(t *testing.T) {
 	}
 	if subscription["price"] != "15.5" || subscription["currency"] != "EUR" {
 		t.Fatalf("expected continue renewal to update price/currency, got %#v", subscription)
+	}
+	if subscription["balance"] != "0" || subscription["balanceCurrency"] != "JPY" {
+		t.Fatalf("renewal changed balance: %#v", subscription)
 	}
 	if subscription["autoRenew"] != false {
 		t.Fatalf("expected manual renewal to keep autoRenew=false, got %#v", subscription["autoRenew"])

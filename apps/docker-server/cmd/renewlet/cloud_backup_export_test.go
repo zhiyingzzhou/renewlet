@@ -361,7 +361,7 @@ func TestCloudBackupExportTypedPayloadPreservesOmissionAndMoney(t *testing.T) {
 		t.Fatal(err)
 	}
 	user, _ := createRouteTestUser(t, app, "export-typed")
-	createRouteTestSubscription(t, app, user.Id, map[string]interface{}{"price": "123456789.012345"})
+	createRouteTestSubscription(t, app, user.Id, map[string]interface{}{"price": "123456789.012345", "balance": "0.000001", "balanceCurrency": "EUR"})
 	bundle, err := buildCloudBackupExportBundle(app, user, time.Date(2026, 10, 9, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		t.Fatal(err)
@@ -374,6 +374,9 @@ func TestCloudBackupExportTypedPayloadPreservesOmissionAndMoney(t *testing.T) {
 		}
 	}
 	sub := data["subscriptions"].([]interface{})[0].(map[string]interface{})
+	if sub["balance"] != "0.000001" || sub["balanceCurrency"] != "EUR" {
+		t.Fatalf("backup lost balance: %#v", sub)
+	}
 	if sub["price"] != "123456789.012345" {
 		t.Fatalf("money lost precision: %v", sub["price"])
 	}

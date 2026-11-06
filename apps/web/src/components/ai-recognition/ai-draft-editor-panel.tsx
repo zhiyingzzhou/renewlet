@@ -58,6 +58,11 @@ export function AIDraftEditorPanel({
     () => todayDateOnlyInTimeZone(new Date(), settings.timezone),
     [settings.timezone],
   );
+  const balanceCurrencyOptions = useManagedCurrencyOptions({
+    currencies: config.currencies,
+    includeDisabledCurrent: formData.balanceCurrency || formData.currency,
+    locale,
+  });
   const currencyOptions = useManagedCurrencyOptions({
     currencies: config.currencies,
     includeDisabledCurrent: formData.currency,
@@ -160,6 +165,7 @@ export function AIDraftEditorPanel({
           formData={formData}
           setFormData={setFormData}
           currencyOptions={currencyOptions}
+          balanceCurrencyOptions={balanceCurrencyOptions}
           availableTags={availableTags}
           errors={blockingFormErrors}
           pendingStatusConfirmation={statusNeedsConfirmation}

@@ -258,6 +258,9 @@ func normalizeSubscriptionRecordWithApp(app core.App, record *core.Record) error
 }
 
 func normalizeSubscriptionRecordWithSettings(record *core.Record, mirrorSettings appSettings) error {
+	if err := normalizeSubscriptionBalanceRecord(record); err != nil {
+		return err
+	}
 	name := strings.TrimSpace(record.GetString("name"))
 	if name == "" {
 		return errors.New("SUBSCRIPTION_NAME_REQUIRED")

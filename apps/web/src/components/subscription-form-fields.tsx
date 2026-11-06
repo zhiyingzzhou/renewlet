@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { compareDateOnly } from "@/lib/time/date-only";
 import { LogoPicker } from "@/components/logo-picker";
+import { SubscriptionBalanceFields } from "@/components/subscription-balance-fields";
 import { CostSharingFields } from "@/components/subscription-cost-sharing-fields";
 import { SubscriptionFormDateFields } from "@/components/subscription-form-date-fields";
 import { SubscriptionPaymentMethodSelect } from "@/components/subscription-payment-method-select";
@@ -71,6 +72,8 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
   formData,
   setFormData,
   currencyOptions,
+  balanceCurrencyOptions,
+  hasStoredBalance = false,
   availableTags = [],
   showLogoField = true,
   onLogoUploadStatusChange,
@@ -86,6 +89,10 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
 
   const update = useCallback(<K extends keyof SubscriptionFormState>(key: K, value: SubscriptionFormState[K]) => {
     setFormData((prev) => {
+      if (key === "balanceEnabled") {
+        // 同次会话关掉再开恢复输入；仅首次开启从订阅币种取默认值，后续独立维护。
+        return { ...prev, balanceEnabled: Boolean(value), balanceCurrency: prev.balanceCurrency || prev.currency };
+      }
       if (key === "billingCycle") {
         const nextBillingCycle = value as BillingCycle;
         const leavingImplicitBuyoutReminder =
@@ -256,6 +263,15 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
           )}
         </FormField>
       </FormFieldRow>
+
+      <SubscriptionBalanceFields
+        idPrefix={idPrefix}
+        formData={formData}
+        update={update}
+        currencyOptions={balanceCurrencyOptions}
+        hasStoredBalance={hasStoredBalance}
+        errors={errors}
+      />
 
       <FormFieldRow alignAt="sm" rowClassName="sm:grid-cols-2">
         <FormField

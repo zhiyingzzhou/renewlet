@@ -15,7 +15,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 
 interface AddSubscriptionDialogProps {
   /** 提交新增订阅（不包含 id，由后端生成）。 */
-  onAdd: (submission: SubscriptionFormSubmission) => void;
+  onAdd: (submission: SubscriptionFormSubmission) => void | Promise<void>;
   /** 当前用户已有标签建议。 */
   availableTags?: readonly string[] | undefined;
   /** 自定义触发器（不传则使用默认 “+ 新增订阅” 按钮）。 */

@@ -118,6 +118,8 @@ export function buildFromRenewletExport(
       logo: asset || isExportAssetPath(logo) ? null : logo ?? null,
       price: subscription.price,
       currency: subscription.currency,
+      balance: subscription.balance,
+      balanceCurrency: subscription.balanceCurrency,
       billingCycle: subscription.billingCycle,
       customDays: subscription.billingCycle === "custom" ? subscription.customDays : null,
       customCycleUnit: subscription.billingCycle === "custom" ? subscription.customCycleUnit : null,

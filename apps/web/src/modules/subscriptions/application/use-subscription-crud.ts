@@ -25,8 +25,8 @@ import type { SubscriptionRenewBody } from "@renewlet/shared/schemas/subscriptio
 /** CRUD 控制器只保存会话目标与列表快照；完整对象始终来自唯一的详情查询缓存。 */
 export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollectionItem[]) {
   const queryClient = useQueryClient();
-  const { mutate: createSubscription } = useCreateSubscription();
-  const { mutate: updateSubscription } = useUpdateSubscription();
+  const { mutateAsync: createSubscription } = useCreateSubscription();
+  const { mutateAsync: updateSubscription } = useUpdateSubscription();
   const { mutate: patchSubscription } = usePatchSubscription();
   const {
     mutateAsync: renewSubscription,
@@ -82,8 +82,8 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
     void prefetchSubscriptionDetail(queryClient, id);
   }, [queryClient]);
 
-  const handleAddSubscription = useCallback((submission: SubscriptionFormSubmission) => {
-    createSubscription({ ...submission, pinned: false });
+  const handleAddSubscription = useCallback(async (submission: SubscriptionFormSubmission) => {
+    await createSubscription({ ...submission, pinned: false });
   }, [createSubscription]);
 
   const handleDeleteSubscription = useCallback((id: string) => {
@@ -124,14 +124,14 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
     setCloneDialogOpen(true);
   }, [cancelCloneCleanup, subscriptions]);
 
-  const handleSaveSubscription = useCallback((changes: SubscriptionFormSubmission) => {
+  const handleSaveSubscription = useCallback(async (changes: SubscriptionFormSubmission) => {
     if (!editingSubscriptionId) return;
-    updateSubscription({ id: editingSubscriptionId, changes });
+    await updateSubscription({ id: editingSubscriptionId, changes });
   }, [editingSubscriptionId, updateSubscription]);
 
-  const handleSaveClonedSubscription = useCallback((submission: SubscriptionFormSubmission) => {
+  const handleSaveClonedSubscription = useCallback(async (submission: SubscriptionFormSubmission) => {
     if (!cloningQuery.data) return;
-    createSubscription(buildClonedSubscriptionDraft(cloningQuery.data, submission));
+    await createSubscription(buildClonedSubscriptionDraft(cloningQuery.data, submission));
   }, [cloningQuery.data, createSubscription]);
 
   const handleSubmitRenewSubscription = useCallback(async (payload: SubscriptionRenewBody) => {

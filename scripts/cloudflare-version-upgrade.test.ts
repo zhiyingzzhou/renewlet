@@ -467,6 +467,9 @@ for (const fixture of pinnedFixtures) {
         : { action: "skipped", feeds: 0 };
       assert.deepEqual(await prepareCalendarFeedsFor0035(client), expectedFeedAction);
       assert.ok(applyPendingMigrations(client.db) > 0);
+      const balanceRows = client.db.prepare("SELECT balance, balance_currency FROM subscriptions").all();
+      assert.ok(balanceRows.length > 0);
+      assert.ok(balanceRows.every((row) => row["balance"] === null && row["balance_currency"] === null));
       assert.deepEqual(
         await restoreCalendarFeedsAfter0035(client),
         fixture.expectsFeedBackup ? { action: "restored", feeds: 2 } : { action: "skipped", feeds: 0 },
@@ -492,3 +495,32 @@ for (const fixture of pinnedFixtures) {
     }
   });
 }
+
+
+test("0047 adds nullable balance without touching facts, rolls back failure, and retries through the ledger", () => {
+  const client = openFixture("v0.3.21.sql");
+  const name = "0047_subscription_balance.sql";
+  try {
+    const applied = new Set(client.db.prepare("SELECT name FROM d1_migrations").all().map((row) => String(row["name"])));
+    for (const migration of migrationNames()) {
+      if (migration === name) break;
+      if (!applied.has(migration)) applyMigration(client.db, migration);
+    }
+    const facts = historicalFactRows(client.db);
+    // 模拟第二次 ALTER 遇到非预期 schema；第一次 ALTER 和账本必须一同回滚。
+    client.db.exec("ALTER TABLE subscriptions ADD COLUMN balance_currency TEXT");
+    assert.throws(() => applyMigration(client.db, name));
+    assert.equal(client.db.prepare("SELECT name FROM d1_migrations WHERE name = ?").get(name), undefined);
+    assert.ok(!client.db.prepare("PRAGMA table_info(subscriptions)").all().some((row) => row["name"] === "balance"));
+    client.db.exec("ALTER TABLE subscriptions DROP COLUMN balance_currency");
+    assert.equal(applyPendingMigrations(client.db), 1);
+    assert.equal(applyPendingMigrations(client.db), 0);
+    assert.deepEqual(historicalFactRows(client.db), facts);
+    assert.ok(client.db.prepare("SELECT balance, balance_currency FROM subscriptions").all().every((row) => row["balance"] === null && row["balance_currency"] === null));
+    assert.throws(() => client.db.prepare("UPDATE subscriptions SET balance = '0' WHERE id = ?").run(subscriptionId));
+    client.db.prepare("UPDATE subscriptions SET balance = '0', balance_currency = 'EUR' WHERE id = ?").run(subscriptionId);
+    assert.equal(applyPendingMigrations(client.db), 0);
+    assert.equal(client.db.prepare("SELECT balance FROM subscriptions WHERE id = ?").get(subscriptionId)?.["balance"], "0");
+    assert.deepEqual(client.db.prepare("PRAGMA foreign_key_check").all(), []);
+  } finally { client.db.close(); }
+});

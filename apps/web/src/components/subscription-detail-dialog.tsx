@@ -30,7 +30,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSettings } from "@/hooks/use-settings";
 import { useI18n } from "@/i18n/I18nProvider";
 import { cn } from "@/lib/utils";
-import { formatCompactCurrencyAmount } from "@/lib/currency";
+import { formatCurrency as formatPreciseCurrency, formatCompactCurrencyAmount } from "@/lib/currency";
 import type { DateOnly } from "@/lib/time/date-only";
 import {
   formatBillingCycleLabel,
@@ -102,6 +102,7 @@ function resolveDetailLoadingStructure(
   const buyout = preview !== null && isOneTimeBuyout(preview);
   return {
     showCalendarAction: preview !== null && !buyout,
+    showBalance: preview?.balance !== undefined,
     showCostSharing: preview?.costSharing?.enabled === true,
     showDailyAverage: preview !== null && projectSubscriptionDailyCost(preview.price, preview, today) !== null,
     showNextBillingDate: preview !== null && (!buyout || preview.startDate !== null),
@@ -224,6 +225,13 @@ function SubscriptionDetailContent({
               : "subscription.detail.dailyAverage")}>
               <span className="tabular-nums">
                 {formatCompactCurrencyAmount(dailyCost.amount, subscription.currency, locale)}
+              </span>
+            </DetailRow>
+          ) : null}
+          {subscription.balance !== undefined && subscription.balanceCurrency ? (
+            <DetailRow label={t("subscription.field.balance")}>
+              <span className="wrap-break-word tabular-nums">
+                {formatPreciseCurrency(subscription.balance, subscription.balanceCurrency, locale, 6)}
               </span>
             </DetailRow>
           ) : null}

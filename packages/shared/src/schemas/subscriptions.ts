@@ -6,6 +6,7 @@ import {
   costSharingMemberJoinedDatesWithinRange,
 } from "../cost-sharing";
 import { moneyStringSchema } from "../money";
+import { subscriptionBalanceCheck, subscriptionBalanceWriteShape, subscriptionBalanceReadShape } from "./subscription-balance";
 import { apiSuccessResponseSchema } from "./api";
 import { okResponseSchema } from "./common";
 import {
@@ -215,6 +216,7 @@ export function costSharingMemberJoinedDateRangeIsValid(value: {
  * PocketBase schema/hooks、D1 row 转换和前端 domain 类型，不能只改某一个运行面。
  */
 const subscriptionWriteFieldShape = {
+  ...subscriptionBalanceWriteShape,
   name: z.string().trim().min(1).max(120),
   logo: optionalLogoReferenceSchema,
   price: moneyStringSchema,
@@ -256,6 +258,7 @@ const subscriptionCreateBodyShape = {
 
 export const subscriptionCreateBodySchema = z.object(subscriptionCreateBodyShape)
   .strict()
+  .check(subscriptionBalanceCheck)
   .refine(customCycleFieldsAreConsistent, {
     path: ["customCycleUnit"],
     message: "Custom cycle count and unit are required",
@@ -288,6 +291,7 @@ export const subscriptionCreateBodySchema = z.object(subscriptionCreateBodyShape
 export const subscriptionUpdateBodySchema = z.object(subscriptionWriteFieldShape)
   .strict()
   .partial()
+  .check(subscriptionBalanceCheck)
   .refine(customCycleFieldsAreConsistent, {
     path: ["customCycleUnit"],
     message: "Custom cycle count and unit are required",
@@ -324,6 +328,7 @@ export const subscriptionRenewBodySchema = z.object({
   });
 
 const apiSubscriptionCollectionItemShape = {
+  ...subscriptionBalanceReadShape,
   id: z.string(),
   name: z.string(),
   price: moneyStringSchema,
@@ -457,6 +462,7 @@ export const apiSubscriptionCollectionItemSchema = z.union(createSubscriptionCyc
   ...apiSubscriptionCollectionItemShape,
   logo: logoReferenceSchema.optional(),
 })).check(
+  subscriptionBalanceCheck,
   startDateRequirementCheck,
   subscriptionDateOrderCheck,
   subscriptionRenewalFieldsCheck,
@@ -471,6 +477,7 @@ export function createApiSubscriptionSchema(logoSchema: z.ZodType<string>) {
     logo: logoSchema.optional(),
     ...apiSubscriptionDetailShape,
   })).check(
+    subscriptionBalanceCheck,
     startDateRequirementCheck,
     subscriptionDateOrderCheck,
     subscriptionRenewalFieldsCheck,

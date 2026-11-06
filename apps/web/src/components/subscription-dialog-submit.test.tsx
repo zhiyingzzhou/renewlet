@@ -1,5 +1,6 @@
+import { ApiError } from "@/lib/api-client";
 // 订阅弹窗提交测试保护上传中禁止保存、标签 pending 文本提交和一次性购买字段清理。
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { assertDateOnly } from "@/lib/time/date-only";
@@ -235,4 +236,29 @@ describe("SubscriptionDialog submit", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("开启自动计算时需要开始日期");
     expect(onSubmit).not.toHaveBeenCalled();
   });
+});
+
+it("waits for save, blocks duplicate submit and closing, then preserves inputs on failure", async () => {
+  let rejectSave: ((reason: Error) => void) | undefined;
+  const onSubmit = vi.fn(() => new Promise<void>((_resolve, reject) => { rejectSave = reject; }));
+  const onOpenChange = vi.fn();
+  render(<TooltipProvider><SubscriptionDialog mode="create" open loadingPreview={null} onSubmit={onSubmit} onOpenChange={onOpenChange} /></TooltipProvider>);
+  fireEvent.click(screen.getByRole("button", { name: "填充有效订阅" }));
+  const submit = screen.getByRole("button", { name: "添加订阅" });
+  const form = submit.closest("form");
+  if (!form) throw new Error("missing form");
+  fireEvent.submit(form);
+  fireEvent.submit(form);
+  expect(onSubmit).toHaveBeenCalledTimes(1);
+  expect(submit).toBeDisabled();
+  expect(screen.getByRole("button", { name: "取消" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "关闭" })).toBeDisabled();
+  expect(onOpenChange).not.toHaveBeenCalled();
+  await act(async () => { rejectSave?.(new ApiError("Connection lost", 0, undefined, "network")); });
+  expect(screen.getByRole("alert")).toHaveTextContent("未能确认保存结果");
+  expect(submit).toBeEnabled();
+  onSubmit.mockImplementationOnce(async () => undefined);
+  fireEvent.click(submit);
+  await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+  expect(onSubmit).toHaveBeenLastCalledWith(expect.objectContaining({ name: "Aws", price: "15" }));
 });

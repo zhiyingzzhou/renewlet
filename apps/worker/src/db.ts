@@ -76,6 +76,8 @@ export const SUBSCRIPTION_COLUMN_NAMES = [
   "extra_json",
   "created_at",
   "updated_at",
+  "balance",
+  "balance_currency",
 ] as const;
 
 export const SUBSCRIPTION_COLLECTION_COLUMN_NAMES = [
@@ -102,6 +104,8 @@ export const SUBSCRIPTION_COLLECTION_COLUMN_NAMES = [
   "reminder_days",
   "cost_sharing_json",
   "created_at",
+  "balance",
+  "balance_currency",
 ] as const satisfies readonly (keyof SubscriptionCollectionRow)[];
 
 const assetColumnNames = [
@@ -343,6 +347,8 @@ export function toApiSubscriptionCollectionItem(row: SubscriptionCollectionRow):
     name: row.name,
     ...(row.logo ? { logo: row.logo } : {}),
     price: moneyFromUnknown(row.price) ?? "0",
+    ...(row.balance == null ? {} : { balance: row.balance }),
+    ...(row.balance_currency == null ? {} : { balanceCurrency: row.balance_currency }),
     currency: row.currency,
     billingCycle: row.billing_cycle,
     ...(row.custom_days === null ? {} : { customDays: row.custom_days }),
@@ -391,6 +397,8 @@ export function toPublicApiSubscription(row: SubscriptionRow) {
     name: row.name,
     ...(row.logo ? { logo: row.logo } : {}),
     price: moneyFromUnknown(row.price) ?? "0",
+    ...(row.balance == null ? {} : { balance: row.balance }),
+    ...(row.balance_currency == null ? {} : { balanceCurrency: row.balance_currency }),
     currency: row.currency,
     billingCycle: row.billing_cycle,
     ...(row.custom_days === null ? {} : { customDays: row.custom_days }),

@@ -98,6 +98,8 @@ function subscriptionRow(overrides: Partial<SubscriptionRow> = {}): Subscription
     name: "Manual Plan",
     logo: null,
     price: "12",
+    balance: null,
+    balance_currency: null,
     currency: "USD",
     billing_cycle: "monthly",
     custom_days: null,

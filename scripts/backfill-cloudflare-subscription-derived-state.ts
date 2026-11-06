@@ -64,6 +64,8 @@ const subscriptionBackfillRowSchema = z.object({
   name: z.string(),
   logo: z.string().nullable(),
   price: z.string(),
+  balance: z.string().nullable(),
+  balance_currency: z.string().nullable(),
   currency: z.string(),
   billing_cycle: z.string(),
   custom_days: z.number().nullable(),

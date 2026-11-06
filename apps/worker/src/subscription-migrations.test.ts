@@ -50,6 +50,7 @@ describe("Cloudflare D1 subscription migrations", () => {
       });
 
       applyMigration(db, "0035_rebuild_cost_sharing_collection_reminder_schema.sql");
+      applyMigration(db, "0047_subscription_balance.sql");
 
       expect(subscriptionColumnNames(db)).toEqual(expect.arrayContaining([
         "cost_sharing_collection_reminder_enabled",
@@ -81,6 +82,7 @@ describe("Cloudflare D1 subscription migrations", () => {
       applyMigration(db, "0034_cost_sharing_collection_reminders.sql");
 
       applyMigration(db, "0035_rebuild_cost_sharing_collection_reminder_schema.sql");
+      applyMigration(db, "0047_subscription_balance.sql");
 
       expect(subscriptionColumnNames(db)).toEqual(expect.arrayContaining([
         "cost_sharing_collection_reminder_enabled",
@@ -106,6 +108,7 @@ describe("Cloudflare D1 subscription migrations", () => {
         billingCycle: "monthly",
       });
       applyMigration(db, "0035_rebuild_cost_sharing_collection_reminder_schema.sql");
+      applyMigration(db, "0047_subscription_balance.sql");
       applyMigration(db, "0036_subscription_derived_state_v2.sql");
       applyMigration(db, "0039_rebuild_subscription_collection_projections.sql");
 
@@ -148,6 +151,7 @@ describe("Cloudflare D1 subscription migrations", () => {
       });
       applyMigration(db, "0034_cost_sharing_collection_reminders.sql");
       applyMigration(db, "0035_rebuild_cost_sharing_collection_reminder_schema.sql");
+      applyMigration(db, "0047_subscription_balance.sql");
 
       applyMigration(db, "0036_subscription_derived_state_v2.sql");
 
@@ -210,6 +214,7 @@ describe("Cloudflare D1 subscription migrations", () => {
         .run(USER_ID, "sub_migrated", "stale", "stale", timestamp, timestamp);
 
       applyMigrationWithD1ForeignKeys(db, "0035_rebuild_cost_sharing_collection_reminder_schema.sql");
+      applyMigration(db, "0047_subscription_balance.sql");
       expect(readScalar<number>(db, "SELECT COUNT(*) FROM subscription_list_index")).toBe(0);
       expect(readScalar<number>(db, "SELECT COUNT(*) FROM subscription_tags")).toBe(0);
       applyMigration(db, "0036_subscription_derived_state_v2.sql");
@@ -274,6 +279,7 @@ describe("Cloudflare D1 subscription migrations", () => {
       db.prepare("UPDATE subscriptions SET next_billing_date = ? WHERE id = ?").run("2999-09-01", "sub_migrated");
       applyMigration(db, "0034_cost_sharing_collection_reminders.sql");
       applyMigration(db, "0035_rebuild_cost_sharing_collection_reminder_schema.sql");
+      applyMigration(db, "0047_subscription_balance.sql");
       applyMigration(db, "0036_subscription_derived_state_v2.sql");
       insertSubscriptionClone(db, { id: "sub_pinned_active", name: "Pinned Active", pinned: 1, status: "active" });
       insertSubscriptionClone(db, { id: "sub_pinned_inactive", name: "Pinned Inactive", pinned: 1, status: "cancelled" });

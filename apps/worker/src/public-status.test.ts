@@ -227,6 +227,8 @@ function subscriptionRow(overrides: Partial<SubscriptionRow> = {}): Subscription
     name: "Visible Plan",
     logo: null,
     price: "12",
+    balance: null,
+    balance_currency: null,
     currency: "USD",
     billing_cycle: "monthly",
     custom_days: null,
@@ -313,6 +315,14 @@ afterEach(() => {
 });
 
 describe("public status worker handlers", () => {
+  it.each([false, true])("never exposes balance in raw public response, showPrices=%s", async (showPrices) => {
+    const env = createEnv({ pages: [publicPage({ show_prices: Number(showPrices) })],
+      subscriptions: [subscriptionRow({ balance: "98765.4321", balance_currency: "EUR" })] });
+    const response = await readPublicStatus(publicRequest(`/api/public/status/${TOKEN}`), env, TOKEN);
+    const raw = await response.text();
+    expect(response.status).toBe(200);
+    expect(raw).not.toMatch(/balance|98765/);
+  });
   it("manages the private public status URL lifecycle without exposing token as a setting", async () => {
     const env = createEnv();
 

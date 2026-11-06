@@ -109,6 +109,8 @@ function CreateCloneDialogHarness({
     currency: "CNY",
     publicHidden: true,
     notes: "Keep note",
+    balance: "77",
+    balanceCurrency: "USD",
     tags: ["Infra"],
   });
 
@@ -298,4 +300,54 @@ describe("SubscriptionDialog lifecycle", () => {
     expect(await screen.findByDisplayValue("Original SaaS")).toBeInTheDocument();
     expect(screen.queryByDisplayValue("Unsaved SaaS")).not.toBeInTheDocument();
   });
+});
+
+it("initializes zero balance once and preserves edits across detail refreshes", async () => {
+  const user = userEvent.setup();
+  const subscription = makeSubscription({ balance: "0", balanceCurrency: "USD" });
+  const onSubmit = vi.fn();
+  const view = (value: Subscription) => <TooltipProvider><SubscriptionDialog mode="edit" open loadingPreview={null} subscription={value} onSubmit={onSubmit} onOpenChange={vi.fn()} /></TooltipProvider>;
+  const { rerender } = render(view(subscription));
+  expect(screen.getByRole("switch", { name: "记录账户余额" })).toBeChecked();
+  const input = screen.getByLabelText("账户余额");
+  await user.clear(input);
+  await user.type(input, "42.123456");
+  rerender(view({ ...subscription, name: "Background update", balance: "10" }));
+  expect(input).toHaveValue("42.123456");
+  await user.click(screen.getByRole("switch", { name: "记录账户余额" }));
+  expect(screen.getByText("保存后将移除已记录的余额。")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "保存修改" }));
+  expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ name: subscription.name, balance: undefined, balanceCurrency: undefined }));
+});
+
+it("does not copy the source account balance", async () => {
+  const user = userEvent.setup();
+  render(<CreateCloneDialogHarness />);
+  await user.click(screen.getByRole("button", { name: "打开复制弹窗" }));
+  const toggle = screen.getByRole("switch", { name: "记录账户余额" });
+  expect(toggle).not.toBeChecked();
+  await user.click(toggle);
+  expect(screen.getByLabelText("账户余额")).toHaveValue("");
+  expect(screen.getByLabelText("余额币种")).toHaveTextContent("CNY");
+});
+
+it("keeps a disabled balance currency visible and independent when saving", async () => {
+  const user = userEvent.setup();
+  const enabledCurrencies = mocks.config.currencies;
+  mocks.config.currencies = enabledCurrencies.map((currency) => ({ ...currency, enabled: currency.value !== "USD" }));
+  try {
+    const onSubmit = vi.fn();
+    render(<TooltipProvider><SubscriptionDialog mode="edit" open loadingPreview={null}
+      subscription={makeSubscription({ currency: "CNY", balance: "0", balanceCurrency: "USD" })}
+      onSubmit={onSubmit} onOpenChange={vi.fn()} /></TooltipProvider>);
+    const balanceCurrency = screen.getByLabelText("余额币种");
+    expect(balanceCurrency).toHaveTextContent("USD");
+    await user.click(balanceCurrency);
+    expect(screen.getByRole("option", { name: /USD/ })).toHaveAttribute("aria-disabled", "true");
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "保存修改" }));
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ currency: "CNY", balance: "0", balanceCurrency: "USD" }));
+  } finally {
+    mocks.config.currencies = enabledCurrencies;
+  }
 });

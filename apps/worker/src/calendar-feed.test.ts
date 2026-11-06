@@ -45,6 +45,8 @@ function calendarEventSection(ics: string, marker: string): string {
 describe("calendar feed worker handlers", () => {
   it("creates a reusable global feed, returns the URL on status, renders filtered ICS by token, and revokes the URL", async () => {
     const env = await createCalendarFeedTestEnv();
+    env.__state.subscriptions[0]!.balance = "987654321.123456";
+    env.__state.subscriptions[0]!.balance_currency = "EUR";
     const request = authorizedRequest("https://renewlet.example/api/app/calendar-feed", {
       body: "{}",
       headers: { "accept-language": "en-US", "x-forwarded-host": "evil.example", "x-forwarded-proto": "http" },
@@ -75,6 +77,7 @@ describe("calendar feed worker handlers", () => {
     const unfoldedIcs = unfoldIcsText(ics);
     expectCalendarIcsLineEndings(ics);
     expect(unfoldedIcs).toContain("BEGIN:VCALENDAR");
+    expect(unfoldedIcs).not.toMatch(/balance|987654321/i);
     expect(unfoldedIcs).toContain("SUMMARY:Active Plan");
     expect(unfoldedIcs).toContain("SUMMARY:Fixed Term Plan");
     expect(unfoldedIcs).toContain("SUMMARY:Quiet Plan");

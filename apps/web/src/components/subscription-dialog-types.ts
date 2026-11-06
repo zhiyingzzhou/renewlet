@@ -9,7 +9,7 @@ type CreateSubscriptionDialogProps = {
   mode: "create";
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (submission: SubscriptionFormSubmission) => void;
+  onSubmit: (submission: SubscriptionFormSubmission) => void | Promise<void>;
   initialSubscription?: Subscription | null | undefined;
   availableTags?: readonly string[] | undefined;
   trigger?: ReactNode;
@@ -22,7 +22,7 @@ type EditSubscriptionDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   subscription: Subscription | null;
-  onSubmit: (submission: SubscriptionFormSubmission) => void;
+  onSubmit: (submission: SubscriptionFormSubmission) => void | Promise<void>;
   availableTags?: readonly string[] | undefined;
   loading?: boolean | undefined;
   loadingPreview: SubscriptionCollectionItem | null;
@@ -33,4 +33,5 @@ export type SubscriptionDialogProps = CreateSubscriptionDialogProps | EditSubscr
 export type SubscriptionDialogContentProps = SubscriptionDialogProps & {
   onNestedDialogOpenChange: (open: boolean) => void;
   onRequestClose: () => void;
+  onSubmittingChange: (submitting: boolean) => void;
 };

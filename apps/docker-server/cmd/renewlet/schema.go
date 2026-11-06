@@ -271,6 +271,8 @@ func ensureSubscriptionsCollection(app core.App, users *core.Collection) error {
 			&core.TextField{Name: "name", Required: true, Max: 120},
 			&core.TextField{Name: "logo", Max: maxLogoReferenceLength},
 			subscriptionPriceTextField(),
+			&core.TextField{Name: "balance", Max: 17},
+			&core.TextField{Name: "balanceCurrency", Max: 3, Pattern: `^$|^[A-Z]{3}$`},
 			&core.TextField{Name: "currency", Required: true, Max: 8, Pattern: `^[A-Z]{3}$`},
 			&core.SelectField{Name: "billingCycle", Required: true, Values: []string{"weekly", "monthly", "quarterly", "semi-annual", "annual", "custom", "one-time"}},
 			&core.NumberField{Name: "customDays", OnlyInt: true, Min: &minZero},

@@ -32,6 +32,8 @@ func TestPublicAPITokenLifecycleAndReadRoutes(t *testing.T) {
 	expiryDate := addDateOnly(today, 8)
 	renewal := createRouteTestSubscription(t, app, user.Id, map[string]interface{}{
 		"name":                         "Renewal Plan",
+		"balance":                      "0",
+		"balanceCurrency":              "EUR",
 		"status":                       "active",
 		"startDate":                    "",
 		"nextBillingDate":              renewalDate,
@@ -210,6 +212,11 @@ func TestPublicAPITokenLifecycleAndReadRoutes(t *testing.T) {
 	dueRes := serveTestRequest(t, app, http.MethodGet, "/api/public/v1/due?days=30", "", publicToken)
 	if dueRes.Code != http.StatusOK {
 		t.Fatalf("expected public due 200, got %d: %s", dueRes.Code, dueRes.Body.String())
+	}
+	for _, body := range []string{listAllRes.Body.String(), detailRes.Body.String(), dueRes.Body.String()} {
+		if !strings.Contains(body, `"balance":"0"`) || !strings.Contains(body, `"balanceCurrency":"EUR"`) {
+			t.Fatalf("authorized public API lost balance pair: %s", body)
+		}
 	}
 	dueBody := decodeAPISuccessDataForTest[publicAPIDueResponse](t, dueRes.Body.Bytes())
 	if dueBody.Days != 30 || len(dueBody.Items) != 3 {

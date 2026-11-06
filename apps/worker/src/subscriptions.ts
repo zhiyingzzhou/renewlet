@@ -68,8 +68,8 @@ export async function createSubscription(request: Request, env: Env): Promise<Re
       category, status, pinned, public_hidden, payment_method,
       start_date, next_billing_date, auto_renew, auto_calculate_next_billing_date, trial_end_date, website, notes, tags_json,
       reminder_days, repeat_reminder_enabled, repeat_reminder_interval, repeat_reminder_window, cost_sharing_json,
-      cost_sharing_collection_reminder_enabled, cost_sharing_next_collection_reminder_date, extra_json, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      cost_sharing_collection_reminder_enabled, cost_sharing_next_collection_reminder_date, extra_json, created_at, updated_at, balance, balance_currency
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(...subscriptionRowValues(row));
   const derived = subscriptionDerivedMutationPlan(env, { before: null, after: row, kind: "create" }, settings);
   await env.DB.batch([...derived.beforeFact, factStatement, ...derived.afterFact]);
@@ -101,7 +101,7 @@ export async function updateSubscription(request: Request, env: Env, id: string)
       pinned = ?, public_hidden = ?, payment_method = ?, start_date = ?, next_billing_date = ?, auto_renew = ?, auto_calculate_next_billing_date = ?,
       trial_end_date = ?, website = ?, notes = ?, tags_json = ?, reminder_days = ?, repeat_reminder_enabled = ?,
       repeat_reminder_interval = ?, repeat_reminder_window = ?, cost_sharing_json = ?,
-      cost_sharing_collection_reminder_enabled = ?, cost_sharing_next_collection_reminder_date = ?, extra_json = ?, updated_at = ?
+      cost_sharing_collection_reminder_enabled = ?, cost_sharing_next_collection_reminder_date = ?, extra_json = ?, updated_at = ?, balance = ?, balance_currency = ?
     WHERE user_id = ? AND id = ?
   `).bind(
     merged.name,
@@ -135,6 +135,8 @@ export async function updateSubscription(request: Request, env: Env, id: string)
     merged.cost_sharing_next_collection_reminder_date,
     merged.extra_json,
     timestamp,
+    merged.balance,
+    merged.balance_currency,
     auth.user.id,
     id,
   );
@@ -279,6 +281,9 @@ function toBody(row: SubscriptionRow): SubscriptionBody {
     name: row.name,
     logo: row.logo,
     price: row.price,
+    // PATCH 和续订都从事实行恢复余额，避免只改备注或价格币种时丢失账号快照。
+    balance: row.balance ?? null,
+    balanceCurrency: row.balance_currency ?? null,
     currency: row.currency,
     billingCycle: row.billing_cycle as SubscriptionBody["billingCycle"],
     customDays: row.custom_days,
@@ -322,6 +327,8 @@ export function toSubscriptionRow(
   return {
     id,
     user_id: userId,
+    balance: body.balance ?? null,
+    balance_currency: body.balanceCurrency ?? null,
     name: body.name,
     logo: body.logo ?? null,
     price: body.price,
