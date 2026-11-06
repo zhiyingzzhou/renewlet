@@ -120,8 +120,8 @@ describe("AIRecognizeSubscriptionDialog preview gating", () => {
 
     await generateDraft(user);
 
-    expect(await screen.findByText("AI 返回的自定义周期无效，请在草稿中修正。")).toBeInTheDocument();
-    expect(screen.getByText("AI_BATCH_REVIEW_WARNING")).toBeInTheDocument();
+    expect((await screen.findAllByText("自定义扣费周期必须是 1 到 3650 之间的整数")).length).toBeGreaterThan(0);
+    expect(screen.queryByText("AI_BATCH_REVIEW_WARNING")).not.toBeInTheDocument();
     const previewButton = screen.getByRole("button", { name: "生成导入预览" });
     expect(previewButton).toBeDisabled();
 

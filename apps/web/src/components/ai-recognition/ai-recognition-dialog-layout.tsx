@@ -11,7 +11,7 @@ import {
   type AiRecognitionProviderType,
 } from "@/lib/api/schemas/ai-recognition";
 import { cn } from "@/lib/utils";
-import type { AIThinkingOption } from "@/modules/ai-recognition/domain/model-capabilities";
+import { aiThinkingDefaultLabelKey, type AIThinkingOption } from "@/modules/ai-recognition/domain/model-capabilities";
 
 export const NO_THINKING_CONTROL_ID = "no-explicit-thinking";
 
@@ -225,7 +225,6 @@ export function AIRecognitionCompactStepper({
 export function AIRecognitionRunSettingsPanel({
   providerType,
   model,
-  mode,
   textLength,
   imageCount,
   thinkingOptions,
@@ -236,7 +235,6 @@ export function AIRecognitionRunSettingsPanel({
 }: {
   providerType: AiRecognitionProviderType;
   model: string;
-  mode: "text" | "image";
   textLength: number;
   imageCount: number;
   thinkingOptions: AIThinkingOption[];
@@ -247,9 +245,7 @@ export function AIRecognitionRunSettingsPanel({
 }) {
   const { t } = useI18n();
   const mobileBar = layout === "mobile-bar";
-  const inputSummary = mode === "text"
-    ? `${textLength}/${AI_RECOGNITION_MAX_TEXT_CHARS}`
-    : t("aiRecognition.imageCount", { count: imageCount, max: AI_RECOGNITION_MAX_IMAGES });
+  const inputSummary = `${textLength}/${AI_RECOGNITION_MAX_TEXT_CHARS} · ${t("aiRecognition.imageCount", { count: imageCount, max: AI_RECOGNITION_MAX_IMAGES })}`;
   // thinking 能力由 provider/model 决定；不支持时只展示原因，不把占位值写入 AI 请求。
   const thinkingHelp = thinkingOptions.length > 0
     ? t("aiRecognition.thinkingHelp")
@@ -264,7 +260,7 @@ export function AIRecognitionRunSettingsPanel({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={NO_THINKING_CONTROL_ID}>{t("aiRecognition.thinking.noExplicitControl")}</SelectItem>
+          <SelectItem value={NO_THINKING_CONTROL_ID}>{t(aiThinkingDefaultLabelKey(model))}</SelectItem>
           {thinkingOptions.map((option) => (
             <SelectItem key={option.id} value={option.id}>{t(option.labelKey)}</SelectItem>
           ))}

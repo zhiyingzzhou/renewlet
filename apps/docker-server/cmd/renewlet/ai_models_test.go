@@ -47,7 +47,7 @@ func TestAIModelListOpenAIShape(t *testing.T) {
 	if len(response.Models) != 1 || response.Models[0].ID != "gpt-5.1" {
 		t.Fatalf("unexpected models: %#v", response.Models)
 	}
-	if response.ProviderType != aiProviderTypeOpenAI || response.TransportProtocol != aiProtocolOpenAIChat {
+	if response.ProviderType != aiProviderTypeOpenAI || response.TransportProtocol != aiProtocolOpenAIResponses {
 		t.Fatalf("provider/protocol not preserved: %#v", response)
 	}
 	if response.Models[0].OwnedBy == nil || *response.Models[0].OwnedBy != "openai" {

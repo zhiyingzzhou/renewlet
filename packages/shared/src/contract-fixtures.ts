@@ -4,6 +4,7 @@ import outboundUrlPolicyFixturesJson from "./contract-fixtures/outbound-url-poli
 import subscriptionCollectionContractFixturesJson from "./contract-fixtures/subscription-collection-contract-fixtures.json";
 import subscriptionPerformanceFixturesJson from "./contract-fixtures/subscription-performance-fixtures.json";
 import subscriptionNormalizationFixturesJson from "./contract-fixtures/subscription-normalization-fixtures.json";
+import aiRecognitionNormalizationFixturesJson from "./contract-fixtures/ai-recognition-normalization-fixtures.json";
 import {
   BILLING_CYCLES,
   CUSTOM_CYCLE_UNITS,
@@ -82,6 +83,33 @@ const subscriptionNormalizationFixtureSchema = z.object({
     oneTimeTermUnit: z.enum(CUSTOM_CYCLE_UNITS).nullable(),
     autoRenew: z.boolean(),
     autoCalculateNextBillingDate: z.boolean(),
+  }).strict(),
+}).strict();
+
+const aiRecognitionConfigOptionFixtureSchema = z.object({
+  value: z.string().min(1),
+  label: z.string(),
+  zhCN: z.string(),
+  enUS: z.string(),
+}).strict();
+
+const aiRecognitionNormalizationFixtureSchema = z.object({
+  name: z.string().min(1),
+  input: z.object({
+    subscriptions: z.array(z.record(z.string(), z.unknown())),
+    warnings: z.array(z.string()),
+  }).strict(),
+  config: z.object({
+    categories: z.array(aiRecognitionConfigOptionFixtureSchema),
+    paymentMethods: z.array(aiRecognitionConfigOptionFixtureSchema),
+    tags: z.array(z.string()),
+  }).strict(),
+  expected: z.object({
+    providerType: z.string().min(1),
+    transportProtocol: z.string().min(1),
+    model: z.string().min(1),
+    subscriptions: z.array(z.record(z.string(), z.unknown())),
+    warnings: z.array(z.string()),
   }).strict(),
 }).strict();
 
@@ -182,12 +210,14 @@ const subscriptionCollectionContractFixtureSchema = z.object({
  */
 export const notificationScheduleFixtures = z.array(notificationScheduleFixtureSchema).parse(notificationScheduleFixturesJson);
 export const subscriptionNormalizationFixtures = z.array(subscriptionNormalizationFixtureSchema).parse(subscriptionNormalizationFixturesJson);
+export const aiRecognitionNormalizationFixtures = z.array(aiRecognitionNormalizationFixtureSchema).parse(aiRecognitionNormalizationFixturesJson);
 export const outboundUrlPolicyFixtures = z.array(outboundUrlPolicyFixtureSchema).parse(outboundUrlPolicyFixturesJson);
 export const subscriptionPerformanceFixture = subscriptionPerformanceFixtureSchema.parse(subscriptionPerformanceFixturesJson);
 export const subscriptionCollectionContractFixture = subscriptionCollectionContractFixtureSchema.parse(subscriptionCollectionContractFixturesJson);
 
 export type NotificationScheduleFixture = (typeof notificationScheduleFixtures)[number];
 export type SubscriptionNormalizationFixture = (typeof subscriptionNormalizationFixtures)[number];
+export type AIRecognitionNormalizationFixture = (typeof aiRecognitionNormalizationFixtures)[number];
 export type OutboundUrlPolicyFixture = (typeof outboundUrlPolicyFixtures)[number];
 export type SubscriptionPerformanceScenario = (typeof subscriptionPerformanceFixture.scenarios)[number];
 

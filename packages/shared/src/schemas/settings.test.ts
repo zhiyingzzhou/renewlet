@@ -123,6 +123,31 @@ describe("settings schema", () => {
     });
   });
 
+  it("accepts legacy AI settings in backups and returns canonical transport", () => {
+    const parsed = persistedSettingsBackupSchema.parse({
+      localePreference: "auto",
+      aiRecognition: {
+        provider: "openai",
+        transportProtocol: "openai-chat",
+        model: "gpt-6.1-sol",
+        modelInputMode: "manual",
+        baseUrl: "https://gateway.example.com/v1",
+        apiKey: "sk-legacy",
+        defaultThinkingControl: { provider: "openai", effort: "minimal" },
+      },
+    });
+
+    expect(parsed.aiRecognition).toEqual({
+      providerType: "openai",
+      transportProtocol: "openai-responses",
+      model: "gpt-6.1-sol",
+      modelInputMode: "manual",
+      baseUrl: "https://gateway.example.com/v1",
+      apiKey: "sk-legacy",
+      defaultThinkingControl: null,
+    });
+  });
+
   it("keeps public settings while restoring write-only fields as empty editor drafts", () => {
     const stored = createDefaultAppSettings();
     stored.testPhone = "8613800000000";

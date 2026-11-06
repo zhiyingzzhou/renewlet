@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode"
 
 	appstatic "github.com/zhiyingzzhou/renewlet/apps/docker-server/internal/static"
 )
@@ -55,10 +56,11 @@ func mustLoadAIRecognitionPrompt() aiRecognitionPromptSpec {
 }
 
 func buildAIRecognitionSystemPrompt() string {
-	return strings.Join(aiRecognitionPrompt.System, "\n")
-}
-
-func buildAIRecognitionUserPrompt(text string, timezone string, defaultCurrency string, imageCount int, locale appLocale, configContext aiRecognitionConfigContext) string {
+	sections := append([]string{}, aiRecognitionPrompt.System...)
+	sections = append(sections, "Output contract:")
+	sections = append(sections, prefixAIPromptRules(aiRecognitionPrompt.OutputContract)...)
+	sections = append(sections, "Field rules:")
+	sections = append(sections, prefixAIPromptRules(aiRecognitionPrompt.FieldRules)...)
 	examples := make([]string, 0, len(aiRecognitionPrompt.Examples))
 	for index, example := range aiRecognitionPrompt.Examples {
 		examples = append(examples, strings.Join([]string{
@@ -68,6 +70,11 @@ func buildAIRecognitionUserPrompt(text string, timezone string, defaultCurrency 
 			formatAIRecognitionPromptJSON(example.Output),
 		}, "\n"))
 	}
+	sections = append(sections, "Examples:", strings.Join(examples, "\n\n"))
+	return strings.Join(sections, "\n")
+}
+
+func buildAIRecognitionUserPrompt(text string, timezone string, imageCount int, locale appLocale, configContext aiRecognitionConfigContext) string {
 	userInput := strings.TrimSpace(text)
 	if userInput == "" {
 		userInput = "(no text input; use attached images)"
@@ -77,7 +84,6 @@ func buildAIRecognitionUserPrompt(text string, timezone string, defaultCurrency 
 		fmt.Sprintf("- Current date in user's timezone: %s", todayDateOnly(time.Now().UTC(), timezone)),
 		fmt.Sprintf("- User timezone: %s", timezone),
 		fmt.Sprintf("- User locale: %s", locale),
-		fmt.Sprintf("- Default currency hint: %s", defaultCurrency),
 		fmt.Sprintf("- Attached image count: %d", imageCount),
 		"",
 		"User context:",
@@ -98,29 +104,28 @@ func buildAIRecognitionUserPrompt(text string, timezone string, defaultCurrency 
 		"- Extract subscriptions from the delimited user input below and any attached images.",
 		"- Treat the dynamic user context as preferences and available options, not as subscription evidence.",
 		"",
-		"Output contract:",
+		"User input:",
+		"<<<renewlet-user-input",
+		userInput,
+		">>>",
 	)
-	lines = append(lines, prefixAIPromptRules(aiRecognitionPrompt.OutputContract)...)
-	lines = append(lines, "", "Field rules:")
-	lines = append(lines, prefixAIPromptRules(aiRecognitionPrompt.FieldRules)...)
-	lines = append(lines, "", "Examples:", strings.Join(examples, "\n\n"), "", "User input:", "<<<renewlet-user-input", userInput, ">>>")
 	return strings.Join(lines, "\n")
 }
 
 func buildAIRecognitionRepairUserPrompt(originalUserPrompt string, previousObject interface{}, missingNoteNames []string) string {
-	// repair 只修补缺失备注，不允许引入本地品牌表或图标库；否则 Docker/Worker 会在同一输入上产生不同草稿。
 	lines := []string{
 		"Repair task:",
-		"- The previous JSON object is structurally valid but some describable subscriptions have missing or unusable notes.",
-		"- Regenerate the entire JSON object with the same output contract, field rules, and all subscriptions.",
-		"- Do not use a hardcoded service table, brand mapping, icon database, region list, operating system list, or local fallback knowledge.",
-		"- For the subscription names below, notes.value must be a concise service/site description unless the service purpose is truly unknowable.",
+		"- The previous JSON object is structurally valid, but some recognizable subscriptions have missing or unusable notes.",
+		"- Regenerate the complete JSON object with the same output contract and preserve every existing billing fact exactly.",
+		"- Only fill notes for the listed subscriptions; do not change price, currency, cycle, dates, status, category, payment method, website, tags, or warnings.",
+		"- For each listed subscription, notes.value must be a concise neutral description of the official service, site, or product. Use source=suggested for that description.",
+		"- Use the original input/images, one official web search when the provider supports it, high-confidence public knowledge, and the existing service name/website.",
+		"- Do not use a hardcoded service table, local fallback, plan, price, region, route, specification, date, duration, promotion, import advice, confirmation reminder, or AI process text.",
 	}
 	for _, name := range missingNoteNames {
 		lines = append(lines, "  - "+name)
 	}
 	lines = append(lines,
-		"- Use only the original input/images, high-confidence public knowledge, and dynamic fields already present in the previous object: service name, website/domain, category, and stable tags.",
 		"",
 		"Original recognition prompt:",
 		"<<<renewlet-original-prompt",
@@ -139,14 +144,14 @@ func formatAIRecognitionTags(tags []string) []string {
 	out := []string{}
 	seen := map[string]bool{}
 	for _, tag := range tags {
-		value := strings.TrimSpace(tag)
-		key := strings.ToLower(value)
+		value := sanitizeAIPromptContextText(tag)
+		key := aiRecognitionConfigMatchKey(value)
 		if value == "" || seen[key] {
 			continue
 		}
 		seen[key] = true
 		out = append(out, "- "+value)
-		if len(out) >= 200 {
+		if len(out) >= 50 {
 			// 标签上下文只提供偏好提示；过多用户历史标签会稀释订阅证据并放大 prompt 成本。
 			break
 		}
@@ -162,14 +167,39 @@ func formatAIRecognitionConfigOptions(options []aiRecognitionConfigOption) []str
 		return []string{"- (none)"}
 	}
 	limit := len(options)
-	if limit > 200 {
-		limit = 200
+	if limit > 50 {
+		limit = 50
 	}
 	out := make([]string, 0, limit)
 	for _, option := range options[:limit] {
-		out = append(out, fmt.Sprintf("- value=%s | label=%s | zh-CN=%s | en-US=%s", option.Value, option.Label, option.ZhCN, option.EnUS))
+		out = append(out, fmt.Sprintf("- value=%s | label=%s | zh-CN=%s | en-US=%s",
+			sanitizeAIPromptContextText(option.Value),
+			sanitizeAIPromptContextText(option.Label),
+			sanitizeAIPromptContextText(option.ZhCN),
+			sanitizeAIPromptContextText(option.EnUS),
+		))
 	}
 	return out
+}
+
+func sanitizeAIPromptContextText(value string) string {
+	// 配置标签和历史标签是用户可写数据；压平成单行，避免换行把不可信文本伪装成新的 prompt 指令。
+	var builder strings.Builder
+	pendingSpace := false
+	for _, r := range value {
+		if unicode.IsControl(r) || unicode.IsSpace(r) {
+			if builder.Len() > 0 {
+				pendingSpace = true
+			}
+			continue
+		}
+		if pendingSpace {
+			builder.WriteByte(' ')
+			pendingSpace = false
+		}
+		builder.WriteRune(r)
+	}
+	return trimMax(builder.String(), 160)
 }
 
 func prefixAIPromptRules(rules []string) []string {
@@ -182,7 +212,7 @@ func prefixAIPromptRules(rules []string) []string {
 
 func formatAIRecognitionPromptJSON(raw json.RawMessage) string {
 	var buf bytes.Buffer
-	if err := json.Indent(&buf, raw, "", "  "); err == nil {
+	if err := json.Compact(&buf, raw); err == nil {
 		return buf.String()
 	}
 	return string(raw)

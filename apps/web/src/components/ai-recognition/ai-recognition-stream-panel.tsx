@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, Brain, CheckCircle2, ChevronDown, Loader2, MessageSquareText, X } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle2, Loader2, MessageSquareText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n/I18nProvider";
 import type { MessageKey } from "@/i18n/messages";
@@ -13,7 +13,6 @@ interface AIRecognitionStreamPanelProps {
   subscriptionsSeen: number;
   warningsSeen: number;
   textPreview: string;
-  reasoningText: string;
   elapsedSeconds: number | null;
   hasErrorDetails?: boolean;
   mobile?: boolean;
@@ -26,17 +25,15 @@ const STAGE_ORDER: AiRecognitionStreamStage[] = [
   "input-read",
   "model-start",
   "model-stream",
-  "repair-start",
   "validating",
   "finalizing",
 ];
 
-// 阶段顺序来自 shared SSE contract；partial/reasoning 事件只驱动进度反馈，不能当成可导入草稿。
+// 阶段顺序来自 shared SSE contract；partial/delta 事件只驱动进度反馈，不能当成可导入草稿。
 const STAGE_LABEL_KEYS: Record<AiRecognitionStreamStage, MessageKey> = {
   "input-read": "aiRecognition.streamStage.inputRead",
   "model-start": "aiRecognition.streamStage.modelStart",
   "model-stream": "aiRecognition.streamStage.modelStream",
-  "repair-start": "aiRecognition.streamStage.repairStart",
   validating: "aiRecognition.streamStage.validating",
   finalizing: "aiRecognition.streamStage.finalizing",
 };
@@ -54,7 +51,6 @@ export function AIRecognitionStreamPanel({
   subscriptionsSeen,
   warningsSeen,
   textPreview,
-  reasoningText,
   elapsedSeconds,
   hasErrorDetails = false,
   mobile = false,
@@ -64,7 +60,6 @@ export function AIRecognitionStreamPanel({
 }: AIRecognitionStreamPanelProps) {
   const { t } = useI18n();
   const activeIndex = stage ? STAGE_ORDER.indexOf(stage) : -1;
-  const hasReasoning = reasoningText.trim().length > 0;
   const canDismiss = status !== "running" && Boolean(onDismiss);
   const stageLabel = stage ? t(STAGE_LABEL_KEYS[stage]) : t("aiRecognition.streamWaiting");
   // 运行中耗时对屏幕阅读器隐藏，避免每秒刷新打断用户；终态耗时再作为稳定文本暴露。
@@ -164,21 +159,6 @@ export function AIRecognitionStreamPanel({
             {textPreview}
           </p>
         </section>
-      ) : null}
-
-      {hasReasoning ? (
-        <details className="group rounded-md bg-secondary/30 px-2 py-1.5">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-[11px] font-medium text-muted-foreground">
-            <span className="inline-flex min-w-0 items-center gap-1.5">
-              <Brain className="h-3.5 w-3.5" />
-              <span className="truncate">{t("aiRecognition.streamReasoning")}</span>
-            </span>
-            <ChevronDown className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-180" />
-          </summary>
-          <pre className="mt-2 max-h-28 overflow-y-auto whitespace-pre-wrap wrap-break-word font-sans text-xs leading-5 text-foreground">
-            {reasoningText}
-          </pre>
-        </details>
       ) : null}
 
       {canDismiss ? (

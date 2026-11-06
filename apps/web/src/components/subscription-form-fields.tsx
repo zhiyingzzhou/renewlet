@@ -75,6 +75,7 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
   showLogoField = true,
   onLogoUploadStatusChange,
   onFieldChange,
+  pendingStatusConfirmation = false,
   errors = {},
   onClearFieldError,
   notificationReminderDays,
@@ -257,10 +258,20 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
       </FormFieldRow>
 
       <FormFieldRow alignAt="sm" rowClassName="sm:grid-cols-2">
-        <FormField id={id("status")} label={t("subscription.field.status")}>
+        <FormField
+          id={id("status")}
+          label={t("subscription.field.status")}
+        >
           {({ id: fieldId }) => (
             <Select value={formData.status} onValueChange={(value) => update("status", value as SubscriptionStatus)}>
-              <SelectTrigger id={fieldId} className="border-border bg-secondary" tooltipContent={statusLabel ? label(statusLabel) : formData.status}>
+              <SelectTrigger
+                id={fieldId}
+                className={cn(
+                  "border-border bg-secondary",
+                  pendingStatusConfirmation && "border-amber-500/70 focus:ring-amber-500/40",
+                )}
+                tooltipContent={statusLabel ? label(statusLabel) : formData.status}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -720,16 +731,18 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
         )}
       </FormField>
 
-      <div className="grid gap-2">
-        <Label htmlFor={id("notes")}>{t("subscription.field.notes")}</Label>
-        <Input
-          id={id("notes")} name={id("notes")} enterKeyHint="done"
-          placeholder={t("subscription.placeholder.notes")}
-          value={formData.notes}
-          onChange={(e) => update("notes", e.target.value)}
-          className="border-border bg-secondary"
-        />
-      </div>
+      <FormField id={id("notes")} label={t("subscription.field.notes")}>
+        {(field) => (
+          <Input
+            id={field.id} name={field.id} enterKeyHint="done" maxLength={5000}
+            placeholder={t("subscription.placeholder.notes")}
+            value={formData.notes}
+            onChange={(e) => update("notes", e.target.value)}
+            aria-describedby={field.describedBy}
+            className="border-border bg-secondary"
+          />
+        )}
+      </FormField>
 
       <div className="grid gap-2">
         <Label htmlFor={id("tags")}>{t("subscription.field.tags")}</Label>

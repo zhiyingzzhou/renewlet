@@ -7,9 +7,13 @@ package main
 import (
 	"errors"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
+
+	"golang.org/x/text/unicode/norm"
 )
 
 var (
@@ -60,17 +64,26 @@ type aiGeneratedNotesField struct {
 	Source string  `json:"source"`
 }
 
-func normalizeAIGeneratedRecognizeResponse(raw aiGeneratedRecognizeResponse, providerType string, transportProtocol string, model string, diagnostics aiRecognitionDiagnostics, configContext aiRecognitionConfigContext) (aiRecognizeResponse, error) {
+func normalizeAIGeneratedRecognizeResponse(raw aiGeneratedRecognizeResponse, providerType string, transportProtocol string, model string, diagnostics aiRecognitionDiagnostics, configContext aiRecognitionConfigContext, currentDate ...string) (aiRecognizeResponse, error) {
 	// generated schema 允许模型输出字符串数字和宽松枚举；进入前端前必须再走标准 RecognizeResponse 归一化。
+	drafts := raw.Subscriptions
+	truncated := len(drafts) > aiRecognitionMaxSubscriptions
+	if truncated {
+		// 与 Worker 保持同一边界：先限制生成态记录数，再归一化，避免超额记录改变 warning 或消耗无意义 CPU。
+		drafts = drafts[:aiRecognitionMaxSubscriptions]
+	}
 	response := aiRecognizeResponse{
 		Warnings:      raw.Warnings,
-		Subscriptions: make([]aiRecognizedSubscriptionDraft, 0, len(raw.Subscriptions)),
+		Subscriptions: make([]aiRecognizedSubscriptionDraft, 0, len(drafts)),
 		Diagnostics:   diagnostics,
 	}
-	for _, draft := range raw.Subscriptions {
+	for _, draft := range drafts {
 		response.Subscriptions = append(response.Subscriptions, aiGeneratedDraftToRecognized(draft))
 	}
-	return normalizeAIRecognizeResponse(response, providerType, transportProtocol, model, configContext)
+	if truncated {
+		response.Warnings = append(response.Warnings, "AI_WARNING_TOO_MANY_SUBSCRIPTIONS_TRUNCATED")
+	}
+	return normalizeAIRecognizeResponse(response, providerType, transportProtocol, model, configContext, currentDate...)
 }
 
 func aiGeneratedDraftToRecognized(draft aiGeneratedSubscriptionDraft) aiRecognizedSubscriptionDraft {
@@ -89,14 +102,14 @@ func aiGeneratedDraftToRecognized(draft aiGeneratedSubscriptionDraft) aiRecogniz
 		AutoCalculateNextBillingDate: draft.AutoCalculateNextBillingDate,
 		TrialEndDate:                 draft.TrialEndDate,
 		Website:                      aiGeneratedSuggestedToSuggestedField(draft.Website),
-		Notes:                        aiGeneratedNotesToSuggestedField(draft.Notes),
 		Tags:                         draft.Tags,
-		RepeatReminderEnabled:        draft.RepeatReminderEnabled,
-		RepeatReminderInterval:       draft.RepeatReminderInterval,
-		RepeatReminderWindow:         draft.RepeatReminderWindow,
+		RepeatReminderEnabled:        nil,
+		RepeatReminderInterval:       nil,
+		RepeatReminderWindow:         nil,
 		Confidence:                   draft.Confidence,
 		Warnings:                     warnings,
 	}
+	recognized.Notes = aiGeneratedNotesToSuggestedField(draft.Notes)
 	if price, ok, valid := parseAIGeneratedNumber(draft.Price); ok {
 		amount, err := canonicalMoneyFromFloat(price)
 		if err != nil {
@@ -109,7 +122,8 @@ func aiGeneratedDraftToRecognized(draft aiGeneratedSubscriptionDraft) aiRecogniz
 	}
 	recognized.CustomDays = parseAIGeneratedPositiveInt(draft.CustomDays, maxReminderDays, "AI_WARNING_CUSTOM_DAYS_INVALID", &recognized.Warnings)
 	recognized.OneTimeTermCount = parseAIGeneratedPositiveInt(draft.OneTimeTermCount, maxReminderDays, "AI_WARNING_ONE_TIME_TERM_COUNT_INVALID", &recognized.Warnings)
-	recognized.ReminderDays = parseAIGeneratedBoundedInt(draft.ReminderDays, disabledReminderDays, maxReminderDays, "AI_WARNING_REMINDER_DAYS_INVALID", &recognized.Warnings)
+	// 提醒属于用户设置，不接受模型推断；前端表单会从当前账号设置生成默认值。
+	recognized.ReminderDays = nil
 	return recognized
 }
 
@@ -139,9 +153,11 @@ func aiGeneratedNotesToSuggestedField(field *aiGeneratedNotesField) *aiSuggested
 	return &aiSuggestedTextField{Value: *field.Value, Source: source}
 }
 
-func normalizeAIRecognizeResponse(raw aiRecognizeResponse, providerType string, transportProtocol string, model string, configContext aiRecognitionConfigContext) (aiRecognizeResponse, error) {
+func normalizeAIRecognizeResponse(raw aiRecognizeResponse, providerType string, transportProtocol string, model string, configContext aiRecognitionConfigContext, currentDate ...string) (aiRecognizeResponse, error) {
 	raw.ProviderType = providerType
-	raw.TransportProtocol = transportProtocol
+	// 输出边界也要重算 canonical transport；调用方可能来自旧配置或测试/恢复路径，不能让历史
+	// openai-chat 继续污染 Docker 与 Worker 的最终 JSON 契约。
+	raw.TransportProtocol = canonicalAIRecognitionTransportProtocol(providerType)
 	raw.Model = model
 	raw.Warnings = compactAIWarnings(raw.Warnings, 20)
 	if len(raw.Subscriptions) > aiRecognitionMaxSubscriptions {
@@ -151,7 +167,7 @@ func normalizeAIRecognizeResponse(raw aiRecognizeResponse, providerType string, 
 	}
 	subscriptions := make([]aiRecognizedSubscriptionDraft, 0, len(raw.Subscriptions))
 	for _, draft := range raw.Subscriptions {
-		normalized, ok := normalizeAISubscriptionDraft(draft, configContext)
+		normalized, ok := normalizeAISubscriptionDraft(draft, configContext, currentDate...)
 		if ok {
 			subscriptions = append(subscriptions, normalized)
 		} else {
@@ -159,6 +175,16 @@ func normalizeAIRecognizeResponse(raw aiRecognizeResponse, providerType string, 
 		}
 	}
 	raw.Subscriptions = subscriptions
+	statusWarningRequired := false
+	for _, draft := range subscriptions {
+		if slices.Contains(draft.Warnings, "AI_WARNING_STATUS_UNCERTAIN") {
+			statusWarningRequired = true
+			break
+		}
+	}
+	if !statusWarningRequired {
+		raw.Warnings = removeAIWarning(raw.Warnings, "AI_WARNING_STATUS_UNCERTAIN")
+	}
 	raw.Warnings = compactAIWarnings(raw.Warnings, 20)
 	if len(raw.Subscriptions) == 0 {
 		return raw, errAIRecognitionNoSubscriptions
@@ -166,7 +192,7 @@ func normalizeAIRecognizeResponse(raw aiRecognizeResponse, providerType string, 
 	return raw, nil
 }
 
-func normalizeAISubscriptionDraft(draft aiRecognizedSubscriptionDraft, configContext aiRecognitionConfigContext) (aiRecognizedSubscriptionDraft, bool) {
+func normalizeAISubscriptionDraft(draft aiRecognizedSubscriptionDraft, configContext aiRecognitionConfigContext, currentDate ...string) (aiRecognizedSubscriptionDraft, bool) {
 	draft.Name = trimMax(draft.Name, 120)
 	if draft.Name == "" {
 		return draft, false
@@ -183,28 +209,141 @@ func normalizeAISubscriptionDraft(draft aiRecognizedSubscriptionDraft, configCon
 	}
 	draft.Currency = normalizeAIOptionalCurrency(draft.Currency, &draft.Warnings)
 	draft.BillingCycle = normalizeAIOptionalEnum(draft.BillingCycle, isValidBillingCycle, "AI_WARNING_BILLING_CYCLE_INVALID", &draft.Warnings)
-	draft.CustomCycleUnit = normalizeAIOptionalEnum(draft.CustomCycleUnit, isValidCustomCycleUnit, "AI_WARNING_CUSTOM_CYCLE_UNIT_INVALID", &draft.Warnings)
-	draft.OneTimeTermUnit = normalizeAIOptionalEnum(draft.OneTimeTermUnit, isValidCustomCycleUnit, "AI_WARNING_ONE_TIME_TERM_UNIT_INVALID", &draft.Warnings)
+	draft.CustomCycleUnit = normalizeAICycleUnit(draft.CustomCycleUnit, "AI_WARNING_CUSTOM_CYCLE_UNIT_INVALID", &draft.Warnings)
+	draft.OneTimeTermUnit = normalizeAICycleUnit(draft.OneTimeTermUnit, "AI_WARNING_ONE_TIME_TERM_UNIT_INVALID", &draft.Warnings)
 	draft.Category = normalizeAIConfigValue(draft.Category, configContext.Categories)
 	draft.Status = normalizeAIOptionalEnum(draft.Status, isValidSubscriptionStatus, "AI_WARNING_STATUS_INVALID", &draft.Warnings)
 	draft.PaymentMethod = normalizeAIConfigValue(draft.PaymentMethod, configContext.PaymentMethods)
 	draft.StartDate = normalizeAIOptionalDate(draft.StartDate, "startDate", &draft.Warnings)
 	draft.NextBillingDate = normalizeAIOptionalDate(draft.NextBillingDate, "nextBillingDate", &draft.Warnings)
 	draft.TrialEndDate = normalizeAIOptionalDate(draft.TrialEndDate, "trialEndDate", &draft.Warnings)
+	if draft.NextBillingDate == nil {
+		draft.NextBillingDate = deriveAIFixedTermEndDate(draft)
+	}
+	if draft.Status == nil && len(currentDate) > 0 {
+		draft.Status = inferAIFixedTermStatus(draft, currentDate[0])
+	}
+	if draft.Status != nil {
+		draft.Warnings = removeAIWarning(draft.Warnings, "AI_WARNING_STATUS_UNCERTAIN")
+	}
+	draft.AutoCalculateNextBillingDate = normalizeAIAutoCalculateNextBillingDate(draft, &draft.Warnings)
 	draft.Website = normalizeAISuggestedField(draft.Website, 5000)
 	draft.Notes = normalizeAINotesField(draft.Notes, 5000)
+	// 事实是否存在以归一化后的值为准；无效值已经被清空，必须同时进入缺失 warning，避免表单显示可提交但实际没有证据。
+	priceProvided := draft.Price != nil
+	currencyProvided := draft.Currency != nil
+	billingCycleProvided := draft.BillingCycle != nil
+	startDateProvided := draft.StartDate != nil
+	nextBillingDateProvided := draft.NextBillingDate != nil
+	statusProvided := draft.Status != nil
+	paymentMethodProvided := draft.PaymentMethod != nil
+	categoryProvided := draft.Category != nil
 	draft.Tags = normalizeAITags(draft.Tags, draft.Name, configContext.Tags)
-	if draft.ReminderDays != nil && (*draft.ReminderDays < disabledReminderDays || *draft.ReminderDays > maxReminderDays) {
-		draft.ReminderDays = nil
-		draft.Warnings = append(draft.Warnings, "AI_WARNING_REMINDER_DAYS_INVALID")
-	}
-	draft.RepeatReminderInterval = normalizeAIOptionalEnum(draft.RepeatReminderInterval, isValidRepeatReminderInterval, "AI_WARNING_REPEAT_INTERVAL_INVALID", &draft.Warnings)
-	draft.RepeatReminderWindow = normalizeAIOptionalEnum(draft.RepeatReminderWindow, isValidRepeatReminderWindow, "AI_WARNING_REPEAT_WINDOW_INVALID", &draft.Warnings)
+	// 提醒属于用户设置，不接受模型推断；前端表单会从当前账号设置生成默认值。
+	draft.ReminderDays = nil
+	draft.RepeatReminderEnabled = nil
+	draft.RepeatReminderInterval = nil
+	draft.RepeatReminderWindow = nil
 	if draft.Confidence != "high" {
 		draft.Confidence = "low"
 	}
+	if !priceProvided {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_PRICE_UNCERTAIN")
+	}
+	if !currencyProvided {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_CURRENCY_UNCERTAIN")
+	}
+	if !billingCycleProvided {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_CYCLE_UNCERTAIN")
+	}
+	if !startDateProvided && !nextBillingDateProvided {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_DATE_UNCERTAIN")
+	}
+	if !statusProvided {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_STATUS_UNCERTAIN")
+	}
+	if !paymentMethodProvided {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_PAYMENT_METHOD_UNCERTAIN")
+	}
+	if !categoryProvided {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_CATEGORY_UNCERTAIN")
+	}
+	if categoryProvided && draft.Category != nil && findAIRecognitionConfigOption(configContext.Categories, *draft.Category) == nil {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_CONFIG_SUGGESTED")
+	}
+	if paymentMethodProvided && draft.PaymentMethod != nil && findAIRecognitionConfigOption(configContext.PaymentMethods, *draft.PaymentMethod) == nil {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_CONFIG_SUGGESTED")
+	}
+	if draft.Confidence == "low" {
+		draft.Warnings = append(draft.Warnings, "AI_WARNING_LOW_CONFIDENCE")
+	}
 	draft.Warnings = compactAIWarnings(draft.Warnings, 12)
 	return draft, true
+}
+
+func removeAIWarning(warnings []string, warning string) []string {
+	filtered := warnings[:0]
+	for _, value := range warnings {
+		if value != warning {
+			filtered = append(filtered, value)
+		}
+	}
+	return filtered
+}
+
+// 固定服务期的完整起止日期是状态证据：区间内 active，结束日之后 expired，开始日前保持未确认。
+// 生产调用只传入经过用户时区计算的 date-only；variadic 参数保留旧测试/恢复调用的兼容性。
+func inferAIFixedTermStatus(draft aiRecognizedSubscriptionDraft, currentDate string) *string {
+	if draft.BillingCycle == nil || *draft.BillingCycle != "one-time" || draft.StartDate == nil || currentDate == "" {
+		return nil
+	}
+	endDate := draft.NextBillingDate
+	if endDate == nil {
+		endDate = deriveAIFixedTermEndDate(draft)
+	}
+	if endDate == nil {
+		return nil
+	}
+	if currentDate < *draft.StartDate {
+		return nil
+	}
+	status := "expired"
+	if currentDate <= *endDate {
+		status = "active"
+	}
+	return &status
+}
+
+func deriveAIFixedTermEndDate(draft aiRecognizedSubscriptionDraft) *string {
+	if draft.BillingCycle == nil || *draft.BillingCycle != "one-time" || draft.StartDate == nil || draft.OneTimeTermCount == nil || *draft.OneTimeTermCount <= 0 || draft.OneTimeTermUnit == nil {
+		return nil
+	}
+	start, err := time.Parse("2006-01-02", *draft.StartDate)
+	if err != nil {
+		return nil
+	}
+	end, err := addCustomBillingCyclesDate(start, *draft.OneTimeTermCount, *draft.OneTimeTermUnit)
+	if err != nil {
+		return nil
+	}
+	value := end.Format("2006-01-02")
+	return &value
+}
+
+func normalizeAIAutoCalculateNextBillingDate(draft aiRecognizedSubscriptionDraft, warnings *[]string) *bool {
+	if draft.BillingCycle != nil && *draft.BillingCycle == "one-time" {
+		value := false
+		return &value
+	}
+	if draft.AutoCalculateNextBillingDate == nil || !*draft.AutoCalculateNextBillingDate {
+		return draft.AutoCalculateNextBillingDate
+	}
+	if draft.StartDate == nil || draft.BillingCycle == nil {
+		value := false
+		*warnings = append(*warnings, "AI_WARNING_AUTO_CALCULATE_DISABLED")
+		return &value
+	}
+	return draft.AutoCalculateNextBillingDate
 }
 
 func normalizeAIOptionalEnum(value *string, valid func(string) bool, warning string, warnings *[]string) *string {
@@ -220,6 +359,48 @@ func normalizeAIOptionalEnum(value *string, valid func(string) bool, warning str
 		return nil
 	}
 	return &trimmed
+}
+
+func normalizeAICycleUnit(value *string, warning string, warnings *[]string) *string {
+	if value == nil {
+		return nil
+	}
+	text := strings.ToLower(strings.TrimSpace(*value))
+	text = strings.Join(strings.Fields(text), "")
+	if text == "" {
+		return nil
+	}
+	var normalized string
+	switch text {
+	case "day", "days", "天", "日":
+		normalized = "day"
+	case "week", "weeks", "周", "星期":
+		normalized = "week"
+	case "month", "months", "月", "个月":
+		normalized = "month"
+	case "year", "years", "年", "年度":
+		normalized = "year"
+	default:
+		for _, candidate := range []struct {
+			suffix string
+			value  string
+		}{
+			{"days", "day"}, {"day", "day"}, {"天", "day"}, {"日", "day"},
+			{"weeks", "week"}, {"week", "week"}, {"周", "week"}, {"星期", "week"},
+			{"months", "month"}, {"month", "month"}, {"个月", "month"}, {"月", "month"},
+			{"years", "year"}, {"year", "year"}, {"年度", "year"}, {"年", "year"},
+		} {
+			if strings.HasSuffix(text, candidate.suffix) {
+				normalized = candidate.value
+				break
+			}
+		}
+	}
+	if normalized == "" {
+		*warnings = append(*warnings, warning)
+		return nil
+	}
+	return &normalized
 }
 
 func normalizeAIOptionalCurrency(value *string, warnings *[]string) *string {
@@ -327,7 +508,7 @@ func isUsefulAIGeneratedTag(value string, key string, serviceKey string) bool {
 	if strings.Contains(lower, "://") || strings.HasPrefix(lower, "www.") || strings.ContainsAny(value, "#()（）[]【】/\\|:：") {
 		return false
 	}
-	if aiNumberPattern.MatchString(value) || aiRecognitionLooksLikeBillingTag(lower) || aiRecognitionLooksLikeOrderAttributeTag(lower) {
+	if aiRecognitionContainsNumber(value) || aiRecognitionLooksLikeBillingTag(lower) || aiRecognitionLooksLikeOrderAttributeTag(lower) {
 		return false
 	}
 	if aiRecognitionIsShortHanTag(value) {
@@ -425,14 +606,24 @@ func findAIRecognitionConfigOption(options []aiRecognitionConfigOption, text str
 }
 
 func aiRecognitionConfigMatchKey(value string) string {
+	// 与 Worker/前端 configMatchKey 保持 NFKC 和标点压缩一致，避免 Docker/Cloudflare 匹配出不同配置值。
 	var builder strings.Builder
-	for _, r := range strings.ToLower(strings.TrimSpace(value)) {
+	for _, r := range strings.ToLower(strings.TrimSpace(norm.NFKC.String(value))) {
 		if unicode.IsSpace(r) || strings.ContainsRune("_-—–/\\|&+，,、.。:：()（）[]【】", r) {
 			continue
 		}
 		builder.WriteRune(r)
 	}
 	return builder.String()
+}
+
+func aiRecognitionContainsNumber(value string) bool {
+	for _, r := range value {
+		if unicode.IsNumber(r) {
+			return true
+		}
+	}
+	return false
 }
 
 func trimMax(value string, maxLen int) string {
@@ -494,6 +685,13 @@ func normalizeAIGeneratedBillingCycle(value *string) *string {
 		return &text
 	}
 	compact := strings.Join(strings.Fields(text), "")
+	// 固定服务期/买断必须先于 year -> annual 处理；裸“2 years/1 month”仍按周期词处理，
+	// 避免把多年预付误判成买断。
+	fixedTerm := strings.Contains(compact, "validfor") || strings.Contains(compact, "serviceterm") || strings.Contains(compact, "fixedterm") || strings.Contains(compact, "duration") || strings.Contains(compact, "term") || strings.Contains(compact, "有效期") || strings.Contains(compact, "服务期") || strings.Contains(compact, "期限") || strings.Contains(compact, "买断") || strings.Contains(compact, "一次性") || strings.Contains(compact, "lifetime")
+	if fixedTerm && !strings.Contains(compact, "every") && !strings.Contains(compact, "each") && !strings.Contains(compact, "per") && !strings.Contains(compact, "renew") && !strings.Contains(compact, "recurr") && !strings.Contains(compact, "每") && !strings.Contains(compact, "续费") && !strings.Contains(compact, "续订") {
+		result := "one-time"
+		return &result
+	}
 	var mapped string
 	switch {
 	case strings.Contains(compact, "week") || strings.Contains(compact, "周"):
@@ -524,21 +722,6 @@ func parseAIGeneratedPositiveInt(value interface{}, max int, warning string, war
 		return nil
 	}
 	if parsed <= 0 || parsed > max {
-		*warnings = append(*warnings, warning)
-		return nil
-	}
-	return &parsed
-}
-
-func parseAIGeneratedBoundedInt(value interface{}, min int, max int, warning string, warnings *[]string) *int {
-	parsed, ok, valid := parseAIGeneratedInt(value)
-	if !ok {
-		if !valid {
-			*warnings = append(*warnings, warning)
-		}
-		return nil
-	}
-	if parsed < min || parsed > max {
 		*warnings = append(*warnings, warning)
 		return nil
 	}

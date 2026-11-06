@@ -41,6 +41,7 @@
     "check:i18n": "pnpm --filter @renewlet/client i18n:check",
     "sync:ai-recognition-prompt": "node scripts/sync-ai-recognition-prompt.mjs",
     "check:ai-recognition-prompt": "node scripts/sync-ai-recognition-prompt.mjs --check",
+    "eval:ai-recognition-golden": "node scripts/evaluate-ai-recognition-golden-corpus.mjs",
     "generate:built-in-config-labels": "node scripts/generate-built-in-config-labels.mjs",
     "check:built-in-config-labels": "node scripts/generate-built-in-config-labels.mjs --check",
     "generate:currency-region-hints": "node scripts/generate-currency-region-hints.mjs",

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { apiEmptySuccess, apiSuccess } from "@renewlet/shared/schemas/api";
 import { apiErrorResponseSchema } from "@renewlet/shared/schemas/errors";
 import { DEFAULT_SERVER_I18N_LOCALE, requestLocale, serverText, type AppLocale } from "./server-i18n";
+import { UpstreamOperationError, UpstreamResponseError } from "./upstream-response";
 
 const JSON_LIMIT_BYTES = 1 << 20;
 const EMPTY_BODY_LIMIT_BYTES = 1024;
@@ -346,6 +347,11 @@ export class HttpError extends Error {
 }
 
 export function toResponse(error: unknown, locale: AppLocale = DEFAULT_SERVER_I18N_LOCALE): Response {
+  if (error instanceof UpstreamResponseError) return error.toResponse();
+  // 未被业务层捕获的上游 HTTP 错误也保持原 status/body；只有没有真实响应的 transport 错误才进入产品 envelope。
+  if (error instanceof UpstreamOperationError && error.status) {
+    return new UpstreamResponseError(error.status, error.details?.rawResponseText ?? "").toResponse();
+  }
   // 未知异常只作为 500 返回；真正的字段级错误必须在边界处抛 HttpError，避免泄漏内部堆栈。
   if (error instanceof HttpError) return errorResponse(error.status, error.message, error.code, error.details);
   return errorResponse(500, serverText(locale, "common.internalError"), "INTERNAL_ERROR");

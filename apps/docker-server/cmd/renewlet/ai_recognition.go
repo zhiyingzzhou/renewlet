@@ -17,18 +17,17 @@ import (
 )
 
 const (
-	aiRecognitionMaxTextChars        = 30000
-	aiRecognitionMaxImages           = 5
-	aiRecognitionMaxImageBytes       = 5 * 1024 * 1024
-	aiRecognitionMaxSubscriptions    = 100
-	aiRecognitionMultipartOverhead   = 1 << 20
-	aiRecognitionThinkingControlMax  = 8 << 10
-	aiRecognitionProviderTimeout     = 90 * time.Second
-	aiRecognitionMaxProviderResponse = 12000
-	aiRecognitionTestProviderTokens  = 16
-	aiRecognitionTestPrompt          = "Reply with OK."
-	aiRecognitionMaxPromptTags       = 200
-	aiRecognitionPromptTagPageSize   = 200
+	aiRecognitionMaxTextChars             = 30000
+	aiRecognitionMaxImages                = 5
+	aiRecognitionMaxImageBytes            = 5 * 1024 * 1024
+	aiRecognitionMaxSubscriptions         = 100
+	aiRecognitionMultipartOverhead        = 1 << 20
+	aiRecognitionThinkingControlMax       = 8 << 10
+	aiRecognitionProviderTimeout          = 90 * time.Second
+	aiRecognitionTestProviderTokens       = 16
+	aiRecognitionTestPrompt               = "Reply with OK."
+	aiRecognitionMaxPromptTags            = 50
+	aiRecognitionEstimatedRecordsPerImage = 4
 )
 
 var (
@@ -59,10 +58,10 @@ type aiThinkingControl struct {
 }
 
 type aiRecognitionInput struct {
-	Text            string
-	Images          []aiRecognitionImage
-	ThinkingControl *aiThinkingControl
-	MaxOutputTokens int
+	Text                    string
+	Images                  []aiRecognitionImage
+	ThinkingControl         *aiThinkingControl
+	ThinkingControlProvided bool
 }
 
 type aiRecognitionImage struct {
@@ -153,8 +152,8 @@ type aiRecognitionErrorDetails struct {
 }
 
 type aiRecognitionRunner interface {
-	Recognize(ctx context.Context, settings aiRecognitionSettings, input aiRecognitionInput, locale appLocale, timezone string, defaultCurrency string, configContext aiRecognitionConfigContext) (aiRecognizeResponse, error)
-	Stream(ctx context.Context, settings aiRecognitionSettings, input aiRecognitionInput, locale appLocale, timezone string, defaultCurrency string, configContext aiRecognitionConfigContext, sink aiRecognitionStreamSink) error
+	Recognize(ctx context.Context, settings aiRecognitionSettings, input aiRecognitionInput, locale appLocale, timezone string, configContext aiRecognitionConfigContext) (aiRecognizeResponse, error)
+	Stream(ctx context.Context, settings aiRecognitionSettings, input aiRecognitionInput, locale appLocale, timezone string, configContext aiRecognitionConfigContext, sink aiRecognitionStreamSink) error
 }
 
 type goaiRecognitionRunner struct{}
@@ -195,9 +194,17 @@ func prepareAIRecognitionRunContext(app core.App, e *core.RequestEvent) (aiRecog
 		return aiRecognitionRunContext{}, e.BadRequestError(validationErrorMessage(locale, "common.invalidRequestBody", err), err)
 	}
 	aiSettings := sanitizeAIRecognitionSettings(settings.AIRecognition)
+	// 设置页保存的 control 是本次识别的默认运行参数；multipart 明确携带的 control 只覆盖当前一次。
+	if !input.ThinkingControlProvided {
+		input.ThinkingControl = aiSettings.DefaultThinkingControl
+	}
 	if input.ThinkingControl != nil && !aiThinkingControlMatchesSettings(aiSettings, input.ThinkingControl) {
 		// thinking control 绑定 provider；切换模型后旧 control 不能继续沿用，否则第三方会拒绝请求。
 		return aiRecognitionRunContext{}, e.BadRequestError(serverText(locale, "aiRecognition.thinkingProviderMismatch"), nil)
+	}
+	// 临时请求也必须按当前模型能力收敛；旧客户端可能仍发送 GPT-5 不支持的 effort，清空后交给模型默认值。
+	if !aiThinkingControlCompatibleWithModel(aiSettings.Model, input.ThinkingControl) {
+		input.ThinkingControl = nil
 	}
 	if err := validateAIRecognitionSettings(aiSettings, locale); err != nil {
 		return aiRecognitionRunContext{}, e.BadRequestError(err.Error(), err)
@@ -221,7 +228,6 @@ func handleAIRecognizeSubscriptions(app core.App, e *core.RequestEvent) error {
 		runContext.Input,
 		runContext.Locale,
 		runContext.Settings.Timezone,
-		runContext.Settings.DefaultCurrency,
 		runContext.ConfigContext,
 	)
 	if err != nil {
@@ -238,11 +244,11 @@ func handleAIRecognizeSubscriptions(app core.App, e *core.RequestEvent) error {
 		if errors.Is(err, errAIRecognitionNoSubscriptions) {
 			return e.BadRequestError(serverText(runContext.Locale, "aiRecognition.noSubscriptions"), nil)
 		}
+		if providerResponse := aiProviderResponseFromError(err); providerResponse != nil || upstreamRawResponseTextFromError(err) != "" {
+			return aiRecognitionProviderResponseJSONError(e, http.StatusBadRequest, serverText(runContext.Locale, "aiRecognition.failed"), "AI_RECOGNITION_FAILED", "provider_failed", err, providerResponse)
+		}
 		if isAIRecognitionSchemaMismatchError(err) {
 			return e.BadRequestError(serverText(runContext.Locale, "aiRecognition.schemaMismatch"), nil)
-		}
-		if providerResponse := aiProviderResponseFromError(err); providerResponse != nil {
-			return aiRecognitionProviderResponseJSONError(e, http.StatusBadRequest, serverText(runContext.Locale, "aiRecognition.failed"), "AI_RECOGNITION_FAILED", "provider_failed", err, providerResponse)
 		}
 		return e.BadRequestError(serverText(runContext.Locale, "aiRecognition.failed"), safeAIRecognitionError(err))
 	}
@@ -323,32 +329,40 @@ func aiRecognitionConfigContextForUser(app core.App, userID string, locale appLo
 
 func aiRecognitionExistingTagsForUser(app core.App, userID string) ([]string, error) {
 	// 这些标签名会进入第三方 AI prompt；只传用户已经持久化的标签文本，不带历史订阅名称、金额或备注。
-	tags := []string{}
-	seen := map[string]bool{}
-	for offset := 0; len(tags) < aiRecognitionMaxPromptTags; offset += aiRecognitionPromptTagPageSize {
-		rows, err := app.FindRecordsByFilter("subscriptions", "user = {:user}", "-created", aiRecognitionPromptTagPageSize, offset, dbx.Params{"user": userID})
-		if err != nil {
-			return nil, err
-		}
-		for _, record := range rows {
-			values, err := normalizeTags(record.Get("tags"))
-			if err != nil {
-				continue
-			}
-			for _, tag := range values {
-				key := strings.ToLower(strings.TrimSpace(tag))
-				if key == "" || seen[key] {
-					continue
-				}
-				seen[key] = true
-				tags = append(tags, tag)
-				if len(tags) >= aiRecognitionMaxPromptTags {
-					return tags, nil
-				}
-			}
-		}
-		if len(rows) < aiRecognitionPromptTagPageSize {
-			break
+	// 派生表已经在启动时幂等建立；这里按与 Worker 相同的候选选择和排序读取，避免 SQLite
+	// GROUP BY 对非聚合 tag 的任意取值，也避免两个运行面把同一用户标签送成不同 prompt 上下文。
+	rows := []struct {
+		Tag string `db:"tag"`
+	}{}
+	err := app.DB().NewQuery(`
+		SELECT tag_row.tag
+		FROM subscription_tags AS tag_row
+		WHERE tag_row.user_id = {:user}
+		  AND NOT EXISTS (
+			SELECT 1
+			FROM subscription_tags AS candidate
+			WHERE candidate.user_id = tag_row.user_id
+			  AND candidate.tag_norm = tag_row.tag_norm
+			  AND (
+				candidate.updated_at > tag_row.updated_at
+				OR (candidate.updated_at = tag_row.updated_at AND candidate.subscription_id > tag_row.subscription_id)
+				OR (
+					candidate.updated_at = tag_row.updated_at
+					AND candidate.subscription_id = tag_row.subscription_id
+					AND candidate.tag > tag_row.tag
+				)
+			  )
+		  )
+		ORDER BY tag_row.updated_at DESC, tag_row.subscription_id DESC, tag_row.tag_norm ASC
+		LIMIT {:limit}
+	`).Bind(dbx.Params{"user": userID, "limit": aiRecognitionMaxPromptTags}).All(&rows)
+	if err != nil {
+		return nil, err
+	}
+	tags := make([]string, 0, len(rows))
+	for _, row := range rows {
+		if strings.TrimSpace(row.Tag) != "" {
+			tags = append(tags, row.Tag)
 		}
 	}
 	return tags, nil
@@ -369,13 +383,68 @@ func aiRecognitionConfigOptions(items []customConfigItem, locale appLocale, buil
 }
 
 func aiRecognitionJSONError(e *core.RequestEvent, status int, message string, code string, reason string, err error, _ *aiRecognitionDiagnostics) error {
+	if providerResponse := aiProviderResponseFromError(err); providerResponse != nil && providerResponse.Status != nil {
+		return writeAIRecognitionUpstreamResponse(e, providerResponse)
+	}
+	raw := aiRecognitionUpstreamRawText(err)
+	if raw != "" {
+		message = raw
+	}
 	return apiErrorJSON(e, status, code, message, aiRecognitionErrorDetails{
-		RawResponseText: optionalUpstreamBody(firstNonBlank(upstreamRawResponseTextFromError(err), aiProviderResponseBody(aiProviderResponseFromError(err)), optionalStringValue(safeAIRecognitionProviderMessage(err)), reason)),
+		RawResponseText: optionalUpstreamBody(firstNonBlank(raw, optionalStringValue(safeAIRecognitionProviderMessage(err)), reason)),
 	})
 }
 
 func aiRecognitionProviderResponseJSONError(e *core.RequestEvent, status int, message string, code string, reason string, err error, providerResponse *aiProviderResponse) error {
+	if providerResponse != nil && providerResponse.Status != nil {
+		return writeAIRecognitionUpstreamResponse(e, providerResponse)
+	}
+	raw := aiRecognitionUpstreamRawText(err)
+	if raw == "" {
+		raw = truncateAIRecognitionProviderText(aiProviderResponseBody(providerResponse))
+	}
+	if raw != "" {
+		message = raw
+	}
 	return apiErrorJSON(e, status, code, message, map[string]interface{}{
-		"rawResponseText": firstNonBlank(upstreamRawResponseTextFromError(err), aiProviderResponseBody(providerResponse), optionalStringValue(safeAIRecognitionProviderMessage(err)), reason),
+		"rawResponseText": firstNonBlank(raw, optionalStringValue(safeAIRecognitionProviderMessage(err)), reason),
 	})
+}
+
+// HTTP 响应已经来自 provider 时直接交付 status/body；只有没有上游 HTTP 响应的本地错误才进入产品 envelope。
+func writeAIRecognitionUpstreamResponse(e *core.RequestEvent, providerResponse *aiProviderResponse) error {
+	if providerResponse == nil || providerResponse.Status == nil {
+		return nil
+	}
+	for name, value := range providerResponse.Headers {
+		if safeUpstreamHeaderName(name) {
+			e.Response.Header().Set(name, value)
+		}
+	}
+	e.Response.Header().Set("Cache-Control", "no-store")
+	e.Response.Header().Set("X-Content-Type-Options", "nosniff")
+	e.Response.WriteHeader(*providerResponse.Status)
+	if providerResponse.Body == nil {
+		return nil
+	}
+	_, err := e.Response.Write([]byte(*providerResponse.Body))
+	return err
+}
+
+// provider/upstream 已经给出正文时，当前 API 的 message 也使用同一正文；调用方再决定是否附带本地错误码。
+func aiRecognitionUpstreamRawText(err error) string {
+	return truncateAIRecognitionProviderText(firstNonBlank(upstreamRawResponseTextFromError(err), aiProviderResponseBody(aiProviderResponseFromError(err))))
+}
+
+func truncateAIRecognitionProviderText(value string) string {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return ""
+	}
+	runes := []rune(value)
+	if len(runes) <= upstreamProviderResponseCaptureBodyMaxBytes {
+		return value
+	}
+	// SSE message 与 Worker shared schema 共用 64KiB 上限；截断只保护协议边界，保留 provider 原文前缀，不拼本地错误说明。
+	return string(runes[:upstreamProviderResponseCaptureBodyMaxBytes])
 }

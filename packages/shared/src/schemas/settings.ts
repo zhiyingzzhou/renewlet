@@ -22,7 +22,11 @@ import {
   type LocalTime,
 } from "../runtime";
 import { LOCALE_PREFERENCES } from "../i18n-config";
-import { aiRecognitionPublicSettingsSchema, aiRecognitionSettingsSchema } from "./ai-recognition";
+import {
+  aiRecognitionPublicSettingsSchema,
+  aiRecognitionSettingsSchema,
+  normalizeLegacyAIRecognitionSettingsInput,
+} from "./ai-recognition";
 import { apiSuccessResponseSchema } from "./api";
 import { exchangeRateProviderSchema } from "./exchange-rates";
 import { moneyStringSchema } from "../money";
@@ -272,7 +276,12 @@ export const settingsUpdateBodySchema = publicSettingsUpdateSchema.extend({
 }).strict();
 
 // 历史 settings 与备份允许缺少新字段；嵌套来源也必须按 patch 解析，随后由统一 normalizer 补齐默认值。
+const persistedAIRecognitionSettingsSchema = z.preprocess(
+  normalizeLegacyAIRecognitionSettingsInput,
+  aiRecognitionSettingsSchema,
+);
 export const persistedSettingsBackupSchema = appSettingsSchema.partial().extend({
+  aiRecognition: persistedAIRecognitionSettingsSchema.optional(),
   builtInIconSources: builtInIconSourcesPatchSchema.optional(),
   onlineIconSources: onlineIconSourcesPatchSchema.optional(),
 }).strict();

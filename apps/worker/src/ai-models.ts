@@ -19,7 +19,7 @@ import { HttpError, readJson, requestLocale, successJson } from "./http";
 import { serverText, type AppLocale } from "./server-i18n";
 import type { Env } from "./types";
 import { providerResponseFromFetchResponse } from "./ai-provider-response";
-import type { UpstreamProviderResponse as AiProviderResponse } from "./upstream-response";
+import { UpstreamResponseError, type UpstreamProviderResponse as AiProviderResponse } from "./upstream-response";
 import { UpstreamRequestError, sendUpstreamRequest } from "./upstream-http";
 import { resolveSecretMutation } from "@renewlet/shared/schemas/secrets";
 import { getSettings } from "./db";
@@ -73,12 +73,13 @@ export async function listAIModels(request: Request, env: Env): Promise<Response
       truncated: normalized.truncated,
     }));
   } catch (error) {
-    if (error instanceof HttpError) throw error;
+    if (error instanceof HttpError || error instanceof UpstreamResponseError) throw error;
+    const details = aiModelListErrorDetails("provider_failed", error);
     throw new HttpError(
       400,
-      serverText(locale, "aiRecognition.modelListFailed"),
+      details.rawResponseText,
       "AI_MODEL_LIST_FAILED",
-      aiModelListErrorDetails("provider_failed", error),
+      details,
     );
   }
 }
@@ -146,22 +147,24 @@ async function fetchAIModelListJSON(endpoint: ModelListEndpoint, locale: AppLoca
 
   const body = await readAIModelListResponseText(response, locale);
   if (!response.ok) {
-    throw new HttpError(
+    const providerResponse = providerResponseFromFetchResponse(response, body.text, body.truncated, endpoint.secrets);
+    throw new UpstreamResponseError(
       response.status,
-      serverText(locale, "aiRecognition.modelListFailed"),
-      "AI_MODEL_LIST_FAILED",
-      aiModelListErrorDetails(`http_${response.status}`, body.text, providerResponseFromFetchResponse(response, body.text, body.truncated, endpoint.secrets)),
+      providerResponse.body ?? "",
+      providerResponse.headers,
+      providerResponse.statusText ?? response.statusText,
     );
   }
 
   try {
     return JSON.parse(body.text) as unknown;
   } catch {
+    const details = aiModelListErrorDetails("invalid_json", body.text, providerResponseFromFetchResponse(response, body.text, body.truncated, endpoint.secrets));
     throw new HttpError(
       400,
-      serverText(locale, "aiRecognition.modelListFailed"),
+      details.rawResponseText,
       "AI_MODEL_LIST_INVALID_JSON",
-      aiModelListErrorDetails("invalid_json", body.text, providerResponseFromFetchResponse(response, body.text, body.truncated, endpoint.secrets)),
+      details,
     );
   }
 }
@@ -349,6 +352,6 @@ function aiModelListErrorDetails(reason: string, providerMessage: unknown, provi
       ? providerMessage
       : null;
   return aiModelListErrorDetailsSchema.parse({
-    rawResponseText: providerResponse?.body || message || reason,
+    rawResponseText: providerResponse?.body || providerResponse?.statusText || message || reason,
   });
 }

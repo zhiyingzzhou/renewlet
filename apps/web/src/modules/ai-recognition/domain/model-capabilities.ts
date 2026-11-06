@@ -4,6 +4,7 @@ import type {
   AiRecognitionTransportProtocol,
   AiThinkingControl,
 } from "@/lib/api/schemas/ai-recognition";
+import { openAIReasoningEffortsForModel } from "@renewlet/shared/schemas/ai-recognition";
 
 export interface AIThinkingOption {
   id: string;
@@ -12,8 +13,7 @@ export interface AIThinkingOption {
   control: AiThinkingControl | null;
 }
 
-// 这些能力表跟第三方模型协议耦合；新增 provider/model 时只扩展这里，UI 继续消费统一的 thinking option。
-const OPENAI_REASONING_EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh"] as const;
+// provider-specific UI 选项只描述协议形状；OpenAI effort 代际规则由 shared 事实源提供，避免前端维护模型名特例。
 const ANTHROPIC_EFFORTS = ["low", "medium", "high", "xhigh", "max"] as const;
 const GEMINI_LEVELS = ["minimal", "low", "medium", "high"] as const;
 const GEMINI_BUDGETS = [1024, 4096, 8192] as const;
@@ -27,7 +27,7 @@ export function getAIThinkingOptions(
   const normalizedModel = normalizeAIModelIdForCapability(model);
   if (!normalizedModel) return [];
   // transport protocol 是真实 API 形状边界，同一 provider 在兼容协议下不能复用原生 thinking 参数。
-  if (providerType === "openai" && transportProtocol === "openai-chat") return getOpenAIThinkingOptions(normalizedModel);
+  if (providerType === "openai" && transportProtocol === "openai-responses") return getOpenAIThinkingOptions(normalizedModel);
   if (providerType === "gemini" && transportProtocol === "gemini-generate-content") return getGeminiThinkingOptions(normalizedModel);
   if (providerType === "anthropic" && transportProtocol === "anthropic-messages") return getAnthropicThinkingOptions(normalizedModel);
   return [];
@@ -59,6 +59,10 @@ export function defaultAIThinkingControl(
   return getAIThinkingOptions(providerType, transportProtocol, model)[0]?.control ?? null;
 }
 
+export function aiThinkingDefaultLabelKey(_model: string): "aiRecognition.thinking.modelDefault" {
+  return "aiRecognition.thinking.modelDefault";
+}
+
 export function thinkingOptionId(control: AiThinkingControl | null): string {
   if (!control) return "off";
   // id 必须编码 provider 维度，防止不同 provider 的 budget/effort 文案选项在 Select 中撞值。
@@ -81,15 +85,16 @@ function thinkingControlMatchesProvider(
   transportProtocol: AiRecognitionTransportProtocol,
   control: AiThinkingControl,
 ): boolean {
-  if (providerType === "openai" && transportProtocol === "openai-chat") return control.provider === "openai";
+  if (providerType === "openai" && transportProtocol === "openai-responses") return control.provider === "openai";
   if (providerType === "gemini" && transportProtocol === "gemini-generate-content") return control.provider === "gemini";
   if (providerType === "anthropic" && transportProtocol === "anthropic-messages") return control.provider === "anthropic";
   return false;
 }
 
 function getOpenAIThinkingOptions(model: string): AIThinkingOption[] {
-  if (!isOpenAIReasoningModel(model)) return [];
-  return OPENAI_REASONING_EFFORTS.map((effort) => ({
+  const efforts = openAIReasoningEffortsForModel(model);
+  if (!efforts) return [];
+  return efforts.map((effort) => ({
     id: `openai:${effort}`,
     labelKey: `aiRecognition.thinking.openai.${effort}` as MessageKey,
     descriptionKey: `aiRecognition.thinking.openai.${effort}.description` as MessageKey,
@@ -149,11 +154,6 @@ function getAnthropicThinkingOptions(model: string): AIThinkingOption[] {
     descriptionKey: "aiRecognition.thinking.anthropic.budget.description" as MessageKey,
     control: { provider: "anthropic", mode: "budget", budgetTokens },
   }));
-}
-
-function isOpenAIReasoningModel(model: string): boolean {
-  if (model.includes("chat")) return false;
-  return /^(?:o[134](?:-|$)|gpt-5(?:\.|[-]|$))/.test(model);
 }
 
 function isGeminiLevelModel(model: string): boolean {

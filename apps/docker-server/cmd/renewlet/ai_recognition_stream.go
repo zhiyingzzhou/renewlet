@@ -19,7 +19,6 @@ const (
 	aiRecognitionStreamStageInputRead    = "input-read"
 	aiRecognitionStreamStageModelStart   = "model-start"
 	aiRecognitionStreamStageModelStream  = "model-stream"
-	aiRecognitionStreamStageRepairStart  = "repair-start"
 	aiRecognitionStreamStageValidating   = "validating"
 	aiRecognitionStreamStageFinalizing   = "finalizing"
 	aiRecognitionStreamHeartbeatInterval = 15 * time.Second
@@ -52,15 +51,17 @@ type aiRecognitionStreamFinalEvent struct {
 }
 
 type aiRecognitionStreamErrorEvent struct {
-	Type    string                     `json:"type"`
-	Message string                     `json:"message"`
-	Code    string                     `json:"code"`
-	Details *aiRecognitionErrorDetails `json:"details,omitempty"`
+	Type             string                     `json:"type"`
+	Message          string                     `json:"message"`
+	Code             string                     `json:"code"`
+	Details          *aiRecognitionErrorDetails `json:"details,omitempty"`
+	UpstreamResponse *upstreamProviderResponse  `json:"upstreamResponse,omitempty"`
 }
 
 type aiRecognitionSSEWriter struct {
 	response   http.ResponseWriter
 	controller *http.ResponseController
+	cancel     context.CancelFunc
 	mu         sync.Mutex
 }
 
@@ -69,21 +70,22 @@ func handleAIRecognizeSubscriptionsStream(app core.App, e *core.RequestEvent) er
 	if err != nil {
 		return err
 	}
-	writer := aiRecognitionSSEWriter{response: e.Response, controller: http.NewResponseController(e.Response)}
+	providerContext, cancel := context.WithCancel(e.Request.Context())
+	defer cancel()
+	writer := aiRecognitionSSEWriter{response: e.Response, controller: http.NewResponseController(e.Response), cancel: cancel}
 	writer.prepareHeaders()
 	// 识别请求可能被代理缓冲或长时间等待模型首包；心跳只写 SSE comment，避免污染 shared event union。
-	stopHeartbeat := writer.startHeartbeat(e.Request.Context())
+	stopHeartbeat := writer.startHeartbeat(providerContext)
 	defer stopHeartbeat()
 	if err := writer.Progress(aiRecognitionStreamStageInputRead); err != nil {
 		return nil
 	}
 	err = defaultAIRecognitionRunner.Stream(
-		e.Request.Context(),
+		providerContext,
 		runContext.AISettings,
 		runContext.Input,
 		runContext.Locale,
 		runContext.Settings.Timezone,
-		runContext.Settings.DefaultCurrency,
 		runContext.ConfigContext,
 		&writer,
 	)
@@ -165,33 +167,69 @@ func (writer *aiRecognitionSSEWriter) writeFrame(frame string) error {
 	defer writer.mu.Unlock()
 	// 模型流、心跳和错误可能来自不同 goroutine；写帧必须串行，否则 SSE 边界会被交错破坏。
 	if _, err := fmt.Fprint(writer.response, frame); err != nil {
+		// 客户端断开时立刻取消 provider context，避免只等待上游超时才释放图片和请求资源。
+		if writer.cancel != nil {
+			writer.cancel()
+		}
 		return err
 	}
-	return writer.controller.Flush()
+	if err := writer.controller.Flush(); err != nil {
+		// 某些 ResponseWriter 会在 Flush 才暴露客户端断开；两个写阶段都必须传播取消。
+		if writer.cancel != nil {
+			writer.cancel()
+		}
+		return err
+	}
+	return nil
 }
 
 func aiRecognitionStreamErrorForError(locale appLocale, err error) aiRecognitionStreamErrorEvent {
 	message := serverText(locale, "aiRecognition.failed")
 	code := "AI_RECOGNITION_FAILED"
-	reason := "provider_failed"
 	if errors.Is(err, errAIRecognitionNoSubscriptions) {
 		message = serverText(locale, "aiRecognition.noSubscriptions")
 		code = "AI_RECOGNITION_EMPTY"
-		reason = "empty"
 	} else if errors.Is(err, context.DeadlineExceeded) {
 		code = "AI_RECOGNITION_TIMEOUT"
 	} else if isAIRecognitionSchemaMismatchError(err) {
 		message = serverText(locale, "aiRecognition.schemaMismatch")
 		code = "AI_RECOGNITION_SCHEMA_MISMATCH"
-		reason = "schema_mismatch"
 	}
 
 	var details *aiRecognitionErrorDetails
-	if diagnostics := aiRecognitionDiagnosticsFromError(err); diagnostics != nil {
-		cause := aiRecognitionCauseError(err)
-		details = &aiRecognitionErrorDetails{
-			RawResponseText: optionalUpstreamBody(firstNonBlank(upstreamRawResponseTextFromError(cause), aiProviderResponseBody(aiProviderResponseFromError(cause)), optionalStringValue(safeAIRecognitionProviderMessage(cause)), reason)),
+	cause := aiRecognitionCauseError(err)
+	providerResponse := aiProviderResponseFromError(cause)
+	if providerResponse != nil && providerResponse.Status != nil {
+		raw := aiRecognitionUpstreamRawText(cause)
+		if raw == "" {
+			raw = aiProviderResponseBody(providerResponse)
 		}
+		if raw == "" {
+			raw = fmt.Sprintf("%s HTTP %d", "upstream", *providerResponse.Status)
+		}
+		return aiRecognitionStreamErrorEvent{
+			Type:    "recognition/error",
+			Message: raw,
+			Code:    "UPSTREAM_HTTP_ERROR",
+			Details: func() *aiRecognitionErrorDetails {
+				if raw == "" {
+					return nil
+				}
+				return &aiRecognitionErrorDetails{RawResponseText: optionalUpstreamBody(raw)}
+			}(),
+			UpstreamResponse: providerResponse,
+		}
+	}
+	// provider body 属于当前错误响应的排障事实；即使超时/取消发生在 diagnostics 包装之前，也不能丢掉已经收到的原文。
+	raw := aiRecognitionUpstreamRawText(cause)
+	if raw != "" {
+		message = raw
+	}
+	if raw == "" && aiRecognitionDiagnosticsFromError(err) != nil {
+		raw = optionalStringValue(safeAIRecognitionProviderMessage(cause))
+	}
+	if raw != "" {
+		details = &aiRecognitionErrorDetails{RawResponseText: optionalUpstreamBody(raw)}
 	}
 	return aiRecognitionStreamErrorEvent{
 		Type:    "recognition/error",

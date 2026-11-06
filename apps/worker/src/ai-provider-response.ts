@@ -1,6 +1,8 @@
 import { APICallError } from "ai";
 import {
   type UpstreamProviderResponse as AiProviderResponse,
+  UpstreamOperationError,
+  UpstreamResponseError,
   upstreamProviderResponseFromBody,
   upstreamProviderResponseFromUnknown,
 } from "./upstream-response";
@@ -28,6 +30,35 @@ export function providerResponseFromError(error: unknown, secrets: readonly stri
     body: apiError.responseBody,
     bodyTruncated: false,
   }, secrets);
+}
+
+/** APICallError 只要带有上游 status，就必须在 HTTP 边界保持原状态和原 body。 */
+export function upstreamResponseErrorFromError(error: unknown, secrets: readonly string[] = []): UpstreamResponseError | null {
+  return findUpstreamResponseError(error, secrets);
+}
+
+function findUpstreamResponseError(error: unknown, secrets: readonly string[], seen = new WeakSet<object>()): UpstreamResponseError | null {
+  if (!error || typeof error !== "object" || seen.has(error)) return null;
+  seen.add(error);
+  if (error instanceof UpstreamResponseError) return error;
+
+  const response = providerResponseFromError(error, secrets);
+  if (response?.status) return new UpstreamResponseError(response.status, response.body ?? "", response.headers, response.statusText ?? "");
+  if (error instanceof UpstreamOperationError && error.status) {
+    return new UpstreamResponseError(error.status, error.details?.rawResponseText ?? "");
+  }
+
+  if ("cause" in error) {
+    const cause = findUpstreamResponseError((error as { cause?: unknown }).cause, secrets, seen);
+    if (cause) return cause;
+  }
+  if ("errors" in error && Array.isArray((error as { errors?: unknown }).errors)) {
+    for (const nested of (error as { errors: unknown[] }).errors) {
+      const match = findUpstreamResponseError(nested, secrets, seen);
+      if (match) return match;
+    }
+  }
+  return null;
 }
 
 function findAPICallError(error: unknown, seen = new WeakSet<object>()): APICallErrorLike | null {

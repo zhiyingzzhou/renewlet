@@ -4,16 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/i18n/I18nProvider";
 import { AI_RECOGNITION_MAX_IMAGES, AI_RECOGNITION_MAX_TEXT_CHARS } from "@/lib/api/schemas/ai-recognition";
 import { cn } from "@/lib/utils";
-import type { AIRecognitionImageItem, AIRecognitionInputMode } from "./ai-recognition-dialog-types";
+import type { AIRecognitionImageItem } from "./ai-recognition-dialog-types";
 
 interface AIRecognitionInputTabsProps {
-  mode: AIRecognitionInputMode;
-  onModeChange: (mode: AIRecognitionInputMode) => void;
   text: string;
   onTextChange: (text: string) => void;
   textInputRef: RefObject<HTMLTextAreaElement | null>;
@@ -27,8 +24,6 @@ interface AIRecognitionInputTabsProps {
 }
 
 export function AIRecognitionInputTabs({
-  mode,
-  onModeChange,
   text,
   onTextChange,
   textInputRef,
@@ -86,10 +81,14 @@ export function AIRecognitionInputTabs({
   }
 
   function handlePaste(event: ClipboardEvent<HTMLDivElement>) {
-    if (mode !== "image" || !canAddMoreImages) return;
+    if (!canAddMoreImages) return;
     const pastedImages = getImageFilesFromClipboard(event.clipboardData);
     if (pastedImages.length === 0) return;
-    event.preventDefault();
+    // 剪贴板同时含文字和图片时保留浏览器文字粘贴，图片另行加入同一工作区，避免丢失任一证据源。
+    const pastedText = typeof event.clipboardData.getData === "function"
+      ? event.clipboardData.getData("text/plain")
+      : "";
+    if (!pastedText.trim()) event.preventDefault();
     handleFiles(pastedImages);
   }
 
@@ -176,9 +175,7 @@ export function AIRecognitionInputTabs({
   ));
 
   return (
-    <Tabs
-      value={mode}
-      onValueChange={(value) => onModeChange(value as AIRecognitionInputMode)}
+    <div
       onPaste={handlePaste}
       data-testid="ai-recognition-input-tabs"
       data-layout={layout}
@@ -188,25 +185,19 @@ export function AIRecognitionInputTabs({
         "flex flex-col border-b border-border bg-secondary/20 sm:flex-row sm:items-center sm:justify-between",
         mobileCompact ? "gap-2 px-2.5 py-2" : "gap-3 px-3 py-3",
       )}>
-        <div className={cn("min-w-0", mobileCompact && "sr-only")}>
-          <p className="text-xs leading-5 text-muted-foreground">{mode === "text" ? t("aiRecognition.inputHint") : t("aiRecognition.imageDropDescription", { count: AI_RECOGNITION_MAX_IMAGES })}</p>
+        <div className="flex min-w-0 items-center gap-2">
+          <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <p className="text-xs leading-5 text-muted-foreground">{t("aiRecognition.inputHint")}</p>
         </div>
-        <TabsList className={cn("grid h-8 w-full grid-cols-2 rounded-md border border-border bg-background p-0.5", mobileCompact ? "sm:w-full" : "sm:w-52")}>
-          <TabsTrigger value="text" disabled={disabled} className="h-7 gap-1.5 rounded-[5px] px-2.5 text-xs shadow-none data-[state=active]:bg-secondary data-[state=active]:shadow-none">
-            <FileText className="h-3.5 w-3.5" />
-            {t("aiRecognition.inputModeText")}
-          </TabsTrigger>
-          <TabsTrigger value="image" disabled={disabled} className="h-7 gap-1.5 rounded-[5px] px-2.5 text-xs shadow-none data-[state=active]:bg-secondary data-[state=active]:shadow-none">
-            <ImageIcon className="h-3.5 w-3.5" />
-            {t("aiRecognition.inputModeImage")}
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+          <ImageIcon className="h-3.5 w-3.5" />
+          <span>{t("aiRecognition.imageDropDescription", { count: AI_RECOGNITION_MAX_IMAGES })}</span>
+        </div>
       </div>
 
-      <TabsContent
-        value="text"
+      <div
         data-testid="ai-recognition-text-panel"
-        className={cn("m-0 grid min-h-0 grid-rows-[minmax(0,1fr)_auto] gap-2 overflow-hidden", mobileCompact ? "p-2.5" : "p-3")}
+        className={cn("grid min-h-0 grid-rows-[minmax(10rem,1fr)_auto_auto] gap-2 overflow-hidden", mobileCompact ? "p-2.5" : "p-3")}
       >
         <Label htmlFor="ai-recognition-text" className="sr-only">{t("aiRecognition.inputText")}</Label>
         <Textarea
@@ -214,47 +205,33 @@ export function AIRecognitionInputTabs({
           id="ai-recognition-text"
           value={text}
           disabled={disabled}
-          onChange={(event) => onTextChange(event.target.value.slice(0, AI_RECOGNITION_MAX_TEXT_CHARS))}
+          onChange={(event) => onTextChange(Array.from(event.target.value).slice(0, AI_RECOGNITION_MAX_TEXT_CHARS).join(""))}
           placeholder={t("aiRecognition.inputPlaceholder")}
           className="h-full min-h-0 resize-none border-border bg-card text-sm leading-6"
         />
         <div className="flex justify-end text-xs tabular-nums text-muted-foreground">
-          <span>{text.length}/{AI_RECOGNITION_MAX_TEXT_CHARS}</span>
+          <span>{Array.from(text).length}/{AI_RECOGNITION_MAX_TEXT_CHARS}</span>
         </div>
-      </TabsContent>
-
-      <TabsContent
-        value="image"
-        data-testid="ai-recognition-image-panel"
-        className={cn("m-0 flex min-h-0 flex-col overflow-hidden", mobileCompact ? "gap-2 p-2.5" : "gap-3 p-3")}
-      >
-        <Input
-          ref={fileInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          multiple
-          className="hidden"
-          disabled={!canAddMoreImages}
-          onChange={handleFileInputChange}
-          aria-label={t("aiRecognition.imageFileInput")}
-        />
-        <div data-testid="ai-recognition-image-scrollport" className="min-h-0 flex-1 overflow-y-auto">
-          {mobileCompact ? (
-            <div className="flex min-h-full flex-col gap-2">
-              {uploadButton}
-              {images.length > 0 ? (
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(5.75rem,1fr))] gap-2">
-                  {imageTiles}
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,6rem)] gap-2">
+        <div
+          data-testid="ai-recognition-image-panel"
+          className={cn("flex min-h-0 flex-col overflow-hidden border-t border-border pt-3", mobileCompact ? "gap-2" : "gap-3")}
+        >
+          <Input
+            ref={fileInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            multiple
+            className="hidden"
+            disabled={!canAddMoreImages}
+            onChange={handleFileInputChange}
+            aria-label={t("aiRecognition.imageFileInput")}
+          />
+          <div data-testid="ai-recognition-image-scrollport" className="min-h-0 max-h-48 overflow-y-auto">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(5.75rem,1fr))] gap-2">
               {uploadButton}
               {imageTiles}
             </div>
-          )}
-        </div>
+          </div>
 
         <Dialog open={Boolean(previewImage)} onOpenChange={(open) => !open && setPreviewImage(null)}>
           <DialogContent layout="content" className="max-w-4xl border-border bg-card p-0">
@@ -272,8 +249,9 @@ export function AIRecognitionInputTabs({
             </div>
           </DialogContent>
         </Dialog>
-      </TabsContent>
-    </Tabs>
+        </div>
+      </div>
+    </div>
   );
 }
 

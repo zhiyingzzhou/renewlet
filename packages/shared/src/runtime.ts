@@ -27,6 +27,25 @@ export type BillingCycle = (typeof BILLING_CYCLES)[number];
 export const CUSTOM_CYCLE_UNITS = ["day", "week", "month", "year"] as const;
 export type CustomCycleUnit = (typeof CUSTOM_CYCLE_UNITS)[number];
 
+/**
+ * 模型可能返回本地化单位或把数量连在单位前面；这里统一收敛到持久化枚举。
+ * 只处理单位本身，不从文本猜测周期数量，数量仍由调用方单独解析。
+ */
+export function normalizeCustomCycleUnit(value: string | null | undefined): CustomCycleUnit | null {
+  const text = typeof value === "string" ? value.normalize("NFKC").trim().toLowerCase().replace(/\s+/g, "") : "";
+  if (!text) return null;
+  if (text === "day" || text === "days" || text === "天" || text === "日") return "day";
+  if (text === "week" || text === "weeks" || text === "周" || text === "星期") return "week";
+  if (text === "month" || text === "months" || text === "月" || text === "个月") return "month";
+  if (text === "year" || text === "years" || text === "年" || text === "年度") return "year";
+  const suffix = text.match(/(days?|天|日|weeks?|周|星期|months?|个月|月|years?|年|年度)$/)?.[1];
+  if (suffix === "day" || suffix === "days" || suffix === "天" || suffix === "日") return "day";
+  if (suffix === "week" || suffix === "weeks" || suffix === "周" || suffix === "星期") return "week";
+  if (suffix === "month" || suffix === "months" || suffix === "月" || suffix === "个月") return "month";
+  if (suffix === "year" || suffix === "years" || suffix === "年" || suffix === "年度") return "year";
+  return null;
+}
+
 /** 通知渠道枚举同时约束设置 payload、cron result 和历史面板筛选。 */
 export const NOTIFICATION_CHANNELS = ["telegram", "notifyx", "webhook", "dingtalk", "wechat", "email", "bark", "serverchan", "discord", "pushplus"] as const;
 export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];

@@ -19,7 +19,7 @@ func TestResolveAIProviderEndpointNormalizesProtocolURLs(t *testing.T) {
 		wantHeaderValue    string
 	}{
 		{
-			name: "openai chat endpoint",
+			name: "openai responses endpoint",
 			settings: aiRecognitionSettings{
 				ProviderType:      aiProviderTypeOpenAI,
 				TransportProtocol: aiProtocolOpenAIChat,

@@ -9,6 +9,7 @@ import {
   aiRecognitionStreamEventSchema,
   aiRecognitionTestRequestSchema,
   aiThinkingControlSchema,
+  normalizeAIRecognitionThinkingControlForModel,
   type AiRecognitionSettings,
   type AiRecognitionStreamEvent,
   type AiThinkingControl,
@@ -25,11 +26,13 @@ import { normalizeAIImageType } from "./ai-recognition-input";
 import {
   aiRecognitionErrorDetails,
   redactAIRecognitionSecrets,
+  rawAIRecognitionErrorDetails,
   safeAIRecognitionError,
 } from "./ai-recognition-diagnostics";
-import { providerResponseFromError } from "./ai-provider-response";
-import { redactUpstreamSecrets, upstreamErrorDetailsFromError } from "./upstream-response";
+import { providerResponseFromError, upstreamResponseErrorFromError } from "./ai-provider-response";
+import { redactUpstreamSecrets, upstreamErrorDetailsFromError, UpstreamResponseError } from "./upstream-response";
 import {
+  AI_RECOGNITION_PROVIDER_TIMEOUT_MS,
   runAIRecognitionConnectionTest,
   thinkingControlMatchesSettings,
 } from "./ai-recognition-runtime";
@@ -50,12 +53,12 @@ const AI_RECOGNITION_MAX_BODY_BYTES =
   AI_RECOGNITION_MAX_TEXT_CHARS * 4
   + AI_RECOGNITION_MAX_IMAGES * AI_RECOGNITION_MAX_IMAGE_BYTES
   + AI_RECOGNITION_MULTIPART_OVERHEAD;
-const AI_RECOGNITION_STREAM_PROVIDER_TIMEOUT_MS = 90_000;
 const AI_RECOGNITION_STREAM_HEARTBEAT_MS = 15_000;
 type AIRecognitionInput = {
   text: string;
   images: Array<{ data: Uint8Array; mediaType: string }>;
   thinkingControl: AiThinkingControl | null;
+  thinkingControlProvided: boolean;
 };
 
 type AIRecognitionRunContext = {
@@ -64,7 +67,6 @@ type AIRecognitionRunContext = {
   input: AIRecognitionInput;
   thinkingControl: AiThinkingControl | null;
   timezone: string;
-  defaultCurrency: string;
   configContext: AIRecognitionPromptConfigContext;
 };
 
@@ -75,6 +77,7 @@ type AIRecognitionRunContext = {
  */
 export async function recognizeSubscriptions(request: Request, env: Env): Promise<Response> {
   const runContext = await prepareAIRecognitionRun(request, env);
+  const runAbort = createAIRecognitionRunAbortSignal(request.signal, AI_RECOGNITION_PROVIDER_TIMEOUT_MS);
 
   try {
     const response = await runAIRecognition({
@@ -82,34 +85,37 @@ export async function recognizeSubscriptions(request: Request, env: Env): Promis
       input: runContext.input,
       locale: runContext.locale,
       timezone: runContext.timezone,
-      defaultCurrency: runContext.defaultCurrency,
       configContext: runContext.configContext,
       thinkingControl: runContext.thinkingControl,
-      maxOutputTokens: 12000,
-      abortSignal: request.signal,
+      abortSignal: runAbort.signal,
     });
     if (response.subscriptions.length === 0) {
       throw new HttpError(400, serverText(runContext.locale, "aiRecognition.noSubscriptions"), "AI_RECOGNITION_EMPTY", aiRecognitionErrorDetails("empty", null, response.diagnostics));
     }
     return successJson(aiRecognizePayloadSchema.parse(response));
   } catch (error) {
-    if (error instanceof HttpError) throw error;
+    if (error instanceof HttpError || error instanceof UpstreamResponseError) throw error;
     const diagnostics = aiRecognitionDiagnosticsFromError(error);
     const cause = aiRecognitionCauseFromError(error);
+    const upstreamResponseError = upstreamResponseErrorFromError(cause, [runContext.settings.apiKey]);
+    if (upstreamResponseError) throw upstreamResponseError;
+    const upstreamDetails = rawAIRecognitionErrorDetails(cause);
     if (isAIRecognitionSchemaMismatch(error)) {
       throw new HttpError(
         400,
-        serverText(runContext.locale, "aiRecognition.schemaMismatch"),
+        upstreamDetails?.rawResponseText ?? serverText(runContext.locale, "aiRecognition.schemaMismatch"),
         "AI_RECOGNITION_SCHEMA_MISMATCH",
-        diagnostics ? aiRecognitionErrorDetails("schema_mismatch", cause, diagnostics) : safeAIRecognitionError(cause),
+        diagnostics ? aiRecognitionErrorDetails("schema_mismatch", cause, diagnostics) : upstreamDetails ?? safeAIRecognitionError(cause),
       );
     }
     throw new HttpError(
       400,
-      serverText(runContext.locale, "aiRecognition.failed"),
+      upstreamDetails?.rawResponseText ?? serverText(runContext.locale, "aiRecognition.failed"),
       "AI_RECOGNITION_FAILED",
-      diagnostics ? aiRecognitionErrorDetails("provider_failed", cause, diagnostics) : safeAIRecognitionError(cause),
+      diagnostics ? aiRecognitionErrorDetails("provider_failed", cause, diagnostics) : upstreamDetails ?? safeAIRecognitionError(cause),
     );
+  } finally {
+    runAbort.cleanup();
   }
 }
 
@@ -118,6 +124,7 @@ export async function recognizeSubscriptionsStream(request: Request, env: Env): 
   const encoder = new TextEncoder();
   let closed = false;
   let heartbeat: ReturnType<typeof setInterval> | null = null;
+  let runAbort: ReturnType<typeof createAIRecognitionRunAbortSignal> | null = null;
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
@@ -135,14 +142,19 @@ export async function recognizeSubscriptionsStream(request: Request, env: Env): 
         // SSE comment 只承担代理/浏览器链路保活，不进入 shared 事件契约，也不能携带诊断或 provider 原文。
         emitComment("keep-alive");
       }, AI_RECOGNITION_STREAM_HEARTBEAT_MS);
+      const currentRunAbort = createAIRecognitionRunAbortSignal(request.signal, AI_RECOGNITION_PROVIDER_TIMEOUT_MS);
+      runAbort = currentRunAbort;
+      if (closed) {
+        currentRunAbort.abort();
+        currentRunAbort.cleanup();
+        return;
+      }
       void (async () => {
-        const runAbort = createAIRecognitionStreamAbortSignal(request.signal, AI_RECOGNITION_STREAM_PROVIDER_TIMEOUT_MS);
         try {
           emit({ type: "recognition/progress", stage: "input-read" });
           const response = await runAIRecognitionStream({
             ...runContext,
-            maxOutputTokens: 12000,
-            abortSignal: runAbort.signal,
+            abortSignal: currentRunAbort.signal,
             sink: { emit },
           });
           if (response.subscriptions.length === 0) {
@@ -150,11 +162,12 @@ export async function recognizeSubscriptionsStream(request: Request, env: Env): 
           }
           emit({ type: "recognition/final", response });
         } catch (error) {
-          emit(runAbort.didTimeout()
-            ? aiRecognitionStreamTimeoutErrorEvent(runContext.locale, error)
-            : aiRecognitionStreamErrorEvent(runContext.locale, error));
+          emit(currentRunAbort.didTimeout()
+            ? aiRecognitionStreamTimeoutErrorEvent(runContext.locale, error, [runContext.settings.apiKey])
+            : aiRecognitionStreamErrorEvent(runContext.locale, error, [runContext.settings.apiKey]));
         } finally {
-          runAbort.cleanup();
+          currentRunAbort.cleanup();
+          runAbort = null;
           if (!closed) {
             closed = true;
             if (heartbeat) clearInterval(heartbeat);
@@ -165,6 +178,7 @@ export async function recognizeSubscriptionsStream(request: Request, env: Env): 
     },
     cancel() {
       closed = true;
+      runAbort?.abort();
       if (heartbeat) clearInterval(heartbeat);
     },
   });
@@ -179,8 +193,9 @@ export async function recognizeSubscriptionsStream(request: Request, env: Env): 
   });
 }
 
-function createAIRecognitionStreamAbortSignal(externalSignal: AbortSignal, timeoutMs: number): {
+function createAIRecognitionRunAbortSignal(externalSignal: AbortSignal, timeoutMs: number): {
   signal: AbortSignal;
+  abort: () => void;
   cleanup: () => void;
   didTimeout: () => boolean;
 } {
@@ -199,6 +214,7 @@ function createAIRecognitionStreamAbortSignal(externalSignal: AbortSignal, timeo
   }
   return {
     signal: controller.signal,
+    abort: () => controller.abort(),
     cleanup: () => {
       clearTimeout(timeout);
       externalSignal.removeEventListener("abort", abortFromExternal);
@@ -214,11 +230,14 @@ async function prepareAIRecognitionRun(request: Request, env: Env): Promise<AIRe
   const settings = await getSettings(env, auth.user.id);
   const aiSettings = aiRecognitionSettingsSchema.parse(settings.aiRecognition);
   const input = await readAIRecognitionInput(request, locale);
-  const thinkingControl = input.thinkingControl;
+  // 设置页保存的 control 是本次识别的默认运行参数；multipart 明确携带的 control 只覆盖当前一次。
+  let thinkingControl = input.thinkingControlProvided ? input.thinkingControl : aiSettings.defaultThinkingControl;
   if (thinkingControl && !thinkingControlMatchesSettings(aiSettings, thinkingControl)) {
     // thinking control 来自 multipart 临时输入，必须绑定当前 provider，不能让旧设置跨模型复用。
     throw new HttpError(400, serverText(locale, "aiRecognition.thinkingProviderMismatch"), "AI_THINKING_PROVIDER_MISMATCH");
   }
+  // 临时请求也必须按当前模型能力收敛；旧客户端可能仍发送 GPT-5 不支持的 effort，清空后交给模型默认值。
+  thinkingControl = normalizeAIRecognitionThinkingControlForModel(aiSettings.model, thinkingControl);
   assertAIRecognitionSettings(aiSettings, locale);
   // 配置项只作为模型上下文和响应归一化依据；新增分类/支付方式仍必须走 import preview/apply 用户确认链路。
   const [customConfig, existingTags] = await Promise.all([
@@ -231,7 +250,6 @@ async function prepareAIRecognitionRun(request: Request, env: Env): Promise<AIRe
     input,
     thinkingControl,
     timezone: settings.timezone,
-    defaultCurrency: settings.defaultCurrency,
     configContext: aiRecognitionConfigContext(customConfig, locale, existingTags),
   };
 }
@@ -248,20 +266,24 @@ export async function testAIRecognitionConnection(request: Request, env: Env): P
   });
   assertAIRecognitionSettings(settings, locale);
   try {
-    await runAIRecognitionConnectionTest(settings, request.signal);
+    await runAIRecognitionConnectionTest(settings, settings.defaultThinkingControl, request.signal);
     return successJson(aiRecognitionTestPayloadSchema.parse({
       providerType: settings.providerType,
       transportProtocol: settings.transportProtocol,
       model: settings.model,
     }));
   } catch (error) {
-    if (error instanceof HttpError) throw error;
+    if (error instanceof HttpError || error instanceof UpstreamResponseError) throw error;
+    const upstreamResponseError = upstreamResponseErrorFromError(error, [settings.apiKey]);
+    if (upstreamResponseError) throw upstreamResponseError;
     const upstreamDetails = upstreamErrorDetailsFromError(error);
+    const rawDetails = rawAIRecognitionErrorDetails(error);
+    const responseDetails = upstreamDetails ?? rawDetails;
     throw new HttpError(
       400,
-      serverText(locale, "aiRecognition.testFailed"),
+      responseDetails?.rawResponseText ?? serverText(locale, "aiRecognition.testFailed"),
       "AI_RECOGNITION_TEST_FAILED",
-      upstreamDetails ?? {
+      responseDetails ?? {
         rawResponseText: redactUpstreamSecrets(redactAIRecognitionSecrets(providerResponseFromError(error)?.body || ""), [settings.apiKey]) || safeAIRecognitionError(error),
       },
     );
@@ -302,7 +324,7 @@ async function readAIRecognitionInput(
   }
 
   const thinkingEntry = form.get("thinkingControl");
-  // 识别请求只认本次 multipart 明确携带的 thinking；设置页默认值由前端初始化选择，缺字段必须等价于未选择。
+  // 缺字段表示沿用设置页默认 control；显式 null 才表示本次请求使用模型默认。
   const thinkingControl = parseAIThinkingControl(thinkingEntry, locale);
   const imageEntries = [...form.getAll("images"), ...form.getAll("images[]")].filter((value): value is File => value instanceof File);
   if (imageEntries.length > AI_RECOGNITION_MAX_IMAGES) {
@@ -324,7 +346,7 @@ async function readAIRecognitionInput(
   if (totalBytes > AI_RECOGNITION_MAX_BODY_BYTES) {
     throw new HttpError(413, serverText(locale, "common.requestBodyTooLarge"), "BODY_TOO_LARGE");
   }
-  return { text, images, thinkingControl };
+  return { text, images, thinkingControl, thinkingControlProvided: thinkingEntry !== null };
 }
 
 function parseAIThinkingControl(

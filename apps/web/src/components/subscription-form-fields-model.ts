@@ -17,6 +17,8 @@ export interface SubscriptionFormFieldsProps {
   showLogoField?: boolean | undefined;
   onLogoUploadStatusChange: (status: LogoUploadStatus) => void;
   onFieldChange?: <K extends keyof SubscriptionFormState>(key: K, value: SubscriptionFormState[K]) => void;
+  /** AI 草稿在模型未给出状态时保留可编辑占位值，但必须把状态控件标成待确认。 */
+  pendingStatusConfirmation?: boolean | undefined;
   errors?: SubscriptionFormErrors | undefined;
   onClearFieldError?: ((field: keyof SubscriptionFormErrors) => void) | undefined;
   notificationReminderDays: number;

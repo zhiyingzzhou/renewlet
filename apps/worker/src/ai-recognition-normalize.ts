@@ -6,6 +6,7 @@
 import {
   AI_RECOGNITION_MAX_SUBSCRIPTIONS,
   aiRecognizePayloadSchema,
+  canonicalAIRecognitionTransportProtocol,
   type AiGeneratedRecognizeObject,
   type AiGeneratedSubscriptionDraft,
   type AiRecognizedSubscriptionDraft,
@@ -17,29 +18,30 @@ import {
   type AIRecognitionPromptConfigContext,
   type AIRecognitionPromptConfigOption,
 } from "@renewlet/shared/ai-recognition-prompt";
-import { normalizeAIRecognitionUsefulNotes } from "@renewlet/shared/ai-recognition-notes";
+import {
+  normalizeAIRecognitionGeneratedInputNotes,
+  normalizeAIRecognitionUsefulNotes,
+} from "@renewlet/shared/ai-recognition-notes";
 import { customConfigSchema, type ApiCustomConfig } from "@renewlet/shared/schemas/custom-config";
 import { moneyFromNumber } from "@renewlet/shared/money";
+import { calculateOneTimeTermEndDate } from "@renewlet/shared/subscription-billing";
 import {
   BILLING_CYCLES,
-  CUSTOM_CYCLE_UNITS,
-  DISABLED_REMINDER_DAYS,
   MAX_REMINDER_DAYS,
-  REPEAT_REMINDER_INTERVALS,
-  REPEAT_REMINDER_WINDOWS,
+  normalizeCustomCycleUnit,
   SUBSCRIPTION_STATUSES,
   isValidDateOnly,
 } from "@renewlet/shared/runtime";
-import { serverFormat, serverText, type AppLocale } from "./server-i18n";
+import { type AppLocale } from "./server-i18n";
 import { localizedConfigLabel } from "./custom-config-labels";
 import { calendarFeedBuiltInCategoryLabelKey, calendarFeedBuiltInPaymentMethodLabelKey } from "./calendar-feed-built-in-labels";
 import type { ServerI18nKey } from "./server-i18n-catalog";
 
 const BILLING_CYCLE_SET = new Set<string>(BILLING_CYCLES);
-const CUSTOM_CYCLE_UNIT_SET = new Set<string>(CUSTOM_CYCLE_UNITS);
-const STATUS_SET = new Set<string>(SUBSCRIPTION_STATUSES);
-const REPEAT_REMINDER_INTERVAL_SET = new Set<string>(REPEAT_REMINDER_INTERVALS);
-const REPEAT_REMINDER_WINDOW_SET = new Set<string>(REPEAT_REMINDER_WINDOWS);
+// 生成态字段是宽字符串；白名单显式绑定到最终草稿联合类型，避免归一化后又退化成 string。
+type RecognizedCustomCycleUnit = NonNullable<AiRecognizedSubscriptionDraft["customCycleUnit"]>;
+type RecognizedSubscriptionStatus = NonNullable<AiRecognizedSubscriptionDraft["status"]>;
+const STATUS_SET: ReadonlySet<RecognizedSubscriptionStatus> = new Set<RecognizedSubscriptionStatus>(SUBSCRIPTION_STATUSES);
 
 export function normalizeGeneratedAIRecognizeObject(
   raw: AiGeneratedRecognizeObject,
@@ -48,20 +50,29 @@ export function normalizeGeneratedAIRecognizeObject(
   model: string,
   diagnostics: AiRecognitionDiagnostics,
   configContext: AIRecognitionPromptConfigContext,
+  currentDate?: string,
 ): AiRecognizeResponse {
   const warnings = compactAIWarnings(raw.warnings, 20);
   const subscriptions: AiRecognizedSubscriptionDraft[] = [];
-  for (const draft of raw.subscriptions.slice(0, AI_RECOGNITION_MAX_SUBSCRIPTIONS)) {
-    const normalized = normalizeGeneratedSubscriptionDraft(draft, configContext);
+  const drafts = raw.subscriptions.slice(0, AI_RECOGNITION_MAX_SUBSCRIPTIONS);
+  for (const draft of drafts) {
+    const normalized = normalizeGeneratedSubscriptionDraft(draft, configContext, currentDate);
     if (normalized) {
       subscriptions.push(normalized);
     } else {
       warnings.push("AI_WARNING_EMPTY_SUBSCRIPTION_SKIPPED");
     }
   }
+  if (raw.subscriptions.length > AI_RECOGNITION_MAX_SUBSCRIPTIONS) {
+    warnings.push("AI_WARNING_TOO_MANY_SUBSCRIPTIONS_TRUNCATED");
+  }
+  // 固定服务期已经由购买日和期限确定状态时，不能继续把模型的通用状态不确定提示显示为全局警告。
+  if (!subscriptions.some((subscription) => subscription.warnings.includes("AI_WARNING_STATUS_UNCERTAIN"))) {
+    removeAIWarning(warnings, "AI_WARNING_STATUS_UNCERTAIN");
+  }
   return aiRecognizePayloadSchema.parse({
     providerType,
-    transportProtocol,
+    transportProtocol: canonicalAIRecognitionTransportProtocol(providerType),
     model,
     subscriptions,
     warnings: compactAIWarnings(warnings, 20),
@@ -69,44 +80,7 @@ export function normalizeGeneratedAIRecognizeObject(
   });
 }
 
-function normalizeGeneratedSubscriptionDraft(
-  draft: AiGeneratedSubscriptionDraft,
-  configContext: AIRecognitionPromptConfigContext,
-): AiRecognizedSubscriptionDraft | null {
-  const name = trimMax(draft.name, 120);
-  if (!name) return null;
-  const warnings = compactAIWarnings(draft.warnings, 12);
-  const website = normalizeGeneratedSuggestedField(draft.website);
-  const notes = normalizeGeneratedNotesField(draft.notes);
-  const confidence = draft.confidence === "high" ? "high" : "low";
-  return {
-    name,
-    price: normalizeGeneratedPrice(draft.price, warnings),
-    currency: normalizeGeneratedCurrency(draft.currency, warnings),
-    billingCycle: normalizeGeneratedBillingCycle(draft.billingCycle, warnings),
-    customDays: normalizeGeneratedPositiveInteger(draft.customDays, MAX_REMINDER_DAYS, "AI_WARNING_CUSTOM_DAYS_INVALID", warnings),
-    customCycleUnit: normalizeGeneratedEnum(draft.customCycleUnit, CUSTOM_CYCLE_UNIT_SET, "AI_WARNING_CUSTOM_CYCLE_UNIT_INVALID", warnings),
-    oneTimeTermCount: normalizeGeneratedPositiveInteger(draft.oneTimeTermCount, MAX_REMINDER_DAYS, "AI_WARNING_ONE_TIME_TERM_COUNT_INVALID", warnings),
-    oneTimeTermUnit: normalizeGeneratedEnum(draft.oneTimeTermUnit, CUSTOM_CYCLE_UNIT_SET, "AI_WARNING_ONE_TIME_TERM_UNIT_INVALID", warnings),
-    category: normalizeGeneratedConfigValue(draft.category, configContext.categories),
-    status: normalizeGeneratedEnum(draft.status, STATUS_SET, "AI_WARNING_STATUS_INVALID", warnings),
-    paymentMethod: normalizeGeneratedConfigValue(draft.paymentMethod, configContext.paymentMethods),
-    startDate: normalizeGeneratedDate(draft.startDate, "startDate", warnings),
-    nextBillingDate: normalizeGeneratedDate(draft.nextBillingDate, "nextBillingDate", warnings),
-    autoCalculateNextBillingDate: draft.autoCalculateNextBillingDate ?? null,
-    trialEndDate: normalizeGeneratedDate(draft.trialEndDate, "trialEndDate", warnings),
-    website,
-    notes,
-    tags: normalizeGeneratedTags(draft.tags, draft.name, configContext.tags),
-    reminderDays: normalizeGeneratedReminderDays(draft.reminderDays, warnings),
-    repeatReminderEnabled: draft.repeatReminderEnabled ?? null,
-    repeatReminderInterval: normalizeGeneratedEnum(draft.repeatReminderInterval, REPEAT_REMINDER_INTERVAL_SET, "AI_WARNING_REPEAT_INTERVAL_INVALID", warnings),
-    repeatReminderWindow: normalizeGeneratedEnum(draft.repeatReminderWindow, REPEAT_REMINDER_WINDOW_SET, "AI_WARNING_REPEAT_WINDOW_INVALID", warnings),
-    confidence,
-    warnings: compactAIWarnings(warnings, 12),
-  };
-}
-
+/** 对有非空服务名但备注为空的草稿执行一次有界 provider 补全；身份是否明确交给模型判定。 */
 export function missingDescribableNoteNames(subscriptions: readonly AiRecognizedSubscriptionDraft[]): string[] {
   return subscriptions
     .filter((draft) => !draft.notes && isDescribableForAINotes(draft))
@@ -115,82 +89,164 @@ export function missingDescribableNoteNames(subscriptions: readonly AiRecognized
 }
 
 function isDescribableForAINotes(draft: AiRecognizedSubscriptionDraft): boolean {
-  return Boolean(draft.website || draft.category || draft.tags.length > 0 || draft.confidence === "high");
+  const name = draft.name.trim().toLowerCase();
+  return name.length > 0 && !/^(?:unknown(?:\s+(?:app|service|subscription))?|unnamed|n\/?a|none|未知(?:服务|应用)?|未命名(?:服务|应用)?)$/u.test(name);
 }
 
-export function fillMissingNotesWithDynamicFallback(
+/**
+ * 补全响应只拥有备注写权限；账单字段继续使用首轮归一化结果，避免二次模型调用覆盖事实。
+ */
+export function mergeRecognizedAIRecognitionNotes(
   response: AiRecognizeResponse,
-  locale: AppLocale,
-  configContext: AIRecognitionPromptConfigContext,
+  repaired: AiRecognizeResponse,
 ): AiRecognizeResponse {
-  // fallback note 只能使用模型已给出的稳定字段，不能引入 Worker 本地品牌知识，保持 Docker/Worker 草稿一致。
-  const subscriptions = response.subscriptions.map((draft) => {
-    if (draft.notes || !isDescribableForAINotes(draft)) return draft;
-    const note = buildDynamicFallbackNote(draft, locale, configContext);
-    if (!note) return draft;
-    return {
-      ...draft,
-      notes: { value: note, source: "suggested" as const },
-      warnings: compactAIWarnings(draft.warnings.filter((warning) => warning !== "AI_WARNING_NOTES_MISSING"), 12),
-    };
+  const used = new Set<number>();
+  const subscriptions = response.subscriptions.map((draft, index) => {
+    const sameIndex = repaired.subscriptions[index];
+    const candidate = sameIndex && sameIndex.name.trim().toLowerCase() === draft.name.trim().toLowerCase()
+      ? sameIndex
+      : repaired.subscriptions.find((item, candidateIndex) => (
+        !used.has(candidateIndex)
+        && item.name.trim().toLowerCase() === draft.name.trim().toLowerCase()
+      ));
+    const candidateIndex = candidate ? repaired.subscriptions.indexOf(candidate) : -1;
+    if (candidateIndex >= 0) used.add(candidateIndex);
+    return candidate?.notes ? { ...draft, notes: candidate.notes } : draft;
   });
-  return aiRecognizePayloadSchema.parse({ ...response, subscriptions });
+  return { ...response, subscriptions };
 }
 
-function buildDynamicFallbackNote(
-  draft: AiRecognizedSubscriptionDraft,
-  locale: AppLocale,
+function normalizeGeneratedSubscriptionDraft(
+  draft: AiGeneratedSubscriptionDraft,
   configContext: AIRecognitionPromptConfigContext,
-): string | null {
-  const labels = dynamicNoteLabels(draft, configContext);
-  const rawNote = labels.length > 0
-    ? serverFormat(locale, "aiRecognition.fallbackNote.labels", {
-      name: draft.name,
-      labels: labels.join(serverText(locale, "aiRecognition.fallbackNote.labelSeparator")),
-    })
-    : dynamicWebsiteFallbackNote(draft, locale);
-  return normalizeAIRecognitionUsefulNotes(rawNote);
-}
-
-function dynamicNoteLabels(
-  draft: AiRecognizedSubscriptionDraft,
-  configContext: AIRecognitionPromptConfigContext,
-): string[] {
-  const labels: string[] = [];
-  const seen = new Set<string>();
-  const add = (value: string | null | undefined) => {
-    const label = trimMax(value ?? "", 80);
-    const key = configMatchKey(label);
-    if (!label || !key || key === configMatchKey(draft.name) || seen.has(key)) return;
-    seen.add(key);
-    labels.push(label);
+  currentDate?: string,
+): AiRecognizedSubscriptionDraft | null {
+  const name = trimMax(draft.name, 120);
+  if (!name) return null;
+  const warnings = compactAIWarnings(draft.warnings, 12);
+  const confidence = draft.confidence === "high" ? "high" : "low";
+  const price = normalizeGeneratedPrice(draft.price, warnings);
+  // Go 运行面先处理这两个宽松数字字段，再进入标准字段归一化；保持 warning 顺序和缺失语义一致。
+  const customDays = normalizeGeneratedPositiveInteger(draft.customDays, MAX_REMINDER_DAYS, "AI_WARNING_CUSTOM_DAYS_INVALID", warnings);
+  const oneTimeTermCount = normalizeGeneratedPositiveInteger(draft.oneTimeTermCount, MAX_REMINDER_DAYS, "AI_WARNING_ONE_TIME_TERM_COUNT_INVALID", warnings);
+  const currency = normalizeGeneratedCurrency(draft.currency, warnings);
+  const billingCycle = normalizeGeneratedBillingCycle(draft.billingCycle, warnings);
+  const customCycleUnit = normalizeGeneratedCycleUnit(draft.customCycleUnit, "AI_WARNING_CUSTOM_CYCLE_UNIT_INVALID", warnings);
+  const oneTimeTermUnit = normalizeGeneratedCycleUnit(draft.oneTimeTermUnit, "AI_WARNING_ONE_TIME_TERM_UNIT_INVALID", warnings);
+  const category = normalizeGeneratedConfigValue(draft.category, configContext.categories);
+  const paymentMethod = normalizeGeneratedConfigValue(draft.paymentMethod, configContext.paymentMethods);
+  const startDate = normalizeGeneratedDate(draft.startDate, "startDate", warnings);
+  const nextBillingDate = normalizeGeneratedDate(draft.nextBillingDate, "nextBillingDate", warnings);
+  const trialEndDate = normalizeGeneratedDate(draft.trialEndDate, "trialEndDate", warnings);
+  const fixedTermEndDate = nextBillingDate ?? (billingCycle === "one-time"
+    ? deriveFixedTermEndDate(startDate, oneTimeTermCount, oneTimeTermUnit)
+    : null);
+  const status = normalizeGeneratedStatus(draft.status, billingCycle, startDate, fixedTermEndDate, currentDate, warnings);
+  if (status !== null) removeAIWarning(warnings, "AI_WARNING_STATUS_UNCERTAIN");
+  // 先规范化周期和锚点，再决定是否自动计算；无效值不能把 true 传入表单日期链路。
+  const autoCalculateNextBillingDate = normalizeAutoCalculateNextBillingDate({
+    billingCycle,
+    startDate,
+    autoCalculateNextBillingDate: draft.autoCalculateNextBillingDate,
+  }, warnings);
+  const website = normalizeGeneratedSuggestedField(draft.website);
+  const notes = normalizeGeneratedNotesField(draft.notes);
+  const tags = normalizeGeneratedTags(draft.tags, draft.name, configContext.tags);
+  if (price === null) warnings.push("AI_WARNING_PRICE_UNCERTAIN");
+  if (currency === null) warnings.push("AI_WARNING_CURRENCY_UNCERTAIN");
+  if (billingCycle === null) warnings.push("AI_WARNING_CYCLE_UNCERTAIN");
+  if (startDate === null && nextBillingDate === null) warnings.push("AI_WARNING_DATE_UNCERTAIN");
+  if (status === null) warnings.push("AI_WARNING_STATUS_UNCERTAIN");
+  if (paymentMethod === null) warnings.push("AI_WARNING_PAYMENT_METHOD_UNCERTAIN");
+  if (category === null) warnings.push("AI_WARNING_CATEGORY_UNCERTAIN");
+  if (category !== null && !findAIRecognitionConfigOption(configContext.categories, category)) warnings.push("AI_WARNING_CONFIG_SUGGESTED");
+  if (paymentMethod !== null && !findAIRecognitionConfigOption(configContext.paymentMethods, paymentMethod)) warnings.push("AI_WARNING_CONFIG_SUGGESTED");
+  if (confidence === "low") warnings.push("AI_WARNING_LOW_CONFIDENCE");
+  return {
+    name,
+    price,
+    currency,
+    billingCycle,
+    customDays,
+    customCycleUnit,
+    oneTimeTermCount,
+    oneTimeTermUnit,
+    category,
+    status,
+    paymentMethod,
+    startDate,
+    // 固定服务期的结束日由已识别的购买日和期限确定；写入草稿后，前端、导入和 Docker 运行面共享同一事实。
+    nextBillingDate: nextBillingDate ?? fixedTermEndDate,
+    autoCalculateNextBillingDate,
+    trialEndDate,
+    website,
+    notes,
+    tags,
+    // 提醒属于用户设置，不接受模型推断；表单会从当前账号设置生成默认值。
+    reminderDays: null,
+    repeatReminderEnabled: null,
+    repeatReminderInterval: null,
+    repeatReminderWindow: null,
+    confidence,
+    warnings: compactAIWarnings(warnings, 12),
   };
-  for (const tag of draft.tags) add(tag);
-  if (draft.category) {
-    const category = configContext.categories.find((option) => option.value === draft.category) ?? findAIRecognitionConfigOption(configContext.categories, draft.category);
-    add(category?.label ?? draft.category);
-  }
-  return labels.slice(0, 3);
 }
 
-function dynamicWebsiteFallbackNote(draft: AiRecognizedSubscriptionDraft, locale: AppLocale): string | null {
-  const domain = draft.website ? hostnameFromUrl(draft.website.value) : null;
-  if (!domain) return null;
-  return serverFormat(locale, "aiRecognition.fallbackNote.website", { name: draft.name, domain });
-}
-
-function hostnameFromUrl(value: string): string | null {
+function deriveFixedTermEndDate(
+  startDate: string | null,
+  count: number | null,
+  unit: AiRecognizedSubscriptionDraft["oneTimeTermUnit"],
+): string | null {
+  if (!startDate || !count || !unit) return null;
   try {
-    const url = new URL(value.startsWith("http://") || value.startsWith("https://") ? value : `https://${value}`);
-    return url.hostname.replace(/^www\./, "") || null;
+    return calculateOneTimeTermEndDate(startDate, count, unit);
   } catch {
     return null;
   }
 }
 
+function normalizeGeneratedStatus(
+  value: string | null | undefined,
+  billingCycle: AiRecognizedSubscriptionDraft["billingCycle"],
+  startDate: string | null,
+  nextBillingDate: string | null,
+  currentDate: string | undefined,
+  warnings: string[],
+): AiRecognizedSubscriptionDraft["status"] {
+  const explicit = normalizeGeneratedEnum(value, STATUS_SET, "AI_WARNING_STATUS_INVALID", warnings);
+  if (explicit !== null || !currentDate || billingCycle !== "one-time" || !startDate || !nextBillingDate) return explicit;
+  // 固定服务期的购买日与期限（或明确结束日）是订阅状态的直接证据：区间内 active，结束后 expired。
+  // 只有 recurring、买断或缺少完整期限证据时才继续要求用户选择，避免把“已付款”误当成生效状态。
+  if (currentDate < startDate) return null;
+  return currentDate <= nextBillingDate ? "active" : "expired";
+}
+
+function removeAIWarning(warnings: string[], warning: string): void {
+  for (let index = warnings.length - 1; index >= 0; index -= 1) {
+    if (warnings[index] === warning) warnings.splice(index, 1);
+  }
+}
+
+function normalizeAutoCalculateNextBillingDate(
+  draft: Pick<AiGeneratedSubscriptionDraft, "billingCycle" | "startDate" | "autoCalculateNextBillingDate">,
+  warnings: string[],
+): boolean | null {
+  if (draft.billingCycle === "one-time") return false;
+  if (!draft.autoCalculateNextBillingDate) return draft.autoCalculateNextBillingDate ?? null;
+  if (!draft.startDate || !draft.billingCycle) {
+    warnings.push("AI_WARNING_AUTO_CALCULATE_DISABLED");
+    return false;
+  }
+  return true;
+}
+
 function normalizeGeneratedPrice(value: AiGeneratedSubscriptionDraft["price"], warnings: string[]): string | null {
+  if (value === null || value === undefined || (typeof value === "string" && !value.trim())) return null;
   const parsed = parseGeneratedNumber(value);
-  if (parsed === null) return null;
+  if (parsed === null) {
+    warnings.push("AI_WARNING_PRICE_INVALID");
+    return null;
+  }
   if (parsed < 0 || parsed > 1_000_000_000) {
     warnings.push("AI_WARNING_PRICE_INVALID");
     return null;
@@ -214,6 +270,10 @@ function normalizeGeneratedBillingCycle(value: string | null | undefined, warnin
   if (!text) return null;
   if (BILLING_CYCLE_SET.has(text)) return text as AiRecognizedSubscriptionDraft["billingCycle"];
   const compact = text.replace(/\s+/g, "");
+  // 固定服务期/买断不是 recurring；只有带有明确固定期限语义的上下文才允许映射为 one-time，
+  // 裸的“2 years/1 month”仍按周期词处理，避免把多年预付误判成买断。
+  const fixedTerm = /(?:validfor|serviceterm|fixedterm|duration|term|有效期|服务期|期限|买断|一次性|lifetime)/i.test(compact);
+  if (fixedTerm && !/(?:every|each|per|renew|recurr|每|续费|续订)/i.test(compact)) return "one-time";
   const mapped = compact.includes("week") || compact.includes("周") ? "weekly"
     : compact.includes("quarter") || compact.includes("季") ? "quarterly"
       : compact.includes("semi") || compact.includes("half") || compact.includes("半年") ? "semi-annual"
@@ -232,8 +292,12 @@ function normalizeGeneratedPositiveInteger(
   warning: string,
   warnings: string[],
 ): number | null {
+  if (value === null || value === undefined || (typeof value === "string" && !value.trim())) return null;
   const parsed = parseGeneratedInteger(value);
-  if (parsed === null) return null;
+  if (parsed === null) {
+    warnings.push(warning);
+    return null;
+  }
   if (parsed <= 0 || parsed > max) {
     warnings.push(warning);
     return null;
@@ -241,27 +305,38 @@ function normalizeGeneratedPositiveInteger(
   return parsed;
 }
 
-function normalizeGeneratedReminderDays(value: AiGeneratedSubscriptionDraft["reminderDays"], warnings: string[]): number | null {
-  const parsed = parseGeneratedInteger(value);
-  if (parsed === null) return null;
-  if (parsed < DISABLED_REMINDER_DAYS || parsed > MAX_REMINDER_DAYS) {
-    warnings.push("AI_WARNING_REMINDER_DAYS_INVALID");
-    return null;
-  }
-  return parsed;
-}
-
 function normalizeGeneratedEnum<T extends string>(
   value: string | null | undefined,
-  allowed: Set<string>,
+  allowed: ReadonlySet<T>,
   warning: string,
   warnings: string[],
 ): T | null {
   const text = stringValue(value);
   if (!text) return null;
-  if (allowed.has(text)) return text as T;
+  if (isAllowedGeneratedEnumValue(allowed, text)) return text;
   warnings.push(warning);
   return null;
+}
+
+function normalizeGeneratedCycleUnit(
+  value: string | null | undefined,
+  warning: string,
+  warnings: string[],
+): RecognizedCustomCycleUnit | null {
+  const text = stringValue(value);
+  if (!text) return null;
+  const normalized = normalizeCustomCycleUnit(text);
+  if (normalized) return normalized;
+  warnings.push(warning);
+  return null;
+}
+
+function isAllowedGeneratedEnumValue<T extends string>(allowed: ReadonlySet<T>, value: string): value is T {
+  // 逐项比较让运行时字符串先由白名单成员收窄为 T，再返回给草稿 schema；不把未知字符串强转成业务枚举。
+  for (const candidate of allowed) {
+    if (candidate === value) return true;
+  }
+  return false;
 }
 
 function normalizeGeneratedOptionalText(value: string | null | undefined, maxLength: number): string | null {
@@ -293,9 +368,13 @@ function normalizeGeneratedSuggestedField(value: AiGeneratedSubscriptionDraft["w
   return { value: text, source: value.source === "input" ? "input" : "suggested" };
 }
 
-function normalizeGeneratedNotesField(value: AiGeneratedSubscriptionDraft["notes"]): AiRecognizedSubscriptionDraft["notes"] {
+function normalizeGeneratedNotesField(
+  value: AiGeneratedSubscriptionDraft["notes"],
+): AiRecognizedSubscriptionDraft["notes"] {
   if (!value || value.source === "none") return null;
-  const text = normalizeAIRecognitionUsefulNotes(value.value);
+  const text = value.source === "input"
+    ? normalizeAIRecognitionGeneratedInputNotes(value.value)
+    : normalizeAIRecognitionUsefulNotes(value.value);
   if (!text) return null;
   return { value: text, source: value.source === "input" ? "input" : "suggested" };
 }

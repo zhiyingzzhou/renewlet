@@ -10,6 +10,7 @@ import {
   aiRecognitionDiagnosticsSchema,
   aiRecognitionErrorDetailsSchema,
   type AiRecognitionDiagnostics,
+  type AiRecognitionErrorDetails,
   type AiRecognitionSettings,
   type AiThinkingControl,
 } from "@renewlet/shared/schemas/ai-recognition";
@@ -17,8 +18,9 @@ import {
   AI_RECOGNITION_PROMPT_VERSION,
   AI_RECOGNITION_SCHEMA_NAME,
 } from "@renewlet/shared/ai-recognition-prompt";
+import { UPSTREAM_RAW_RESPONSE_TEXT_CAPTURE_MAX_CHARS } from "@renewlet/shared/schemas/upstream";
 import { providerResponseFromError } from "./ai-provider-response";
-import type { UpstreamProviderResponse } from "./upstream-response";
+import { upstreamErrorDetailsFromError, type UpstreamProviderResponse } from "./upstream-response";
 
 const AI_SECRET_PATTERN = /(sk-[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{8,}|sk-ant-[A-Za-z0-9_-]{8,}|Bearer\s+[A-Za-z0-9._-]{8,}|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+|(?:api[_-]?key|authorization|cookie|set-cookie|access[_-]?token|refresh[_-]?token)["'\s:=]+[A-Za-z0-9._~+/=-]{8,})/gi;
 
@@ -93,10 +95,43 @@ export function aiRecognitionErrorDetails(
   _diagnostics: AiRecognitionDiagnostics,
   providerResponse: UpstreamProviderResponse | null = providerResponseFromError(error),
 ) {
-  const providerBody = providerResponse?.body ? redactAIRecognitionSecrets(providerResponse.body) : "";
+  // AI SDK 与自有 upstream adapter 可能分别把同一响应放在 responseBody 或 details.rawResponseText；
+  // diagnostics 包装不能覆盖后者，否则用户最终只能看到泛化的错误消息而失去上游排障事实。
+  const upstreamDetails = upstreamErrorDetailsFromError(error);
+  const responseText = providerResponseText(providerResponse);
+  const providerBody = upstreamDetails?.rawResponseText
+    ? boundedRawResponseText(upstreamDetails.rawResponseText)
+    : responseText
+      ? boundedRawResponseText(responseText)
+      : "";
   return aiRecognitionErrorDetailsSchema.parse({
     rawResponseText: providerBody || (error === null ? reason : safeAIRecognitionError(error)),
   });
+}
+
+/** provider 直接失败且尚未形成完整 diagnostics 时，仍优先回显已脱敏的上游响应。 */
+export function rawAIRecognitionErrorDetails(error: unknown): AiRecognitionErrorDetails | undefined {
+  const upstreamDetails = upstreamErrorDetailsFromError(error);
+  if (upstreamDetails?.rawResponseText) {
+    return aiRecognitionErrorDetailsSchema.parse({
+      rawResponseText: boundedRawResponseText(upstreamDetails.rawResponseText),
+    });
+  }
+  const providerResponse = providerResponseFromError(error);
+  const responseText = providerResponseText(providerResponse);
+  if (!responseText) return undefined;
+  return aiRecognitionErrorDetailsSchema.parse({
+    rawResponseText: boundedRawResponseText(responseText),
+  });
+}
+
+function providerResponseText(response: UpstreamProviderResponse | null): string | null {
+  return response?.body || response?.statusText || null;
+}
+
+function boundedRawResponseText(value: string): string {
+  const redacted = redactAIRecognitionSecrets(value);
+  return [...redacted].slice(0, UPSTREAM_RAW_RESPONSE_TEXT_CAPTURE_MAX_CHARS).join("");
 }
 
 export function noObjectGeneratedText(error: unknown): string | null {

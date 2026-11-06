@@ -18,6 +18,7 @@ import {
 } from "@/lib/api/schemas/ai-recognition";
 import { resolveAIProviderEndpoint } from "@renewlet/shared/ai-provider-endpoints";
 import {
+  aiThinkingDefaultLabelKey,
   getAIThinkingOptions,
   normalizeAIThinkingControl,
   thinkingControlFromOptionId,
@@ -374,7 +375,7 @@ export function AIRecognitionSettingsSection({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={MODEL_DEFAULT_THINKING_ID}>{t("aiRecognition.thinking.modelDefault")}</SelectItem>
+            <SelectItem value={MODEL_DEFAULT_THINKING_ID}>{t(aiThinkingDefaultLabelKey(canonicalSettings.model))}</SelectItem>
             {thinkingOptions.map((option) => (
               <SelectItem key={option.id} value={option.id}>
                 {t(option.labelKey)}
