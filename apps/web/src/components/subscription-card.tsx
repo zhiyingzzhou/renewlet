@@ -11,7 +11,7 @@
  */
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { memo, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+import { memo, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 import type { ConfigItem } from '@/types/config';
 import {
   DEFAULT_NOTIFICATION_REMINDER_DAYS,
@@ -22,7 +22,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { colorWithAlpha } from '@/lib/color';
-import { Calendar, MoreHorizontal, CalendarClock, Bell, CreditCard, CalendarPlus, Copy, Eye, EyeOff, Gauge, Pencil, Pin, PinOff, RotateCw, Trash2 } from 'lucide-react';
+import { Wallet, Calendar, MoreHorizontal, CalendarClock, Bell, CreditCard, CalendarPlus, Copy, Eye, EyeOff, Gauge, Pencil, Pin, PinOff, RotateCw, Trash2 } from 'lucide-react';
 import {
   daysBetweenDateOnly,
   type DateOnly,
@@ -52,7 +52,7 @@ import {
 import { useI18n } from '@/i18n/I18nProvider';
 import { SubscriptionLogo } from '@/components/subscription-logo';
 import { SubscriptionStatusBadge } from '@/components/subscription-status-badge';
-import { formatCompactCurrencyAmount } from '@/lib/currency';
+import { formatCurrency as formatPreciseCurrency, formatCompactCurrencyAmount } from '@/lib/currency';
 import {
   formatBillingCycleLabel,
   isOneTimeBuyout,
@@ -87,7 +87,7 @@ interface SubscriptionCardProps {
   selected?: boolean;
   onSelect?: ((id: string, selected: boolean) => void) | undefined;
   /** 手动续订动作由页面持有 mutation，卡片只负责可见入口。 */
-  onRenew?: (id: string) => void;
+  onRenew?: (id: string, restoreTarget?: HTMLElement | null) => void;
   /** 卡片主体 primary action：打开只读详情；菜单内动作保持独立。 */
   onViewDetails?: (id: string) => void;
   /** 日历弹层需要完整 detail DTO，由页面级控制器按 intent 读取。 */
@@ -200,6 +200,7 @@ function SubscriptionCardComponent({
     color: categoryColor,
   };
 
+  const moreActionsRef = useRef<HTMLButtonElement>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const daysUntilRenewal = daysBetweenDateOnly(today, subscription.nextBillingDate);
   const daysUntilTrialEnd = subscription.trialEndDate ? daysBetweenDateOnly(today, subscription.trialEndDate) : null;
@@ -316,6 +317,15 @@ function SubscriptionCardComponent({
           text: paymentMethodLabel,
           tone: "muted" as const,
           truncate: true,
+        }]
+      : []),
+    ...(subscription.balance !== undefined && subscription.balanceCurrency
+      ? [{
+          key: "balance",
+          icon: <Wallet className="h-3.5 w-3.5 shrink-0" />,
+          text: `${t("subscription.field.balance")} ${formatPreciseCurrency(subscription.balance, subscription.balanceCurrency, locale, 6)}`,
+          tone: "muted" as const,
+          tabular: true,
         }]
       : []),
     ...(costSharingSummary.enabled
@@ -436,6 +446,7 @@ function SubscriptionCardComponent({
                   variant="ghost"
                   size="icon"
                   className="pointer-events-auto h-8 w-8 shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+                  ref={moreActionsRef}
                   aria-label={t("subscription.moreActions")}
                 >
                   <MoreHorizontal className="h-4 w-4" />
@@ -470,7 +481,7 @@ function SubscriptionCardComponent({
                     onPointerEnter={preloadRenewSubscriptionDialog}
                     onFocus={preloadRenewSubscriptionDialog}
                     onTouchStart={preloadRenewSubscriptionDialog}
-                    onClick={() => onRenew?.(subscription.id)}
+                    onClick={() => onRenew?.(subscription.id, moreActionsRef.current)}
                   >
                     <RotateCw className="h-4 w-4 shrink-0 text-muted-foreground" />
                     {t("subscription.renew")}

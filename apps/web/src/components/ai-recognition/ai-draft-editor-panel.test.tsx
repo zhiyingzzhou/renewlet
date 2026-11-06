@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DEFAULT_CUSTOM_CONFIG, type CustomConfig } from "@/types/config";
 import type { SubscriptionFormState } from "@/types/subscription-form";
 import { aiDraftToSubscriptionFormState } from "@/modules/ai-recognition/domain/ai-recognition-form";
+import { getAIDraftBlockingIssues } from "@/modules/ai-recognition/domain/ai-draft-preflight";
 import { configuredSettings, makeDraft } from "../ai-recognize-subscription-dialog.test-utils";
 import { AIDraftEditorPanel } from "./ai-draft-editor-panel";
 
@@ -26,11 +27,11 @@ beforeAll(() => {
   Element.prototype.releasePointerCapture ??= vi.fn();
 });
 
-function EditorHarness({ config = currencyManagerOrderConfig }: { config?: CustomConfig }) {
-  const sourceDraft = makeDraft({ currency: "CNY" });
+function EditorHarness({ config = currencyManagerOrderConfig, statusMissing = false }: { config?: CustomConfig; statusMissing?: boolean }) {
+  const sourceDraft = makeDraft({ currency: "CNY", status: statusMissing ? null : "active" });
   const settings = configuredSettings();
   const [formData, setFormData] = useState<SubscriptionFormState>(() => (
-    aiDraftToSubscriptionFormState(sourceDraft, { config, settings })
+    aiDraftToSubscriptionFormState(sourceDraft, { settings })
   ));
   return (
     <AIDraftEditorPanel
@@ -40,7 +41,10 @@ function EditorHarness({ config = currencyManagerOrderConfig }: { config?: Custo
       draftNumber={1}
       config={config}
       settings={settings}
-      blockingIssues={[]}
+      blockingIssues={statusMissing ? getAIDraftBlockingIssues({
+        formData,
+        pendingConfirmationFields: ["status"],
+      }) : []}
       setFormData={setFormData}
       onFieldChange={vi.fn()}
       onConfirmField={vi.fn()}
@@ -79,5 +83,14 @@ describe("AIDraftEditorPanel", () => {
     expect(nameInput).toHaveValue("Apple One Family");
     expect(screen.getByRole("switch", { name: "自动续订" })).toBeChecked();
     expect(screen.getByRole("switch", { name: "从公开页隐藏" })).toBeChecked();
+  });
+
+  it("makes an unconfirmed status actionable from the blocking summary", async () => {
+    const user = userEvent.setup();
+    render(<TooltipProvider delayDuration={0}><EditorHarness statusMissing /></TooltipProvider>);
+
+    expect(screen.getByText("状态待确认")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "确认当前状态" }));
+    expect(document.activeElement).toBe(screen.getByRole("combobox", { name: "状态" }));
   });
 });

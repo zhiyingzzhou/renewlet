@@ -387,8 +387,13 @@ async function hasSubscriptionMigrationTempTable(client: D1Client): Promise<bool
   return results.some(Boolean);
 }
 
-function assertPost0035SubscriptionShape(columns: readonly string[]): void {
-  if (!sameOrderedValues(columns, subscriptionColumns0035)) {
+async function assertPost0035SubscriptionShape(client: D1Client): Promise<void> {
+  const columns = await tableColumns(client, "subscriptions");
+  // 0047 只追加两列；Feed 恢复仍严格核对已记账版本，不能把合法增量升级误判为混合库。
+  const expected = await migrationApplied(client, "0047_subscription_balance.sql")
+    ? [...subscriptionColumns0035, "balance", "balance_currency"]
+    : subscriptionColumns0035;
+  if (!sameOrderedValues(columns, expected)) {
     throw new Error("Cloudflare subscriptions schema after 0035 is invalid or mixed; refusing automatic recovery");
   }
 }
@@ -546,7 +551,7 @@ export async function prepareCalendarFeedsFor0035(client: D1Client): Promise<Cal
     if (!(await tableExists(client, "subscriptions")) || !(await tableExists(client, "calendar_feeds"))) {
       throw new Error("Cloudflare 0035 migration is recorded but its subscription or calendar Feed schema is missing");
     }
-    assertPost0035SubscriptionShape(await tableColumns(client, "subscriptions"));
+    await assertPost0035SubscriptionShape(client);
     await assertSubscriptionTableKeys(client);
     await assertCalendarFeedTable(client, "calendar_feeds", "calendar Feed");
     if (hasBackup) {
@@ -589,7 +594,7 @@ export async function restoreCalendarFeedsAfter0035(client: D1Client): Promise<C
   if (!(await tableExists(client, "subscriptions")) || !(await tableExists(client, "calendar_feeds"))) {
     throw new Error("Cloudflare post-0035 schema is incomplete; preserving calendar Feed backup");
   }
-  assertPost0035SubscriptionShape(await tableColumns(client, "subscriptions"));
+  await assertPost0035SubscriptionShape(client);
   await assertSubscriptionTableKeys(client);
   await assertCalendarFeedTable(client, "calendar_feeds", "calendar Feed");
   await removeRevokedBackupFeeds(client);

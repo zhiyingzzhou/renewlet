@@ -2,8 +2,6 @@ import type { AiRecognizedSubscriptionDraft } from "@/lib/api/schemas/ai-recogni
 import type { AIDraftConfirmationField } from "@/modules/ai-recognition/domain/ai-recognition-form";
 import type { SubscriptionFormState } from "@/types/subscription-form";
 
-export type AIRecognitionInputMode = "text" | "image";
-
 export interface AIRecognitionImageItem {
   id: string;
   file: File;

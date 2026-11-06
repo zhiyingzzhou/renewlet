@@ -11,9 +11,13 @@ const queryClients: QueryClient[] = [];
 const queryKey = subscriptionsInfiniteQueryOptions().queryKey;
 
 // Profiler 只观察真实 Hook 消费者；jsdom 的诊断耗时不与生产浏览器导航耗时混算。
-function mountSubscriptions(total: number, reactStrictMode = false) {
+function mountSubscriptions(total: number, reactStrictMode = false, balanceMode: "none" | "mixed" | "all" = "none") {
   const page: SubscriptionPage = {
-    subscriptions: subscriptionPerformanceCollectionItems(total).slice(0, subscriptionService.pageSize),
+    subscriptions: subscriptionPerformanceCollectionItems(total).slice(0, subscriptionService.pageSize).map((subscription, index) => (
+      balanceMode === "all" || (balanceMode === "mixed" && index % 2 === 0)
+        ? { ...subscription, balance: "123456.123456", balanceCurrency: "EUR" }
+        : subscription
+    )),
     nextCursor: total > subscriptionService.pageSize ? "next-page" : null,
     total,
   };
@@ -51,10 +55,12 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe.each(subscriptionPerformanceFixture.scenarios)("Query subscription work: $size", ({ size }) => {
+describe.each(subscriptionPerformanceFixture.scenarios.flatMap((scenario) =>
+  (["none", "mixed", "all"] as const).map((balanceMode) => ({ ...scenario, balanceMode })),
+))("Query subscription work: $size / $balanceMode", ({ size, balanceMode }) => {
   it("commits no consumer updates over ten unchanged background refreshes", async () => {
     const request = vi.spyOn(subscriptionService, "listPage");
-    const { result, queryClient, page, commits } = mountSubscriptions(size);
+    const { result, queryClient, page, commits } = mountSubscriptions(size, false, balanceMode);
     const visibleSubscriptions = result.current.subscriptions;
     const samples: { commits: number; actualDurationMs: number }[] = [];
 
@@ -87,7 +93,7 @@ describe.each(subscriptionPerformanceFixture.scenarios)("Query subscription work
 
     expect(request).toHaveBeenCalledTimes(10);
     // 零更新只约束相同响应且分页状态不变的刷新；真实数据、错误和加载下一页仍必须通知页面。
-    console.info(`[perf] query_subscription ${JSON.stringify({ size, loaded: page.subscriptions.length, samples })}`);
+    console.info(`[perf] query_subscription ${JSON.stringify({ size, balanceMode, responseBytes: JSON.stringify(page).length, loaded: page.subscriptions.length, samples })}`);
   });
 });
 
@@ -147,7 +153,7 @@ it("still publishes changed data and background errors through the existing resu
   const { result, queryClient, page } = mountSubscriptions(10);
   const changed: SubscriptionPage = {
     ...page,
-    subscriptions: page.subscriptions.map((subscription) => ({ ...subscription, name: `${subscription.name} updated` })),
+    subscriptions: page.subscriptions.map((subscription) => ({ ...subscription, balance: "0", balanceCurrency: "USD" })),
   };
   request.mockResolvedValueOnce(changed);
   await act(async () => {

@@ -16,8 +16,10 @@ import {
   isValidDateOnly,
 } from "../runtime";
 import {
+  UPSTREAM_RAW_RESPONSE_TEXT_CAPTURE_MAX_CHARS,
   UPSTREAM_RAW_RESPONSE_TEXT_MAX_CHARS,
   upstreamErrorDetailsSchema,
+  upstreamResponseSchema,
 } from "./upstream";
 import { apiSuccessResponseSchema } from "./api";
 import { moneyStringSchema } from "../money";
@@ -35,14 +37,32 @@ export const AI_PROVIDER_RESPONSE_BODY_MAX_CHARS = UPSTREAM_RAW_RESPONSE_TEXT_MA
 /** Provider 类型是用户设置的存储值；transport protocol 必须由 provider canonical 派生，不能让历史字段反向影响运行时。 */
 export const aiRecognitionProviderTypeSchema = z.enum(["openai", "anthropic", "gemini", "openai-compatible"]);
 export type AiRecognitionProviderType = z.infer<typeof aiRecognitionProviderTypeSchema>;
-export const aiRecognitionTransportProtocolSchema = z.enum(["openai-chat", "anthropic-messages", "gemini-generate-content"]);
+export const aiRecognitionTransportProtocolSchema = z.enum(["openai-responses", "openai-chat", "anthropic-messages", "gemini-generate-content"]);
 export type AiRecognitionTransportProtocol = z.infer<typeof aiRecognitionTransportProtocolSchema>;
 export const aiRecognitionModelInputModeSchema = z.enum(["select", "manual"]);
 export type AiRecognitionModelInputMode = z.infer<typeof aiRecognitionModelInputModeSchema>;
 
-export const openaiReasoningEffortSchema = z.enum(["none", "minimal", "low", "medium", "high", "xhigh"]);
+export const openaiReasoningEffortSchema = z.enum(["none", "minimal", "low", "medium", "high", "xhigh", "max"]);
+export type AiOpenAIReasoningEffort = z.infer<typeof openaiReasoningEffortSchema>;
+const OPENAI_LEGACY_REASONING_EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh"] as const satisfies readonly AiOpenAIReasoningEffort[];
+const OPENAI_MODERN_REASONING_EFFORTS = ["low", "medium", "high", "xhigh", "max"] as const satisfies readonly AiOpenAIReasoningEffort[];
 export const geminiThinkingLevelSchema = z.enum(["minimal", "low", "medium", "high"]);
 export const anthropicThinkingEffortSchema = z.enum(["low", "medium", "high", "xhigh", "max"]);
+
+/**
+ * OpenAI reasoning 档位按模型代际而不是具体模型名归一化；新同代模型无需再改前端特例。
+ * 未知模型返回 null，界面只显示“模型默认”，避免把不受支持的 effort 发给兼容网关。
+ */
+export function openAIReasoningEffortsForModel(model: string): readonly AiOpenAIReasoningEffort[] | null {
+  const normalizedModel = model.trim().toLowerCase().replace(/^models\//, "");
+  if (!normalizedModel || normalizedModel.includes("chat") || normalizedModel.includes("instruct")) return null;
+  if (/^o\d+(?:-|$)/.test(normalizedModel)) return OPENAI_LEGACY_REASONING_EFFORTS;
+  const gptMajor = /^gpt-(\d+)(?:\.|-|$)/.exec(normalizedModel)?.[1];
+  if (!gptMajor) return null;
+  const major = Number.parseInt(gptMajor, 10);
+  if (!Number.isFinite(major) || major < 5) return null;
+  return major >= 6 ? OPENAI_MODERN_REASONING_EFFORTS : OPENAI_LEGACY_REASONING_EFFORTS;
+}
 
 export const openaiThinkingControlSchema = z.object({
   provider: z.literal("openai"),
@@ -100,35 +120,71 @@ const optionalProviderBaseUrlSchema = z.string().trim().max(2048).refine((value)
   }
 }, "AI base URL must be empty or an http(s) URL without credentials");
 
-/** canonical transport 是 SDK 分派事实源；OpenAI-compatible 在 Renewlet 内固定走 OpenAI Chat 形状。 */
+/** canonical transport 是 SDK 分派事实源；旧 openai-chat 只在读取历史设置时被归一化，兼容 provider 仍固定走 Chat。 */
 export function canonicalAIRecognitionTransportProtocol(providerType: AiRecognitionProviderType): AiRecognitionTransportProtocol {
   if (providerType === "anthropic") return "anthropic-messages";
   if (providerType === "gemini") return "gemini-generate-content";
-  return "openai-chat";
+  if (providerType === "openai-compatible") return "openai-chat";
+  return "openai-responses";
+}
+
+export function normalizeLegacyAIRecognitionSettingsInput(value: unknown): unknown {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const input = value as Record<string, unknown>;
+  // providerType 是新字段；只有它无效或缺失时才回退历史 provider alias，避免旧配置被一个脏别名拖垮。
+  const providerCandidates = [input["providerType"], input["provider"]]
+    .filter((candidate): candidate is string => typeof candidate === "string");
+  const parsedProviderType = providerCandidates
+    .map((candidate) => aiRecognitionProviderTypeSchema.safeParse(candidate))
+    .find((result) => result.success);
+  const canonicalProviderType = parsedProviderType?.success ? parsedProviderType.data : "openai";
+  // 保留未知键交给后续 strict schema 拒绝；读取边界只能迁移历史 alias，不能把坏配置静默吞掉。
+  const normalized: Record<string, unknown> = { ...input };
+  delete normalized["provider"];
+  normalized["providerType"] = canonicalProviderType;
+  normalized["transportProtocol"] = canonicalAIRecognitionTransportProtocol(canonicalProviderType);
+  normalized["model"] ??= "";
+  normalized["modelInputMode"] ??= "select";
+  normalized["baseUrl"] ??= "";
+  normalized["defaultThinkingControl"] = normalizeLegacyThinkingControl(normalized["defaultThinkingControl"]);
+  normalized["apiKey"] ??= "";
+  return normalized;
+}
+
+function normalizeLegacyThinkingControl(value: unknown): unknown {
+  if (value === undefined || value === null) return null;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const control = value as Record<string, unknown>;
+  const knownKeys = new Set(["provider", "effort", "mode", "budget", "level", "budgetTokens"]);
+  // 只清理已知 effort/mode 的历史坏值；未知嵌套键仍交给 strict schema 拒绝，不能被迁移逻辑吞掉。
+  if (Object.keys(control).some((key) => !knownKeys.has(key))) return value;
+  if (control["provider"] === "openai") {
+    return openaiReasoningEffortSchema.safeParse(control["effort"]).success ? value : null;
+  }
+  if (control["provider"] === "gemini") {
+    const mode = control["mode"];
+    if (mode === "off" || mode === "dynamic") return value;
+    if (mode === "budget" && typeof control["budget"] === "number" && Number.isInteger(control["budget"]) && control["budget"] >= 1 && control["budget"] <= 32_768) return value;
+    if (mode === "level" && geminiThinkingLevelSchema.safeParse(control["level"]).success) return value;
+    return null;
+  }
+  if (control["provider"] === "anthropic") {
+    const mode = control["mode"];
+    if (mode === "effort" && anthropicThinkingEffortSchema.safeParse(control["effort"]).success) return value;
+    if (mode === "budget" && typeof control["budgetTokens"] === "number" && Number.isInteger(control["budgetTokens"]) && control["budgetTokens"] >= 1024 && control["budgetTokens"] <= 64_000) return value;
+    return null;
+  }
+  return null;
 }
 
 function normalizeAIRecognitionSettingsInput(value: unknown): unknown {
   if (!value || typeof value !== "object" || Array.isArray(value)) return value;
   const input = value as Record<string, unknown>;
-  const providerType = typeof input["providerType"] === "string"
-    ? input["providerType"]
-    : typeof input["provider"] === "string"
-      ? input["provider"]
-      : undefined;
   const normalized = { ...input };
   delete normalized["provider"];
-  const parsedProviderType = providerType
-    ? aiRecognitionProviderTypeSchema.safeParse(providerType)
-    : null;
-  if (parsedProviderType?.success && !normalized["providerType"]) {
-    normalized["providerType"] = parsedProviderType.data;
-  }
-  const normalizedProviderType = normalized["providerType"];
-  const parsedNormalizedProviderType = typeof normalizedProviderType === "string"
-    ? aiRecognitionProviderTypeSchema.safeParse(normalizedProviderType)
-    : null;
-  if (parsedNormalizedProviderType?.success) {
-    normalized["transportProtocol"] = canonicalAIRecognitionTransportProtocol(parsedNormalizedProviderType.data);
+  const legacy = normalizeLegacyAIRecognitionSettingsInput(value);
+  if (legacy && typeof legacy === "object" && !Array.isArray(legacy)) {
+    Object.assign(normalized, legacy);
   }
   return normalized;
 }
@@ -137,6 +193,15 @@ function aiThinkingControlMatchesProviderType(providerType: AiRecognitionProvide
   if (control === null) return true;
   if (providerType === "openai-compatible") return false;
   return control.provider === providerType;
+}
+
+/** 旧设置里的 effort 不能跨模型原样发送；不兼容的旧档位回到模型默认，避免历史设置让请求失败。 */
+export function normalizeAIRecognitionThinkingControlForModel(
+  model: string,
+  control: AiThinkingControl | null,
+): AiThinkingControl | null {
+  if (!control || control.provider !== "openai") return control;
+  return openAIReasoningEffortsForModel(model)?.includes(control.effort) ? control : null;
 }
 
 const aiRecognitionPublicSettingsShape = {
@@ -158,9 +223,12 @@ const aiRecognitionSettingsBaseSchema = z.object({
   ...settings,
   transportProtocol: canonicalAIRecognitionTransportProtocol(settings.providerType),
   // thinking control 是 provider 私有协议，切换 provider 时清空错配值，避免把旧设置发给新模型。
-  defaultThinkingControl: aiThinkingControlMatchesProviderType(settings.providerType, settings.defaultThinkingControl)
-    ? settings.defaultThinkingControl
-    : null,
+  defaultThinkingControl: normalizeAIRecognitionThinkingControlForModel(
+    settings.model,
+    aiThinkingControlMatchesProviderType(settings.providerType, settings.defaultThinkingControl)
+      ? settings.defaultThinkingControl
+      : null,
+  ),
 }));
 export const aiRecognitionSettingsSchema = z.preprocess(normalizeAIRecognitionSettingsInput, aiRecognitionSettingsBaseSchema);
 export type AiRecognitionSettings = z.infer<typeof aiRecognitionSettingsSchema>;
@@ -221,9 +289,9 @@ const generatedWebsiteFieldSchema = z.object({
   source: suggestedFieldSourceSchema,
 }).strict().nullable().describe("Official or user-provided website for the subscribed service. Use null for the entire website field when the official site is ambiguous or unknown.");
 const generatedNotesFieldSchema = z.object({
-  value: z.string().trim().max(5000).nullable().describe("Concise neutral service/site description. Must be non-null for describable services; not a category, import advice, confirmation reminder, or AI process note."),
+  value: z.string().trim().max(5000).nullable().describe("Human-readable service/product description or meaningful merchant NOTE/Remark/Memo/Terms text; never repeat price, package, region, specifications, payment dates, service dates, billing term, duration, promotion, or AI commentary."),
   source: generatedNotesSourceSchema,
-}).strict().describe("Required service/site description decision object. Use value=null and source=none only when the service purpose is truly unknowable from input, domain, service name, category, tags, or high-confidence public knowledge.");
+}).strict().describe("Optional notes decision object. Use source=input only for an explicit merchant note or visible service/product description; use source=suggested for a concise AI service/product description grounded in a reliable official site or unambiguous product knowledge; otherwise value=null/source=none.");
 const generatedTagsSchema = z.array(z.string().trim().max(40))
   .max(3)
   .describe("User-facing reusable organization tags. Prefer existing user tags from prompt context; if none fit, generate only stable reusable service/product/domain tags, not one-off order attributes.");
@@ -282,7 +350,6 @@ export const aiRecognitionStreamStageSchema = z.enum([
   "input-read",
   "model-start",
   "model-stream",
-  "repair-start",
   "validating",
   "finalizing",
 ]);
@@ -316,9 +383,11 @@ const aiRecognitionStreamFinalEventSchema = z.object({
 
 const aiRecognitionStreamErrorEventSchema = z.object({
   type: z.literal("recognition/error"),
-  message: z.string().trim().min(1).max(1000),
+  // provider body 在有响应时就是排障事实；message 与 details.rawResponseText 共用同一有界上限，避免外层再截断成泛化文案。
+  message: z.string().trim().min(1).max(UPSTREAM_RAW_RESPONSE_TEXT_CAPTURE_MAX_CHARS),
   code: z.string().trim().min(1).max(120),
   details: aiRecognitionErrorDetailsSchema.optional(),
+  upstreamResponse: upstreamResponseSchema.optional(),
 }).strict();
 
 export const aiRecognitionStreamEventSchema = z.discriminatedUnion("type", [
@@ -361,7 +430,8 @@ export const aiGeneratedSubscriptionDraftSchema = z.object({
 export type AiGeneratedSubscriptionDraft = z.infer<typeof aiGeneratedSubscriptionDraftSchema>;
 
 export const aiGeneratedRecognizeObjectSchema = z.object({
-  subscriptions: z.array(aiGeneratedSubscriptionDraftSchema).max(AI_RECOGNITION_MAX_SUBSCRIPTIONS),
+  // 生成态允许先完整接收 provider 输出；最终数量上限和截断 warning 由 normalize 层统一处理，保持 Go/Worker 行为一致。
+  subscriptions: z.array(aiGeneratedSubscriptionDraftSchema),
   warnings: z.array(z.string().trim().min(1).max(240)).max(20),
 }).strict();
 export type AiGeneratedRecognizeObject = z.infer<typeof aiGeneratedRecognizeObjectSchema>;

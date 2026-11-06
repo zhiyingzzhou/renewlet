@@ -68,8 +68,8 @@ export async function createSubscription(request: Request, env: Env): Promise<Re
       category, status, pinned, public_hidden, payment_method,
       start_date, next_billing_date, auto_renew, auto_calculate_next_billing_date, trial_end_date, website, notes, tags_json,
       reminder_days, repeat_reminder_enabled, repeat_reminder_interval, repeat_reminder_window, cost_sharing_json,
-      cost_sharing_collection_reminder_enabled, cost_sharing_next_collection_reminder_date, extra_json, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      cost_sharing_collection_reminder_enabled, cost_sharing_next_collection_reminder_date, extra_json, created_at, updated_at, balance, balance_currency
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(...subscriptionRowValues(row));
   const derived = subscriptionDerivedMutationPlan(env, { before: null, after: row, kind: "create" }, settings);
   await env.DB.batch([...derived.beforeFact, factStatement, ...derived.afterFact]);
@@ -89,7 +89,8 @@ export async function updateSubscription(request: Request, env: Env, id: string)
     if (!current) throw new HttpError(404, serverText(locale, "subscription.notFound"));
     return successJson(subscriptionPayloadSchema.parse({ subscription: toApiSubscription(current) }));
   }
-  const timestamp = nowIso();
+  // 同一毫秒内的价格修改也必须让旧续订确认失效。
+  const timestamp = new Date(Math.max(Date.now(), Date.parse(existing.updated_at) + 1)).toISOString();
   const settings = await getSettings(env, auth.user.id);
   // Worker 没有 PocketBase hook 可二次归一；切换计费类型时先清理互斥字段，再合并 patch 走同一套 create schema。
   const mergedBody = parseSubscriptionBodyForStorage(mergeSubscriptionPatchForStorage(toBody(existing), stripUndefined(patch)), locale);
@@ -101,7 +102,7 @@ export async function updateSubscription(request: Request, env: Env, id: string)
       pinned = ?, public_hidden = ?, payment_method = ?, start_date = ?, next_billing_date = ?, auto_renew = ?, auto_calculate_next_billing_date = ?,
       trial_end_date = ?, website = ?, notes = ?, tags_json = ?, reminder_days = ?, repeat_reminder_enabled = ?,
       repeat_reminder_interval = ?, repeat_reminder_window = ?, cost_sharing_json = ?,
-      cost_sharing_collection_reminder_enabled = ?, cost_sharing_next_collection_reminder_date = ?, extra_json = ?, updated_at = ?
+      cost_sharing_collection_reminder_enabled = ?, cost_sharing_next_collection_reminder_date = ?, extra_json = ?, updated_at = ?, balance = ?, balance_currency = ?
     WHERE user_id = ? AND id = ?
   `).bind(
     merged.name,
@@ -135,6 +136,8 @@ export async function updateSubscription(request: Request, env: Env, id: string)
     merged.cost_sharing_next_collection_reminder_date,
     merged.extra_json,
     timestamp,
+    merged.balance,
+    merged.balance_currency,
     auth.user.id,
     id,
   );
@@ -163,12 +166,17 @@ export async function renewSubscription(request: Request, env: Env, id: string):
   const existing = await getSubscription(env, auth.user.id, id);
   if (!existing) throw new HttpError(404, serverText(locale, "subscription.notFound"), "NOT_FOUND");
 
+  const conflict = () => new HttpError(409, serverText(locale, "subscription.renewConflict"), "SUBSCRIPTION_RENEW_CONFLICT");
+  if (existing.next_billing_date !== body.expectedNextBillingDate || existing.updated_at !== body.expectedUpdatedAt) throw conflict();
   const settings = await getSettings(env, auth.user.id);
   const today = dateOnlyInZone(new Date(), settings.timezone);
-  const result = advanceSubscriptionRenewal(existing, today, "manual");
-  if (!result) throw new HttpError(400, serverText(locale, "common.invalidPayload"), "SUBSCRIPTION_RENEW_NOT_ALLOWED");
+  let result: SubscriptionRenewalResult | null;
+  try { result = advanceSubscriptionRenewal(existing, today, "manual"); }
+  catch { throw new HttpError(400, serverText(locale, "subscription.renewInvalidDate"), "SUBSCRIPTION_RENEW_INVALID_DATE"); }
+  if (!result) throw new HttpError(400, serverText(locale, "subscription.renewNotAllowed"), "SUBSCRIPTION_RENEW_NOT_ALLOWED");
 
-  const timestamp = nowIso();
+  if (body.mode === "continue" && result.nextBillingDate !== body.nextBillingDate) throw conflict();
+  const timestamp = new Date(Math.max(Date.now(), Date.parse(existing.updated_at) + 1)).toISOString();
   // Worker 没有 PocketBase hook；续订也必须先收敛成完整写入 body，才能重新执行 costSharing/date 镜像规则。
   const merged = renewSubscriptionRow(existing, body, result, timestamp, settings, today, locale);
   const factStatement = env.DB.prepare(`
@@ -190,7 +198,15 @@ export async function renewSubscription(request: Request, env: Env, id: string):
     id,
   );
   const derived = subscriptionDerivedMutationPlan(env, { before: existing, after: merged, kind: "update" }, settings);
-  await env.DB.batch([...derived.beforeFact, factStatement, ...derived.afterFact]);
+  try {
+    await env.DB.batch([...derived.beforeFact, factStatement, ...derived.afterFact]);
+  } catch (error) {
+    // D1 guard 与派生写共用 batch；仅失败后回读判定真正的并发变化，不把存储损坏伪装成冲突。
+    const current = await getSubscription(env, auth.user.id, id).catch(() => { throw error; });
+    if (!current) throw new HttpError(404, serverText(locale, "subscription.notFound"), "NOT_FOUND");
+    if (JSON.stringify(subscriptionRowValues(current)) !== JSON.stringify(subscriptionRowValues(existing))) throw conflict();
+    throw error;
+  }
   return successJson(subscriptionPayloadSchema.parse({ subscription: toApiSubscription(merged) }));
 }
 
@@ -279,6 +295,9 @@ function toBody(row: SubscriptionRow): SubscriptionBody {
     name: row.name,
     logo: row.logo,
     price: row.price,
+    // PATCH 和续订都从事实行恢复余额，避免只改备注或价格币种时丢失账号快照。
+    balance: row.balance ?? null,
+    balanceCurrency: row.balance_currency ?? null,
     currency: row.currency,
     billingCycle: row.billing_cycle as SubscriptionBody["billingCycle"],
     customDays: row.custom_days,
@@ -322,6 +341,8 @@ export function toSubscriptionRow(
   return {
     id,
     user_id: userId,
+    balance: body.balance ?? null,
+    balance_currency: body.balanceCurrency ?? null,
     name: body.name,
     logo: body.logo ?? null,
     price: body.price,

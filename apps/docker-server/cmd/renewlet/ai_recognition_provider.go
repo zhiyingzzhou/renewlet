@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"net"
 	"net/http"
 	"net/url"
-	"strconv"
+	"slices"
 	"strings"
+	"time"
 
 	"github.com/zendev-sh/goai"
 	"github.com/zendev-sh/goai/provider"
@@ -22,6 +24,8 @@ type aiRecognitionGeneration struct {
 	capture aiRecognitionCapture
 }
 
+const aiRecognitionNetworkRetryDelay = 150 * time.Millisecond
+
 var generateAIRecognitionObjectForRunner = generateAIRecognitionObject
 var streamAIRecognitionObjectForRunner = streamAIRecognitionObject
 var newAIRecognitionModelForConnection = newAIRecognitionModel
@@ -32,7 +36,76 @@ func (goaiRecognitionRunner) Recognize(
 	input aiRecognitionInput,
 	locale appLocale,
 	timezone string,
-	defaultCurrency string,
+	configContext aiRecognitionConfigContext,
+) (aiRecognizeResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, aiRecognitionProviderTimeout)
+	defer cancel()
+	if len(input.Images) > 0 {
+		return goaiRecognitionRunner{}.recognizeSingle(ctx, settings, input, locale, timezone, configContext)
+	}
+	chunks := splitAIRecognitionText(input.Text)
+	if len(chunks) == 1 {
+		return goaiRecognitionRunner{}.recognizeSingle(ctx, settings, input, locale, timezone, configContext)
+	}
+	responses := make([]aiRecognizeResponse, len(chunks))
+	completed := make([]bool, len(chunks))
+	errorsByChunk := make([]error, len(chunks))
+	for start := 0; start < len(chunks); start += 2 {
+		end := minInt(start+2, len(chunks))
+		type chunkResult struct {
+			index    int
+			response aiRecognizeResponse
+			err      error
+		}
+		results := make(chan chunkResult, end-start)
+		for index := start; index < end; index++ {
+			go func(index int) {
+				chunkInput := input
+				chunkInput.Text = chunks[index]
+				response, err := goaiRecognitionRunner{}.recognizeSingle(ctx, settings, chunkInput, locale, timezone, configContext)
+				results <- chunkResult{index: index, response: response, err: err}
+			}(index)
+		}
+		for index := start; index < end; index++ {
+			result := <-results
+			if result.err != nil {
+				if ctx.Err() != nil {
+					return aiRecognizeResponse{}, ctx.Err()
+				}
+				errorsByChunk[result.index] = result.err
+				continue
+			}
+			responses[result.index] = result.response
+			completed[result.index] = true
+		}
+	}
+	orderedResponses := make([]aiRecognizeResponse, 0, len(chunks))
+	for index, response := range responses {
+		if completed[index] {
+			orderedResponses = append(orderedResponses, response)
+		}
+	}
+	if len(orderedResponses) == 0 {
+		for _, chunkErr := range errorsByChunk {
+			if chunkErr != nil {
+				return aiRecognizeResponse{}, chunkErr
+			}
+		}
+		return aiRecognizeResponse{}, errAIRecognitionNoSubscriptions
+	}
+	merged := mergeAIRecognizeResponses(orderedResponses)
+	if hasAIRecognitionChunkError(errorsByChunk) {
+		merged.Warnings = appendAIRecognitionWarning(merged.Warnings, "AI_WARNING_BATCH_PARTIAL")
+	}
+	return merged, nil
+}
+
+func (goaiRecognitionRunner) recognizeSingle(
+	ctx context.Context,
+	settings aiRecognitionSettings,
+	input aiRecognitionInput,
+	locale appLocale,
+	timezone string,
 	configContext aiRecognitionConfigContext,
 ) (aiRecognizeResponse, error) {
 	if err := validateAIRecognitionSettings(settings, locale); err != nil {
@@ -42,16 +115,17 @@ func (goaiRecognitionRunner) Recognize(
 	if err != nil {
 		return aiRecognizeResponse{}, err
 	}
-	ctx, cancel := context.WithTimeout(ctx, aiRecognitionProviderTimeout)
-	defer cancel()
-
-	systemPrompt := buildAIRecognitionSystemPrompt()
-	userPrompt := buildAIRecognitionUserPrompt(input.Text, timezone, defaultCurrency, len(input.Images), locale, configContext)
+	systemPrompt := buildAIRecognitionSystemPrompt(locale)
+	userPrompt := buildAIRecognitionUserPrompt(input.Text, timezone, len(input.Images), locale, configContext)
 	generateForPrompt := func(nextUserPrompt string) (aiRecognitionGeneration, error) {
 		return generateAIRecognitionObjectForRunner(ctx, model, input, systemPrompt, nextUserPrompt)
 	}
 	generation, err := generateForPrompt(userPrompt)
 	if err != nil {
+		// 总 deadline 或客户端断开后不再从截断 raw text 恢复草稿，避免取消请求越过运行预算继续收敛。
+		if ctx.Err() != nil {
+			return aiRecognizeResponse{}, ctx.Err()
+		}
 		if generation.capture.rawModelText == "" {
 			generation.capture.rawModelText = aiRecognitionRawTextFromError(err)
 		}
@@ -62,7 +136,7 @@ func (goaiRecognitionRunner) Recognize(
 			return aiRecognizeResponse{}, &aiRecognitionRunError{cause: err, diagnostics: diagnostics}
 		}
 	}
-	return finalizeAIRecognitionGeneration(settings, input, locale, configContext, systemPrompt, userPrompt, generation, nil, generateForPrompt)
+	return finalizeAIRecognitionGeneration(settings, input, locale, configContext, systemPrompt, userPrompt, generation, todayDateOnly(time.Now().UTC(), timezone), nil, generateForPrompt)
 }
 
 func (goaiRecognitionRunner) Stream(
@@ -71,30 +145,132 @@ func (goaiRecognitionRunner) Stream(
 	input aiRecognitionInput,
 	locale appLocale,
 	timezone string,
-	defaultCurrency string,
 	configContext aiRecognitionConfigContext,
 	sink aiRecognitionStreamSink,
 ) error {
+	ctx, cancel := context.WithTimeout(ctx, aiRecognitionProviderTimeout)
+	defer cancel()
+	if len(input.Images) > 0 {
+		response, err := goaiRecognitionRunner{}.streamSingle(ctx, settings, input, locale, timezone, configContext, sink)
+		if err != nil {
+			return err
+		}
+		return sink.Final(response)
+	}
+	chunks := splitAIRecognitionText(input.Text)
+	if len(chunks) == 1 {
+		response, err := goaiRecognitionRunner{}.streamSingle(ctx, settings, input, locale, timezone, configContext, sink)
+		if err != nil {
+			return err
+		}
+		return sink.Final(response)
+	}
+	errorsByChunk := make([]error, len(chunks))
+	responsesByChunk := make([]aiRecognizeResponse, len(chunks))
+	completed := make([]bool, len(chunks))
+	subscriptionOffset := 0
+	warningOffset := 0
+	// 分块 provider 请求最多两块并发；事件先按块缓存再按原始顺序刷出，避免 partial 计数倒退或交错。
+	for start := 0; start < len(chunks); start += 2 {
+		end := minInt(start+2, len(chunks))
+		type chunkResult struct {
+			index    int
+			response aiRecognizeResponse
+			events   aiRecognitionBufferedStreamEvents
+			err      error
+		}
+		results := make(chan chunkResult, end-start)
+		for index := start; index < end; index++ {
+			go func(index int) {
+				chunkInput := input
+				chunkInput.Text = chunks[index]
+				buffer := aiRecognitionBufferedStreamEvents{}
+				response, err := goaiRecognitionRunner{}.streamSingle(ctx, settings, chunkInput, locale, timezone, configContext, &buffer)
+				results <- chunkResult{index: index, response: response, events: buffer, err: err}
+			}(index)
+		}
+		batchResults := make([]chunkResult, 0, end-start)
+		for index := start; index < end; index++ {
+			batchResults = append(batchResults, <-results)
+		}
+		slices.SortFunc(batchResults, func(left, right chunkResult) int { return left.index - right.index })
+		for _, result := range batchResults {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
+			if result.err != nil {
+				errorsByChunk[result.index] = result.err
+				continue
+			}
+			if err := flushAIRecognitionBufferedStreamEvents(result.events, sink, subscriptionOffset, warningOffset); err != nil {
+				return err
+			}
+			responsesByChunk[result.index] = result.response
+			completed[result.index] = true
+			subscriptionOffset += len(result.response.Subscriptions)
+			warningOffset = minInt(20, warningOffset+len(result.response.Warnings))
+		}
+	}
+	responses := make([]aiRecognizeResponse, 0, len(chunks))
+	for index, response := range responsesByChunk {
+		if completed[index] {
+			responses = append(responses, response)
+		}
+	}
+	if len(responses) == 0 {
+		for _, chunkErr := range errorsByChunk {
+			if chunkErr != nil {
+				return chunkErr
+			}
+		}
+		return errAIRecognitionNoSubscriptions
+	}
+	merged := mergeAIRecognizeResponses(responses)
+	if hasAIRecognitionChunkError(errorsByChunk) {
+		merged.Warnings = appendAIRecognitionWarning(merged.Warnings, "AI_WARNING_BATCH_PARTIAL")
+	}
+	return sink.Final(merged)
+}
+
+func hasAIRecognitionChunkError(errorsByChunk []error) bool {
+	for _, chunkErr := range errorsByChunk {
+		if chunkErr != nil {
+			return true
+		}
+	}
+	return false
+}
+
+func (goaiRecognitionRunner) streamSingle(
+	ctx context.Context,
+	settings aiRecognitionSettings,
+	input aiRecognitionInput,
+	locale appLocale,
+	timezone string,
+	configContext aiRecognitionConfigContext,
+	sink aiRecognitionStreamSink,
+) (aiRecognizeResponse, error) {
 	if err := validateAIRecognitionSettings(settings, locale); err != nil {
-		return err
+		return aiRecognizeResponse{}, err
 	}
 	model, err := newAIRecognitionModel(settings)
 	if err != nil {
-		return err
+		return aiRecognizeResponse{}, err
 	}
-	ctx, cancel := context.WithTimeout(ctx, aiRecognitionProviderTimeout)
-	defer cancel()
-
-	systemPrompt := buildAIRecognitionSystemPrompt()
-	userPrompt := buildAIRecognitionUserPrompt(input.Text, timezone, defaultCurrency, len(input.Images), locale, configContext)
+	systemPrompt := buildAIRecognitionSystemPrompt(locale)
+	userPrompt := buildAIRecognitionUserPrompt(input.Text, timezone, len(input.Images), locale, configContext)
 	if err := sink.Progress(aiRecognitionStreamStageModelStart); err != nil {
-		return err
+		return aiRecognizeResponse{}, err
 	}
 	generateForPrompt := func(nextUserPrompt string) (aiRecognitionGeneration, error) {
 		return streamAIRecognitionObjectForRunner(ctx, model, input, systemPrompt, nextUserPrompt, sink)
 	}
 	generation, err := generateForPrompt(userPrompt)
 	if err != nil {
+		// SSE 断开或总 deadline 触发时，raw text 恢复也必须停止，不能在请求已取消后发送 final。
+		if ctx.Err() != nil {
+			return aiRecognizeResponse{}, ctx.Err()
+		}
 		if generation.capture.rawModelText == "" {
 			generation.capture.rawModelText = aiRecognitionRawTextFromError(err)
 		}
@@ -102,44 +278,37 @@ func (goaiRecognitionRunner) Stream(
 			generation = recovered
 		} else {
 			diagnostics := buildAIRecognitionDiagnostics(settings, input, systemPrompt, userPrompt, generation.capture.rawModelText, nil, generation.capture.usage, generation.capture.finishReason, generation.capture.providerMetadata)
-			return &aiRecognitionRunError{cause: err, diagnostics: diagnostics}
+			return aiRecognizeResponse{}, &aiRecognitionRunError{cause: err, diagnostics: diagnostics}
 		}
 	}
-	response, err := finalizeAIRecognitionGeneration(settings, input, locale, configContext, systemPrompt, userPrompt, generation, sink.Progress, generateForPrompt)
+	response, err := finalizeAIRecognitionGeneration(settings, input, locale, configContext, systemPrompt, userPrompt, generation, todayDateOnly(time.Now().UTC(), timezone), sink.Progress, generateForPrompt)
 	if err != nil {
-		return err
+		return aiRecognizeResponse{}, err
 	}
-	return sink.Final(response)
+	return response, nil
 }
 
-func finalizeAIRecognitionGeneration(settings aiRecognitionSettings, input aiRecognitionInput, locale appLocale, configContext aiRecognitionConfigContext, systemPrompt string, userPrompt string, initialGeneration aiRecognitionGeneration, progress func(string) error, generateForPrompt func(string) (aiRecognitionGeneration, error)) (aiRecognizeResponse, error) {
-	generation := initialGeneration
+func finalizeAIRecognitionGeneration(settings aiRecognitionSettings, input aiRecognitionInput, locale appLocale, configContext aiRecognitionConfigContext, systemPrompt string, userPrompt string, generation aiRecognitionGeneration, currentDate string, progress func(string) error, generateForPrompt func(string) (aiRecognitionGeneration, error)) (aiRecognizeResponse, error) {
 	if progress != nil {
 		if err := progress(aiRecognitionStreamStageValidating); err != nil {
 			return aiRecognizeResponse{}, err
 		}
 	}
 	diagnostics := buildAIRecognitionDiagnosticsForGeneration(settings, input, systemPrompt, userPrompt, generation)
-	response, err := normalizeAIGeneratedRecognizeResponse(generation.result.Object, settings.ProviderType, settings.TransportProtocol, settings.Model, diagnostics, configContext)
+	response, err := normalizeAIGeneratedRecognizeResponse(generation.result.Object, settings.ProviderType, settings.TransportProtocol, settings.Model, diagnostics, configContext, currentDate)
 	if err != nil {
 		return aiRecognizeResponse{}, &aiRecognitionRunError{cause: err, diagnostics: diagnostics}
 	}
-	if missingNames := missingDescribableAINoteNames(response.Subscriptions); len(missingNames) > 0 {
-		if progress != nil {
-			if err := progress(aiRecognitionStreamStageRepairStart); err != nil {
-				return aiRecognizeResponse{}, err
-			}
-		}
-		repairPrompt := buildAIRecognitionRepairUserPrompt(userPrompt, generation.result.Object, missingNames)
+	missingNames := missingDescribableAINoteNames(response.Subscriptions)
+	if len(missingNames) > 0 {
+		repairPrompt := buildAIRecognitionRepairUserPrompt(userPrompt, generation.result.Object, missingNames, locale)
 		if repairedGeneration, repairErr := generateForPrompt(repairPrompt); repairErr == nil {
 			repairDiagnostics := buildAIRecognitionDiagnosticsForGeneration(settings, input, systemPrompt, repairPrompt, repairedGeneration)
-			if repairedResponse, normalizeErr := normalizeAIGeneratedRecognizeResponse(repairedGeneration.result.Object, settings.ProviderType, settings.TransportProtocol, settings.Model, repairDiagnostics, configContext); normalizeErr == nil {
-				diagnostics = repairDiagnostics
-				response = repairedResponse
+			if repairedResponse, normalizeErr := normalizeAIGeneratedRecognizeResponse(repairedGeneration.result.Object, settings.ProviderType, settings.TransportProtocol, settings.Model, repairDiagnostics, configContext, currentDate); normalizeErr == nil {
+				response = mergeAIRecognitionNotes(response, repairedResponse)
+				response.Diagnostics = repairDiagnostics
 			}
 		}
-		response.Diagnostics = diagnostics
-		response = fillMissingAINotesWithDynamicFallback(response, locale, configContext)
 	}
 	if progress != nil {
 		if err := progress(aiRecognitionStreamStageFinalizing); err != nil {
@@ -270,6 +439,9 @@ func aiRecognitionObjectOptions(model provider.LanguageModel, input aiRecognitio
 		goai.WithSystem(systemPrompt),
 		goai.WithMessages(provider.Message{Role: provider.RoleUser, Content: userParts}),
 		goai.WithMaxOutputTokens(aiRecognitionOutputTokenLimit(input)),
+		// SDK 默认会重试两次；识别链只允许 runtime transport 做一次短网络级重试，
+		// 结构化错误、拒绝、4xx 和截断必须在同一总 deadline 内立即返回。
+		goai.WithMaxRetries(0),
 		goai.WithExplicitSchema(aiRecognitionGeneratedSchema),
 		goai.WithSchemaName(aiRecognitionPrompt.SchemaName),
 		goai.WithOnStepFinish(func(step goai.StepResult) {
@@ -283,6 +455,19 @@ func aiRecognitionObjectOptions(model provider.LanguageModel, input aiRecognitio
 	}
 	if providerOptions := aiRecognitionProviderOptions(modelProviderType(model), modelTransportProtocol(model), input.ThinkingControl); len(providerOptions) > 0 {
 		options = append(options, goai.WithProviderOptions(providerOptions))
+	}
+	if modelProviderType(model) == aiProviderTypeOpenAI && modelTransportProtocol(model) == aiProtocolOpenAIResponses {
+		// 原生 Responses 才能使用 provider 执行的官方站搜索；最多允许一次 search step，
+		// compatible Chat 不注入伪造工具，避免第三方把未知 tool 当成业务字段。
+		webSearch := openai.Tools.WebSearch(openai.WithSearchContextSize("low"))
+		options = append(options,
+			goai.WithTools(goai.Tool{
+				Name:                   webSearch.Name,
+				ProviderDefinedType:    webSearch.ProviderDefinedType,
+				ProviderDefinedOptions: webSearch.ProviderDefinedOptions,
+			}),
+			goai.WithMaxSteps(2),
+		)
 	}
 	return options
 }
@@ -310,136 +495,30 @@ func buildAIRecognitionDiagnosticsForGeneration(settings aiRecognitionSettings, 
 	)
 }
 
-var aiRecognitionGeneratedSchema = json.RawMessage(`{
-  "type": "object",
-  "properties": {
-    "subscriptions": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string" },
-          "price": { "type": ["number", "string", "null"] },
-          "currency": { "type": ["string", "null"] },
-          "billingCycle": { "type": ["string", "null"] },
-          "customDays": { "type": ["integer", "string", "null"] },
-          "customCycleUnit": { "type": ["string", "null"] },
-          "oneTimeTermCount": { "type": ["integer", "string", "null"] },
-          "oneTimeTermUnit": { "type": ["string", "null"] },
-          "category": {
-            "type": ["string", "null"],
-            "description": "Renewlet category value from provided options when possible; otherwise a concise user-facing category only when the service type is obvious."
-          },
-          "status": { "type": ["string", "null"] },
-          "paymentMethod": {
-            "type": ["string", "null"],
-            "description": "Renewlet payment method value from provided options when possible; otherwise a concise user-facing payment method only when the input explicitly names one."
-          },
-          "startDate": { "type": ["string", "null"] },
-          "nextBillingDate": { "type": ["string", "null"] },
-          "autoCalculateNextBillingDate": { "type": ["boolean", "null"] },
-          "trialEndDate": { "type": ["string", "null"] },
-          "website": {
-            "type": ["object", "null"],
-            "description": "Official or user-provided website for the subscribed service. Use null for the entire website field when the official site is ambiguous or unknown.",
-            "properties": {
-              "value": { "type": ["string", "null"] },
-              "source": { "type": "string", "enum": ["input", "suggested"] }
-            },
-            "required": ["value", "source"],
-            "additionalProperties": false
-          },
-          "notes": {
-            "type": "object",
-            "description": "Required service/site description decision object. Use value=null and source=none only when the service purpose is truly unknowable from input, domain, service name, category, tags, or high-confidence public knowledge.",
-            "properties": {
-              "value": {
-                "type": ["string", "null"],
-                "description": "Concise neutral service/site description. Must be non-null for describable services; not a category, import advice, confirmation reminder, or AI process note."
-              },
-              "source": { "type": "string", "enum": ["input", "suggested", "none"] }
-            },
-            "required": ["value", "source"],
-            "additionalProperties": false
-          },
-          "tags": {
-            "type": "array",
-            "description": "User-facing reusable organization tags. Prefer existing user tags from prompt context; if none fit, generate only stable reusable service/product/domain tags, not one-off order attributes.",
-            "items": { "type": "string" },
-            "maxItems": 3
-          },
-          "reminderDays": { "type": ["integer", "string", "null"] },
-          "repeatReminderEnabled": { "type": ["boolean", "null"] },
-          "repeatReminderInterval": { "type": ["string", "null"] },
-          "repeatReminderWindow": { "type": ["string", "null"] },
-          "confidence": {
-            "type": "string",
-            "description": "Use high only when the extracted row can be directly confirmed; use low for ambiguous, partial, or inferred records.",
-            "enum": ["high", "low"]
-          },
-          "warnings": {
-            "type": "array",
-            "description": "Stable warning codes for uncertain or invalid fields; keep uncertainty out of notes.",
-            "items": { "type": "string" }
-          }
-        },
-        "required": [
-          "name",
-          "price",
-          "currency",
-          "billingCycle",
-          "customDays",
-          "customCycleUnit",
-          "oneTimeTermCount",
-          "oneTimeTermUnit",
-          "category",
-          "status",
-          "paymentMethod",
-          "startDate",
-          "nextBillingDate",
-          "autoCalculateNextBillingDate",
-          "trialEndDate",
-          "website",
-          "notes",
-          "tags",
-          "reminderDays",
-          "repeatReminderEnabled",
-          "repeatReminderInterval",
-          "repeatReminderWindow",
-          "confidence",
-          "warnings"
-        ],
-        "additionalProperties": false
-      }
-    },
-    "warnings": { "type": "array", "items": { "type": "string" } }
-  },
-  "required": ["subscriptions", "warnings"],
-  "additionalProperties": false
-}`)
-
 func newAIRecognitionModel(settings aiRecognitionSettings) (provider.LanguageModel, error) {
 	settings = sanitizeAIRecognitionSettings(settings)
 	endpoint := resolveAIProviderEndpoint(settings)
 	switch settings.TransportProtocol {
-	case aiProtocolOpenAIChat:
-		httpClient := aiProviderRuntimeHTTPClient(endpoint, "")
+	case aiProtocolOpenAIResponses:
 		if settings.ProviderType != aiProviderTypeOpenAI {
-			options := []compat.Option{compat.WithBaseURL(endpoint.RuntimeBaseURL), compat.WithHTTPClient(httpClient)}
-			if settings.APIKey != "" {
-				options = append(options, compat.WithAPIKey(settings.APIKey))
-			}
-			return aiRecognitionRuntimeModel{LanguageModel: compat.Chat(settings.Model, options...), providerType: settings.ProviderType, transportProtocol: settings.TransportProtocol}, nil
+			return nil, errAIRecognitionProviderInvalid
 		}
+		httpClient := aiProviderRuntimeHTTPClient(endpoint, "")
 		options := []openai.Option{openai.WithAPIKey(settings.APIKey), openai.WithHTTPClient(httpClient)}
 		if endpoint.RuntimeBaseURL != "" {
 			options = append(options, openai.WithBaseURL(endpoint.RuntimeBaseURL))
 		}
-		if requiresOpenAIMaxCompletionTokens(settings.Model) {
-			// GoAI 的模型能力识别落后于 OpenAI GPT-6 参数契约；在官方 Chat 边界显式选择新 token 字段，避免改写 HTTP 或影响兼容网关。
-			options = append(options, openai.WithUseMaxCompletionTokens(true))
-		}
 		return aiRecognitionRuntimeModel{LanguageModel: openai.Chat(settings.Model, options...), providerType: settings.ProviderType, transportProtocol: settings.TransportProtocol}, nil
+	case aiProtocolOpenAIChat:
+		httpClient := aiProviderRuntimeHTTPClient(endpoint, "")
+		if settings.ProviderType != aiProviderTypeOpenAICompatible {
+			return nil, errAIRecognitionProviderInvalid
+		}
+		options := []compat.Option{compat.WithBaseURL(endpoint.RuntimeBaseURL), compat.WithHTTPClient(httpClient)}
+		if settings.APIKey != "" {
+			options = append(options, compat.WithAPIKey(settings.APIKey))
+		}
+		return aiRecognitionRuntimeModel{LanguageModel: compat.Chat(settings.Model, options...), providerType: settings.ProviderType, transportProtocol: settings.TransportProtocol}, nil
 	case aiProtocolGeminiGenerateContent:
 		options := []google.Option{google.WithAPIKey(settings.APIKey), google.WithHTTPClient(aiProviderRuntimeHTTPClient(endpoint, "v1beta"))}
 		if baseURL := goAIBaseURLForEndpoint(endpoint); baseURL != "" {
@@ -457,40 +536,6 @@ func newAIRecognitionModel(settings aiRecognitionSettings) (provider.LanguageMod
 	}
 }
 
-func requiresOpenAIMaxCompletionTokens(modelID string) bool {
-	modelID = strings.ToLower(strings.TrimSpace(modelID))
-	if !strings.HasPrefix(modelID, "gpt-") {
-		return false
-	}
-	rest := strings.TrimPrefix(modelID, "gpt-")
-	majorEnd := 0
-	for majorEnd < len(rest) && rest[majorEnd] >= '0' && rest[majorEnd] <= '9' {
-		majorEnd++
-	}
-	if majorEnd == 0 {
-		return false
-	}
-	major, err := strconv.Atoi(rest[:majorEnd])
-	if err != nil || major < 6 {
-		return false
-	}
-	suffix := rest[majorEnd:]
-	for suffix != "" {
-		if suffix[0] == '-' {
-			suffix = suffix[1:]
-		}
-		separator := strings.IndexByte(suffix, '-')
-		if separator < 0 {
-			return suffix != "chat"
-		}
-		if suffix[:separator] == "chat" {
-			return false
-		}
-		suffix = suffix[separator:]
-	}
-	return true
-}
-
 func testAIRecognitionConnection(ctx context.Context, settings aiRecognitionSettings) error {
 	settings = sanitizeAIRecognitionSettings(settings)
 	model, err := newAIRecognitionModelForConnection(settings)
@@ -504,7 +549,7 @@ func testAIRecognitionConnection(ctx context.Context, settings aiRecognitionSett
 		goai.WithMaxOutputTokens(aiRecognitionTestProviderTokens),
 		goai.WithMaxRetries(0),
 	}
-	if providerOptions := aiRecognitionProviderOptions(settings.ProviderType, settings.TransportProtocol, nil); len(providerOptions) > 0 {
+	if providerOptions := aiRecognitionProviderOptions(settings.ProviderType, settings.TransportProtocol, settings.DefaultThinkingControl); len(providerOptions) > 0 {
 		options = append(options, goai.WithProviderOptions(providerOptions))
 	}
 	_, err = goai.GenerateText(ctx, model, options...)
@@ -541,15 +586,12 @@ func modelTransportProtocol(model provider.LanguageModel) string {
 
 func aiRecognitionProviderOptions(providerType string, transportProtocol string, control *aiThinkingControl) map[string]any {
 	var options map[string]any
-	if providerType == aiProviderTypeOpenAI && transportProtocol == aiProtocolOpenAIChat {
-		options = map[string]any{"useResponsesAPI": false}
-	}
 	if control == nil {
 		return options
 	}
 	switch control.Provider {
 	case "openai":
-		if providerType != aiProviderTypeOpenAI || transportProtocol != aiProtocolOpenAIChat {
+		if providerType != aiProviderTypeOpenAI || transportProtocol != aiProtocolOpenAIResponses {
 			return options
 		}
 		if options == nil {
@@ -645,6 +687,17 @@ func (transport aiProviderRuntimeTransport) RoundTrip(request *http.Request) (*h
 
 func (transport aiProviderRuntimeTransport) roundTripWithDiagnostics(inner http.RoundTripper, request *http.Request) (*http.Response, error) {
 	response, err := inner.RoundTrip(request)
+	if err != nil && isAIRecognitionRetryableNetworkError(err) && request.Context().Err() == nil {
+		if retryRequest, ok := replayAIRecognitionRequest(request); ok {
+			timer := time.NewTimer(aiRecognitionNetworkRetryDelay)
+			select {
+			case <-request.Context().Done():
+				timer.Stop()
+			case <-timer.C:
+				response, err = inner.RoundTrip(retryRequest)
+			}
+		}
+	}
 	if err == nil {
 		return response, nil
 	}
@@ -659,11 +712,67 @@ func (transport aiProviderRuntimeTransport) roundTripWithDiagnostics(inner http.
 	}, err, aiRecognitionProviderTimeout, timedOut), timedOut)
 }
 
-func aiRecognitionOutputTokenLimit(input aiRecognitionInput) int {
-	if input.MaxOutputTokens > 0 {
-		return input.MaxOutputTokens
+func isAIRecognitionRetryableNetworkError(err error) bool {
+	var networkErr net.Error
+	return errors.As(err, &networkErr) && networkErr.Temporary() && !networkErr.Timeout()
+}
+
+func replayAIRecognitionRequest(request *http.Request) (*http.Request, bool) {
+	if request == nil {
+		return nil, false
 	}
-	return aiRecognitionMaxProviderResponse
+	retryRequest := request.Clone(request.Context())
+	if request.Body == nil {
+		return retryRequest, true
+	}
+	if request.GetBody == nil {
+		return nil, false
+	}
+	body, err := request.GetBody()
+	if err != nil {
+		return nil, false
+	}
+	retryRequest.Body = body
+	return retryRequest, true
+}
+
+func aiRecognitionOutputTokenLimit(input aiRecognitionInput) int {
+	lines := []string{}
+	for _, line := range strings.Split(strings.ReplaceAll(input.Text, "\r\n", "\n"), "\n") {
+		if strings.TrimSpace(line) != "" {
+			lines = append(lines, line)
+		}
+	}
+	rows := len(lines)
+	if detectAIRecognitionDelimitedHeader(lines) != "" {
+		rows--
+	}
+	if rows < 1 {
+		rows = 1
+	}
+	imageRows := len(input.Images) * aiRecognitionEstimatedRecordsPerImage
+	if imageRows > rows {
+		rows = imageRows
+	}
+	if rows > aiRecognitionBatchMaxRows {
+		rows = aiRecognitionBatchMaxRows
+	}
+	limit := 512 + rows*220
+	if rows >= aiRecognitionBatchMaxRows {
+		limit = 7000
+	}
+	if limit < 1024 {
+		limit = 1024
+	}
+	if limit > 7000 {
+		limit = 7000
+	}
+	// 显式 thinking 会消耗 max_output_tokens 中的推理 token；与 Worker 保持同一最低预算，
+	// 避免 high/max 只得到截断 JSON 而模型默认档位正常。
+	if input.ThinkingControl != nil && limit < 4096 {
+		limit = 4096
+	}
+	return limit
 }
 
 func resultStringFromAIObject(value interface{}) string {

@@ -1,3 +1,5 @@
+import { ApiError } from "@/lib/api-client";
+import { readProductSessionSnapshot } from "@/services/product-session";
 import { useMemo } from "react";
 import {
   infiniteQueryOptions,
@@ -182,8 +184,15 @@ export function usePatchSubscription() {
 export function useRenewSubscription() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: SubscriptionRenewBody }) =>
-      subscriptionService.renew(id, payload),
+    retry: false,
+    mutationFn: async ({ id, payload }: { id: string; payload: SubscriptionRenewBody }) => {
+      const session = readProductSessionSnapshot();
+      const result = await subscriptionService.renew(id, payload);
+      // 退出/换号清缓存后，旧写请求不能把上一账号的详情重新放入共享 QueryClient。
+      const current = readProductSessionSnapshot();
+      if (session?.userId !== current?.userId || session?.expiresAt !== current?.expiresAt) throw new ApiError("Session changed", 0, undefined, "aborted");
+      return result;
+    },
     onSuccess: (subscription) => writeNotificationAffectingSubscriptionMutationResult(queryClient, subscription),
   });
 }

@@ -275,6 +275,22 @@ describe("api-client", () => {
     expect(readProductSession()?.session.expiresAt).toBe("2026-07-03T00:00:00.000Z");
   });
 
+  it("does not clear auth session for any proxied provider 401 with raw details", async () => {
+    writeProductSession(sessionFixture());
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockResolvedValue(new Response(errorResponseBody(
+      "AI_RECOGNITION_TEST_FAILED",
+      "{\"error\":\"invalid_api_key\"}",
+      { rawResponseText: "{\"error\":\"invalid_api_key\"}" },
+    ), { status: 401 }));
+
+    await expect(apiFetch("/api/app/ai/subscriptions/test", okResponseSchema)).rejects.toMatchObject({
+      status: 401,
+      code: "AI_RECOGNITION_TEST_FAILED",
+    });
+    expect(mocks.clearAuthSession).not.toHaveBeenCalled();
+  });
+
   it("turns Zod field errors into a readable message", async () => {
     const fetchMock = vi.mocked(fetch);
     fetchMock.mockResolvedValue(new Response(errorResponseBody("INVALID_PAYLOAD", "Invalid payload", {
@@ -296,7 +312,7 @@ describe("api-client", () => {
     fetchMock.mockResolvedValue(new Response("not-json", { status: 502, statusText: "Bad Gateway" }));
 
     await expect(apiFetch("/api/example", okResponseSchema)).rejects.toMatchObject({
-      message: "Bad Gateway",
+      message: "not-json",
       status: 502,
       rawResponseText: "not-json",
     });

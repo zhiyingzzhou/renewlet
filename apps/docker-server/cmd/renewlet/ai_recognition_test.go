@@ -7,10 +7,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
-	"slices"
 	"strings"
 	"testing"
 
@@ -29,17 +29,17 @@ func TestAIRecognitionProviderOptions(t *testing.T) {
 		want              map[string]any
 	}{
 		{
-			name:              "openai chat completion with reasoning effort",
+			name:              "openai responses with reasoning effort",
 			providerType:      aiProviderTypeOpenAI,
-			transportProtocol: aiProtocolOpenAIChat,
+			transportProtocol: aiProtocolOpenAIResponses,
 			control:           &aiThinkingControl{Provider: "openai", Effort: "high"},
-			want:              map[string]any{"useResponsesAPI": false, "reasoning_effort": "high"},
+			want:              map[string]any{"reasoning_effort": "high"},
 		},
 		{
-			name:              "openai chat completion without thinking",
+			name:              "openai responses without thinking",
 			providerType:      aiProviderTypeOpenAI,
-			transportProtocol: aiProtocolOpenAIChat,
-			want:              map[string]any{"useResponsesAPI": false},
+			transportProtocol: aiProtocolOpenAIResponses,
+			want:              nil,
 		},
 		{
 			name:              "compatible openai chat does not receive official openai options",
@@ -87,6 +87,25 @@ func TestAIRecognitionProviderOptions(t *testing.T) {
 	}
 }
 
+func TestAIThinkingControlKeepsGPT5VersionedEfforts(t *testing.T) {
+	for _, model := range []string{"gpt-5.1", "gpt-5-mini"} {
+		if !aiThinkingControlCompatibleWithModel(model, &aiThinkingControl{Provider: aiProviderTypeOpenAI, Effort: "high"}) {
+			t.Fatalf("expected GPT-5 model %q to keep high effort", model)
+		}
+	}
+	for _, model := range []string{"gpt-6.1-terra", "gpt-7.0-future", "models/gpt-6.9-new-model"} {
+		if !aiThinkingControlCompatibleWithModel(model, &aiThinkingControl{Provider: aiProviderTypeOpenAI, Effort: "max"}) {
+			t.Fatalf("expected modern GPT model %q to keep max effort", model)
+		}
+		if aiThinkingControlCompatibleWithModel(model, &aiThinkingControl{Provider: aiProviderTypeOpenAI, Effort: "minimal"}) {
+			t.Fatalf("modern GPT model %q must reject legacy minimal effort", model)
+		}
+	}
+	if aiThinkingControlCompatibleWithModel("gpt-4.1", &aiThinkingControl{Provider: aiProviderTypeOpenAI, Effort: "high"}) {
+		t.Fatal("unknown/non-reasoning GPT family must not receive reasoning effort")
+	}
+}
+
 func TestAIRecognitionConnectionUsesMinimalTextGeneration(t *testing.T) {
 	fake := &aiConnectionTestModel{
 		err: &goai.APIError{
@@ -107,7 +126,7 @@ func TestAIRecognitionConnectionUsesMinimalTextGeneration(t *testing.T) {
 
 	err := testAIRecognitionConnection(context.Background(), aiRecognitionSettings{
 		ProviderType:           aiProviderTypeOpenAI,
-		TransportProtocol:      aiProtocolOpenAIChat,
+		TransportProtocol:      aiProtocolOpenAIResponses,
 		Model:                  "gpt-5.1",
 		APIKey:                 "sk-test",
 		DefaultThinkingControl: &aiThinkingControl{Provider: "openai", Effort: "high"},
@@ -132,8 +151,8 @@ func TestAIRecognitionConnectionUsesMinimalTextGeneration(t *testing.T) {
 	if fake.params.MaxOutputTokens != aiRecognitionTestProviderTokens || fake.params.ResponseFormat != nil || len(fake.params.Tools) != 0 {
 		t.Fatalf("connection test should be a small text-only call, got %#v", fake.params)
 	}
-	if !reflect.DeepEqual(fake.params.ProviderOptions, map[string]any{"useResponsesAPI": false}) {
-		t.Fatalf("OpenAI connection test must stay on Chat Completions, got %#v", fake.params.ProviderOptions)
+	if got := fake.params.ProviderOptions["reasoning_effort"]; got != "high" {
+		t.Fatalf("OpenAI connection test should preserve selected effort, got %#v", fake.params.ProviderOptions)
 	}
 	if len(fake.params.Messages) != 1 || len(fake.params.Messages[0].Content) != 1 || fake.params.Messages[0].Content[0].Text != aiRecognitionTestPrompt {
 		t.Fatalf("connection test prompt mismatch: %#v", fake.params.Messages)
@@ -159,69 +178,41 @@ func TestAIProviderResponseFromWrappedAPIError(t *testing.T) {
 	}
 }
 
-func TestGoAIRecognitionRunnerRepairsMissingNotes(t *testing.T) {
-	restore := stubAIRecognitionGeneration(t, []aiGeneratedRecognizeResponse{
-		aiGeneratedResponseForTest(aiGeneratedDraftForTest(
-			"HostDZire CloudVPS",
-			aiGeneratedNotesField{Value: nil, Source: "none"},
-			[]string{"VPS", "云主机"},
-		)),
-		aiGeneratedResponseForTest(aiGeneratedDraftForTest(
-			"HostDZire CloudVPS",
-			aiGeneratedNotesField{Value: stringRef("HostDZire CloudVPS 是提供 VPS 和云主机相关产品或服务的订阅服务。"), Source: "suggested"},
-			[]string{"VPS", "云主机"},
-		)),
-	})
-	defer restore()
-
-	response, err := goaiRecognitionRunner{}.Recognize(
-		context.Background(),
-		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, Model: "gpt-5.1", APIKey: "sk-test"},
-		aiRecognitionInput{Text: "HostDZire CloudVPS 15元 1个月", MaxOutputTokens: 12000},
-		localeZhCN,
-		"Asia/Shanghai",
-		"CNY",
-		aiRecognitionConfigContext{},
-	)
+func TestAIRecognitionProviderRetriesOneTemporaryNetworkFailure(t *testing.T) {
+	attempts := 0
+	transport := aiProviderRuntimeTransport{
+		provider: "test provider",
+		inner: roundTripFunc(func(request *http.Request) (*http.Response, error) {
+			attempts++
+			if attempts == 1 {
+				return nil, temporaryAIRecognitionNetworkError{}
+			}
+			return &http.Response{
+				StatusCode: http.StatusOK,
+				Body:       io.NopCloser(strings.NewReader("{}")),
+				Header:     make(http.Header),
+				Request:    request,
+			}, nil
+		}),
+	}
+	request, err := http.NewRequest(http.MethodPost, "https://provider.test/v1/chat", strings.NewReader("{}"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if response.Subscriptions[0].Notes == nil || response.Subscriptions[0].Notes.Value != "HostDZire CloudVPS 是提供 VPS 和云主机相关产品或服务的订阅服务。" {
-		t.Fatalf("repair notes not preserved: %#v", response.Subscriptions[0].Notes)
-	}
-	if !strings.Contains(response.Diagnostics.Prompt.User.Value, "Repair task:") {
-		t.Fatalf("diagnostics should describe repair prompt, got %s", response.Diagnostics.Prompt.User.Value)
-	}
-}
-
-func TestGoAIRecognitionRunnerFallsBackWhenRepairStillMissesNotes(t *testing.T) {
-	missing := aiGeneratedResponseForTest(aiGeneratedDraftForTest(
-		"HostDZire CloudVPS",
-		aiGeneratedNotesField{Value: nil, Source: "none"},
-		[]string{"VPS", "云主机"},
-	))
-	restore := stubAIRecognitionGeneration(t, []aiGeneratedRecognizeResponse{missing, missing})
-	defer restore()
-
-	response, err := goaiRecognitionRunner{}.Recognize(
-		context.Background(),
-		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, Model: "gpt-5.1", APIKey: "sk-test"},
-		aiRecognitionInput{Text: "HostDZire CloudVPS 15元 1个月", MaxOutputTokens: 12000},
-		localeZhCN,
-		"Asia/Shanghai",
-		"CNY",
-		aiRecognitionConfigContext{},
-	)
+	response, err := transport.RoundTrip(request)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if response.Subscriptions[0].Notes == nil || response.Subscriptions[0].Notes.Value != "HostDZire CloudVPS 是提供 VPS、云主机相关产品或服务的订阅服务。" {
-		t.Fatalf("fallback notes not generated from dynamic fields: %#v", response.Subscriptions[0].Notes)
-	}
-	if slices.Contains(response.Subscriptions[0].Warnings, "AI_WARNING_NOTES_MISSING") {
-		t.Fatalf("fallback should not expose missing-notes warning: %#v", response.Subscriptions[0].Warnings)
+	if response == nil || response.StatusCode != http.StatusOK || attempts != 2 {
+		t.Fatalf("temporary network retry mismatch: response=%#v attempts=%d", response, attempts)
 	}
 }
+
+type temporaryAIRecognitionNetworkError struct{}
+
+func (temporaryAIRecognitionNetworkError) Error() string   { return "temporary network failure" }
+func (temporaryAIRecognitionNetworkError) Timeout() bool   { return false }
+func (temporaryAIRecognitionNetworkError) Temporary() bool { return true }
 
 func TestGoAIRecognitionRunnerRecoversRawJSONWhenStructuredObjectRejected(t *testing.T) {
 	raw := aiGeneratedResponseForTest(aiGeneratedDraftForTest(
@@ -245,11 +236,10 @@ func TestGoAIRecognitionRunnerRecoversRawJSONWhenStructuredObjectRejected(t *tes
 
 	response, err := goaiRecognitionRunner{}.Recognize(
 		context.Background(),
-		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, Model: "gpt-5.1", APIKey: "sk-test"},
-		aiRecognitionInput{Text: "locvps 20元 1个月", MaxOutputTokens: 12000},
+		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIResponses, Model: "gpt-5.1", APIKey: "sk-test"},
+		aiRecognitionInput{Text: "locvps 20元 1个月"},
 		localeZhCN,
 		"Asia/Shanghai",
-		"CNY",
 		aiRecognitionConfigContext{},
 	)
 	if err != nil {
@@ -277,11 +267,10 @@ func TestGoAIRecognitionRunnerStreamsProgressPartialAndFinal(t *testing.T) {
 
 	err := goaiRecognitionRunner{}.Stream(
 		context.Background(),
-		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, Model: "gpt-5.1", APIKey: "sk-test"},
-		aiRecognitionInput{Text: "HostDZire CloudVPS 15元 1个月", MaxOutputTokens: 12000},
+		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIResponses, Model: "gpt-5.1", APIKey: "sk-test"},
+		aiRecognitionInput{Text: "HostDZire CloudVPS 15元 1个月"},
 		localeZhCN,
 		"Asia/Shanghai",
-		"CNY",
 		aiRecognitionConfigContext{},
 		sink,
 	)
@@ -327,11 +316,10 @@ func TestGoAIRecognitionRunnerStreamsRecoveredRawJSONFinal(t *testing.T) {
 
 	err := goaiRecognitionRunner{}.Stream(
 		context.Background(),
-		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, Model: "gpt-5.1", APIKey: "sk-test"},
-		aiRecognitionInput{Text: "locvps 20元 1个月", MaxOutputTokens: 12000},
+		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIResponses, Model: "gpt-5.1", APIKey: "sk-test"},
+		aiRecognitionInput{Text: "locvps 20元 1个月"},
 		localeZhCN,
 		"Asia/Shanghai",
-		"CNY",
 		aiRecognitionConfigContext{},
 		sink,
 	)
@@ -390,7 +378,7 @@ func TestAIRecognitionSSEWriterHeadersEventsAndSanitizedError(t *testing.T) {
 	}
 	if err := writer.Final(aiRecognizeResponse{
 		ProviderType:      aiProviderTypeOpenAI,
-		TransportProtocol: aiProtocolOpenAIChat,
+		TransportProtocol: aiProtocolOpenAIResponses,
 		Model:             "gpt-5.1",
 		Subscriptions:     []aiRecognizedSubscriptionDraft{{Name: "dmit", Confidence: "high"}},
 		Warnings:          []string{},
@@ -432,6 +420,32 @@ func TestAIRecognitionSSEWriterHeadersEventsAndSanitizedError(t *testing.T) {
 	}
 }
 
+func TestAIRecognitionSSEWriterCancelsOnFlushFailure(t *testing.T) {
+	flushErr := errors.New("client disconnected")
+	recorder := &flushErrorResponseRecorder{ResponseRecorder: *httptest.NewRecorder(), err: flushErr}
+	cancelled := false
+	writer := aiRecognitionSSEWriter{
+		response:   recorder,
+		controller: http.NewResponseController(recorder),
+		cancel:     func() { cancelled = true },
+	}
+	if err := writer.writeFrame(": keep-alive\n\n"); !errors.Is(err, flushErr) {
+		t.Fatalf("expected flush error, got %v", err)
+	}
+	if !cancelled {
+		t.Fatal("flush failure should cancel the provider context")
+	}
+}
+
+type flushErrorResponseRecorder struct {
+	httptest.ResponseRecorder
+	err error
+}
+
+func (writer *flushErrorResponseRecorder) FlushError() error {
+	return writer.err
+}
+
 func TestAIRecognitionStreamErrorCodeForTimeout(t *testing.T) {
 	streamErr := aiRecognitionStreamErrorForError(localeZhCN, context.DeadlineExceeded)
 	if streamErr.Code != "AI_RECOGNITION_TIMEOUT" {
@@ -455,12 +469,32 @@ func TestAIRecognitionStreamErrorIncludesRawResponseText(t *testing.T) {
 	if *streamErr.Details.RawResponseText != `{"code":"INVALID_API_KEY","message":"bad [redacted]"}` {
 		t.Fatalf("raw response mismatch: %#v", streamErr.Details.RawResponseText)
 	}
+	if streamErr.Message != `{"code":"INVALID_API_KEY","message":"bad [redacted]"}` {
+		t.Fatalf("stream error should preserve provider body as message: %q", streamErr.Message)
+	}
+}
+
+func TestAIRecognitionStreamErrorBoundsRawResponseToSharedContract(t *testing.T) {
+	raw := strings.Repeat("上游", upstreamProviderResponseCaptureBodyMaxBytes)
+	streamErr := aiRecognitionStreamErrorForError(localeZhCN, newUpstreamOperationError(
+		"provider failed",
+		&upstreamErrorDetails{RawResponseText: &raw},
+	))
+	if got := len([]rune(streamErr.Message)); got != upstreamProviderResponseCaptureBodyMaxBytes {
+		t.Fatalf("stream message length mismatch: got %d want %d", got, upstreamProviderResponseCaptureBodyMaxBytes)
+	}
+	if streamErr.Details == nil || streamErr.Details.RawResponseText == nil {
+		t.Fatal("bounded upstream response should remain available in details")
+	}
+	if got := len([]rune(*streamErr.Details.RawResponseText)); got != upstreamProviderResponseCaptureBodyMaxBytes {
+		t.Fatalf("stream details length mismatch: got %d want %d", got, upstreamProviderResponseCaptureBodyMaxBytes)
+	}
 }
 
 func TestReadAIRecognitionMultipartThinkingControl(t *testing.T) {
 	missing := readAIRecognitionMultipartForTest(t, map[string]string{"text": "dmit 15元 1个月"})
-	if missing.ThinkingControl != nil {
-		t.Fatalf("missing thinkingControl field should not apply defaults, got %#v", missing.ThinkingControl)
+	if missing.ThinkingControl != nil || missing.ThinkingControlProvided {
+		t.Fatalf("missing thinkingControl field should remain absent, got %#v provided=%v", missing.ThinkingControl, missing.ThinkingControlProvided)
 	}
 
 	explicitNull := readAIRecognitionMultipartForTest(t, map[string]string{
@@ -495,13 +529,13 @@ func TestReadAIRecognitionMultipartImageLimit(t *testing.T) {
 }
 
 func TestSanitizeAIRecognitionSettingsModelInputMode(t *testing.T) {
-	if got := sanitizeAIRecognitionSettings(aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, ModelInputMode: ""}).ModelInputMode; got != "select" {
+	if got := sanitizeAIRecognitionSettings(aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIResponses, ModelInputMode: ""}).ModelInputMode; got != "select" {
 		t.Fatalf("empty model input mode should default to select, got %q", got)
 	}
-	if got := sanitizeAIRecognitionSettings(aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, ModelInputMode: "manual"}).ModelInputMode; got != "manual" {
+	if got := sanitizeAIRecognitionSettings(aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIResponses, ModelInputMode: "manual"}).ModelInputMode; got != "manual" {
 		t.Fatalf("manual model input mode should be preserved, got %q", got)
 	}
-	if got := sanitizeAIRecognitionSettings(aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, ModelInputMode: "unknown"}).ModelInputMode; got != "select" {
+	if got := sanitizeAIRecognitionSettings(aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIResponses, ModelInputMode: "unknown"}).ModelInputMode; got != "select" {
 		t.Fatalf("invalid model input mode should fall back to select, got %q", got)
 	}
 }
@@ -525,6 +559,23 @@ func TestSanitizeAIRecognitionSettingsCanonicalizesProtocol(t *testing.T) {
 	}
 }
 
+func TestAIRecognitionSettingsLegacyJSONKeepsSecretsAndCanonicalizesThinking(t *testing.T) {
+	var settings aiRecognitionSettings
+	if err := json.Unmarshal([]byte(`{"provider":"openai","transportProtocol":"openai-chat","model":"gpt-6.1-sol","modelInputMode":"manual","baseUrl":"https://gateway.example.com/v1","apiKey":"sk-legacy","defaultThinkingControl":{"provider":"openai","effort":"minimal"}}`), &settings); err != nil {
+		t.Fatal(err)
+	}
+	settings = sanitizeAIRecognitionSettings(settings)
+	if settings.ProviderType != aiProviderTypeOpenAI || settings.TransportProtocol != aiProtocolOpenAIResponses {
+		t.Fatalf("legacy OpenAI settings should canonicalize to Responses: %#v", settings)
+	}
+	if settings.Model != "gpt-6.1-sol" || settings.ModelInputMode != "manual" || settings.BaseURL != "https://gateway.example.com/v1" || settings.APIKey != "sk-legacy" {
+		t.Fatalf("legacy credentials/model settings were not preserved: %#v", settings)
+	}
+	if settings.DefaultThinkingControl != nil {
+		t.Fatalf("GPT-6.1-sol must drop incompatible legacy effort: %#v", settings.DefaultThinkingControl)
+	}
+}
+
 func TestSafeAIRecognitionErrorRedactsSecrets(t *testing.T) {
 	err := safeAIRecognitionError(errors.New("provider failed sk-testsecret123 AIza123456789 sk-ant-secret123 Bearer abc.def.ghi eyJabc.def.ghi authorization: secret-token-12345"))
 	message := err.Error()
@@ -538,168 +589,12 @@ func TestSafeAIRecognitionErrorRedactsSecrets(t *testing.T) {
 	}
 }
 
-func TestAIRecognitionPromptUsesSharedJSONContract(t *testing.T) {
-	systemPrompt := buildAIRecognitionSystemPrompt()
-	configContext := aiRecognitionConfigContext{
-		Categories: []aiRecognitionConfigOption{{
-			Value: "hosting_domains",
-			Label: "域名与托管",
-			ZhCN:  "域名与托管",
-			EnUS:  "Domains & Hosting",
-		}},
-		PaymentMethods: []aiRecognitionConfigOption{{
-			Value: "crypto",
-			Label: "加密货币",
-			ZhCN:  "加密货币",
-			EnUS:  "Crypto",
-		}},
-		Tags: []string{"VPS", "云服务器"},
-	}
-	userPrompt := buildAIRecognitionUserPrompt("sample service 15元 1个月", "Asia/Shanghai", "CNY", 2, localeZhCN, configContext)
-	russianPrompt := buildAIRecognitionUserPrompt("sample service 15 руб. в месяц", "Europe/Moscow", "RUB", 0, localeRuRU, configContext)
-	for _, want := range []string{
-		"Return exactly one valid JSON object parseable by JSON.parse",
-		"no Markdown",
-		"no explanations",
-		"output null and add a warning code",
-		"Never invent price, currency, billing cycle, dates, status, payment method, or reminder fields",
-		"Do generate useful service and website metadata",
-		"Examples show output shape and decision patterns only",
-		"do not copy example natural-language output when it conflicts with User locale",
-	} {
-		if !strings.Contains(systemPrompt, want) {
-			t.Fatalf("system prompt missing %q:\n%s", want, systemPrompt)
-		}
-	}
-	for _, want := range []string{
-		`Top-level JSON must be exactly {"subscriptions": [], "warnings": []}.`,
-		"Runtime context:",
-		"- Attached image count: 2",
-		"- User locale: zh-CN",
-		"User context:",
-		"Task:",
-		"Examples:",
-		"<<<renewlet-user-input",
-		"Existing user tags:",
-		"- VPS",
-		"value=hosting_domains",
-		"value=crypto",
-		"provided category values exactly",
-		"website with the canonical https URL",
-		"output website: null",
-		`never output {"value": null, "source": "suggested"}`,
-		"notes must always be an object",
-		"notes.value must be non-null for describable services",
-		"dynamic evidence from this request",
-		"Generated user-facing metadata must follow User locale",
-		"use English for en-US, Simplified Chinese for zh-CN, and Russian for ru-RU",
-		"Do not translate source=input text, Existing user tags",
-		"Prefer Existing user tags when they fit.",
-		"stable and reusable across multiple subscriptions",
-		"Do not use one-off order attributes as tags",
-		"Example Cloud Backup",
-		"Team Docs Workspace",
-		`"price": 12`,
-		`"currency": "USD"`,
-		`"billingCycle": "annual"`,
-		`"value": "https://backup.example.com"`,
-		`"source": "none"`,
-	} {
-		if !strings.Contains(userPrompt, want) {
-			t.Fatalf("user prompt missing %q:\n%s", want, userPrompt)
-		}
-	}
-	for _, forbidden := range []string{
-		"apple 50刀 1年",
-		"youtube 15刀 1年",
-		"locvps 15元 1个月",
-		"dmit 15元 1个月",
-		"https://www.apple.com/",
-		"YouTube 是 Google 旗下的视频分享和流媒体平台。",
-		"LOCVPS 是面向 VPS、云服务器和服务器托管的主机服务商。",
-		"DMIT 是提供 VPS、云服务器和网络线路服务的主机商。",
-	} {
-		if strings.Contains(userPrompt, forbidden) {
-			t.Fatalf("user prompt should not contain brand mapping example %q:\n%s", forbidden, userPrompt)
-		}
-	}
-	for _, want := range []string{
-		"- User locale: ru-RU",
-		"use English for en-US, Simplified Chinese for zh-CN, and Russian for ru-RU",
-	} {
-		if !strings.Contains(russianPrompt, want) {
-			t.Fatalf("Russian user prompt missing %q:\n%s", want, russianPrompt)
-		}
-	}
-}
-
-func TestAIRecognitionGeneratedSchemaRequiresCompleteDraftFields(t *testing.T) {
-	var schema struct {
-		Properties map[string]struct {
-			Items struct {
-				Required   []string `json:"required"`
-				Properties map[string]struct {
-					Description string   `json:"description"`
-					Type        any      `json:"type"`
-					Enum        []string `json:"enum"`
-					MaxItems    int      `json:"maxItems"`
-					Properties  map[string]struct {
-						Description string   `json:"description"`
-						Type        any      `json:"type"`
-						Enum        []string `json:"enum"`
-					} `json:"properties"`
-				} `json:"properties"`
-			} `json:"items"`
-		} `json:"properties"`
-		Required []string `json:"required"`
-	}
-	if err := json.Unmarshal(aiRecognitionGeneratedSchema, &schema); err != nil {
-		t.Fatal(err)
-	}
-	subscriptionRequired := schema.Properties["subscriptions"].Items.Required
-	for _, field := range []string{"name", "price", "currency", "billingCycle", "website", "notes", "tags", "confidence", "warnings"} {
-		if !slices.Contains(subscriptionRequired, field) {
-			t.Fatalf("generated subscription schema should require %q, got %#v", field, subscriptionRequired)
-		}
-	}
-	if !slices.Contains(schema.Required, "warnings") {
-		t.Fatalf("top-level schema should require warnings, got %#v", schema.Required)
-	}
-	tagsSchema := schema.Properties["subscriptions"].Items.Properties["tags"]
-	if tagsSchema.MaxItems != 3 || !strings.Contains(tagsSchema.Description, "reusable organization tags") {
-		t.Fatalf("generated tags schema should describe reusable tags and cap at 3, got %#v", tagsSchema)
-	}
-	notesSchema := schema.Properties["subscriptions"].Items.Properties["notes"]
-	notesType, _ := json.Marshal(notesSchema.Type)
-	if strings.Contains(string(notesType), "null") {
-		t.Fatalf("generated notes object should not be nullable, got %s", notesType)
-	}
-	if !slices.Contains(notesSchema.Properties["source"].Enum, "none") {
-		t.Fatalf("generated notes source should include none, got %#v", notesSchema.Properties["source"].Enum)
-	}
-	websiteValueType, _ := json.Marshal(schema.Properties["subscriptions"].Items.Properties["website"].Properties["value"].Type)
-	if !strings.Contains(string(websiteValueType), "null") {
-		t.Fatalf("generated website value should allow null at generation boundary, got %s", websiteValueType)
-	}
-	for field, want := range map[string]string{
-		"website":       "Official or user-provided website",
-		"notes":         "service/site description",
-		"category":      "Renewlet category value",
-		"paymentMethod": "Renewlet payment method value",
-		"confidence":    "directly confirmed",
-		"warnings":      "Stable warning codes",
-	} {
-		if !strings.Contains(schema.Properties["subscriptions"].Items.Properties[field].Description, want) {
-			t.Fatalf("generated %s schema should describe %q, got %#v", field, want, schema.Properties["subscriptions"].Items.Properties[field])
-		}
-	}
-}
-
 func TestAIRecognitionExistingTagsForUser(t *testing.T) {
 	app := newSchemaTestApp(t)
 	if err := ensureSchema(app); err != nil {
 		t.Fatal(err)
 	}
+	registerRecordHooks(app)
 	user, _ := createRouteTestUser(t, app, "ai-tags")
 	other, _ := createRouteTestUser(t, app, "ai-tags-other")
 	saveSubscriptionRecord(t, app, user.Id, []string{" VPS ", "云服务器", "vps"}, "Host")
@@ -709,14 +604,14 @@ func TestAIRecognitionExistingTagsForUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(tags, []string{"VPS", "云服务器"}) {
+	if !reflect.DeepEqual(tags, []string{"vps", "云服务器"}) {
 		t.Fatalf("expected current user tags with case-insensitive prompt dedupe, got %#v", tags)
 	}
 }
 
 func TestAIRecognitionDiagnosticsRedactsSecretsAndImageData(t *testing.T) {
 	diagnostics := buildAIRecognitionDiagnostics(
-		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, Model: "gpt-5.1"},
+		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIResponses, Model: "gpt-5.1"},
 		aiRecognitionInput{
 			Text: "dmit 15元 1个月 sk-testsecret123",
 			Images: []aiRecognitionImage{{
@@ -724,7 +619,6 @@ func TestAIRecognitionDiagnosticsRedactsSecretsAndImageData(t *testing.T) {
 				DataURL:   "data:image/png;base64,SHOULD_NOT_LEAK",
 				SizeBytes: 12,
 			}},
-			MaxOutputTokens: 12000,
 		},
 		"Return JSON only",
 		"authorization: secret-token-12345",

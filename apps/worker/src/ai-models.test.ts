@@ -175,10 +175,7 @@ describe("Cloudflare AI model list proxy", () => {
       apiKey: { action: "set", value: "sk-test-secret" },
     }), envFixture())).rejects.toMatchObject({
       status: 401,
-      code: "AI_MODEL_LIST_FAILED",
-      details: {
-        rawResponseText: "invalid [redacted]",
-      },
+      body: "invalid [redacted]",
     });
   });
 
@@ -191,10 +188,7 @@ describe("Cloudflare AI model list proxy", () => {
       apiKey: { action: "set", value: "sk-test-secret" },
     }), envFixture())).rejects.toMatchObject({
       status: 429,
-      code: "AI_MODEL_LIST_FAILED",
-      details: {
-        rawResponseText: "slow down",
-      },
+      body: "slow down",
     });
   });
 
@@ -207,10 +201,7 @@ describe("Cloudflare AI model list proxy", () => {
       apiKey: { action: "set", value: "sk-test-secret" },
     }), envFixture())).rejects.toMatchObject({
       status: 503,
-      code: "AI_MODEL_LIST_FAILED",
-      details: {
-        rawResponseText: "provider down",
-      },
+      body: "provider down",
     });
   });
 
@@ -224,6 +215,7 @@ describe("Cloudflare AI model list proxy", () => {
     }), envFixture())).rejects.toMatchObject({
       status: 400,
       code: "AI_MODEL_LIST_INVALID_JSON",
+      message: "not-json",
       details: {
         rawResponseText: "not-json",
       },

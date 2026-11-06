@@ -142,6 +142,8 @@
                             "name": "GitHub",
                             "price": "12",
                             "currency": "USD",
+                            "balance": "50.123456",
+                            "balanceCurrency": "EUR",
                             "billingCycle": "monthly",
                             "category": "developer_tools",
                             "status": "active",
@@ -261,6 +263,8 @@
                           "name": "GitHub",
                           "price": "12",
                           "currency": "USD",
+                          "balance": "50.123456",
+                          "balanceCurrency": "EUR",
                           "billingCycle": "monthly",
                           "category": "developer_tools",
                           "status": "active",
@@ -449,6 +453,8 @@
                               "name": "GitHub",
                               "price": "12",
                               "currency": "USD",
+                              "balance": "50.123456",
+                              "balanceCurrency": "EUR",
                               "billingCycle": "monthly",
                               "category": "developer_tools",
                               "status": "active",
@@ -609,6 +615,17 @@
                 "items": {
                   "type": "object",
                   "properties": {
+                    "balance": {
+                      "description": "手动记录的预付账户余额，与订阅价格独立；不自动扣减。未记录时省略，零是有效金额。",
+                      "type": "string",
+                      "pattern": "^(?:(?:0|[1-9][0-9]{0,8})(?:\\.[0-9]{0,5}[1-9])?|1000000000)$",
+                      "example": "12.34"
+                    },
+                    "balanceCurrency": {
+                      "description": "余额的 ISO 4217 币种；与 balance 成对返回，不随订阅币种变化。",
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
                     "id": {
                       "type": "string"
                     },
@@ -881,13 +898,9 @@
                 }
               },
               "nextCursor": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "type": [
+                  "string",
+                  "null"
                 ]
               },
               "total": {
@@ -922,6 +935,17 @@
               "subscription": {
                 "type": "object",
                 "properties": {
+                  "balance": {
+                    "description": "手动记录的预付账户余额，与订阅价格独立；不自动扣减。未记录时省略，零是有效金额。",
+                    "type": "string",
+                    "pattern": "^(?:(?:0|[1-9][0-9]{0,8})(?:\\.[0-9]{0,5}[1-9])?|1000000000)$",
+                    "example": "12.34"
+                  },
+                  "balanceCurrency": {
+                    "description": "余额的 ISO 4217 币种；与 balance 成对返回，不随订阅币种变化。",
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  },
                   "id": {
                     "type": "string"
                   },
@@ -1316,6 +1340,17 @@
                     "subscription": {
                       "type": "object",
                       "properties": {
+                        "balance": {
+                          "description": "手动记录的预付账户余额，与订阅价格独立；不自动扣减。未记录时省略，零是有效金额。",
+                          "type": "string",
+                          "pattern": "^(?:(?:0|[1-9][0-9]{0,8})(?:\\.[0-9]{0,5}[1-9])?|1000000000)$",
+                          "example": "12.34"
+                        },
+                        "balanceCurrency": {
+                          "description": "余额的 ISO 4217 币种；与 balance 成对返回，不随订阅币种变化。",
+                          "type": "string",
+                          "pattern": "^[A-Z]{3}$"
+                        },
                         "id": {
                           "type": "string"
                         },

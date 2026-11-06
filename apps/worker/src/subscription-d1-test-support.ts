@@ -17,6 +17,8 @@ export function openDerivedStateDatabase(): { db: DatabaseSync; env: Env } {
       name TEXT NOT NULL,
       logo TEXT,
       price TEXT NOT NULL,
+      balance TEXT,
+      balance_currency TEXT,
       currency TEXT NOT NULL,
       billing_cycle TEXT NOT NULL,
       custom_days INTEGER,
@@ -140,6 +142,8 @@ export function subscriptionRow(id: string, overrides: Partial<SubscriptionRow> 
     name: `Subscription ${id}`,
     logo: null,
     price: "10",
+    balance: null,
+    balance_currency: null,
     currency: "USD",
     billing_cycle: "monthly",
     custom_days: null,
@@ -179,7 +183,7 @@ export function insertSubscriptionStatement(env: Env, row: SubscriptionRow): D1P
       id, user_id, name, logo, price, currency, billing_cycle, custom_days, custom_cycle_unit, one_time_term_count, one_time_term_unit,
       category, status, pinned, public_hidden, payment_method, start_date, next_billing_date, auto_renew, auto_calculate_next_billing_date,
       trial_end_date, website, notes, tags_json, reminder_days, repeat_reminder_enabled, repeat_reminder_interval, repeat_reminder_window,
-      cost_sharing_json, cost_sharing_collection_reminder_enabled, cost_sharing_next_collection_reminder_date, extra_json, created_at, updated_at
+      cost_sharing_json, cost_sharing_collection_reminder_enabled, cost_sharing_next_collection_reminder_date, extra_json, created_at, updated_at, balance, balance_currency
     ) VALUES (${subscriptionRowValues(row).map(() => "?").join(", ")})
   `).bind(...subscriptionRowValues(row));
 }

@@ -32,12 +32,52 @@ export type UpstreamProviderResponse = {
 };
 
 const textEncoder = new TextEncoder();
+// Provider errors may echo a key variant that is not byte-for-byte equal to the
+// configured value (for example a test gateway appends a suffix).  Keep the
+// generic token guard at the upstream boundary so raw pass-through never turns
+// into credential disclosure.
+const GENERIC_UPSTREAM_SECRET_PATTERN = /(?:sk-ant-[A-Za-z0-9_-]{8,}|sk-[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{8,}|Bearer\s+[A-Za-z0-9._-]{8,}|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+|(?:api[_-]?key|authorization|cookie|set-cookie|access[_-]?token|refresh[_-]?token)["'\s:=]+[A-Za-z0-9._~+/=-]{8,})/gi;
 
 // 上游错误需要沿 cause/errors 嵌套向外冒泡；details 只能随当前失败响应返回，不进入 cron history 或缓存状态。
 export class UpstreamOperationError extends Error {
   constructor(message: string, readonly details?: UpstreamErrorDetails, readonly status?: number) {
     super(message);
     this.name = "UpstreamOperationError";
+  }
+}
+
+/**
+ * 上游已经返回 HTTP 响应时使用的透明错误。
+ *
+ * 该错误只承载当前响应，不经过 Renewlet 的产品 error envelope；调用方需要把上游
+ * status/body/content-type 原样交付给前端，才能让 provider 的 type/code/message 保持可诊断。
+ */
+export class UpstreamResponseError extends Error {
+  constructor(
+    readonly status: number,
+    readonly body: string,
+    readonly headers: Record<string, string> | null = null,
+    readonly statusText = "",
+  ) {
+    super(`Upstream HTTP ${status}`);
+    this.name = "UpstreamResponseError";
+  }
+
+  toResponse(): Response {
+    const headers = new Headers();
+    for (const [name, value] of Object.entries(this.headers ?? {})) {
+      // 只复制安全且不负责 body framing 的响应头；鉴权、Cookie、签名和压缩/长度头永远不能从 provider 回显。
+      if (safeUpstreamHeaderName(name)) headers.set(name, value);
+    }
+    headers.set("cache-control", "no-store");
+    headers.set("x-content-type-options", "nosniff");
+    const init: ResponseInit = {
+      status: this.status,
+      headers,
+    };
+    // exactOptionalPropertyTypes 要求可选字段“缺省”而不是显式写入 undefined。
+    if (this.statusText) init.statusText = this.statusText;
+    return new Response(this.body, init);
   }
 }
 
@@ -148,7 +188,19 @@ export function recordToUpstreamHeaders(value: unknown, secrets: readonly string
 export function safeUpstreamHeaderName(key: string): boolean {
   const normalized = key.toLowerCase().trim();
   if (!normalized) return false;
-  if (normalized === "authorization" || normalized === "proxy-authorization" || normalized === "cookie" || normalized === "set-cookie") return false;
+  if (
+    normalized === "authorization"
+    || normalized === "proxy-authorization"
+    || normalized === "cookie"
+    || normalized === "set-cookie"
+    || normalized === "content-length"
+    || normalized === "content-encoding"
+    || normalized === "transfer-encoding"
+    || normalized === "connection"
+    || normalized === "keep-alive"
+    || normalized === "trailer"
+    || normalized === "upgrade"
+  ) return false;
   return !normalized.includes("secret")
     && !normalized.includes("token")
     && !normalized.includes("signature")
@@ -162,7 +214,7 @@ export function safeUpstreamHeaderName(key: string): boolean {
 }
 
 export function redactUpstreamSecrets(value: string, secrets: readonly string[] = []): string {
-  let out = value;
+  let out = value.replace(GENERIC_UPSTREAM_SECRET_PATTERN, "[redacted]");
   for (const secret of normalizedUpstreamSecrets(secrets)) {
     // 同时替换原文和 URL 编码形态，覆盖 SendKey/API key 出现在 HTML、JSON 或签名 URL 里的常见返回。
     out = out.split(secret).join("[redacted]");

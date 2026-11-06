@@ -1,6 +1,7 @@
 // 单次 open session 独占表单草稿；本层只编排字段、自动日期和提交转换，不拥有 Radix modal 生命周期。
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { ApiError } from "@/lib/api-client";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SubscriptionFormFields } from "@/components/subscription-form-fields";
@@ -40,7 +41,7 @@ type SubscriptionFormLoadingPreview = Subscription | SubscriptionCollectionItem 
 
 function resolveLoadingStructure(preview: SubscriptionFormLoadingPreview): SubscriptionFormLoadingStructure {
   if (!preview) {
-    return { cycle: "recurring", reminderEnabled: true, repeatReminderEnabled: false };
+    return { balanceEnabled: false, cycle: "recurring", reminderEnabled: true, repeatReminderEnabled: false };
   }
   if ("oneTimeMode" in preview) {
     return {
@@ -51,6 +52,7 @@ function resolveLoadingStructure(preview: SubscriptionFormLoadingPreview): Subsc
           : preview.oneTimeMode === "term"
             ? "one-time-fixed-term"
             : "one-time-buyout",
+      balanceEnabled: preview.balanceEnabled,
       reminderEnabled: preview.reminderType !== "disabled",
       repeatReminderEnabled: preview.repeatReminderEnabled,
     };
@@ -63,6 +65,7 @@ function resolveLoadingStructure(preview: SubscriptionFormLoadingPreview): Subsc
         : "oneTimeTermCount" in preview && typeof preview.oneTimeTermCount === "number"
           ? "one-time-fixed-term"
           : "one-time-buyout",
+    balanceEnabled: preview.balance !== undefined,
     reminderEnabled: preview.reminderDays !== DISABLED_REMINDER_DAYS,
     repeatReminderEnabled:
       "repeatReminderEnabled" in preview && preview.repeatReminderEnabled,
@@ -71,6 +74,14 @@ function resolveLoadingStructure(preview: SubscriptionFormLoadingPreview): Subsc
 
 export function SubscriptionDialogContent(props: SubscriptionDialogContentProps) {
   const formRef = useRef<HTMLFormElement>(null);
+  const submittingRef = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [focusValidation, setFocusValidation] = useState(0);
+  useLayoutEffect(() => {
+    if (focusValidation === 0) return;
+    // 错误节点 commit 后才能定位首错，避免提交时查询到上一轮 DOM。
+    formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]:not([disabled])')?.focus();
+  }, [focusValidation]);
   const { config } = useCustomConfigState();
   const { data: settings } = useSettings();
   const { t, locale } = useI18n();
@@ -96,6 +107,7 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
   );
   const {
     formData,
+    hasStoredBalance,
     setFormData,
     logoUploadStatus,
     setLogoUploadStatus,
@@ -120,6 +132,11 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
   useDeferredDialogInitialFocus(props.open, props.loading !== true, "subscription-form", resolveInitialFocus);
   const idPrefix = props.mode === "edit" ? "edit-" : "";
   // 主表单和家庭共享成员管理器复用同一选项数组，避免嵌套弹层在顺序或禁用当前项回显上分叉。
+  const balanceCurrencyOptions = useManagedCurrencyOptions({
+    currencies: config.currencies,
+    includeDisabledCurrent: formData.balanceCurrency || formData.currency,
+    locale,
+  });
   const currencyOptions = useManagedCurrencyOptions({
     currencies: config.currencies,
     includeDisabledCurrent: formData.currency,
@@ -171,9 +188,9 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
     [t],
   );
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (logoUploadStatus === "uploading") return;
+    if (logoUploadStatus === "uploading" || submittingRef.current || props.loading) return;
 
     const submissionFormData = getSubmissionFormData();
     if (submissionFormData !== formData) {
@@ -185,7 +202,7 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
     if (Object.keys(nextErrors).length > 0) {
       setFormErrors(nextErrors);
       setSubmitError(null);
-      formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]:not([disabled])')?.focus();
+      setFocusValidation((request) => request + 1);
       return;
     }
 
@@ -198,25 +215,40 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
     setSubmitError(null);
 
     if (props.mode === "edit" && !props.subscription) return;
-    props.onSubmit(submission);
-    setFormErrors({});
-    props.onRequestClose();
+    // ref 同步阻止同一事件周期的重复写入；shell 同时阻止关闭，失败时保留完整会话。
+    submittingRef.current = true;
+    setSubmitting(true);
+    props.onSubmittingChange(true);
+    try {
+      await props.onSubmit(submission);
+      props.onSubmittingChange(false);
+      props.onRequestClose();
+    } catch (error) {
+      // 网络中断或响应校验失败不证明服务端未提交；保留草稿并提示先核对，不能自动重试写入。
+      const uncertainOutcome = error instanceof ApiError && (error.status === 0 || error.code === "invalid_response");
+      setSubmitError(!uncertainOutcome && error instanceof Error && error.message ? error.message : t("subscription.saveError"));
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
+      props.onSubmittingChange(false);
+    }
   };
 
-  const submitDisabled = logoUploadStatus === "uploading";
+  const submitDisabled = submitting || logoUploadStatus === "uploading";
   const loadingPreview = props.mode === "create"
     ? props.initialSubscription ?? props.loadingPreview ?? formData
     : props.loadingPreview;
   const loadingSlots = props.loading
     ? createSubscriptionFormLoadingSlots({
         label: t("common.loading"),
-        structure: resolveLoadingStructure(loadingPreview),
+        structure: { ...resolveLoadingStructure(loadingPreview), ...(props.mode === "create" ? { balanceEnabled: false } : {}) },
       })
     : null;
 
   return (
     <SubscriptionFormScaffold
       formRef={formRef}
+      fieldsDisabled={submitting}
       onSubmit={handleSubmit}
       noValidate
       data-testid={props.loading ? "subscription-form-data-loading" : undefined}
@@ -227,6 +259,8 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
           formData={formData}
           setFormData={setFormData}
           currencyOptions={currencyOptions}
+          balanceCurrencyOptions={balanceCurrencyOptions}
+          hasStoredBalance={hasStoredBalance}
           availableTags={props.availableTags}
           onLogoUploadStatusChange={setLogoUploadStatus}
           onFieldChange={handleFieldChange}
@@ -240,7 +274,7 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
       actions={loadingSlots?.actions ?? (
         <>
           {submitError ? (
-            <p className="w-full min-w-0 wrap-break-word text-center text-sm text-destructive sm:mr-auto sm:w-auto sm:text-left">
+            <p role="alert" className="w-full min-w-0 wrap-break-word text-center text-sm text-destructive sm:mr-auto sm:w-auto sm:text-left">
               {submitError}
             </p>
           ) : null}
@@ -248,6 +282,7 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
             type="button"
             variant="outline"
             onClick={props.onRequestClose}
+            disabled={submitting}
             className="w-full border-border sm:w-auto"
           >
             {t("common.cancel")}
@@ -257,7 +292,7 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
             disabled={submitDisabled}
             className="w-full bg-primary text-primary-foreground hover:bg-primary-glow sm:w-auto"
           >
-            {logoUploadStatus === "uploading" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {submitDisabled ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {props.mode === "create"
               ? isCloneCreateMode
                 ? t("subscription.cloneSubmit")

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { DatabaseSync, type SQLInputValue } from "node:sqlite";
 import test from "node:test";
 import { runBackfill } from "./backfill-cloudflare-subscription-derived-state";
@@ -250,6 +251,8 @@ function openDerivedDatabase({ v2Marker = true, v3Marker = false }: { v2Marker?:
     db.prepare("INSERT INTO subscription_derived_backfills (name, completed_at) VALUES (?, ?)")
       .run("subscription-derived-state-v3", timestamp);
   }
+  db.exec(readFileSync(new URL("../apps/worker/migrations/0047_subscription_balance.sql", import.meta.url), "utf8"));
+  db.exec("INSERT INTO d1_migrations (name) VALUES ('0047_subscription_balance.sql')");
   return new SqliteDerivedClient(db);
 }
 

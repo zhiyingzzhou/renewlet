@@ -31,8 +31,12 @@ const IMPORT_MESSAGE_KEYS: Record<string, MessageKey> = {
 };
 
 const AI_RECOGNITION_WARNING_KEYS: Record<string, MessageKey> = {
+  AI_WARNING_AUTO_CALCULATE_DISABLED: "import.warning.aiDateUncertain",
+  AI_WARNING_BATCH_PARTIAL: "import.warning.aiBatchPartial",
   AI_WARNING_BILLING_CYCLE_INVALID: "import.warning.aiBillingCycleInvalid",
   AI_WARNING_BILLING_CYCLE_UNCERTAIN: "import.warning.aiBillingCycleUncertain",
+  AI_WARNING_CATEGORY_UNCERTAIN: "import.warning.aiCategoryUncertain",
+  AI_WARNING_CONFIG_SUGGESTED: "import.warning.aiConfigSuggested",
   AI_WARNING_CURRENCY_INVALID: "import.warning.aiCurrencyInvalid",
   AI_WARNING_CURRENCY_UNCERTAIN: "import.warning.aiCurrencyUncertain",
   AI_WARNING_CUSTOM_CYCLE_UNIT_INVALID: "import.warning.aiCustomCycleInvalid",
@@ -42,20 +46,57 @@ const AI_RECOGNITION_WARNING_KEYS: Record<string, MessageKey> = {
   AI_WARNING_DATE_UNCERTAIN: "import.warning.aiDateUncertain",
   AI_WARNING_EMPTY_SUBSCRIPTION_SKIPPED: "import.warning.aiEmptySubscriptionSkipped",
   AI_WARNING_LOW_CONFIDENCE: "import.warning.aiLowConfidence",
-  AI_WARNING_NOTES_MISSING: "import.warning.aiNotesMissing",
   AI_WARNING_ONE_TIME_TERM_COUNT_INVALID: "import.warning.aiOneTimeTermInvalid",
   AI_WARNING_ONE_TIME_TERM_UNIT_INVALID: "import.warning.aiOneTimeTermInvalid",
   AI_WARNING_PRICE_INVALID: "import.warning.aiPriceInvalid",
   AI_WARNING_PRICE_UNCERTAIN: "import.warning.aiPriceUncertain",
+  AI_WARNING_PAYMENT_METHOD_UNCERTAIN: "import.warning.aiPaymentMethodUncertain",
   AI_WARNING_REMINDER_DAYS_INVALID: "import.warning.aiReminderInvalid",
   AI_WARNING_REPEAT_INTERVAL_INVALID: "import.warning.aiRepeatReminderInvalid",
   AI_WARNING_REPEAT_WINDOW_INVALID: "import.warning.aiRepeatReminderInvalid",
   AI_WARNING_SERVICE_UNSPECIFIED: "import.warning.aiServiceUnspecified",
   AI_WARNING_STATUS_INVALID: "import.warning.aiStatusInvalid",
-  AI_WARNING_STATUS_UNCERTAIN: "import.warning.aiLowConfidence",
+  AI_WARNING_STATUS_UNCERTAIN: "import.warning.aiStatusUncertain",
   AI_WARNING_TOO_MANY_SUBSCRIPTIONS_TRUNCATED: "import.warning.aiTooManySubscriptionsTruncated",
   AI_WARNING_WEBSITE_UNCERTAIN: "import.warning.aiWebsiteUncertain",
 };
+
+export type AIRecognitionWarningGroup = "missing-facts" | "suggestions" | "batch" | "format";
+
+export const AI_RECOGNITION_WARNING_GROUP_LABELS: Record<AIRecognitionWarningGroup, MessageKey> = {
+  "missing-facts": "import.warning.aiGroupMissingFacts",
+  suggestions: "import.warning.aiGroupSuggestions",
+  batch: "import.warning.aiGroupBatch",
+  format: "import.warning.aiGroupFormat",
+};
+
+/** 把稳定 warning code 映射到用户能快速处理的四类，避免审阅区展示模型内部诊断。 */
+export function groupAIRecognitionWarnings(
+  warnings: readonly string[],
+): Array<{ group: AIRecognitionWarningGroup; warnings: string[] }> {
+  const grouped: Record<AIRecognitionWarningGroup, string[]> = {
+    "missing-facts": [],
+    suggestions: [],
+    batch: [],
+    format: [],
+  };
+  for (const warning of warnings) {
+    // 服务简介是可选元数据；历史运行面可能仍返回旧的 NOTES_MISSING code，前端不再把它展示成待修复问题。
+    if (warning === "AI_WARNING_NOTES_MISSING") continue;
+    grouped[classifyAIRecognitionWarning(warning)].push(warning);
+  }
+  return (Object.keys(grouped) as AIRecognitionWarningGroup[])
+    .map((group) => ({ group, warnings: grouped[group] }))
+    .filter((entry) => entry.warnings.length > 0);
+}
+
+function classifyAIRecognitionWarning(warning: string): AIRecognitionWarningGroup {
+  if (warning === "AI_WARNING_BATCH_PARTIAL") return "batch";
+  if (warning === "AI_WARNING_AUTO_CALCULATE_DISABLED") return "missing-facts";
+  if (warning.includes("_INVALID") || warning.includes("EMPTY_SUBSCRIPTION") || warning.includes("TOO_MANY_SUBSCRIPTIONS")) return "format";
+  if (warning.includes("_UNCERTAIN") || warning === "AI_WARNING_LOW_CONFIDENCE") return "missing-facts";
+  return "suggestions";
+}
 
 const IMPORT_DATE_FIELD_KEYS: Record<string, MessageKey> = {
   wallosDueDate: "import.field.wallosDueDate",

@@ -5,7 +5,7 @@ import { assertDateOnly } from "@/lib/time/date-only";
 import type { AiRecognizedSubscriptionDraft } from "@/lib/api/schemas/ai-recognition";
 import { translate } from "@/i18n/messages";
 import { IMPORT_MESSAGE_CODES } from "@/modules/import-export/domain/import-export-model";
-import { formatImportMessage } from "@/modules/import-export/domain/import-message-format";
+import { formatImportMessage, groupAIRecognitionWarnings } from "@/modules/import-export/domain/import-message-format";
 import { aiDraftToSubscriptionFormState } from "./ai-recognition-form";
 import { buildPreparedImportFromAIDrafts, type AIImportDraft } from "./ai-recognition-import";
 
@@ -46,16 +46,17 @@ function draft(overrides: Partial<AiRecognizedSubscriptionDraft> = {}): AiRecogn
 function item(
   sourceDraft: AiRecognizedSubscriptionDraft = draft(),
   formOverrides: Partial<AIImportDraft["formData"]> = {},
+  pendingConfirmationFields: AIImportDraft["pendingConfirmationFields"] = [],
 ): AIImportDraft {
   return {
     sourceDraft,
     formData: {
       ...aiDraftToSubscriptionFormState(sourceDraft, {
-        ...context,
         settings: { ...DEFAULT_SETTINGS, defaultCurrency: "USD", notificationReminderDays: 5 },
       }),
       ...formOverrides,
     },
+    pendingConfirmationFields,
   };
 }
 
@@ -74,6 +75,14 @@ describe("AI recognition import mapping", () => {
     expect(subscription?.autoRenew).toBe(true);
     expect(subscription?.publicHidden).toBe(true);
     expect(prepared.assets).toEqual([]);
+  });
+
+  it("only includes balances explicitly entered in the manual editor", () => {
+    expect(buildPreparedImportFromAIDrafts([item()], context).payload.subscriptions[0]?.balance).toBeUndefined();
+    const subscription = buildPreparedImportFromAIDrafts([item(draft(), {
+      balanceEnabled: true, balance: "0.000001", balanceCurrency: "EUR",
+    })], context).payload.subscriptions[0];
+    expect(subscription).toMatchObject({ balance: "0.000001", balanceCurrency: "EUR" });
   });
 
   it("keeps the immutable AI trial date outside the editable form state", () => {
@@ -234,6 +243,30 @@ describe("AI recognition import mapping", () => {
     expect(prepared.warnings).toContain(`IMPORT_WARNING_FOR_SUBSCRIPTION|Netflix|${IMPORT_MESSAGE_CODES.aiWebsiteSuggested}`);
   });
 
+  it("does not persist inferred input fragments as notes", () => {
+    const sourceDraft = draft({
+      notes: { value: "HKG Tier1 - 1C1G - NetBird节点/Docker测试 NOTE: read the Terms first.", source: "input" },
+    });
+    const prepared = buildPreparedImportFromAIDrafts([item(sourceDraft)], context);
+
+    expect(prepared.payload.subscriptions[0]?.notes).toBeNull();
+    expect(prepared.payload.subscriptions[0]?.extra["ai"]).toEqual({ websiteSource: "input" });
+  });
+
+  it("does not persist unknown category or payment method before confirmation", () => {
+    const sourceDraft = draft({ category: "Cloud lab", paymentMethod: "Personal card" });
+    const pending = ["category", "paymentMethod"] as const;
+    const unconfirmed = buildPreparedImportFromAIDrafts([item(sourceDraft, {}, pending)], context);
+
+    expect(unconfirmed.payload.subscriptions[0]).toMatchObject({ category: "other", paymentMethod: null });
+    expect(unconfirmed.payload.customConfig?.categories.some((entry) => entry.labels["zh-CN"] === "Cloud lab")).toBe(false);
+    expect(unconfirmed.payload.customConfig?.paymentMethods.some((entry) => entry.labels["zh-CN"] === "Personal card")).toBe(false);
+
+    const confirmed = buildPreparedImportFromAIDrafts([item(sourceDraft)], context);
+    expect(confirmed.payload.customConfig?.categories.some((entry) => entry.labels["zh-CN"] === "Cloud lab")).toBe(true);
+    expect(confirmed.payload.customConfig?.paymentMethods.some((entry) => entry.labels["zh-CN"] === "Personal card")).toBe(true);
+  });
+
   it("drops process notes and removes Renewlet-facing advice", () => {
     const processDraft = draft({
       notes: { value: "输入没有提供官网或更多上下文，AI 未能高置信识别该服务。", source: "suggested" },
@@ -255,6 +288,15 @@ describe("AI recognition import mapping", () => {
     expect(formatted).toBe("Apple：输入没有明确具体服务，AI 已按品牌生成基础信息，请确认是否正确。");
   });
 
+  it("groups recognition warnings by the action the user needs to take", () => {
+    expect(groupAIRecognitionWarnings([
+      "AI_WARNING_PRICE_UNCERTAIN",
+      "AI_WARNING_CONFIG_SUGGESTED",
+      "AI_WARNING_BATCH_PARTIAL",
+      "AI_WARNING_DATE_INVALID:startDate",
+    ]).map((entry) => entry.group)).toEqual(["missing-facts", "suggestions", "batch", "format"]);
+  });
+
   it("matches existing config values and creates only unknown options", () => {
     const matched = buildPreparedImportFromAIDrafts([item(draft({
       currency: "EUR",
@@ -264,7 +306,7 @@ describe("AI recognition import mapping", () => {
     const created = buildPreparedImportFromAIDrafts([item(draft({
       category: "Streaming AI",
       paymentMethod: "Virtual Card",
-    }))], context);
+    }), {}, [])], context);
 
     expect(matched.payload.subscriptions[0]).toMatchObject({ category: "streaming", paymentMethod: "crypto" });
     expect(matched.payload.customConfig?.currencies.some((configItem) => configItem.value === "EUR" && configItem.enabled)).toBe(true);

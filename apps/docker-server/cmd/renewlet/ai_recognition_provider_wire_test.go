@@ -7,9 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/zendev-sh/goai"
-	"github.com/zendev-sh/goai/provider"
 )
 
 func TestAIRecognitionNativeProviderTokenParametersOnWire(t *testing.T) {
@@ -91,88 +88,44 @@ func TestAIRecognitionNativeProviderTokenParametersOnWire(t *testing.T) {
 	})
 }
 
-func TestRequiresOpenAIMaxCompletionTokens(t *testing.T) {
-	tests := []struct {
-		model string
-		want  bool
-	}{
-		{model: "gpt-6-sol", want: true},
-		{model: "gpt-6.1", want: true},
-		{model: "gpt-7", want: true},
-		{model: "gpt-6-chat", want: false},
-		{model: "gpt-6.1-chat", want: false},
-		{model: "gpt-6-chat-latest", want: false},
-		{model: "gpt-5.1", want: false},
-		{model: "o3", want: false},
-		{model: "openai/gpt-6-sol", want: false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.model, func(t *testing.T) {
-			if got := requiresOpenAIMaxCompletionTokens(tt.model); got != tt.want {
-				t.Fatalf("requiresOpenAIMaxCompletionTokens(%q) = %v, want %v", tt.model, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestAIRecognitionTokenParameterSelectionOnWire(t *testing.T) {
-	requests := make(chan map[string]any, 10)
+	requests := make(chan map[string]any, 4)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/v1/chat/completions" {
-			t.Errorf("unexpected OpenAI Chat path: %s", r.URL.Path)
-		}
 		var body map[string]any
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			t.Errorf("decode request body: %v", err)
 			return
 		}
 		requests <- body
-		if streaming, _ := body["stream"].(bool); streaming {
-			w.Header().Set("Content-Type", "text/event-stream")
-			_, _ = fmt.Fprint(w, "data: {\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"OK\"}}]}\n\n")
-			_, _ = fmt.Fprint(w, "data: {\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n")
-			_, _ = fmt.Fprint(w, "data: [DONE]\n\n")
-			return
+		switch r.URL.Path {
+		case "/v1/responses":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = fmt.Fprint(w, `{"id":"resp-test","model":"gpt-6.1-sol","status":"completed","output":[{"type":"message","content":[{"type":"output_text","text":"OK"}]}],"usage":{"input_tokens":1,"output_tokens":1}}`)
+		case "/v1/chat/completions":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = fmt.Fprint(w, `{"id":"chatcmpl-test","choices":[{"index":0,"message":{"role":"assistant","content":"OK"},"finish_reason":"stop"}]}`)
+		default:
+			t.Errorf("unexpected provider path: %s", r.URL.Path)
+			w.WriteHeader(http.StatusNotFound)
 		}
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = fmt.Fprint(w, `{"id":"chatcmpl-test","choices":[{"index":0,"message":{"role":"assistant","content":"OK"},"finish_reason":"stop"}]}`)
 	}))
 	defer server.Close()
-
-	var gpt6Model provider.LanguageModel
-	previousModelFactory := newAIRecognitionModelForConnection
-	newAIRecognitionModelForConnection = func(settings aiRecognitionSettings) (provider.LanguageModel, error) {
-		model, err := newAIRecognitionModel(settings)
-		if err == nil && settings.ProviderType == aiProviderTypeOpenAI && settings.Model == "gpt-6-sol" {
-			gpt6Model = model
-		}
-		return model, err
-	}
-	t.Cleanup(func() {
-		newAIRecognitionModelForConnection = previousModelFactory
-	})
 
 	tests := []struct {
 		name         string
 		providerType string
+		transport    string
 		model        string
 		want         string
 	}{
-		{name: "official GPT-6", providerType: aiProviderTypeOpenAI, model: "gpt-6-sol", want: "max_completion_tokens"},
-		{name: "official GPT-6.1", providerType: aiProviderTypeOpenAI, model: "gpt-6.1", want: "max_completion_tokens"},
-		{name: "official GPT-6 chat", providerType: aiProviderTypeOpenAI, model: "gpt-6-chat", want: "max_tokens"},
-		{name: "official GPT-5 reasoning", providerType: aiProviderTypeOpenAI, model: "gpt-5.1", want: "max_completion_tokens"},
-		{name: "official o-series reasoning", providerType: aiProviderTypeOpenAI, model: "o4-mini", want: "max_completion_tokens"},
-		{name: "official codex reasoning", providerType: aiProviderTypeOpenAI, model: "codex-mini", want: "max_completion_tokens"},
-		{name: "official GPT-5 chat", providerType: aiProviderTypeOpenAI, model: "gpt-5-chat", want: "max_tokens"},
-		{name: "official GPT-4o", providerType: aiProviderTypeOpenAI, model: "gpt-4o", want: "max_tokens"},
-		{name: "OpenAI-compatible GPT-6", providerType: aiProviderTypeOpenAICompatible, model: "gpt-6-sol", want: "max_tokens"},
+		{name: "official GPT-6.1-sol uses Responses", providerType: aiProviderTypeOpenAI, transport: aiProtocolOpenAIResponses, model: "gpt-6.1-sol", want: "max_output_tokens"},
+		{name: "OpenAI-compatible keeps Chat", providerType: aiProviderTypeOpenAICompatible, transport: aiProtocolOpenAIChat, model: "gpt-6.1-sol", want: "max_tokens"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := testAIRecognitionConnection(context.Background(), aiRecognitionSettings{
 				ProviderType:      tt.providerType,
-				TransportProtocol: aiProtocolOpenAIChat,
+				TransportProtocol: tt.transport,
 				Model:             tt.model,
 				BaseURL:           server.URL,
 				APIKey:            "sk-test",
@@ -186,36 +139,11 @@ func TestAIRecognitionTokenParameterSelectionOnWire(t *testing.T) {
 			}
 			unexpected := "max_tokens"
 			if tt.want == unexpected {
-				unexpected = "max_completion_tokens"
+				unexpected = "max_output_tokens"
 			}
 			if _, ok := body[unexpected]; ok {
 				t.Fatalf("request should not contain %q: %#v", unexpected, body)
 			}
 		})
-	}
-
-	if gpt6Model == nil {
-		t.Fatal("connection test did not construct the official GPT-6 model")
-	}
-	stream, err := goai.StreamText(context.Background(), gpt6Model,
-		goai.WithPrompt(aiRecognitionTestPrompt),
-		goai.WithMaxOutputTokens(aiRecognitionTestProviderTokens),
-		goai.WithMaxRetries(0),
-		goai.WithProviderOptions(map[string]any{"useResponsesAPI": false}),
-	)
-	if err != nil {
-		t.Fatalf("streaming connection test failed: %v", err)
-	}
-	for range stream.Stream() {
-	}
-	if err := stream.Err(); err != nil {
-		t.Fatalf("streaming response failed: %v", err)
-	}
-	body := <-requests
-	if _, ok := body["max_completion_tokens"]; !ok {
-		t.Fatalf("streaming request should contain max_completion_tokens: %#v", body)
-	}
-	if _, ok := body["max_tokens"]; ok {
-		t.Fatalf("streaming request should not contain max_tokens: %#v", body)
 	}
 }

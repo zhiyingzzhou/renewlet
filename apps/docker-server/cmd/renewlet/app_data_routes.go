@@ -74,37 +74,6 @@ type assetInUseDetails struct {
 	PaymentMethodIconCount int64 `json:"paymentMethodIconCount"`
 }
 
-type subscriptionWriteRequest struct {
-	Name                         optionalJSONField[string]                 `json:"name"`
-	Logo                         optionalJSONField[string]                 `json:"logo"`
-	Price                        optionalJSONField[string]                 `json:"price"`
-	Currency                     optionalJSONField[string]                 `json:"currency"`
-	BillingCycle                 optionalJSONField[string]                 `json:"billingCycle"`
-	CustomDays                   optionalJSONField[int]                    `json:"customDays"`
-	CustomCycleUnit              optionalJSONField[string]                 `json:"customCycleUnit"`
-	OneTimeTermCount             optionalJSONField[int]                    `json:"oneTimeTermCount"`
-	OneTimeTermUnit              optionalJSONField[string]                 `json:"oneTimeTermUnit"`
-	Category                     optionalJSONField[string]                 `json:"category"`
-	Status                       optionalJSONField[string]                 `json:"status"`
-	Pinned                       optionalJSONField[bool]                   `json:"pinned"`
-	PublicHidden                 optionalJSONField[bool]                   `json:"publicHidden"`
-	PaymentMethod                optionalJSONField[string]                 `json:"paymentMethod"`
-	StartDate                    optionalJSONField[string]                 `json:"startDate"`
-	NextBillingDate              optionalJSONField[string]                 `json:"nextBillingDate"`
-	AutoRenew                    optionalJSONField[bool]                   `json:"autoRenew"`
-	AutoCalculateNextBillingDate optionalJSONField[bool]                   `json:"autoCalculateNextBillingDate"`
-	TrialEndDate                 optionalJSONField[string]                 `json:"trialEndDate"`
-	Website                      optionalJSONField[string]                 `json:"website"`
-	Notes                        optionalJSONField[string]                 `json:"notes"`
-	Tags                         optionalJSONField[[]string]               `json:"tags"`
-	ReminderDays                 optionalJSONField[int]                    `json:"reminderDays"`
-	RepeatReminderEnabled        optionalJSONField[bool]                   `json:"repeatReminderEnabled"`
-	RepeatReminderInterval       optionalJSONField[string]                 `json:"repeatReminderInterval"`
-	RepeatReminderWindow         optionalJSONField[string]                 `json:"repeatReminderWindow"`
-	CostSharing                  optionalJSONField[map[string]interface{}] `json:"costSharing"`
-	Extra                        optionalJSONField[map[string]interface{}] `json:"extra"`
-}
-
 type optionalJSONField[T any] struct {
 	Set   bool
 	Null  bool
@@ -477,16 +446,10 @@ func findOwnedSubscription(app core.App, e *core.RequestEvent) (*core.Record, er
 	)
 }
 
-func (r subscriptionWriteRequest) HasChanges() bool {
-	return r.Name.Set || r.Logo.Set || r.Price.Set || r.Currency.Set || r.BillingCycle.Set || r.CustomDays.Set ||
-		r.CustomCycleUnit.Set || r.OneTimeTermCount.Set || r.OneTimeTermUnit.Set || r.Category.Set || r.Status.Set ||
-		r.Pinned.Set || r.PublicHidden.Set || r.PaymentMethod.Set || r.StartDate.Set || r.NextBillingDate.Set ||
-		r.AutoRenew.Set || r.AutoCalculateNextBillingDate.Set || r.TrialEndDate.Set || r.Website.Set || r.Notes.Set ||
-		r.Tags.Set || r.ReminderDays.Set || r.RepeatReminderEnabled.Set || r.RepeatReminderInterval.Set ||
-		r.RepeatReminderWindow.Set || r.CostSharing.Set || r.Extra.Set
-}
-
 func applySubscriptionWriteRequest(record *core.Record, body subscriptionWriteRequest, create bool) error {
+	if err := applySubscriptionBalanceWrite(record, body.Balance, body.BalanceCurrency); err != nil {
+		return err
+	}
 	if err := setStringRecordField(record, "name", body.Name, create, false, true); err != nil {
 		return err
 	}

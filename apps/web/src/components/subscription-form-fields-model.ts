@@ -13,10 +13,14 @@ export interface SubscriptionFormFieldsProps {
   setFormData: Dispatch<SetStateAction<SubscriptionFormState>>;
   /** 由表单宿主统一生成，字段组件不能重建货币列表，否则会绕开设置页货币管理顺序。 */
   currencyOptions: SearchableSelectOption[];
+  balanceCurrencyOptions: SearchableSelectOption[];
+  hasStoredBalance?: boolean | undefined;
   availableTags?: readonly string[] | undefined;
   showLogoField?: boolean | undefined;
   onLogoUploadStatusChange: (status: LogoUploadStatus) => void;
   onFieldChange?: <K extends keyof SubscriptionFormState>(key: K, value: SubscriptionFormState[K]) => void;
+  /** AI 草稿在模型未给出状态时保留可编辑占位值，但必须把状态控件标成待确认。 */
+  pendingStatusConfirmation?: boolean | undefined;
   errors?: SubscriptionFormErrors | undefined;
   onClearFieldError?: ((field: keyof SubscriptionFormErrors) => void) | undefined;
   notificationReminderDays: number;
@@ -36,6 +40,8 @@ export const errorFieldByFormKey: Partial<Record<keyof SubscriptionFormState, Su
   name: "name",
   price: "price",
   currency: "currency",
+  balance: "balance",
+  balanceCurrency: "balanceCurrency",
   billingCycle: "billingCycle",
   customDays: "customDays",
   oneTimeMode: "oneTimeTerm",
@@ -56,6 +62,7 @@ const structuralErrorFieldsByFormKey: Partial<Record<keyof SubscriptionFormState
   billingCycle: ["billingCycle", "dates", "customDays", "oneTimeTerm", "reminderDays", "costSharing"],
   oneTimeMode: ["dates", "oneTimeTerm", "reminderDays", "costSharing"],
   autoCalculate: ["dates"],
+  balanceEnabled: ["balance", "balanceCurrency"],
 };
 
 export function getErrorFieldsToClearForFormChange(

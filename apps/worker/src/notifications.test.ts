@@ -152,6 +152,8 @@ function subscriptionRow(overrides: Partial<SubscriptionRow> = {}): Subscription
     name: "Apple",
     logo: null,
     price: "10",
+    balance: null,
+    balance_currency: null,
     currency: "USD",
     billing_cycle: "monthly",
     custom_days: null,
@@ -254,6 +256,18 @@ describe("Cloudflare notifications", () => {
       user: { id: "usr_due", role: "admin" },
       session: { id: "ses" },
     });
+  });
+
+  it("never adds manually recorded balances to notification items", () => {
+    const base = subscription();
+    const options = { ...createDefaultAppSettings(), timezone: "UTC", showExpired: false };
+    const expected = collectNotificationItemsForLocalDate("2026-01-10", options, [base]);
+    expect(expected.length).toBeGreaterThan(0);
+    const actual = collectNotificationItemsForLocalDate("2026-01-10", options, [
+      subscription({ balance: "987654321.123456", balanceCurrency: "EUR" }),
+    ]);
+    expect(actual).toEqual(expected);
+    expect(JSON.stringify(actual)).not.toMatch(/balance|987654321/i);
   });
 
   it("skips subscriptions with disabled reminders", () => {

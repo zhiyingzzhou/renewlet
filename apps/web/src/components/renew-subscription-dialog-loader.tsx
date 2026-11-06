@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import type { RenewSubscriptionDialogProps } from "@/components/renew-subscription-dialog";
 import {
   Dialog,
@@ -21,26 +23,31 @@ export function preloadRenewSubscriptionDialog(): void {
 /** 续订代码按 intent 加载，但单次 open session 始终复用同一套 Radix Portal、焦点域和退出动画。 */
 export function DeferredRenewSubscriptionDialog(props: RenewSubscriptionDialogProps) {
   const { t } = useI18n();
-  const { value: Content, error, sessionKey } = useLazyDialogSession(props.open, renewSubscriptionDialogResource);
+  const [resource, setResource] = useState(renewSubscriptionDialogResource);
+  const { value: Content, error, sessionKey } = useLazyDialogSession(props.open, resource);
   const titleSubscription = props.subscription ?? props.loadingPreview;
   const title = titleSubscription
     ? t("subscription.renew.title", { name: titleSubscription.name })
     : t("subscription.renew");
-  if (props.open && error) throw error;
 
   return (
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent
         closeLabel={t("common.close")}
+        closeDisabled={props.submitting}
         dismissMode="explicit"
         layout="content"
         className="h5-dialog-auto-frame gap-0 border-border bg-card p-0 sm:max-w-lg"
-        aria-busy={!Content || props.loading ? true : undefined}
+        aria-busy={(!Content && !error) || props.loading ? true : undefined}
         data-testid={Content ? undefined : "renew-subscription-dialog-module-pending"}
         onCloseAutoFocus={(event) => {
-          if (!props.restoreFocusRef?.current) return;
           event.preventDefault();
-          props.restoreFocusRef.current.focus();
+          const target = props.restoreFocusRef?.current;
+          if (target?.isConnected) target.focus();
+          else {
+            const heading = document.querySelector<HTMLElement>("main h1, main h2, [data-renewal-focus-fallback]");
+            if (heading) { heading.tabIndex = -1; heading.focus(); }
+          }
         }}
       >
         {Content ? (
@@ -48,12 +55,17 @@ export function DeferredRenewSubscriptionDialog(props: RenewSubscriptionDialogPr
         ) : (
           <>
             <DialogHeader className="shrink-0 p-6 pb-0">
-              <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
+              <DialogTitle className="min-w-0 wrap-anywhere pr-6 text-xl font-semibold">{title}</DialogTitle>
               <DialogDescription className="sr-only">
                 {t("subscription.renew.description")}
               </DialogDescription>
             </DialogHeader>
-            <DialogModulePending label={t("common.loading")} />
+            {error ? (
+              <div className="grid min-w-0 gap-4 p-6">
+                <p role="alert" className="text-sm text-destructive">{t("subscription.renew.loadFailed")}</p>
+                <Button type="button" variant="outline" onClick={() => setResource({ ...renewSubscriptionDialogResource })}>{t("system.retry")}</Button>
+              </div>
+            ) : <DialogModulePending label={t("common.loading")} />}
           </>
         )}
       </DialogContent>

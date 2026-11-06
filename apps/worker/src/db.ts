@@ -76,6 +76,8 @@ export const SUBSCRIPTION_COLUMN_NAMES = [
   "extra_json",
   "created_at",
   "updated_at",
+  "balance",
+  "balance_currency",
 ] as const;
 
 export const SUBSCRIPTION_COLLECTION_COLUMN_NAMES = [
@@ -102,6 +104,8 @@ export const SUBSCRIPTION_COLLECTION_COLUMN_NAMES = [
   "reminder_days",
   "cost_sharing_json",
   "created_at",
+  "balance",
+  "balance_currency",
 ] as const satisfies readonly (keyof SubscriptionCollectionRow)[];
 
 const assetColumnNames = [
@@ -343,6 +347,8 @@ export function toApiSubscriptionCollectionItem(row: SubscriptionCollectionRow):
     name: row.name,
     ...(row.logo ? { logo: row.logo } : {}),
     price: moneyFromUnknown(row.price) ?? "0",
+    ...(row.balance == null ? {} : { balance: row.balance }),
+    ...(row.balance_currency == null ? {} : { balanceCurrency: row.balance_currency }),
     currency: row.currency,
     billingCycle: row.billing_cycle,
     ...(row.custom_days === null ? {} : { customDays: row.custom_days }),
@@ -391,6 +397,8 @@ export function toPublicApiSubscription(row: SubscriptionRow) {
     name: row.name,
     ...(row.logo ? { logo: row.logo } : {}),
     price: moneyFromUnknown(row.price) ?? "0",
+    ...(row.balance == null ? {} : { balance: row.balance }),
+    ...(row.balance_currency == null ? {} : { balanceCurrency: row.balance_currency }),
     currency: row.currency,
     billingCycle: row.billing_cycle,
     ...(row.custom_days === null ? {} : { customDays: row.custom_days }),
@@ -594,14 +602,28 @@ export async function deleteAssetMetadata(env: Env, userId: string, id: string):
   await env.DB.prepare("DELETE FROM assets WHERE user_id = ? AND id = ?").bind(userId, id).run();
 }
 
-export async function listSubscriptionTags(env: Env, userId: string, limit = 200): Promise<string[]> {
+export async function listSubscriptionTags(env: Env, userId: string, limit = 50): Promise<string[]> {
   // 这些标签名会进入第三方 AI prompt；只传用户已经持久化的标签文本，不带历史订阅名称、金额或备注。
   const rows = await env.DB.prepare(`
-    SELECT tag
-    FROM subscription_tags
-    WHERE user_id = ?
-    GROUP BY tag_norm
-    ORDER BY MAX(updated_at) DESC, tag_norm ASC
+    SELECT tag_row.tag
+    FROM subscription_tags AS tag_row
+    WHERE tag_row.user_id = ?
+      AND NOT EXISTS (
+        SELECT 1
+        FROM subscription_tags AS candidate
+        WHERE candidate.user_id = tag_row.user_id
+          AND candidate.tag_norm = tag_row.tag_norm
+          AND (
+            candidate.updated_at > tag_row.updated_at
+            OR (candidate.updated_at = tag_row.updated_at AND candidate.subscription_id > tag_row.subscription_id)
+            OR (
+              candidate.updated_at = tag_row.updated_at
+              AND candidate.subscription_id = tag_row.subscription_id
+              AND candidate.tag > tag_row.tag
+            )
+          )
+      )
+    ORDER BY tag_row.updated_at DESC, tag_row.subscription_id DESC, tag_row.tag_norm ASC
     LIMIT ?
   `)
     .bind(userId, limit)

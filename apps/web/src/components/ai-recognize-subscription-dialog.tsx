@@ -22,7 +22,7 @@ import {
   recognitionElapsedSeconds,
   thinkingOptionIdOrNull,
 } from "@/components/ai-recognition/ai-recognition-dialog-utils";
-import type { AIDraftListItem, AIRecognitionInputMode } from "@/components/ai-recognition/ai-recognition-dialog-types";
+import type { AIDraftListItem } from "@/components/ai-recognition/ai-recognition-dialog-types";
 import Link from "@/components/router-link";
 import { Button } from "@/components/ui/button";
 import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -51,8 +51,12 @@ import { getAIRecognitionSettingsBlocker } from "@/modules/ai-recognition/domain
 import { buildPreparedImportFromAIDrafts } from "@/modules/ai-recognition/domain/ai-recognition-import";
 import { getAIDraftBlockingIssues } from "@/modules/ai-recognition/domain/ai-draft-preflight";
 import {
+  AI_DRAFT_CONFIRMATION_FIELDS,
   aiDraftToSubscriptionFormState,
+  canConfirmAIDraftField,
+  canConfirmAIDraftDefaultValue,
   getInitialAIDraftConfirmationFields,
+  isAIDraftConfigValueKnown,
   type AIDraftConfirmationField,
 } from "@/modules/ai-recognition/domain/ai-recognition-form";
 import { useImportPreviewApply } from "@/modules/import-export/application/use-import-preview-apply";
@@ -82,7 +86,6 @@ export interface AIRecognizeSubscriptionDialogContentProps extends Omit<
 type AIRecognitionStage = "input" | "draft" | "preview";
 type AIRecognitionStreamStatus = "running" | "complete" | "error" | "stopped";
 const AI_RECOGNITION_TEXT_PREVIEW_MAX_CHARS = 360;
-const AI_RECOGNITION_REASONING_PREVIEW_MAX_CHARS = 1600;
 export function AIRecognizeSubscriptionDialogContent({
   open,
   settings,
@@ -102,11 +105,9 @@ export function AIRecognizeSubscriptionDialogContent({
   const previewAbortRef = useRef<AbortController | null>(null);
   const recognitionStartedAtRef = useRef<number | null>(null);
   const recognitionElapsedSecondsRef = useRef<number | null>(null);
-  const [inputMode, setInputMode] = useState<AIRecognitionInputMode>("text");
   const [text, setText] = useState("");
   const [drafts, setDrafts] = useState<AIDraftListItem[]>([]);
   const [selectedDraftId, setSelectedDraftId] = useState<string | null>(null);
-  const [recognitionWarnings, setRecognitionWarnings] = useState<string[]>([]);
   const [thinkingControl, setThinkingControl] = useState<AiThinkingControl | null>(null);
   const [recognizing, setRecognizing] = useState(false);
   const [previewingDrafts, setPreviewingDrafts] = useState(false);
@@ -117,7 +118,6 @@ export function AIRecognizeSubscriptionDialogContent({
   const [streamSubscriptionsSeen, setStreamSubscriptionsSeen] = useState(0);
   const [streamWarningsSeen, setStreamWarningsSeen] = useState(0);
   const [streamTextPreview, setStreamTextPreview] = useState("");
-  const [streamReasoningText, setStreamReasoningText] = useState("");
   const [streamElapsedSeconds, setStreamElapsedSeconds] = useState<number | null>(null);
   const [draftGenerationElapsedSeconds, setDraftGenerationElapsedSeconds] = useState<number | null>(null);
   const [aiErrorDetails, setAIErrorDetails] = useState<AIErrorDetails | null>(null);
@@ -168,8 +168,8 @@ export function AIRecognizeSubscriptionDialogContent({
     [draftBlockingIssuesById, drafts],
   );
   const hasDraftBlockingIssues = firstBlockingDraftId !== null;
-  const activeText = inputMode === "text" ? text.trim() : "";
-  const activeImages = inputMode === "image" ? images : [];
+  const activeText = text.trim();
+  const activeImages = images;
   const canGenerate = !settingsBlocker && (activeText.length > 0 || activeImages.length > 0) && !recognizing && !imageProcessing;
   const workflowExpanded = stage !== "input";
   const inputStageVisible = stage === "input";
@@ -240,12 +240,6 @@ export function AIRecognizeSubscriptionDialogContent({
     recognitionAbortRef.current = null;
   }
 
-  function handleInputModeChange(nextMode: AIRecognitionInputMode) {
-    if (nextMode === inputMode) return;
-    setInputMode(nextMode);
-    markDraftsStaleFromInputChange();
-  }
-
   function handleTextChange(nextText: string) {
     if (nextText === text) return;
     setText(nextText);
@@ -298,7 +292,6 @@ export function AIRecognizeSubscriptionDialogContent({
     setError(null);
     setAIErrorDetails(null);
     setAIErrorDetailsOpen(false);
-    setRecognitionWarnings([]);
     resetStreamState();
     startRecognitionElapsed();
     setStreamStatus("running");
@@ -307,8 +300,8 @@ export function AIRecognizeSubscriptionDialogContent({
     try {
       const response = await aiRecognitionService.recognizeSubscriptionsStream(
         {
-          text: inputMode === "text" ? text : "",
-          images: inputMode === "image" ? images.map((image) => image.file) : [],
+          text,
+          images: images.map((image) => image.file),
           thinkingControl,
         },
         {
@@ -324,13 +317,12 @@ export function AIRecognizeSubscriptionDialogContent({
         id: nextDraftId(draftIdRef),
         // sourceDraft 只保存模型证据；所有用户可见编辑都进入唯一 formData，切换草稿不会再做双向镜像。
         sourceDraft: draft,
-        formData: aiDraftToSubscriptionFormState(draft, { settings, config }),
-        pendingConfirmationFields: getInitialAIDraftConfirmationFields(draft),
+        formData: aiDraftToSubscriptionFormState(draft, { settings }),
+        pendingConfirmationFields: getInitialAIDraftConfirmationFields(draft, config, settings.timezone),
       }));
       setDrafts(nextDrafts);
       setDraftGenerationElapsedSeconds(elapsedSeconds);
       setSelectedDraftId(nextDrafts[0]?.id ?? null);
-      setRecognitionWarnings(response.warnings);
       setDraftsStale(false);
       setStage("draft");
     } catch (err) {
@@ -366,7 +358,6 @@ export function AIRecognizeSubscriptionDialogContent({
     setStreamSubscriptionsSeen(0);
     setStreamWarningsSeen(0);
     setStreamTextPreview("");
-    setStreamReasoningText("");
     setStreamElapsedSeconds(null);
   }
 
@@ -400,7 +391,7 @@ export function AIRecognizeSubscriptionDialogContent({
         setStreamTextPreview((current) => appendLimitedText(current, event.delta, AI_RECOGNITION_TEXT_PREVIEW_MAX_CHARS));
         break;
       case "recognition/reasoning-delta":
-        setStreamReasoningText((current) => appendLimitedText(current, event.delta, AI_RECOGNITION_REASONING_PREVIEW_MAX_CHARS));
+        // 兼容旧 Worker 事件但永不展示内部 reasoning，避免把 chain-of-thought 变成用户界面契约。
         break;
       case "recognition/final":
         freezeRecognitionElapsed();
@@ -453,16 +444,33 @@ export function AIRecognizeSubscriptionDialogContent({
     invalidateDraftPreview();
     setDrafts((current) => current.map((item) => {
       if (item.id !== id) return item;
-      return { ...item, formData: typeof action === "function" ? action(item.formData) : action };
+      const formData = typeof action === "function" ? action(item.formData) : action;
+      const pendingConfirmationFields = syncAIDraftConfirmationFields(item, formData, config);
+      return { ...item, formData, pendingConfirmationFields };
     }));
   }
 
-  function confirmDraftField(id: string, field: AIDraftConfirmationField) {
+  function confirmDraftField(id: string, field: AIDraftConfirmationField, value?: unknown) {
     // 直接编辑或点击“使用当前值”都消费一次显式确认；确认只改变审阅状态，绝不回写不可变的 sourceDraft。
     invalidateDraftPreview();
-    setDrafts((current) => current.map((item) => item.id === id
-      ? { ...item, pendingConfirmationFields: item.pendingConfirmationFields.filter((candidate) => candidate !== field) }
-      : item));
+    setDrafts((current) => current.map((item) => {
+      if (item.id !== id) return item;
+      // 字段可能本来就显示表单默认值（例如缺失周期显示“每月”），因此不能只比较新旧值。
+      // 编辑回调传入的值代表用户刚刚明确选择的值，直接用它参与确认判断，避免读到旧快照。
+      const confirmationFormData = value === undefined
+        ? item.formData
+        : { ...item.formData, [field]: value } as SubscriptionFormState;
+      if (!canConfirmAIDraftField(item.sourceDraft, confirmationFormData, field, config)) return item;
+      return { ...item, pendingConfirmationFields: item.pendingConfirmationFields.filter((candidate) => candidate !== field) };
+    }));
+  }
+
+  function confirmAllDraftDefaults() {
+    invalidateDraftPreview();
+    setDrafts((current) => current.map((item) => ({
+      ...item,
+      pendingConfirmationFields: item.pendingConfirmationFields.filter((field) => !canConfirmAIDraftDefaultValue(item.sourceDraft, item.formData, field, config)),
+    })));
   }
 
   function removeDraft(id: string) {
@@ -476,8 +484,6 @@ export function AIRecognizeSubscriptionDialogContent({
 
   const inputTabs = (
     <AIRecognitionInputTabs
-      mode={inputMode}
-      onModeChange={handleInputModeChange}
       text={text}
       onTextChange={handleTextChange}
       textInputRef={textInputRef}
@@ -494,8 +500,7 @@ export function AIRecognizeSubscriptionDialogContent({
     <AIRecognitionRunSettingsPanel
       providerType={aiSettings.providerType}
       model={aiSettings.model}
-      mode={inputMode}
-      textLength={text.length}
+      textLength={Array.from(text).length}
       imageCount={images.length}
       thinkingOptions={thinkingOptions}
       selectedThinkingId={selectedThinkingId}
@@ -511,7 +516,6 @@ export function AIRecognizeSubscriptionDialogContent({
       subscriptionsSeen={streamSubscriptionsSeen}
       warningsSeen={streamWarningsSeen}
       textPreview={streamTextPreview}
-      reasoningText={streamReasoningText}
       elapsedSeconds={streamElapsedSeconds}
       hasErrorDetails={streamStatus === "error" && Boolean(aiErrorDetails)}
       actionsDisabled={recognizing}
@@ -601,12 +605,6 @@ export function AIRecognizeSubscriptionDialogContent({
         </div>
       ) : null}
 
-      {draftStageVisible && recognitionWarnings.length > 0 ? (
-        <div className="rounded-lg border border-border bg-secondary/30 p-3 text-xs leading-5 text-muted-foreground">
-          {recognitionWarnings.slice(0, 6).map((warning, index) => <p key={`${warning}:${index}`}>{warning}</p>)}
-        </div>
-      ) : null}
-
       {draftStageVisible && drafts.length > 0 ? (
         <AIDraftReviewPanel
           drafts={drafts}
@@ -618,6 +616,7 @@ export function AIRecognizeSubscriptionDialogContent({
           selectedDraftId={selectedDraftId}
           onSelectedDraftIdChange={setSelectedDraftId}
           onChangeDraftForm={updateDraftForm}
+          onConfirmAllDefaults={confirmAllDraftDefaults}
           onConfirmDraftField={confirmDraftField}
           onNestedDialogOpenChange={onNestedDialogOpenChange}
           onRemoveDraft={removeDraft}
@@ -753,4 +752,39 @@ export function AIRecognizeSubscriptionDialogContent({
       />
     </>
   );
+}
+
+function syncAIDraftConfirmationFields(
+  item: AIDraftListItem,
+  formData: SubscriptionFormState,
+  config: CustomConfig,
+): AIDraftConfirmationField[] {
+  const next = new Set(item.pendingConfirmationFields);
+  const previousFormData = item.formData;
+  // 用户编辑已经是对模型缺失的核心值作出的明确确认。这里在同一个
+  // setState 事务里消费确认，避免先更新表单、再回调确认时读到旧快照。
+  for (const field of ["price", "currency", "billingCycle", "status"] as const) {
+    if (previousFormData[field] === formData[field]) continue;
+    if (canConfirmAIDraftField(item.sourceDraft, formData, field, config)) next.delete(field);
+  }
+  const configFields: Array<{
+    field: "category" | "paymentMethod";
+    value: string;
+    options: CustomConfig["categories"] | CustomConfig["paymentMethods"];
+  }> = [
+    { field: "category", value: formData.category, options: config.categories },
+    { field: "paymentMethod", value: formData.paymentMethod, options: config.paymentMethods },
+  ];
+  for (const { field, value, options } of configFields) {
+    if (previousFormData[field] === value) continue;
+    // 清空未知配置仍然是未确认状态；否则导入层会把空值静默回退为 other/null，绕过安全确认。
+    if (!value.trim()) {
+      next.add(field);
+    } else if (isAIDraftConfigValueKnown(value, options)) {
+      next.delete(field);
+    } else {
+      next.add(field);
+    }
+  }
+  return AI_DRAFT_CONFIRMATION_FIELDS.filter((field) => next.has(field));
 }

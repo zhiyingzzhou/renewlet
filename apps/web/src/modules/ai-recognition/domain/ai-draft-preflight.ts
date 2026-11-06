@@ -11,6 +11,9 @@ export const AI_DRAFT_BLOCKING_ISSUE_CODES = [
   "aiPriceUnconfirmed",
   "aiCurrencyUnconfirmed",
   "aiBillingCycleUnconfirmed",
+  "aiStatusUnconfirmed",
+  "aiCategoryUnconfirmed",
+  "aiPaymentMethodUnconfirmed",
 ] as const;
 
 export type AIDraftBlockingIssueCode =
@@ -62,6 +65,27 @@ function confirmationIssue(field: AIDraftConfirmationField): AIDraftBlockingIssu
         code: "aiBillingCycleUnconfirmed",
         field: "billingCycle",
         messageKey: "aiRecognition.draftIssueBillingCycleRequired",
+        confirmationField: field,
+      };
+    case "status":
+      return {
+        code: "aiStatusUnconfirmed",
+        field: "name",
+        messageKey: "aiRecognition.draftIssueStatusRequired",
+        confirmationField: field,
+      };
+    case "category":
+      return {
+        code: "aiCategoryUnconfirmed",
+        field: "name",
+        messageKey: "aiRecognition.draftIssueCategoryRequired",
+        confirmationField: field,
+      };
+    case "paymentMethod":
+      return {
+        code: "aiPaymentMethodUnconfirmed",
+        field: "name",
+        messageKey: "aiRecognition.draftIssuePaymentMethodRequired",
         confirmationField: field,
       };
   }

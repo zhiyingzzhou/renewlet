@@ -10,17 +10,19 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode"
 
 	appstatic "github.com/zhiyingzzhou/renewlet/apps/docker-server/internal/static"
 )
 
 type aiRecognitionPromptSpec struct {
-	Version        string                       `json:"version"`
-	SchemaName     string                       `json:"schemaName"`
-	System         []string                     `json:"system"`
-	OutputContract []string                     `json:"outputContract"`
-	FieldRules     []string                     `json:"fieldRules"`
-	Examples       []aiRecognitionPromptExample `json:"examples"`
+	Version         string                                 `json:"version"`
+	SchemaName      string                                 `json:"schemaName"`
+	System          []string                               `json:"system"`
+	OutputContract  []string                               `json:"outputContract"`
+	FieldRules      []string                               `json:"fieldRules"`
+	OutputLanguages map[string]aiRecognitionOutputLanguage `json:"outputLanguages"`
+	Examples        []aiRecognitionPromptExample           `json:"examples"`
 }
 
 type aiRecognitionPromptExample struct {
@@ -41,6 +43,11 @@ type aiRecognitionConfigContext struct {
 	Tags           []string
 }
 
+type aiRecognitionOutputLanguage struct {
+	Label             string `json:"label"`
+	NativeInstruction string `json:"nativeInstruction"`
+}
+
 var aiRecognitionPrompt = mustLoadAIRecognitionPrompt()
 
 func mustLoadAIRecognitionPrompt() aiRecognitionPromptSpec {
@@ -48,17 +55,23 @@ func mustLoadAIRecognitionPrompt() aiRecognitionPromptSpec {
 	if err := json.Unmarshal(appstatic.AIRecognitionPrompt, &spec); err != nil {
 		panic(fmt.Sprintf("load AI recognition prompt: %v", err))
 	}
-	if spec.Version == "" || spec.SchemaName == "" || len(spec.System) == 0 || len(spec.OutputContract) == 0 || len(spec.FieldRules) == 0 {
+	if spec.Version == "" || spec.SchemaName == "" || len(spec.System) == 0 || len(spec.OutputContract) == 0 || len(spec.FieldRules) == 0 || len(spec.OutputLanguages) == 0 || spec.OutputLanguages["en-US"].Label == "" || spec.OutputLanguages["en-US"].NativeInstruction == "" {
 		panic("load AI recognition prompt: incomplete prompt spec")
 	}
 	return spec
 }
 
-func buildAIRecognitionSystemPrompt() string {
-	return strings.Join(aiRecognitionPrompt.System, "\n")
-}
-
-func buildAIRecognitionUserPrompt(text string, timezone string, defaultCurrency string, imageCount int, locale appLocale, configContext aiRecognitionConfigContext) string {
+func buildAIRecognitionSystemPrompt(locales ...appLocale) string {
+	locale := localeEnUS
+	if len(locales) > 0 {
+		locale = locales[0]
+	}
+	sections := append([]string{}, aiRecognitionPrompt.System...)
+	sections = append(sections, aiRecognitionOutputLanguageRules(locale)...)
+	sections = append(sections, "Output contract:")
+	sections = append(sections, prefixAIPromptRules(aiRecognitionPrompt.OutputContract)...)
+	sections = append(sections, "Field rules:")
+	sections = append(sections, prefixAIPromptRules(aiRecognitionPrompt.FieldRules)...)
 	examples := make([]string, 0, len(aiRecognitionPrompt.Examples))
 	for index, example := range aiRecognitionPrompt.Examples {
 		examples = append(examples, strings.Join([]string{
@@ -68,6 +81,11 @@ func buildAIRecognitionUserPrompt(text string, timezone string, defaultCurrency 
 			formatAIRecognitionPromptJSON(example.Output),
 		}, "\n"))
 	}
+	sections = append(sections, "Examples:", strings.Join(examples, "\n\n"))
+	return strings.Join(sections, "\n")
+}
+
+func buildAIRecognitionUserPrompt(text string, timezone string, imageCount int, locale appLocale, configContext aiRecognitionConfigContext) string {
 	userInput := strings.TrimSpace(text)
 	if userInput == "" {
 		userInput = "(no text input; use attached images)"
@@ -77,12 +95,16 @@ func buildAIRecognitionUserPrompt(text string, timezone string, defaultCurrency 
 		fmt.Sprintf("- Current date in user's timezone: %s", todayDateOnly(time.Now().UTC(), timezone)),
 		fmt.Sprintf("- User timezone: %s", timezone),
 		fmt.Sprintf("- User locale: %s", locale),
-		fmt.Sprintf("- Default currency hint: %s", defaultCurrency),
 		fmt.Sprintf("- Attached image count: %d", imageCount),
+		"",
+	}
+	lines = append(lines, aiRecognitionOutputLanguageRules(locale)...)
+	lines = append(lines,
+		"- Keep service names, URLs, explicit source=input text, existing labels, and existing tags in their original form; do not translate evidence.",
 		"",
 		"User context:",
 		"Existing user tags:",
-	}
+	)
 	lines = append(lines, formatAIRecognitionTags(configContext.Tags)...)
 	lines = append(lines,
 		"",
@@ -98,29 +120,32 @@ func buildAIRecognitionUserPrompt(text string, timezone string, defaultCurrency 
 		"- Extract subscriptions from the delimited user input below and any attached images.",
 		"- Treat the dynamic user context as preferences and available options, not as subscription evidence.",
 		"",
-		"Output contract:",
+		"User input:",
+		"<<<renewlet-user-input",
+		userInput,
+		">>>",
 	)
-	lines = append(lines, prefixAIPromptRules(aiRecognitionPrompt.OutputContract)...)
-	lines = append(lines, "", "Field rules:")
-	lines = append(lines, prefixAIPromptRules(aiRecognitionPrompt.FieldRules)...)
-	lines = append(lines, "", "Examples:", strings.Join(examples, "\n\n"), "", "User input:", "<<<renewlet-user-input", userInput, ">>>")
 	return strings.Join(lines, "\n")
 }
 
-func buildAIRecognitionRepairUserPrompt(originalUserPrompt string, previousObject interface{}, missingNoteNames []string) string {
-	// repair 只修补缺失备注，不允许引入本地品牌表或图标库；否则 Docker/Worker 会在同一输入上产生不同草稿。
+func buildAIRecognitionRepairUserPrompt(originalUserPrompt string, previousObject interface{}, missingNoteNames []string, locale appLocale) string {
 	lines := []string{
 		"Repair task:",
-		"- The previous JSON object is structurally valid but some describable subscriptions have missing or unusable notes.",
-		"- Regenerate the entire JSON object with the same output contract, field rules, and all subscriptions.",
-		"- Do not use a hardcoded service table, brand mapping, icon database, region list, operating system list, or local fallback knowledge.",
-		"- For the subscription names below, notes.value must be a concise service/site description unless the service purpose is truly unknowable.",
+		"- The previous JSON object is structurally valid, but some recognizable subscriptions have missing or unusable notes.",
+		"- Regenerate the complete JSON object with the same output contract and preserve every existing billing fact exactly.",
+		"- Only fill notes for the listed subscriptions; do not change price, currency, cycle, dates, status, category, payment method, website, tags, or warnings.",
+		"- For each listed subscription, notes.value must be a concise neutral description of the official service, site, or product. Use source=suggested for that description.",
 	}
+	lines = append(lines, aiRecognitionOutputLanguageRules(locale)...)
+	lines = append(lines,
+		"- Keep service names, URLs, explicit source=input text, existing labels, and existing tags in their original form; do not translate evidence.",
+		"- Use the original input/images, one official web search when the provider supports it, high-confidence public knowledge, and the existing service name/website.",
+		"- Do not use a hardcoded service table, local fallback, plan, price, region, route, specification, date, duration, promotion, import advice, confirmation reminder, or AI process text.",
+	)
 	for _, name := range missingNoteNames {
 		lines = append(lines, "  - "+name)
 	}
 	lines = append(lines,
-		"- Use only the original input/images, high-confidence public knowledge, and dynamic fields already present in the previous object: service name, website/domain, category, and stable tags.",
 		"",
 		"Original recognition prompt:",
 		"<<<renewlet-original-prompt",
@@ -135,18 +160,30 @@ func buildAIRecognitionRepairUserPrompt(originalUserPrompt string, previousObjec
 	return strings.Join(lines, "\n")
 }
 
+func aiRecognitionOutputLanguageRules(locale appLocale) []string {
+	language, ok := aiRecognitionPrompt.OutputLanguages[string(locale)]
+	if !ok {
+		language = aiRecognitionPrompt.OutputLanguages["en-US"]
+	}
+	return []string{
+		"Output language (authoritative):",
+		fmt.Sprintf("- Generated user-facing metadata must use %s.", language.Label),
+		"- " + language.NativeInstruction,
+	}
+}
+
 func formatAIRecognitionTags(tags []string) []string {
 	out := []string{}
 	seen := map[string]bool{}
 	for _, tag := range tags {
-		value := strings.TrimSpace(tag)
-		key := strings.ToLower(value)
+		value := sanitizeAIPromptContextText(tag)
+		key := aiRecognitionConfigMatchKey(value)
 		if value == "" || seen[key] {
 			continue
 		}
 		seen[key] = true
 		out = append(out, "- "+value)
-		if len(out) >= 200 {
+		if len(out) >= 50 {
 			// 标签上下文只提供偏好提示；过多用户历史标签会稀释订阅证据并放大 prompt 成本。
 			break
 		}
@@ -162,14 +199,39 @@ func formatAIRecognitionConfigOptions(options []aiRecognitionConfigOption) []str
 		return []string{"- (none)"}
 	}
 	limit := len(options)
-	if limit > 200 {
-		limit = 200
+	if limit > 50 {
+		limit = 50
 	}
 	out := make([]string, 0, limit)
 	for _, option := range options[:limit] {
-		out = append(out, fmt.Sprintf("- value=%s | label=%s | zh-CN=%s | en-US=%s", option.Value, option.Label, option.ZhCN, option.EnUS))
+		out = append(out, fmt.Sprintf("- value=%s | label=%s | zh-CN=%s | en-US=%s",
+			sanitizeAIPromptContextText(option.Value),
+			sanitizeAIPromptContextText(option.Label),
+			sanitizeAIPromptContextText(option.ZhCN),
+			sanitizeAIPromptContextText(option.EnUS),
+		))
 	}
 	return out
+}
+
+func sanitizeAIPromptContextText(value string) string {
+	// 配置标签和历史标签是用户可写数据；压平成单行，避免换行把不可信文本伪装成新的 prompt 指令。
+	var builder strings.Builder
+	pendingSpace := false
+	for _, r := range value {
+		if unicode.IsControl(r) || unicode.IsSpace(r) {
+			if builder.Len() > 0 {
+				pendingSpace = true
+			}
+			continue
+		}
+		if pendingSpace {
+			builder.WriteByte(' ')
+			pendingSpace = false
+		}
+		builder.WriteRune(r)
+	}
+	return trimMax(builder.String(), 160)
 }
 
 func prefixAIPromptRules(rules []string) []string {
@@ -182,7 +244,7 @@ func prefixAIPromptRules(rules []string) []string {
 
 func formatAIRecognitionPromptJSON(raw json.RawMessage) string {
 	var buf bytes.Buffer
-	if err := json.Indent(&buf, raw, "", "  "); err == nil {
+	if err := json.Compact(&buf, raw); err == nil {
 		return buf.String()
 	}
 	return string(raw)

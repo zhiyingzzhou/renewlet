@@ -26,6 +26,7 @@ export function subscriptionPerformanceItems(size: number) {
 /** 列表诊断使用轻量 DTO，避免将只有导出才读取的详情字段算进 Query 结构共享成本。 */
 export function subscriptionPerformanceCollectionItems(size: number) {
   return subscriptionPerformanceItems(size).map(({
+    updatedAt: _updatedAt,
     website: _website,
     notes: _notes,
     tags: _tags,

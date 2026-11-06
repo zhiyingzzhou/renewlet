@@ -23,11 +23,12 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/hooks/use-subscriptions", () => ({
   prefetchSubscriptionDetail: mocks.prefetchDetail,
-  useCreateSubscription: () => ({ mutate: mocks.createMutate }),
-  useUpdateSubscription: () => ({ mutate: mocks.updateMutate }),
+  useCreateSubscription: () => ({ mutateAsync: mocks.createMutate }),
+  useUpdateSubscription: () => ({ mutateAsync: mocks.updateMutate }),
   usePatchSubscription: () => ({ mutate: mocks.patchMutate }),
   useRenewSubscription: () => ({
     mutateAsync: mocks.renewMutateAsync,
+    reset: vi.fn(),
     error: null,
     isPending: false,
   }),

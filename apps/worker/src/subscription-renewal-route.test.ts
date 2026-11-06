@@ -98,6 +98,8 @@ function subscriptionRow(overrides: Partial<SubscriptionRow> = {}): Subscription
     name: "Manual Plan",
     logo: null,
     price: "12",
+    balance: null,
+    balance_currency: null,
     currency: "USD",
     billing_cycle: "monthly",
     custom_days: null,
@@ -138,11 +140,13 @@ afterEach(() => {
 
 describe("Cloudflare subscription renewal route", () => {
   const continueBody = {
+    expectedNextBillingDate: "2026-01-31",
+    expectedUpdatedAt: "2026-01-31T00:00:00.000Z",
     mode: "continue",
     price: "15.500000",
     currency: "EUR",
     startDate: null,
-    nextBillingDate: "2026-08-12",
+    nextBillingDate: "2026-02-28",
     autoCalculateNextBillingDate: false,
   };
 
@@ -179,6 +183,7 @@ describe("Cloudflare subscription renewal route", () => {
     const fixture = envFixture(subscriptionRow({ auto_calculate_next_billing_date: 0 }));
 
     const response = await renewSubscription(requestFixture({
+      ...continueBody,
       mode: "restart",
       price: "20",
       currency: "USD",
@@ -245,6 +250,7 @@ describe("Cloudflare subscription renewal route", () => {
     }));
 
     await expect(renewSubscription(requestFixture({
+      ...continueBody,
       mode: "restart",
       price: "20",
       currency: "USD",

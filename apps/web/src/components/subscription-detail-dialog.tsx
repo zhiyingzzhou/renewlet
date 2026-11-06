@@ -30,7 +30,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSettings } from "@/hooks/use-settings";
 import { useI18n } from "@/i18n/I18nProvider";
 import { cn } from "@/lib/utils";
-import { formatCompactCurrencyAmount } from "@/lib/currency";
+import { formatCurrency as formatPreciseCurrency, formatCompactCurrencyAmount } from "@/lib/currency";
 import type { DateOnly } from "@/lib/time/date-only";
 import {
   formatBillingCycleLabel,
@@ -54,7 +54,7 @@ interface SubscriptionDetailDialogProps {
   subscription: Subscription | null;
   loadingPreview: SubscriptionCollectionItem | null;
   onEditSubscription?: (subscription: Subscription) => void;
-  onRenewSubscription?: (id: string) => void;
+  onRenewSubscription?: (id: string, restoreTarget?: HTMLElement | null) => void;
   today: DateOnly | string;
   currencyConvert: SubscriptionCurrencyConverter;
   currencyRatesReady: boolean;
@@ -71,7 +71,7 @@ interface SubscriptionDetailContentProps {
   today: DateOnly | string;
   onClose: () => void;
   onEditSubscription?: (subscription: Subscription) => void;
-  onRenewSubscription?: (id: string) => void;
+  onRenewSubscription?: (id: string, restoreTarget?: HTMLElement | null) => void;
   onAddToCalendar: () => void;
   currencyConvert: SubscriptionCurrencyConverter;
   currencyRatesReady: boolean;
@@ -102,6 +102,7 @@ function resolveDetailLoadingStructure(
   const buyout = preview !== null && isOneTimeBuyout(preview);
   return {
     showCalendarAction: preview !== null && !buyout,
+    showBalance: preview?.balance !== undefined,
     showCostSharing: preview?.costSharing?.enabled === true,
     showDailyAverage: preview !== null && projectSubscriptionDailyCost(preview.price, preview, today) !== null,
     showNextBillingDate: preview !== null && (!buyout || preview.startDate !== null),
@@ -224,6 +225,13 @@ function SubscriptionDetailContent({
               : "subscription.detail.dailyAverage")}>
               <span className="tabular-nums">
                 {formatCompactCurrencyAmount(dailyCost.amount, subscription.currency, locale)}
+              </span>
+            </DetailRow>
+          ) : null}
+          {subscription.balance !== undefined && subscription.balanceCurrency ? (
+            <DetailRow label={t("subscription.field.balance")}>
+              <span className="wrap-break-word tabular-nums">
+                {formatPreciseCurrency(subscription.balance, subscription.balanceCurrency, locale, 6)}
               </span>
             </DetailRow>
           ) : null}
@@ -436,6 +444,12 @@ export function SubscriptionDetailDialog({
     suppressDetailFocusRestoreRef.current = true;
     onEditSubscription?.(nextSubscription);
   };
+  const renewFromDetail = (id: string) => {
+    // 续订与编辑使用同一 modal 交接规则；关闭后的焦点回到详情原入口，而非已卸载的 footer。
+    suppressDetailFocusRestoreRef.current = true;
+    closeDetail();
+    onRenewSubscription?.(id, detailRestoreFocusRef.current);
+  };
   const detailContent = loading || subscription ? (
     <SubscriptionDetailContent
       subscription={subscription}
@@ -450,7 +464,7 @@ export function SubscriptionDetailDialog({
       currencyRatesReady={currencyRatesReady}
       priceReferenceCurrency={priceReferenceCurrency}
       {...(onEditSubscription ? { onEditSubscription: editFromDetail } : {})}
-      {...(onRenewSubscription ? { onRenewSubscription } : {})}
+      {...(onRenewSubscription ? { onRenewSubscription: renewFromDetail } : {})}
     />
   ) : null;
   // 受控 Root 没有 Trigger 引用；每次打开会话只保存一次真实入口，切换 modal 时则禁止焦点回跳背景。

@@ -2,7 +2,7 @@
   "name": "@renewlet/shared",
   "private": true,
   "license": "MIT",
-  "version": "0.3.34",
+  "version": "0.3.35",
   "type": "module",
   "exports": {
     "./schemas/api": "./src/schemas/api.ts",
@@ -62,7 +62,7 @@
   "dependencies": {
     "@js-temporal/polyfill": "^0.5.1",
     "ical-generator": "11.1.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "typescript": "6.0.3",

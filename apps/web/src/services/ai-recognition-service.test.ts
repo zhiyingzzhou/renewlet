@@ -27,7 +27,7 @@ vi.mock("@/lib/api-client", () => ({
 
 const response = {
   providerType: "openai",
-  transportProtocol: "openai-chat",
+  transportProtocol: "openai-responses",
   model: "gpt-5-mini",
   subscriptions: [],
   warnings: [],
@@ -45,7 +45,7 @@ const response = {
     },
     request: {
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "gpt-5-mini",
       thinkingControl: null,
       maxOutputTokens: 4096,
@@ -73,7 +73,7 @@ describe("aiRecognitionService", () => {
     ));
   });
 
-  it("omits thinkingControl from multipart requests when no control is selected", async () => {
+  it("sends an explicit null when the current run selects the model default", async () => {
     await aiRecognitionService.recognizeSubscriptions({
       text: "github copilot 20刀 一个月",
       images: [],
@@ -83,10 +83,10 @@ describe("aiRecognitionService", () => {
     const init = mocks.apiFetch.mock.calls[0]?.[2] as RequestInit;
     const body = init.body as FormData;
     expect(body.get("text")).toBe("github copilot 20刀 一个月");
-    expect(body.has("thinkingControl")).toBe(false);
+    expect(body.get("thinkingControl")).toBe("null");
   });
 
-  it("sends thinkingControl only when the current run has an explicit control", async () => {
+  it("sends the selected thinkingControl in multipart requests", async () => {
     await aiRecognitionService.recognizeSubscriptions({
       text: "github copilot 20刀 一个月",
       images: [],
@@ -234,7 +234,7 @@ describe("aiRecognitionService", () => {
   it("loads provider models through the authenticated app API", async () => {
     const modelList = {
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       models: [{
         id: "gpt-5.1",
         displayName: null,

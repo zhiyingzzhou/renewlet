@@ -327,6 +327,8 @@ describe("subscription service API calls", () => {
   it("renews with an explicit payload and deletes through the product API", async () => {
     mocks.apiFetch.mockResolvedValueOnce({ subscription: apiSubscription }).mockResolvedValueOnce({});
     const renewPayload = {
+      expectedNextBillingDate: "2026-02-01",
+      expectedUpdatedAt: "2026-01-01T00:00:00.000Z",
       mode: "continue",
       price: "15",
       currency: "USD",
@@ -343,4 +345,14 @@ describe("subscription service API calls", () => {
     expect(mocks.apiFetch.mock.calls[1]?.[0]).toBe("/api/app/subscriptions/sub_api");
     expect(mocks.apiFetch.mock.calls[1]?.[2]).toMatchObject({ method: "DELETE" });
   });
+});
+
+it("maps zero balance and emits paired clearing only for full form writes", async () => {
+  const subscription = fromApiSubscription({ ...apiSubscription, balance: "0", balanceCurrency: "EUR" });
+  expect(subscription).toMatchObject({ balance: "0", balanceCurrency: "EUR" });
+  expect(toSubscriptionUpdatePayload(subscription)).toMatchObject({ balance: "0", balanceCurrency: "EUR" });
+  expect(toSubscriptionUpdatePayload({ ...subscription, balance: undefined, balanceCurrency: undefined })).toMatchObject({ balance: null, balanceCurrency: null });
+  mocks.apiFetch.mockResolvedValueOnce({ subscription: apiSubscription });
+  await subscriptionService.patch(subscription.id, { pinned: true });
+  expect(mocks.apiFetch.mock.lastCall?.[2]?.body).toBe(JSON.stringify({ pinned: true }));
 });

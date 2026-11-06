@@ -9,12 +9,13 @@ import {
 } from "@/components/ai-recognition/ai-draft-display";
 import type { AIDraftFilter, AIDraftListItem } from "@/components/ai-recognition/ai-recognition-dialog-types";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VirtualizedList } from "@/components/ui/virtualized-list";
 import { useI18n } from "@/i18n/I18nProvider";
 import type { MessageKey } from "@/i18n/messages";
 import type { AIDraftBlockingIssue } from "@/modules/ai-recognition/domain/ai-draft-preflight";
-import type { AIDraftConfirmationField } from "@/modules/ai-recognition/domain/ai-recognition-form";
+import { canConfirmAIDraftDefaultValue, isAIDraftConfigValueKnown, type AIDraftConfirmationField } from "@/modules/ai-recognition/domain/ai-recognition-form";
 import { cn } from "@/lib/utils";
 import type { CustomConfig } from "@/types/config";
 import type { AppSettings } from "@/types/subscription";
@@ -39,7 +40,8 @@ interface AIDraftReviewPanelProps {
   selectedDraftId: string | null;
   onSelectedDraftIdChange: (id: string | null) => void;
   onChangeDraftForm: (id: string, action: SetStateAction<SubscriptionFormState>) => void;
-  onConfirmDraftField: (id: string, field: AIDraftConfirmationField) => void;
+  onConfirmAllDefaults: () => void;
+  onConfirmDraftField: (id: string, field: AIDraftConfirmationField, value?: unknown) => void;
   onNestedDialogOpenChange?: ((open: boolean) => void) | undefined;
   onRemoveDraft: (id: string) => void;
 }
@@ -54,6 +56,7 @@ export function AIDraftReviewPanel({
   selectedDraftId,
   onSelectedDraftIdChange,
   onChangeDraftForm,
+  onConfirmAllDefaults,
   onConfirmDraftField,
   onNestedDialogOpenChange,
   onRemoveDraft,
@@ -71,8 +74,12 @@ export function AIDraftReviewPanel({
     () => drafts.reduce((count, item) => count + (draftBlockingIssuesById.get(item.id)?.length ?? 0), 0),
     [draftBlockingIssuesById, drafts],
   );
+  const confirmableDefaultCount = useMemo(
+    () => drafts.reduce((count, item) => count + item.pendingConfirmationFields.filter((field) => canConfirmAIDraftDefaultValue(item.sourceDraft, item.formData, field, config)).length, 0),
+    [config, drafts],
+  );
   const filteredDrafts = useMemo(() => drafts.filter((item) => {
-    if (filter === "warning" && item.sourceDraft.warnings.length === 0) return false;
+    if (filter === "warning" && item.sourceDraft.confidence !== "low" && (draftBlockingIssuesById.get(item.id)?.length ?? 0) === 0) return false;
     if (filter === "low-confidence" && item.sourceDraft.confidence !== "low") return false;
     if (filter === "missing-core" && (draftBlockingIssuesById.get(item.id)?.length ?? 0) === 0) return false;
     if (!normalizedQuery) return true;
@@ -131,6 +138,11 @@ export function AIDraftReviewPanel({
                 : t("aiRecognition.draftsCountWithElapsed", { count: drafts.length, seconds: generationElapsedSeconds })}
             </p>
           </div>
+          {confirmableDefaultCount > 0 ? (
+            <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={onConfirmAllDefaults}>
+              {t("aiRecognition.confirmDefaults")}
+            </Button>
+          ) : null}
           <div className="flex min-w-0 flex-1 flex-col gap-2 sm:max-w-3xl sm:flex-row sm:items-center sm:justify-end">
             <div className="flex min-w-0 items-center gap-1 overflow-x-auto rounded-md border border-border bg-background p-0.5 text-xs">
               <Filter className="ml-2 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -203,10 +215,10 @@ export function AIDraftReviewPanel({
                 availableTags={availableTags}
                 blockingIssues={draftBlockingIssuesById.get(selectedDraft.id) ?? []}
                 setFormData={(action) => onChangeDraftForm(selectedDraft.id, action)}
-                onFieldChange={(field) => {
-                  // 用户真实修改 AI 可能缺省的核心字段即视为显式确认；普通字段编辑不应误清其他待确认项。
-                  if (field === "price" || field === "currency" || field === "billingCycle") {
-                    onConfirmDraftField(selectedDraft.id, field);
+                onFieldChange={(field, value) => {
+                  // 只有编辑出可用值才消费显式确认；清空金额/货币或保留未知配置仍必须继续阻塞。
+                  if (isAIDraftFieldValueConfirmed(field, value, config)) {
+                    onConfirmDraftField(selectedDraft.id, field, value);
                   }
                 }}
                 onConfirmField={(field) => onConfirmDraftField(selectedDraft.id, field)}
@@ -223,6 +235,19 @@ export function AIDraftReviewPanel({
       </div>
     </section>
   );
+}
+
+function isAIDraftFieldValueConfirmed(field: keyof SubscriptionFormState, value: unknown, config: CustomConfig): field is AIDraftConfirmationField {
+  if (field === "price" || field === "currency" || field === "billingCycle" || field === "status") {
+    return typeof value === "string" && value.trim().length > 0;
+  }
+  if (field === "category") {
+    return typeof value === "string" && value.trim().length > 0 && isAIDraftConfigValueKnown(value, config.categories);
+  }
+  if (field === "paymentMethod") {
+    return typeof value === "string" && value.trim().length > 0 && isAIDraftConfigValueKnown(value, config.paymentMethods);
+  }
+  return false;
 }
 
 function DraftRow({
@@ -244,7 +269,9 @@ function DraftRow({
 }) {
   const { t } = useI18n();
   const { formData, sourceDraft } = item;
-  const warningCount = sourceDraft.warnings.length + (sourceDraft.confidence === "low" ? 1 : 0) + blockingIssueCount;
+  // 原始 warning 保留在 diagnostics；列表只标记用户必须处理的缺失字段和低置信度，
+  // 避免把“AI 无法确认某个非必填事实”渲染成一串重复提示。
+  const warningCount = (sourceDraft.confidence === "low" ? 1 : 0) + blockingIssueCount;
   const metadata = [
     formData.website,
     ...formData.tags.slice(0, 3),

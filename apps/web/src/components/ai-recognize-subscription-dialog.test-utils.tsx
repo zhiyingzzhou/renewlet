@@ -61,7 +61,7 @@ export function configuredSettings(): AppSettings {
     ...DEFAULT_SETTINGS,
     aiRecognition: {
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "gpt-5-mini",
       modelInputMode: "select",
       baseUrl: "",
@@ -83,7 +83,7 @@ export function makeDraft(overrides: Partial<AiRecognizedSubscriptionDraft> = {}
     oneTimeTermUnit: null,
     category: "music",
     status: "active",
-    paymentMethod: null,
+    paymentMethod: "alipay",
     startDate: "2026-01-01",
     nextBillingDate: "2027-01-01",
     autoCalculateNextBillingDate: true,
@@ -104,7 +104,7 @@ export function makeDraft(overrides: Partial<AiRecognizedSubscriptionDraft> = {}
 export function makeResponse(subscriptions: AiRecognizedSubscriptionDraft[]): AiRecognizeResponse {
   return {
     providerType: "openai",
-    transportProtocol: "openai-chat",
+    transportProtocol: "openai-responses",
     model: "gpt-5-mini",
     subscriptions,
     warnings: [],
@@ -123,7 +123,7 @@ export function makeResponse(subscriptions: AiRecognizedSubscriptionDraft[]): Ai
       },
       request: {
         providerType: "openai",
-        transportProtocol: "openai-chat",
+        transportProtocol: "openai-responses",
         model: "gpt-5-mini",
         thinkingControl: null,
         maxOutputTokens: 4096,

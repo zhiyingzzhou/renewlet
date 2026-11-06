@@ -10,6 +10,7 @@ interface RenewSubscriptionScaffoldProps extends ComponentPropsWithoutRef<"form"
   mode: ReactNode;
   pricing: ReactNode;
   schedule: ReactNode;
+  disabled?: boolean;
 }
 
 export type RenewSubscriptionScaffoldSlots = Pick<
@@ -25,25 +26,29 @@ export function RenewSubscriptionScaffold({
   mode,
   pricing,
   schedule,
+  disabled,
   ...formProps
 }: RenewSubscriptionScaffoldProps) {
   return (
     <>
       <DialogHeader className="shrink-0 p-6 pb-0">
-        <DialogTitle className="text-xl font-semibold">{heading}</DialogTitle>
+        <DialogTitle className="min-w-0 wrap-anywhere pr-6 text-xl font-semibold">{heading}</DialogTitle>
         <DialogDescription className="sr-only">{description}</DialogDescription>
       </DialogHeader>
-      <form ref={formRef} className="flex min-h-0 flex-col overflow-hidden" {...formProps}>
+      <form ref={formRef} className="h5-subscription-dialog-form overflow-hidden" {...formProps}>
+        {/* 原生 fieldset 的匿名内容盒不能可靠承担滚动裁切；独立滚动层避免日期控件越过 footer，fieldset 只拥有禁用语义。 */}
         <div
-          className="h5-mobile-sheet-scroll grid min-h-0 flex-1 gap-5 px-6 py-4"
+          className="h5-mobile-sheet-scroll min-w-0"
           data-dialog-region="renewal-fields"
         >
-          {mode}
-          {pricing}
-          {schedule}
+          <fieldset disabled={disabled} className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 px-6 py-4">
+            {mode}
+            {pricing}
+            {schedule}
+          </fieldset>
         </div>
         <div
-          className="flex shrink-0 flex-col gap-3 border-t border-border bg-card p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:flex-row sm:justify-end md:p-6 md:pt-4"
+          className="flex shrink-0 flex-col gap-3 border-t border-border bg-card p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:flex-row sm:flex-wrap sm:justify-end md:p-6 md:pt-4"
           data-dialog-region="renewal-actions"
         >
           {actions}

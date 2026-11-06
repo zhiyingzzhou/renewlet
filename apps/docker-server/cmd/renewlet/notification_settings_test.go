@@ -52,6 +52,67 @@ func TestLunarCalendarSettingDefaultsAndRoundTrips(t *testing.T) {
 	}
 }
 
+func TestSettingsFromValueMigratesLegacyAIRecognitionShapeInMemory(t *testing.T) {
+	settings, err := settingsFromValue(json.RawMessage(`{"localePreference":"auto","aiRecognition":{"provider":"openai","transportProtocol":"openai-chat","model":"gpt-6.1-sol","modelInputMode":"manual","baseUrl":"https://gateway.example.com/v1","apiKey":"sk-legacy","defaultThinkingControl":{"provider":"openai","effort":"minimal"}}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if settings.AIRecognition.ProviderType != aiProviderTypeOpenAI || settings.AIRecognition.TransportProtocol != aiProtocolOpenAIResponses {
+		t.Fatalf("legacy AI settings should use canonical OpenAI Responses transport: %#v", settings.AIRecognition)
+	}
+	if settings.AIRecognition.Model != "gpt-6.1-sol" || settings.AIRecognition.ModelInputMode != "manual" || settings.AIRecognition.BaseURL != "https://gateway.example.com/v1" || settings.AIRecognition.APIKey != "sk-legacy" {
+		t.Fatalf("legacy AI settings lost user values: %#v", settings.AIRecognition)
+	}
+	if settings.AIRecognition.DefaultThinkingControl != nil {
+		t.Fatalf("incompatible GPT-6.1-sol effort should be cleared: %#v", settings.AIRecognition.DefaultThinkingControl)
+	}
+}
+
+func TestSettingsFromValueUsesValidLegacyProviderAliasWhenProviderTypeIsDirty(t *testing.T) {
+	settings, err := settingsFromValue(json.RawMessage(`{"localePreference":"auto","aiRecognition":{"providerType":"removed-provider","provider":"openai-compatible","model":"custom-model","baseUrl":"https://gateway.example.com/v1","apiKey":"legacy-key"}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if settings.AIRecognition.ProviderType != aiProviderTypeOpenAICompatible || settings.AIRecognition.TransportProtocol != aiProtocolOpenAIChat {
+		t.Fatalf("valid legacy provider alias should win over dirty providerType: %#v", settings.AIRecognition)
+	}
+	if settings.AIRecognition.Model != "custom-model" || settings.AIRecognition.APIKey != "legacy-key" {
+		t.Fatalf("legacy provider alias migration lost user values: %#v", settings.AIRecognition)
+	}
+}
+
+func TestSettingsFromValueClearsInvalidLegacyThinkingValueWithoutDroppingConfig(t *testing.T) {
+	settings, err := settingsFromValue(json.RawMessage(`{"localePreference":"auto","aiRecognition":{"provider":"openai","model":"gpt-6.1-sol","modelInputMode":"manual","baseUrl":"https://gateway.example.com/v1","apiKey":"legacy-key","defaultThinkingControl":{"provider":"openai","effort":123}}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if settings.AIRecognition.DefaultThinkingControl != nil {
+		t.Fatalf("invalid legacy effort should use model default, got %#v", settings.AIRecognition.DefaultThinkingControl)
+	}
+	if settings.AIRecognition.APIKey != "legacy-key" || settings.AIRecognition.BaseURL != "https://gateway.example.com/v1" || settings.AIRecognition.ModelInputMode != "manual" {
+		t.Fatalf("invalid legacy effort must not drop the remaining AI settings: %#v", settings.AIRecognition)
+	}
+}
+
+func TestSettingsFromValueRejectsUnknownNestedThinkingField(t *testing.T) {
+	if _, err := settingsFromValue(json.RawMessage(`{"localePreference":"auto","aiRecognition":{"provider":"openai","model":"gpt-5.1","defaultThinkingControl":{"provider":"openai","effort":"high","unexpected":true}}}`)); err == nil {
+		t.Fatal("expected unknown nested thinking field to fail the strict settings contract")
+	}
+}
+
+func TestMergeSettingsRequestPreservesAISecretOnPartialPublicPatch(t *testing.T) {
+	base := defaultAppSettings()
+	base.AIRecognition.APIKey = "stored-ai-secret"
+	base.AIRecognition.Model = "gpt-5.1"
+	next, err := mergeSettingsRequest(base, json.RawMessage(`{"aiRecognition":{"model":"gpt-6.1-sol"},"secretUpdates":{"aiRecognition.apiKey":{"action":"keep"}}}`), defaultAppLocale)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if next.AIRecognition.Model != "gpt-6.1-sol" || next.AIRecognition.APIKey != "stored-ai-secret" {
+		t.Fatalf("partial AI patch must preserve existing secret and update model: %#v", next.AIRecognition)
+	}
+}
+
 func TestSubscriptionPriceReferenceSettingsDefaultRecoverAndWriteValidation(t *testing.T) {
 	defaults := defaultAppSettings()
 	if defaults.SubscriptionPriceReferenceEnabled {

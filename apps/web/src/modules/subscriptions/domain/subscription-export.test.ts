@@ -7,6 +7,7 @@ import {
   subscriptionCycleFixture,
   type SubscriptionFixtureOverrides,
 } from "@/test/subscription-fixtures";
+import { loadLocaleCatalog } from "@/i18n/messages";
 import { moneyToNumber } from "@renewlet/shared/money";
 
 describe("subscription-export", () => {
@@ -33,6 +34,21 @@ describe("subscription-export", () => {
     expect(csv).toContain('"生产力"');
     expect(csv).toContain('"活跃"');
     expect(csv).toContain('"SaaS;Work"');
+  });
+
+  it.each(["zh-CN", "en-US", "ru-RU"] as const)("exports absent, zero and precise balances separately in %s CSV", async (locale) => {
+    await loadLocaleCatalog(locale);
+    const csv = buildSubscriptionsCsv([
+      makeSubscription(),
+      makeSubscription({ balance: "0", balanceCurrency: "EUR" }),
+      makeSubscription({ balance: "999999999.123456", balanceCurrency: "JPY" }),
+    ], { categoryLabelByValue: new Map(), statusLabelByValue: new Map(), locale, today: "2026-01-01" });
+    const rows = csv.split("\n").map((row) => row.split(","));
+    expect(rows[0]?.slice(3, 5)).toHaveLength(2);
+    expect(rows[1]?.slice(3, 5)).toEqual(['""', '""']);
+    expect(rows[2]?.slice(3, 5)).toEqual(['"0"', '"EUR"']);
+    expect(rows[3]?.slice(3, 5)).toEqual(['"999999999.123456"', '"JPY"']);
+    expect(csv).not.toContain("subscription.field.");
   });
 
   it("renders inherited reminder days as a user-facing CSV label", () => {

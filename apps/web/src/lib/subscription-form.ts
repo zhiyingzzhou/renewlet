@@ -37,6 +37,8 @@ export type SubscriptionFormErrorField =
   | "name"
   | "price"
   | "currency"
+  | "balance"
+  | "balanceCurrency"
   | "billingCycle"
   | "dates"
   | "customDays"
@@ -49,6 +51,9 @@ export type SubscriptionFormErrorField =
 export type SubscriptionFormValidationIssueCode =
   | "nameRequired"
   | "amountInvalid"
+  | "balanceRequired"
+  | "balanceInvalid"
+  | "balanceCurrencyInvalid"
   | SubscriptionDateValidationKind
   | "reminderInvalid"
   | "customCycleInvalid"
@@ -284,6 +289,16 @@ export function getSubscriptionFormValidationIssues(formData: SubscriptionFormSt
   if (parseMoneyInput(formData.price) === null) {
     issues.push({ code: "amountInvalid", field: "price", messageKey: "subscription.validation.amountInvalid" });
   }
+  if (formData.balanceEnabled) {
+    if (!formData.balance.trim()) {
+      issues.push({ code: "balanceRequired", field: "balance", messageKey: "subscription.validation.balanceRequired" });
+    } else if (parseMoneyInput(formData.balance) === null) {
+      issues.push({ code: "balanceInvalid", field: "balance", messageKey: "subscription.validation.balanceInvalid" });
+    }
+    if (!/^[A-Z]{3}$/.test(formData.balanceCurrency)) {
+      issues.push({ code: "balanceCurrencyInvalid", field: "balanceCurrency", messageKey: "subscription.validation.balanceCurrencyInvalid" });
+    }
+  }
   const dateValidationKind = getSubscriptionDateValidationKind(formData);
   if (dateValidationKind) {
     issues.push({
@@ -415,6 +430,9 @@ export function toSubscriptionFormSubmission(formData: SubscriptionFormState): S
     logo: formData.logo,
     price,
     currency: formData.currency,
+    // 关闭只影响提交命令，草稿仍保留；零不能通过真假判断退化为未记录。
+    balance: formData.balanceEnabled ? parseMoneyInput(formData.balance) ?? undefined : undefined,
+    balanceCurrency: formData.balanceEnabled ? formData.balanceCurrency : undefined,
     category: formData.category,
     status: formData.status,
     publicHidden: formData.publicHidden,

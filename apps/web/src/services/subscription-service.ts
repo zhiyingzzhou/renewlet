@@ -37,6 +37,8 @@ type SubscriptionCollectionBaseForService = Pick<
   | "logo"
   | "price"
   | "currency"
+  | "balance"
+  | "balanceCurrency"
   | "category"
   | "status"
   | "paymentMethod"
@@ -53,6 +55,7 @@ type SubscriptionCollectionBaseForService = Pick<
 
 type SubscriptionDetailFieldsForService = Pick<
   Subscription,
+  | "updatedAt"
   | "website"
   | "notes"
   | "tags"
@@ -108,6 +111,8 @@ function fromApiSubscriptionCollectionBase(
     logo: parsedRow.logo,
     price: parsedRow.price,
     currency: parsedRow.currency,
+    balance: parsedRow.balance,
+    balanceCurrency: parsedRow.balanceCurrency,
     category: parsedRow.category,
     status: parsedRow.status,
     paymentMethod: parsedRow.paymentMethod,
@@ -127,6 +132,7 @@ function fromApiSubscriptionCollectionBase(
 
 function fromApiSubscriptionDetailFields(parsedRow: ApiSubscription): SubscriptionDetailFieldsForService {
   return {
+    updatedAt: parsedRow.updatedAt,
     website: parsedRow.website,
     notes: parsedRow.notes,
     tags: parsedRow.tags,
@@ -201,6 +207,8 @@ function toSubscriptionFormPayload(submission: SubscriptionFormSubmission) {
     logo: submission.logo ?? null,
     price: submission.price,
     currency: submission.currency,
+    balance: submission.balance ?? null,
+    balanceCurrency: submission.balanceCurrency ?? null,
     billingCycle: submission.billingCycle,
     customDays: submission.customDays ?? null,
     customCycleUnit: submission.customCycleUnit ?? null,

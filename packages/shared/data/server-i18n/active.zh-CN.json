@@ -19,9 +19,6 @@
   "aiRecognition.apiKeyRequired": "请先填写 AI API Key",
   "aiRecognition.baseUrlRequired": "请先填写 AI Base URL",
   "aiRecognition.failed": "AI 识别失败，请检查输入和模型配置。",
-  "aiRecognition.fallbackNote.labelSeparator": "、",
-  "aiRecognition.fallbackNote.labels": "{name} 是提供 {labels}相关产品或服务的订阅服务。",
-  "aiRecognition.fallbackNote.website": "{name} 是与 {domain} 相关的在线服务。",
   "aiRecognition.imageTypeInvalid": "图片类型无效，仅支持 PNG、JPG 或 WebP。",
   "aiRecognition.inputRequired": "请先粘贴文本或上传图片。",
   "aiRecognition.modelRequired": "请先填写 AI 模型。",
@@ -359,5 +356,8 @@
   "url.privateOrLocalNotAllowedGeneric": "URL 不允许指向内网或本机地址",
   "validation.jsonParseFailed": "JSON 解析失败：请检查格式是否正确",
   "subscription.visibilityConflict": "订阅数据已变化，已保留选择，请重试以使用最新数据。",
-  "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。"
+  "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。",
+  "subscription.renewConflict": "订阅已更新或续订日期发生变化，请刷新信息并重新确认。",
+  "subscription.renewNotAllowed": "此订阅当前不支持手动续订，请检查状态与续订方式。",
+  "subscription.renewInvalidDate": "无法计算续订日期，请检查订阅日期和周期。"
 }

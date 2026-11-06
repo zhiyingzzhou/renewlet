@@ -38,17 +38,17 @@ function draft(overrides: Partial<AiRecognizedSubscriptionDraft> = {}): AiRecogn
 function input(sourceDraft: AiRecognizedSubscriptionDraft) {
   return {
     formData: aiDraftToSubscriptionFormState(sourceDraft, {
-      config: DEFAULT_CUSTOM_CONFIG,
       settings: DEFAULT_SETTINGS,
     }),
-    pendingConfirmationFields: getInitialAIDraftConfirmationFields(sourceDraft),
+    pendingConfirmationFields: getInitialAIDraftConfirmationFields(sourceDraft, DEFAULT_CUSTOM_CONFIG),
   };
 }
 
 describe("AI draft preflight", () => {
   it("does not block complete form states", () => {
-    expect(getAIDraftBlockingIssues(input(draft()))).toEqual([]);
-    expect(hasAIDraftBlockingIssues(input(draft()))).toBe(false);
+    const complete = input(draft({ category: "other", paymentMethod: "alipay" }));
+    expect(getAIDraftBlockingIssues(complete)).toEqual([]);
+    expect(hasAIDraftBlockingIssues(complete)).toBe(false);
   });
 
   it("layers unconfirmed model defaults before common validation and deduplicates fields", () => {
@@ -62,6 +62,8 @@ describe("AI draft preflight", () => {
       "aiPriceUnconfirmed",
       "aiCurrencyUnconfirmed",
       "aiBillingCycleUnconfirmed",
+      "aiCategoryUnconfirmed",
+      "aiPaymentMethodUnconfirmed",
       "startDateRequiredForAutoCalculate",
     ]);
   });
@@ -71,13 +73,21 @@ describe("AI draft preflight", () => {
       billingCycle: "custom",
       customDays: null,
       customCycleUnit: "day",
-    }))).map((issue) => issue.code)).toEqual(["customCycleInvalid"]);
+    }))).map((issue) => issue.code)).toEqual([
+      "aiCategoryUnconfirmed",
+      "aiPaymentMethodUnconfirmed",
+      "customCycleInvalid",
+    ]);
 
     expect(getAIDraftBlockingIssues(input(draft({
       startDate: null,
       nextBillingDate: null,
       autoCalculateNextBillingDate: true,
-    }))).map((issue) => issue.code)).toEqual(["startDateRequiredForAutoCalculate"]);
+    }))).map((issue) => issue.code)).toEqual([
+      "aiCategoryUnconfirmed",
+      "aiPaymentMethodUnconfirmed",
+      "startDateRequiredForAutoCalculate",
+    ]);
   });
 
   it("requires a purchase date for one-time subscriptions", () => {
@@ -86,6 +96,10 @@ describe("AI draft preflight", () => {
       startDate: null,
       nextBillingDate: null,
       autoCalculateNextBillingDate: false,
-    }))).map((issue) => issue.code)).toEqual(["purchaseDateRequired"]);
+    }))).map((issue) => issue.code)).toEqual([
+      "aiCategoryUnconfirmed",
+      "aiPaymentMethodUnconfirmed",
+      "purchaseDateRequired",
+    ]);
   });
 });

@@ -28,7 +28,7 @@ type SubscriptionGridProps = {
   selectionMode?: boolean;
   selectedIds?: ReadonlySet<string>;
   onSelect?: (id: string, selected: boolean) => void;
-  onRenew: (id: string) => void;
+  onRenew: (id: string, restoreTarget?: HTMLElement | null) => void;
   onViewDetails: (id: string) => void;
   onAddToCalendar: (id: string) => void;
   onPrefetchDetails: (id: string) => void;

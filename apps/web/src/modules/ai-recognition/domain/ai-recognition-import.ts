@@ -10,9 +10,14 @@ import {
   stableHash,
   type PreparedImport,
 } from "@/modules/import-export/domain/import-export-model";
-import { normalizeAIRecognitionUsefulNotes } from "@renewlet/shared/ai-recognition-notes";
+import {
+  normalizeAIRecognitionGeneratedInputNotes,
+  normalizeAIRecognitionInputNotes,
+  normalizeAIRecognitionUsefulNotes,
+} from "@renewlet/shared/ai-recognition-notes";
 import type { ConfigItem, CustomConfig } from "@/types/config";
 import type { SubscriptionFormState } from "@/types/subscription-form";
+import type { AIDraftConfirmationField } from "./ai-recognition-form";
 
 interface AIImportContext {
   config: CustomConfig;
@@ -21,6 +26,7 @@ interface AIImportContext {
 export interface AIImportDraft {
   sourceDraft: AiRecognizedSubscriptionDraft;
   formData: SubscriptionFormState;
+  pendingConfirmationFields: readonly AIDraftConfirmationField[];
 }
 
 interface AIImportBuildState extends AIImportContext {
@@ -59,15 +65,21 @@ function buildAIImportSubscription(item: AIImportDraft, state: AIImportBuildStat
   const warnings: string[] = [];
   const websiteWarnings: string[] = [];
   const website = normalizeWebsite(formData.website, websiteWarnings);
-  const notes = normalizeAIRecognitionUsefulNotes(formData.notes);
   const websiteSource = editedWebsiteSource(formData.website, sourceDraft.website);
   const notesSource = editedTextSource(formData.notes, sourceDraft.notes);
+  const notesWasEdited = sourceDraft.notes?.value !== formData.notes.trim();
+  const notes = notesSource === "input"
+    ? (notesWasEdited
+      ? normalizeAIRecognitionInputNotes(formData.notes)
+      : normalizeAIRecognitionGeneratedInputNotes(formData.notes))
+    : normalizeAIRecognitionUsefulNotes(formData.notes);
   warnings.push(...websiteWarnings);
   if (websiteSource === "suggested" && website) warnings.push(IMPORT_MESSAGE_CODES.aiWebsiteSuggested);
   pushPreparedWarnings(state, formData.name, warnings);
 
-  const category = resolveConfigValue("category", formData.category, state) ?? "other";
-  const paymentMethod = resolveConfigValue("payment", formData.paymentMethod || null, state);
+  const pendingConfirmationFields = item.pendingConfirmationFields;
+  const category = resolveConfigValue("category", formData.category, state, !pendingConfirmationFields.includes("category")) ?? "other";
+  const paymentMethod = resolveConfigValue("payment", formData.paymentMethod || null, state, !pendingConfirmationFields.includes("paymentMethod"));
   ensureCurrency(formData.currency, state);
 
   return {
@@ -75,6 +87,8 @@ function buildAIImportSubscription(item: AIImportDraft, state: AIImportBuildStat
     logo: submission.logo ?? null,
     price: submission.price,
     currency: submission.currency,
+    balance: submission.balance,
+    balanceCurrency: submission.balanceCurrency,
     billingCycle: submission.billingCycle,
     customDays: submission.billingCycle === "custom" ? submission.customDays : null,
     customCycleUnit: submission.billingCycle === "custom" ? submission.customCycleUnit : null,
@@ -142,13 +156,17 @@ function ensureCurrency(value: string, state: AIImportBuildState): void {
   };
 }
 
-function resolveConfigValue(kind: "category" | "payment", value: string | null, state: AIImportBuildState): string | null {
+function resolveConfigValue(kind: "category" | "payment", value: string | null, state: AIImportBuildState, allowCreate: boolean): string | null {
   const items = kind === "category" ? state.config.categories : state.config.paymentMethods;
-  const fallback = items[0]?.value ?? "other";
+  const fallback = kind === "category"
+    ? items.find((item) => configMatchKey(item.value) === "other")?.value ?? items[0]?.value ?? "other"
+    : null;
   const text = value?.trim();
-  if (!text) return kind === "category" ? fallback : null;
+  if (!text) return fallback;
   const matched = findConfigItem(items, text);
   if (matched) return matched.value;
+  // 未知配置只有在草稿待确认项已被用户消费后才允许进入 customConfig，避免模型建议污染用户配置。
+  if (!allowCreate || (kind === "category" && configMatchKey(text) === "other")) return fallback;
   const nextValue = `${kind === "category" ? "category" : "payment"}_${stableHash(text)}`;
   const configItem = makeConfigItem(nextValue, text);
   state.config = kind === "category"
@@ -166,9 +184,11 @@ function findConfigItem(items: readonly ConfigItem[], text: string): ConfigItem 
   )) ?? null;
 }
 
-function configMatchKey(value: string): string {
+function configMatchKey(value: string | undefined): string {
   // AI 可能输出中英文、全角标点或用户自定义标签原文；匹配只压缩书写差异，不翻译或猜测业务含义。
-  return value.normalize("NFKC").trim().toLowerCase().replace(/[\s_\-—–/\\|&+，,、.。:：()（）[\]【】]+/g, "");
+  return value
+    ? value.normalize("NFKC").trim().toLowerCase().replace(/[\s_\-—–/\\|&+，,、.。:：()（）[\]【】]+/g, "")
+    : "";
 }
 
 function nextAISourceId(formData: SubscriptionFormState, state: AIImportBuildState): string {

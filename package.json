@@ -2,7 +2,7 @@
   "name": "renewlet",
   "private": true,
   "license": "MIT",
-  "version": "0.3.34",
+  "version": "0.3.35",
   "packageManager": "pnpm@11.20.0",
   "engines": {
     "node": ">=24.19.0 <25 || >=26.5.0 <27"
@@ -41,6 +41,7 @@
     "check:i18n": "pnpm --filter @renewlet/client i18n:check",
     "sync:ai-recognition-prompt": "node scripts/sync-ai-recognition-prompt.mjs",
     "check:ai-recognition-prompt": "node scripts/sync-ai-recognition-prompt.mjs --check",
+    "eval:ai-recognition-golden": "node scripts/evaluate-ai-recognition-golden-corpus.mjs",
     "generate:built-in-config-labels": "node scripts/generate-built-in-config-labels.mjs",
     "check:built-in-config-labels": "node scripts/generate-built-in-config-labels.mjs --check",
     "generate:currency-region-hints": "node scripts/generate-currency-region-hints.mjs",
@@ -105,6 +106,6 @@
     "typescript": "6.0.3",
     "web-vitals": "6.2.3",
     "wrangler": "4.151.3",
-    "zod": "4.4.3"
+    "zod": "4.6.7"
   }
 }

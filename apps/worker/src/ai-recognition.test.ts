@@ -7,6 +7,7 @@ import { readSuccessData } from "./api-test-helpers";
 import { recognizeSubscriptions, testAIRecognitionConnection } from "./ai-recognition";
 import { generatedDraft } from "./ai-recognition.test-utils";
 import type { Env } from "./types";
+import { UpstreamOperationError } from "./upstream-response";
 
 const authMocks = vi.hoisted(() => ({
   requireAuth: vi.fn(),
@@ -18,15 +19,22 @@ const dbMocks = vi.hoisted(() => ({
   listSubscriptionTags: vi.fn(),
 }));
 
-const aiMocks = vi.hoisted(() => ({
-  generateObject: vi.fn(),
-  generateText: vi.fn(),
-  streamText: vi.fn(),
-  outputObject: vi.fn((options: unknown) => options),
-  wrapLanguageModel: vi.fn(({ model }: { model: unknown }) => model),
-  isNoObjectGeneratedError: vi.fn((error: unknown) => Boolean(error && typeof error === "object" && "__noObjectGenerated" in error)),
-  isAPICallError: vi.fn((error: unknown) => Boolean(error && typeof error === "object" && "__apiCallError" in error)),
-}));
+const aiMocks = vi.hoisted(() => {
+  const generateObject = vi.fn();
+  const generateText = vi.fn();
+  return {
+    // 识别运行时使用 generateText + Output.object；旧测试仍通过 generateObject 配置模型结果，
+    // 适配器只把旧 fixture 的 object 映射到 AI SDK 的 output，不改变生产路径。
+    generateObject,
+    generateText,
+    streamText: vi.fn(),
+    isStepCount: vi.fn(() => () => false),
+    outputObject: vi.fn((options: unknown) => options),
+    wrapLanguageModel: vi.fn(({ model }: { model: unknown }) => model),
+    isNoObjectGeneratedError: vi.fn((error: unknown) => Boolean(error && typeof error === "object" && "__noObjectGenerated" in error)),
+    isAPICallError: vi.fn((error: unknown) => Boolean(error && typeof error === "object" && "__apiCallError" in error)),
+  };
+});
 
 vi.mock("./auth", () => ({
   requireAuth: authMocks.requireAuth,
@@ -42,6 +50,7 @@ vi.mock("ai", () => ({
   generateObject: aiMocks.generateObject,
   generateText: aiMocks.generateText,
   streamText: aiMocks.streamText,
+  isStepCount: aiMocks.isStepCount,
   Output: {
     object: aiMocks.outputObject,
   },
@@ -55,9 +64,13 @@ vi.mock("ai", () => ({
 }));
 
 vi.mock("@ai-sdk/openai", () => ({
+  openai: { tools: { webSearch: vi.fn(() => ({ type: "provider-defined" })) } },
   createOpenAI: vi.fn(() => Object.assign(
     vi.fn(() => ({ provider: "openai.responses" })),
-    { chat: vi.fn(() => ({ provider: "openai.chat" })) },
+    {
+      chat: vi.fn(() => ({ provider: "openai.chat" })),
+      responses: vi.fn(() => ({ provider: "openai.responses" })),
+    },
   )),
 }));
 
@@ -158,6 +171,13 @@ describe("Cloudflare AI recognition", () => {
     dbMocks.listSubscriptionTags.mockReset();
     aiMocks.generateObject.mockReset();
     aiMocks.generateText.mockReset();
+    aiMocks.generateText.mockImplementation(async (...args: unknown[]) => {
+      const result = await aiMocks.generateObject(...args);
+      if (result && typeof result === "object" && "object" in result) {
+        return { ...result, output: (result as { object: unknown }).object };
+      }
+      return result;
+    });
     aiMocks.streamText.mockReset();
     aiMocks.outputObject.mockClear();
     aiMocks.wrapLanguageModel.mockClear();
@@ -171,7 +191,7 @@ describe("Cloudflare AI recognition", () => {
     dbMocks.getSettings.mockResolvedValue({
       aiRecognition: {
         providerType: "openai",
-        transportProtocol: "openai-chat",
+        transportProtocol: "openai-responses",
         model: "gpt-5.1",
         modelInputMode: "select",
         baseUrl: "",
@@ -251,7 +271,7 @@ describe("Cloudflare AI recognition", () => {
 
     expect(response.status).toBe(200);
     expect(body.providerType).toBe("openai");
-    expect(body.transportProtocol).toBe("openai-chat");
+    expect(body.transportProtocol).toBe("openai-responses");
     expect(body.model).toBe("gpt-5.1");
     expect(body.subscriptions[0]).toMatchObject({
       name: "dmit",
@@ -263,18 +283,21 @@ describe("Cloudflare AI recognition", () => {
       website: { value: "https://www.dmit.io/", source: "suggested" },
       notes: { value: "DMIT 是提供 VPS、云服务器和网络线路服务的主机商。", source: "suggested" },
       tags: ["云服务", "VPS"],
-      warnings: [],
+      warnings: expect.arrayContaining([
+        "AI_WARNING_AUTO_CALCULATE_DISABLED",
+        "AI_WARNING_DATE_UNCERTAIN",
+      ]),
     });
     expect(body.diagnostics.schemaName).toBe("renewlet_ai_subscription_recognition");
-    expect(body.diagnostics.prompt.system.value).toContain("Return exactly one valid JSON object parseable by JSON.parse");
-    expect(body.diagnostics.prompt.system.value).toContain("Do generate useful service and website metadata");
-    expect(body.diagnostics.prompt.system.value).toContain("Examples show output shape and decision patterns only");
+    expect(body.diagnostics.prompt.system.value).toContain("Return exactly one strict JSON object");
+    expect(body.diagnostics.prompt.system.value).toContain("Billing facts come only from input/image");
+    expect(body.diagnostics.prompt.system.value).toContain("Examples:");
     expect(body.diagnostics.prompt.user.value).toContain("dmit 15元 1个月");
     expect(body.diagnostics.prompt.user.value).toContain("Runtime context:");
     expect(body.diagnostics.prompt.user.value).toContain("- User locale: zh-CN");
     expect(body.diagnostics.prompt.user.value).toContain("User context:");
     expect(body.diagnostics.prompt.user.value).toContain("Task:");
-    expect(body.diagnostics.prompt.user.value).toContain("Examples:");
+    expect(body.diagnostics.prompt.system.value).toContain("Examples:");
     expect(aiMocks.generateObject).toHaveBeenCalledWith(expect.objectContaining({
       abortSignal: expect.any(AbortSignal),
     }));
@@ -292,8 +315,55 @@ describe("Cloudflare AI recognition", () => {
     expect(body.diagnostics.prompt.user.value).not.toContain("LOCVPS 是面向 VPS、云服务器和服务器托管的主机服务商。");
     expect(body.diagnostics.prompt.user.value).not.toContain("DMIT 是提供 VPS、云服务器和网络线路服务的主机商。");
     expect(body.diagnostics.output.rawObjectJson?.value).toContain("\"name\": \"dmit\"");
-    expect(body.diagnostics.request).toMatchObject({ providerType: "openai", transportProtocol: "openai-chat", model: "gpt-5.1", textCharCount: 12, images: [] });
+    expect(body.diagnostics.request).toMatchObject({ providerType: "openai", transportProtocol: "openai-responses", model: "gpt-5.1", textCharCount: 12, images: [] });
     expect(body.diagnostics.response.finishReason).toBe("stop");
+  });
+
+  it("splits long text into ordered provider chunks and merges the drafts", async () => {
+    let calls = 0;
+    aiMocks.generateObject.mockImplementation(async () => {
+      calls += 1;
+      return {
+        object: {
+          subscriptions: [generatedDraft({ name: `chunk-${calls}` })],
+          warnings: [],
+        },
+        finishReason: "stop",
+      };
+    });
+    const text = Array.from({ length: 26 }, (_, index) => `service-${index + 1} 10 CNY`).join("\n");
+
+    const response = await recognizeSubscriptions(requestForText(text), envFixture());
+    const body = await readSuccessData<{ subscriptions: Array<{ name: string }>; warnings: string[] }>(response);
+
+    expect(response.status).toBe(200);
+    expect(calls).toBe(2);
+    expect(body.subscriptions.map((draft) => draft.name)).toEqual(["chunk-1", "chunk-2"]);
+    expect(body.warnings).not.toContain("AI_WARNING_BATCH_PARTIAL");
+  });
+
+  it("keeps successful chunks when another provider chunk fails", async () => {
+    let calls = 0;
+    aiMocks.generateObject.mockImplementation(async () => {
+      calls += 1;
+      if (calls === 1) throw new Error("temporary chunk failure");
+      return {
+        object: {
+          subscriptions: [generatedDraft({ name: "successful-chunk" })],
+          warnings: [],
+        },
+        finishReason: "stop",
+      };
+    });
+    const text = Array.from({ length: 26 }, (_, index) => `service-${index + 1} 10 CNY`).join("\n");
+
+    const response = await recognizeSubscriptions(requestForText(text), envFixture());
+    const body = await readSuccessData<{ subscriptions: Array<{ name: string }>; warnings: string[] }>(response);
+
+    expect(response.status).toBe(200);
+    expect(calls).toBe(2);
+    expect(body.subscriptions.map((draft) => draft.name)).toEqual(["successful-chunk"]);
+    expect(body.warnings).toContain("AI_WARNING_BATCH_PARTIAL");
   });
 
   it("includes locale-first language rules in English recognition diagnostics", async () => {
@@ -311,14 +381,42 @@ describe("Cloudflare AI recognition", () => {
 
     const response = await recognizeSubscriptions(requestForText("dmit 2 months 15dollar", "en-US"), envFixture());
     const body = await readSuccessData<{
-      diagnostics: { prompt: { user: { value: string } } };
+      diagnostics: { prompt: { system: { value: string }; user: { value: string } } };
     }>(response);
 
     expect(response.status).toBe(200);
     expect(body.diagnostics.prompt.user.value).toContain("- User locale: en-US");
-    expect(body.diagnostics.prompt.user.value).toContain("Generated user-facing metadata must follow User locale");
-    expect(body.diagnostics.prompt.user.value).toContain("use English for en-US, Simplified Chinese for zh-CN, and Russian for ru-RU");
-    expect(body.diagnostics.prompt.user.value).toContain("Do not translate source=input text, Existing user tags");
+    expect(body.diagnostics.prompt.user.value).toContain("Generate notes.value (source=suggested) in English");
+    expect(body.diagnostics.prompt.system.value).toContain("Generated user-facing metadata must use English (US)");
+    expect(body.diagnostics.prompt.system.value).toContain("Generated user-facing metadata follows the user locale");
+    expect(body.diagnostics.prompt.system.value).toContain("source=input text and existing labels/tags stay unchanged");
+  });
+
+  it("disables automatic dates after cycle or anchor normalization fails", async () => {
+    aiMocks.generateObject.mockResolvedValue({
+      object: {
+        subscriptions: [generatedDraft({
+          billingCycle: "unreadable cycle",
+          startDate: "2026-99-99",
+          nextBillingDate: null,
+          autoCalculateNextBillingDate: true,
+        })],
+        warnings: [],
+      },
+      finishReason: "stop",
+    });
+
+    const response = await recognizeSubscriptions(requestForText("unknown service"), envFixture());
+    const body = await readSuccessData<{
+      subscriptions: Array<{ billingCycle: string | null; startDate: string | null; autoCalculateNextBillingDate: boolean | null; warnings: string[] }>;
+    }>(response);
+
+    expect(body.subscriptions[0]).toMatchObject({
+      billingCycle: null,
+      startDate: null,
+      autoCalculateNextBillingDate: false,
+    });
+    expect(body.subscriptions[0]?.warnings).toContain("AI_WARNING_AUTO_CALCULATE_DISABLED");
   });
 
   it("includes Russian language rules in Russian recognition diagnostics", async () => {
@@ -328,19 +426,21 @@ describe("Cloudflare AI recognition", () => {
     });
 
     const response = await recognizeSubscriptions(requestForText("sample service 15 руб. в месяц", "ru-RU"), envFixture());
-    const body = await readSuccessData<{ diagnostics: { prompt: { user: { value: string } } } }>(response);
+    const body = await readSuccessData<{ diagnostics: { prompt: { system: { value: string }; user: { value: string } } } }>(response);
 
     expect(response.status).toBe(200);
     expect(body.diagnostics.prompt.user.value).toContain("- User locale: ru-RU");
-    expect(body.diagnostics.prompt.user.value).toContain("use English for en-US, Simplified Chinese for zh-CN, and Russian for ru-RU");
-    expect(body.diagnostics.prompt.user.value).toContain("Do not translate source=input text, Existing user tags");
+    expect(body.diagnostics.prompt.user.value).toContain("Поле notes.value (source=suggested) должно быть написано на русском языке");
+    expect(body.diagnostics.prompt.system.value).toContain("Generated user-facing metadata must use Russian (русский язык)");
+    expect(body.diagnostics.prompt.system.value).toContain("Generated user-facing metadata follows the user locale");
+    expect(body.diagnostics.prompt.system.value).toContain("source=input text and existing labels/tags stay unchanged");
   });
 
-  it("does not apply saved default thinking when the multipart field is absent", async () => {
+  it("applies the saved default thinking when the multipart field is absent", async () => {
     dbMocks.getSettings.mockResolvedValue({
       aiRecognition: {
         providerType: "openai",
-        transportProtocol: "openai-chat",
+        transportProtocol: "openai-responses",
         model: "gpt-5.1",
         modelInputMode: "select",
         baseUrl: "",
@@ -360,10 +460,10 @@ describe("Cloudflare AI recognition", () => {
 
     const response = await recognizeSubscriptions(requestForText("dmit 15元 1个月"), envFixture());
     const body = await readSuccessData<{ diagnostics: { request: { thinkingControl: unknown } } }>(response);
-    const call = aiMocks.generateObject.mock.calls[0]?.[0] as { providerOptions?: unknown };
+    const call = aiMocks.generateText.mock.calls[0]?.[0] as { providerOptions?: unknown };
 
-    expect(call.providerOptions).toBeUndefined();
-    expect(body.diagnostics.request.thinkingControl).toBeNull();
+    expect(call.providerOptions).toEqual({ openai: { reasoningEffort: "high", reasoningSummary: null } });
+    expect(body.diagnostics.request.thinkingControl).toEqual({ provider: "openai", effort: "high" });
   });
 
   it("passes explicit thinking controls to provider options and diagnostics", async () => {
@@ -380,9 +480,9 @@ describe("Cloudflare AI recognition", () => {
       envFixture(),
     );
     const body = await readSuccessData<{ diagnostics: { request: { thinkingControl: unknown } } }>(response);
-    const call = aiMocks.generateObject.mock.calls[0]?.[0] as { providerOptions?: unknown };
+    const call = aiMocks.generateText.mock.calls[0]?.[0] as { providerOptions?: unknown };
 
-    expect(call.providerOptions).toEqual({ openai: { reasoningEffort: "high" } });
+    expect(call.providerOptions).toEqual({ openai: { reasoningEffort: "high", reasoningSummary: null } });
     expect(body.diagnostics.request.thinkingControl).toEqual({ provider: "openai", effort: "high" });
   });
 
@@ -391,7 +491,7 @@ describe("Cloudflare AI recognition", () => {
 
     const response = await testAIRecognitionConnection(testConnectionRequestFor({
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "gpt-5.1",
       modelInputMode: "select",
       baseUrl: "",
@@ -401,9 +501,9 @@ describe("Cloudflare AI recognition", () => {
     const body = await readSuccessData<{ providerType: string; transportProtocol: string; model: string }>(response);
 
     expect(response.status).toBe(200);
-    expect(body).toEqual({ providerType: "openai", transportProtocol: "openai-chat", model: "gpt-5.1" });
+    expect(body).toEqual({ providerType: "openai", transportProtocol: "openai-responses", model: "gpt-5.1" });
     expect(aiMocks.generateText).toHaveBeenCalledWith(expect.objectContaining({
-      model: { provider: "openai.chat" },
+      model: { provider: "openai.responses" },
       prompt: "Reply with OK.",
       maxOutputTokens: 16,
       maxRetries: 0,
@@ -428,18 +528,15 @@ describe("Cloudflare AI recognition", () => {
 
     await expect(testAIRecognitionConnection(testConnectionRequestFor({
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "gpt-5.1",
       modelInputMode: "select",
       baseUrl: "",
       apiKey: "sk-test",
       defaultThinkingControl: null,
     }), envFixture())).rejects.toMatchObject({
-      status: 400,
-      code: "AI_RECOGNITION_TEST_FAILED",
-      details: {
-        rawResponseText: "{\"code\":\"INVALID_API_KEY\",\"message\":\"bad [redacted]\"}",
-      },
+      status: 401,
+      body: "{\"code\":\"INVALID_API_KEY\",\"message\":\"bad [redacted]\"}",
     });
   });
 
@@ -470,83 +567,6 @@ describe("Cloudflare AI recognition", () => {
       status: 400,
       code: "AI_THINKING_CONTROL_INVALID",
     });
-  });
-
-  it("drops recognition process notes from provider output", async () => {
-    aiMocks.generateObject.mockResolvedValue({
-      object: {
-        subscriptions: [generatedDraft({
-          name: "unknown app",
-          price: 12,
-          currency: "CNY",
-          billingCycle: "monthly",
-          website: null,
-          notes: { value: "输入没有提供官网或更多上下文，AI 未能高置信识别该服务。", source: "suggested" },
-          confidence: "low",
-          warnings: ["AI_WARNING_WEBSITE_UNCERTAIN"],
-        })],
-        warnings: [],
-      },
-      finishReason: "stop",
-    });
-
-    const response = await recognizeSubscriptions(requestForText("unknown app 12 1个月"), envFixture());
-    const body = await readSuccessData<{ subscriptions: Array<{ notes: unknown; warnings: string[] }> }>(response);
-
-    expect(body.subscriptions[0]?.notes).toBeNull();
-    expect(body.subscriptions[0]?.warnings).toContain("AI_WARNING_WEBSITE_UNCERTAIN");
-  });
-
-  it("removes Renewlet-facing advice from service notes", async () => {
-    aiMocks.generateObject.mockResolvedValue({
-      object: {
-        subscriptions: [generatedDraft({
-          name: "locvps",
-          price: 15,
-          currency: "CNY",
-          billingCycle: "monthly",
-          notes: { value: "LOCVPS 提供 VPS、云服务器和服务器托管相关服务，适合记录主机或服务器套餐订阅。", source: "suggested" },
-        })],
-        warnings: [],
-      },
-      finishReason: "stop",
-    });
-
-    const response = await recognizeSubscriptions(requestForText("locvps 15元 1个月"), envFixture());
-    const body = await readSuccessData<{ subscriptions: Array<{ notes: { value: string; source: string } | null }> }>(response);
-
-    expect(body.subscriptions[0]?.notes).toEqual({
-      value: "LOCVPS 提供 VPS、云服务器和服务器托管服务",
-      source: "suggested",
-    });
-  });
-
-  it("keeps high-confidence public service descriptions from the provider", async () => {
-    aiMocks.generateObject.mockResolvedValue({
-      object: {
-        subscriptions: [generatedDraft({
-          name: "youtube",
-          price: "15刀",
-          currency: "USD",
-          billingCycle: "1年",
-          website: { value: "https://www.youtube.com/", source: "suggested" },
-          notes: { value: "YouTube 是 Google 旗下的视频分享和流媒体平台。", source: "suggested" },
-          tags: ["视频", "流媒体", "Google"],
-          confidence: "high",
-        })],
-        warnings: [],
-      },
-      finishReason: "stop",
-    });
-
-    const response = await recognizeSubscriptions(requestForText("youtube 15刀 1年"), envFixture());
-    const body = await readSuccessData<{ subscriptions: Array<{ notes: { value: string; source: string } | null; warnings: string[] }> }>(response);
-
-    expect(body.subscriptions[0]?.notes).toEqual({
-      value: "YouTube 是 Google 旗下的视频分享和流媒体平台。",
-      source: "suggested",
-    });
-    expect(body.subscriptions[0]?.warnings).not.toContain("AI_WARNING_NOTES_MISSING");
   });
 
   it("reuses existing tags and filters one-off generated attributes", async () => {
@@ -606,8 +626,8 @@ describe("Cloudflare AI recognition", () => {
     expect(body.subscriptions[0]?.tags).toEqual(["VPS", "云服务器"]);
   });
 
-  it("repairs missing notes for describable services with the same model", async () => {
-    aiMocks.generateObject.mockResolvedValueOnce({
+  it("makes one bounded notes repair attempt without adding a warning", async () => {
+    aiMocks.generateObject.mockResolvedValue({
       object: {
         subscriptions: [generatedDraft({
           name: "HostDZire CloudVPS",
@@ -619,62 +639,13 @@ describe("Cloudflare AI recognition", () => {
         warnings: [],
       },
       finishReason: "stop",
-    }).mockResolvedValueOnce({
-      object: {
-        subscriptions: [generatedDraft({
-          name: "HostDZire CloudVPS",
-          website: { value: "https://hostdzire.com/", source: "suggested" },
-          notes: { value: "HostDZire CloudVPS 是提供 VPS 和云主机相关产品或服务的订阅服务。", source: "suggested" },
-          tags: ["VPS", "云主机"],
-          confidence: "high",
-        })],
-        warnings: [],
-      },
-      finishReason: "stop",
     });
 
     const response = await recognizeSubscriptions(requestForText("HostDZire CloudVPS 15元 1个月"), envFixture());
     const body = await readSuccessData<{ subscriptions: Array<{ notes: unknown; warnings: string[] }> }>(response);
 
     expect(aiMocks.generateObject).toHaveBeenCalledTimes(2);
-    expect(JSON.stringify(aiMocks.generateObject.mock.calls[1]?.[0])).toContain("Repair task:");
-    expect(body.subscriptions[0]?.notes).toEqual({
-      value: "HostDZire CloudVPS 是提供 VPS 和云主机相关产品或服务的订阅服务。",
-      source: "suggested",
-    });
-    expect(body.subscriptions[0]?.warnings).not.toContain("AI_WARNING_NOTES_MISSING");
-  });
-
-  it("uses dynamic fallback notes when repair still omits a describable service description", async () => {
-    const missingNotesDraft = generatedDraft({
-      name: "HostDZire CloudVPS",
-      website: { value: "https://hostdzire.com/", source: "suggested" },
-      notes: { value: null, source: "none" },
-      tags: ["VPS", "云主机"],
-      confidence: "high",
-    });
-    aiMocks.generateObject.mockResolvedValueOnce({
-      object: {
-        subscriptions: [missingNotesDraft],
-        warnings: [],
-      },
-      finishReason: "stop",
-    }).mockResolvedValueOnce({
-      object: {
-        subscriptions: [missingNotesDraft],
-        warnings: [],
-      },
-      finishReason: "stop",
-    });
-
-    const response = await recognizeSubscriptions(requestForText("HostDZire CloudVPS 15元 1个月"), envFixture());
-    const body = await readSuccessData<{ subscriptions: Array<{ notes: unknown; warnings: string[] }> }>(response);
-
-    expect(aiMocks.generateObject).toHaveBeenCalledTimes(2);
-    expect(body.subscriptions[0]?.notes).toEqual({
-      value: "HostDZire CloudVPS 是提供 VPS、云主机相关产品或服务的订阅服务。",
-      source: "suggested",
-    });
+    expect(body.subscriptions[0]?.notes).toBeNull();
     expect(body.subscriptions[0]?.warnings).not.toContain("AI_WARNING_NOTES_MISSING");
   });
 
@@ -760,11 +731,21 @@ describe("Cloudflare AI recognition", () => {
     }));
 
     await expect(recognizeSubscriptions(requestForText("dmit 15元 1个月"), envFixture())).rejects.toMatchObject({
-      status: 400,
-      code: "AI_RECOGNITION_FAILED",
-      details: {
-        rawResponseText: "{\"error\":\"forbidden [redacted]\"}",
-      },
+      status: 403,
+      body: "{\"error\":\"forbidden [redacted]\"}",
+    });
+  });
+
+  it("keeps an upstream adapter response when diagnostics wrap the provider failure", async () => {
+    aiMocks.generateObject.mockRejectedValue(new UpstreamOperationError(
+      "gateway rejected the request",
+      { rawResponseText: "{\"error\":\"gateway detail\"}" },
+      502,
+    ));
+
+    await expect(recognizeSubscriptions(requestForText("dmit 15元 1个月"), envFixture())).rejects.toMatchObject({
+      status: 502,
+      body: "{\"error\":\"gateway detail\"}",
     });
   });
 

@@ -35,7 +35,6 @@ function draft(overrides: Partial<AiRecognizedSubscriptionDraft> = {}): AiRecogn
 }
 
 const context = {
-  config: DEFAULT_CUSTOM_CONFIG,
   settings: { ...DEFAULT_SETTINGS, defaultCurrency: "USD", notificationReminderDays: 5 },
 };
 
@@ -55,7 +54,7 @@ describe("AI recognition form mapping", () => {
       repeatReminderEnabled: true,
       repeatReminderInterval: "6h",
       repeatReminderWindow: "48h",
-    }), context);
+    }), { settings: context.settings });
 
     expect(formData).toMatchObject({
       name: "DMIT",
@@ -72,12 +71,12 @@ describe("AI recognition form mapping", () => {
       nextBillingDate: "2026-07-01",
       autoRenew: false,
       autoCalculate: false,
-      reminderType: "custom",
-      reminderDays: "5",
-      customReminderDays: "11",
-      repeatReminderEnabled: true,
-      repeatReminderInterval: "6h",
-      repeatReminderWindow: "48h",
+      reminderType: "inherit",
+      reminderDays: "-1",
+      customReminderDays: "",
+      repeatReminderEnabled: false,
+      repeatReminderInterval: "1h",
+      repeatReminderWindow: "72h",
       costSharing: undefined,
       website: "https://www.dmit.io/",
       notes: "DMIT 是提供 VPS、云服务器和网络线路服务的主机商。",
@@ -90,23 +89,74 @@ describe("AI recognition form mapping", () => {
       billingCycle: "one-time",
       oneTimeTermCount: 2,
       oneTimeTermUnit: "year",
-    }), context);
+    }), { settings: context.settings });
     const buyout = aiDraftToSubscriptionFormState(draft({
       billingCycle: "one-time",
       oneTimeTermCount: null,
       oneTimeTermUnit: null,
-    }), context);
+    }), { settings: context.settings });
 
     expect(term).toMatchObject({ oneTimeMode: "term", oneTimeTermCount: "2", oneTimeTermUnit: "year", reminderType: "inherit" });
     expect(buyout).toMatchObject({ oneTimeMode: "buyout", reminderType: "disabled", reminderDays: "-2", repeatReminderEnabled: false });
   });
 
+  it("infers active status for a fixed paid term that covers today", () => {
+    const fixedTerm = draft({
+      billingCycle: "one-time",
+      oneTimeTermCount: 2,
+      oneTimeTermUnit: "year",
+      status: null,
+      startDate: "2026-01-06",
+      nextBillingDate: null,
+    });
+
+    expect(aiDraftToSubscriptionFormState(fixedTerm, { settings: context.settings })).toMatchObject({
+      status: "active",
+      nextBillingDate: "2028-01-06",
+    });
+    expect(getInitialAIDraftConfirmationFields(fixedTerm, DEFAULT_CUSTOM_CONFIG, context.settings.timezone)).not.toContain("status");
+  });
+
+  it("keeps future fixed terms and buyouts explicitly confirmable", () => {
+    const futureTerm = draft({
+      billingCycle: "one-time",
+      oneTimeTermCount: 2,
+      oneTimeTermUnit: "year",
+      status: null,
+      startDate: "2027-01-06",
+      nextBillingDate: null,
+    });
+    const buyout = draft({
+      billingCycle: "one-time",
+      oneTimeTermCount: null,
+      oneTimeTermUnit: null,
+      status: null,
+      startDate: "2026-01-06",
+      nextBillingDate: null,
+    });
+    const expiredTerm = draft({
+      billingCycle: "one-time",
+      oneTimeTermCount: 2,
+      oneTimeTermUnit: "year",
+      status: null,
+      startDate: "2023-01-06",
+      nextBillingDate: null,
+    });
+
+    expect(getInitialAIDraftConfirmationFields(futureTerm, DEFAULT_CUSTOM_CONFIG, context.settings.timezone)).toContain("status");
+    expect(getInitialAIDraftConfirmationFields(buyout, DEFAULT_CUSTOM_CONFIG, context.settings.timezone)).toContain("status");
+    expect(aiDraftToSubscriptionFormState(expiredTerm, { settings: context.settings }).status).toBe("expired");
+    expect(getInitialAIDraftConfirmationFields(expiredTerm, DEFAULT_CUSTOM_CONFIG, context.settings.timezone)).not.toContain("status");
+  });
+
   it("tracks model defaults that still require explicit user confirmation", () => {
-    expect(getInitialAIDraftConfirmationFields(draft())).toEqual([]);
+    expect(getInitialAIDraftConfirmationFields(draft(), DEFAULT_CUSTOM_CONFIG)).toEqual([]);
     expect(getInitialAIDraftConfirmationFields(draft({
       price: null,
       currency: null,
       billingCycle: null,
-    }))).toEqual(["price", "currency", "billingCycle"]);
+    }), DEFAULT_CUSTOM_CONFIG)).toEqual(["price", "currency", "billingCycle"]);
+    expect(getInitialAIDraftConfirmationFields(draft({ category: null }), DEFAULT_CUSTOM_CONFIG)).toContain("category");
+    expect(getInitialAIDraftConfirmationFields(draft({ paymentMethod: null }), DEFAULT_CUSTOM_CONFIG)).toContain("paymentMethod");
   });
 });
