@@ -28,6 +28,7 @@ vi.mock("@/hooks/use-subscriptions", () => ({
   usePatchSubscription: () => ({ mutate: mocks.patchMutate }),
   useRenewSubscription: () => ({
     mutateAsync: mocks.renewMutateAsync,
+    reset: vi.fn(),
     error: null,
     isPending: false,
   }),

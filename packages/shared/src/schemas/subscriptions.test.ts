@@ -286,6 +286,8 @@ describe("cost sharing collection reminder contract", () => {
 
 describe("subscription renew request contract", () => {
   const renewBody = {
+      expectedNextBillingDate: "2026-07-01",
+      expectedUpdatedAt: "2026-01-01T00:00:00.000Z",
     mode: "continue",
     price: "12.500000",
     currency: "USD",
@@ -293,6 +295,15 @@ describe("subscription renew request contract", () => {
     nextBillingDate: "2026-08-01",
     autoCalculateNextBillingDate: false,
   } as const;
+
+  it("requires valid, exact renewal preconditions", () => {
+    for (const patch of [
+      { expectedNextBillingDate: undefined }, { expectedUpdatedAt: undefined },
+      { expectedNextBillingDate: "2026-02-30" }, { expectedUpdatedAt: "yesterday" },
+      { expectedUpdatedAt: 123 },
+    ]) expect(subscriptionRenewBodySchema.safeParse({ ...renewBody, ...patch }).success).toBe(false);
+    expect(subscriptionRenewBodySchema.parse({ ...renewBody, expectedUpdatedAt: "2026-01-01T00:00:00.123456Z" }).expectedUpdatedAt).toBe("2026-01-01T00:00:00.123456Z");
+  });
 
   it("accepts continue renewal payloads and canonicalizes money", () => {
     const parsed = subscriptionRenewBodySchema.parse(renewBody);

@@ -55,6 +55,7 @@ type SubscriptionCollectionBaseForService = Pick<
 
 type SubscriptionDetailFieldsForService = Pick<
   Subscription,
+  | "updatedAt"
   | "website"
   | "notes"
   | "tags"
@@ -131,6 +132,7 @@ function fromApiSubscriptionCollectionBase(
 
 function fromApiSubscriptionDetailFields(parsedRow: ApiSubscription): SubscriptionDetailFieldsForService {
   return {
+    updatedAt: parsedRow.updatedAt,
     website: parsedRow.website,
     notes: parsedRow.notes,
     tags: parsedRow.tags,

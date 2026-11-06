@@ -141,6 +141,8 @@ const Statistics = () => {
     handleEditSubscription,
     handleRenewSubscription,
     handleSubmitRenewSubscription,
+    handleRefreshRenewSubscription,
+    handleEditRenewSubscription,
     handleSaveSubscription,
     handleEditDialogOpenChange,
     handleRenewDialogOpenChange,
@@ -329,7 +331,9 @@ const Statistics = () => {
         open={renewDialogOpen}
         today={today}
         submitting={renewSubmitting}
-        error={renewError instanceof Error ? renewError.message : null}
+        error={renewError}
+        onRefresh={handleRefreshRenewSubscription}
+        onEdit={handleEditRenewSubscription}
         restoreFocusRef={renewRestoreFocusRef}
         onOpenChange={handleRenewDialogOpenChange}
         onSubmit={handleSubmitRenewSubscription}

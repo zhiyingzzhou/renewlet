@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   prefetchSubscriptionDetail,
+  subscriptionDetailQueryOptions,
   useCreateSubscription,
   useDeleteSubscription,
   usePatchSubscription,
@@ -32,6 +33,7 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
     mutateAsync: renewSubscription,
     error: renewError,
     isPending: renewSubmitting,
+    reset: resetRenewMutation,
   } = useRenewSubscription();
   const { mutate: deleteSubscription } = useDeleteSubscription();
   const [editingTarget, setEditingTarget] = useState<SubscriptionDialogTarget | null>(null);
@@ -66,6 +68,8 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
   const editDialogSession = useDialogSessionSnapshot(editDialogOpen, editingSubscriptionId, currentEditDialogSession);
   const cloneDialogSession = useDialogSessionSnapshot(cloneDialogOpen, cloningSubscriptionId, currentCloneDialogSession);
   const renewDialogSession = useDialogSessionSnapshot(renewDialogOpen, renewingSubscriptionId, currentRenewDialogSession);
+  const renewSubmitLock = useRef(false);
+  const renewSession = useRef(0);
   const renewRestoreFocusRef = useRef<HTMLElement | null>(null);
   const { scheduleCleanup: scheduleEditCleanup, cancelCleanup: cancelEditCleanup } = useDeferredDialogCleanup(() => {
     // 关闭动画结束后再丢弃 id，避免 detail cache 在 fade-out 中解除绑定导致内容闪空。
@@ -103,14 +107,17 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
     patchSubscription({ id, patch: { publicHidden: !subscription.publicHidden } });
   }, [patchSubscription, subscriptions]);
 
-  const handleRenewSubscription = useCallback((id: string) => {
-    renewRestoreFocusRef.current = typeof document !== "undefined" && document.activeElement instanceof HTMLElement
+  const handleRenewSubscription = useCallback((id: string, restoreTarget?: HTMLElement | null) => {
+    if (renewSubmitLock.current) return;
+    renewSession.current += 1;
+    resetRenewMutation();
+    renewRestoreFocusRef.current = restoreTarget ?? (typeof document !== "undefined" && document.activeElement instanceof HTMLElement
       ? document.activeElement
-      : null;
+      : null);
     cancelRenewCleanup();
     setRenewingTarget(createSubscriptionDialogTarget(subscriptions, id));
     setRenewDialogOpen(true);
-  }, [cancelRenewCleanup, subscriptions]);
+  }, [cancelRenewCleanup, resetRenewMutation, subscriptions]);
 
   const handleEditSubscription = useCallback((id: string) => {
     cancelEditCleanup();
@@ -135,11 +142,32 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
   }, [cloningQuery.data, createSubscription]);
 
   const handleSubmitRenewSubscription = useCallback(async (payload: SubscriptionRenewBody) => {
-    if (!renewingSubscriptionId) return;
-    await renewSubscription({ id: renewingSubscriptionId, payload });
+    if (!renewingSubscriptionId || renewSubmitLock.current) return;
+    const session = renewSession.current;
+    renewSubmitLock.current = true;
+    try {
+      await renewSubscription({ id: renewingSubscriptionId, payload });
+      // 迟到响应只结束发起它的会话，不能关闭后来打开的其它订阅。
+      if (renewSession.current !== session) return;
+      setRenewDialogOpen(false);
+      scheduleRenewCleanup();
+    } finally { renewSubmitLock.current = false; }
+  }, [renewSubscription, renewingSubscriptionId, scheduleRenewCleanup]);
+
+  const handleRefreshRenewSubscription = useCallback(async () => {
+    if (!renewingSubscriptionId) return null;
+    const session = renewSession.current;
+    resetRenewMutation();
+    const result = await queryClient.fetchQuery({ ...subscriptionDetailQueryOptions(renewingSubscriptionId), staleTime: 0 });
+    return session === renewSession.current ? result : null;
+  }, [queryClient, renewingSubscriptionId, resetRenewMutation]);
+
+  const handleEditRenewSubscription = useCallback(() => {
+    if (!renewingSubscriptionId || renewSubmitLock.current) return;
     setRenewDialogOpen(false);
     scheduleRenewCleanup();
-  }, [renewSubscription, renewingSubscriptionId, scheduleRenewCleanup]);
+    handleEditSubscription(renewingSubscriptionId);
+  }, [renewingSubscriptionId, scheduleRenewCleanup, handleEditSubscription]);
 
   const handleEditDialogOpenChange = useCallback((nextOpen: boolean) => {
     setEditDialogOpen(nextOpen);
@@ -160,6 +188,8 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
   }, [cancelCloneCleanup, scheduleCloneCleanup]);
 
   const handleRenewDialogOpenChange = useCallback((nextOpen: boolean) => {
+    if (renewSubmitLock.current) return;
+    if (!nextOpen) renewSession.current += 1;
     setRenewDialogOpen(nextOpen);
     if (nextOpen) {
       cancelRenewCleanup();
@@ -191,6 +221,8 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
     handleTogglePublicHiddenSubscription,
     handleRenewSubscription,
     handleSubmitRenewSubscription,
+    handleRefreshRenewSubscription,
+    handleEditRenewSubscription,
     handleEditSubscription,
     handleCloneSubscription,
     handleSaveSubscription,

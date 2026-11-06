@@ -371,7 +371,10 @@ export const SERVER_I18N_CATALOGS = {
     "url.privateOrLocalNotAllowedGeneric": "URL 不允许指向内网或本机地址",
     "validation.jsonParseFailed": "JSON 解析失败：请检查格式是否正确",
     "subscription.visibilityConflict": "订阅数据已变化，已保留选择，请重试以使用最新数据。",
-    "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。"
+    "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。",
+    "subscription.renewConflict": "订阅已更新或续订日期发生变化，请刷新信息并重新确认。",
+    "subscription.renewNotAllowed": "此订阅当前不支持手动续订，请检查状态与续订方式。",
+    "subscription.renewInvalidDate": "无法计算续订日期，请检查订阅日期和周期。"
   },
   "en-US": {
     "admin.createFailed": "Failed to create admin",
@@ -731,7 +734,10 @@ export const SERVER_I18N_CATALOGS = {
     "url.privateOrLocalNotAllowedGeneric": "URL cannot point to private or localhost addresses",
     "validation.jsonParseFailed": "JSON parsing failed. Check the format.",
     "subscription.visibilityConflict": "Subscriptions have changed. Your selection is preserved; retry to use the latest data.",
-    "subscription.visibilityFailed": "Unable to update public visibility. Your selection is preserved; please retry."
+    "subscription.visibilityFailed": "Unable to update public visibility. Your selection is preserved; please retry.",
+    "subscription.renewConflict": "The subscription or renewal date has changed. Refresh its details and confirm again.",
+    "subscription.renewNotAllowed": "This subscription cannot be renewed manually in its current state.",
+    "subscription.renewInvalidDate": "The renewal date could not be calculated. Check the subscription dates and billing cycle."
   },
   "ru-RU": {
     "admin.createFailed": "Не удалось создать администратора",
@@ -1091,7 +1097,10 @@ export const SERVER_I18N_CATALOGS = {
     "url.privateOrLocalNotAllowedGeneric": "URL не может указывать на частные или локальные адреса",
     "validation.jsonParseFailed": "Не удалось разобрать JSON. Проверьте формат.",
     "subscription.visibilityConflict": "Подписки изменились. Ваш выбор сохранён, повторите попытку, чтобы использовать актуальные данные.",
-    "subscription.visibilityFailed": "Не удалось обновить публичную видимость. Ваш выбор сохранён, повторите попытку."
+    "subscription.visibilityFailed": "Не удалось обновить публичную видимость. Ваш выбор сохранён, повторите попытку.",
+    "subscription.renewConflict": "Подписка или дата продления изменились. Обновите данные и подтвердите ещё раз.",
+    "subscription.renewNotAllowed": "Эту подписку нельзя продлить вручную в текущем состоянии.",
+    "subscription.renewInvalidDate": "Не удалось рассчитать дату продления. Проверьте даты и период подписки."
   }
 } as const satisfies Record<ServerI18nLocale, ServerI18nCatalog>;
 

@@ -310,6 +310,9 @@ export const subscriptionUpdateBodySchema = z.object(subscriptionWriteFieldShape
   .refine((obj) => Object.keys(obj).length > 0, { message: "Empty payload" });
 
 export const subscriptionRenewBodySchema = z.object({
+  // 同一次确认绑定原账单日和服务端版本，过期草稿或响应丢失后的重放不能多推进一期。
+  expectedNextBillingDate: dateInputSchema,
+  expectedUpdatedAt: z.string().max(64).datetime({ offset: true }),
   mode: z.enum(SUBSCRIPTION_RENEW_MODES),
   price: moneyStringSchema,
   currency: z.string().trim().regex(/^[A-Z]{3}$/),

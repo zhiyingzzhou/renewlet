@@ -41,15 +41,18 @@ type ApiFetchMock = (url: string, schema: unknown, init?: RequestInit) => Promis
 const mocks = vi.hoisted(() => ({
   apiFetch: vi.fn<ApiFetchMock>(),
   getProductCurrentUserId: vi.fn<() => string | null>(),
+  readProductSessionSnapshot: vi.fn<() => { userId: string; expiresAt: string; verifiedAt: number } | null>(),
 }));
 
-vi.mock("@/lib/api-client", () => ({
+vi.mock("@/lib/api-client", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/lib/api-client")>(),
   apiFetch: mocks.apiFetch,
 }));
 
 vi.mock("@/services/product-session", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/services/product-session")>(),
   getProductCurrentUserId: mocks.getProductCurrentUserId,
+  readProductSessionSnapshot: mocks.readProductSessionSnapshot,
 }));
 
 function createWrapper(
@@ -172,6 +175,7 @@ function requestBody(callIndex: number): unknown {
 
 describe("use-subscriptions mutations", () => {
   beforeEach(() => {
+    mocks.readProductSessionSnapshot.mockReturnValue({ userId: "user-1", expiresAt: "2027-01-01T00:00:00Z", verifiedAt: 1 });
     mocks.apiFetch.mockReset();
     mocks.getProductCurrentUserId.mockReset();
     mocks.getProductCurrentUserId.mockReturnValue("user-1");
@@ -271,6 +275,8 @@ describe("use-subscriptions mutations", () => {
         id: "sub-1",
         payload: {
           mode: "continue",
+          expectedNextBillingDate: "2026-06-14",
+          expectedUpdatedAt: "2026-01-01T00:00:00.000Z",
           price: "15",
           currency: "USD",
           startDate: null,
@@ -281,6 +287,34 @@ describe("use-subscriptions mutations", () => {
     });
 
     expect(invalidate).toHaveBeenCalledWith({ queryKey: notificationQueryKeys.overview });
+  });
+
+  it.each(["logout", "switch", "verify"])("isolates late renewal results across %s", async (change) => {
+    const queryClient = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
+    let release!: (value: unknown) => void;
+    mocks.apiFetch.mockImplementationOnce(() => new Promise(resolve => { release = resolve; }));
+    const { result } = renderHook(() => useRenewSubscription(), { wrapper: createWrapper(queryClient) });
+    let outcome: unknown;
+    await act(async () => {
+      const pending = result.current.mutateAsync({ id: "sub-1", payload: {
+        mode: "continue", expectedNextBillingDate: "2026-06-14", expectedUpdatedAt: "2026-01-01T00:00:00Z",
+        price: "15", currency: "USD", startDate: null, nextBillingDate: "2026-07-14", autoCalculateNextBillingDate: false,
+      } }).then(() => "saved", (error: unknown) => error);
+      await Promise.resolve();
+      mocks.readProductSessionSnapshot.mockReturnValue(change === "logout" ? null : {
+        userId: change === "switch" ? "user-2" : "user-1", expiresAt: "2027-01-01T00:00:00Z", verifiedAt: 2,
+      });
+      release({ subscription: apiSubscriptionFromDraft("sub-1", subscriptionDraft()) });
+      outcome = await pending;
+    });
+    if (change === "verify") {
+      expect(outcome).toBe("saved");
+      expect(queryClient.getQueryData(subscriptionQueryKeys.detail("sub-1"))).toBeDefined();
+    } else {
+      expect(outcome).toMatchObject({ code: "aborted" });
+      expect(queryClient.getQueryData(subscriptionQueryKeys.detail("sub-1"))).toBeUndefined();
+    }
+    expect(mocks.apiFetch).toHaveBeenCalledTimes(1);
   });
 
   it("sends only quick-action fields through the patch mutation", async () => {
@@ -377,6 +411,7 @@ describe("use-subscriptions mutations", () => {
 
 describe("use-subscriptions collection queries", () => {
   beforeEach(() => {
+    mocks.readProductSessionSnapshot.mockReturnValue({ userId: "user-1", expiresAt: "2027-01-01T00:00:00Z", verifiedAt: 1 });
     mocks.apiFetch.mockReset();
     mocks.getProductCurrentUserId.mockReset();
     mocks.getProductCurrentUserId.mockReturnValue("user-1");

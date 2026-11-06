@@ -327,6 +327,8 @@ describe("subscription service API calls", () => {
   it("renews with an explicit payload and deletes through the product API", async () => {
     mocks.apiFetch.mockResolvedValueOnce({ subscription: apiSubscription }).mockResolvedValueOnce({});
     const renewPayload = {
+      expectedNextBillingDate: "2026-02-01",
+      expectedUpdatedAt: "2026-01-01T00:00:00.000Z",
       mode: "continue",
       price: "15",
       currency: "USD",

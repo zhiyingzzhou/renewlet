@@ -26,7 +26,8 @@ describe("account balance in real subscription transactions", () => {
     const { subscription } = await readSuccessData<{ subscription: { id: string; balance: string; balanceCurrency: string } }>(response);
     expect(subscription).toMatchObject({ balance: "0", balanceCurrency: "EUR" });
     await updateSubscription(request({ pinned: true, currency: "CNY" }, "PATCH"), env, subscription.id);
-    await renewSubscription(request({ mode: "continue", price: "25", currency: "GBP", startDate: null,
+    const beforeRenew = await getSubscription(env, USER_ID, subscription.id);
+    await renewSubscription(request({ expectedNextBillingDate: beforeRenew!.next_billing_date, expectedUpdatedAt: beforeRenew!.updated_at, mode: "continue", price: "25", currency: "GBP", startDate: null,
       nextBillingDate: "2027-02-01", autoCalculateNextBillingDate: false }), env, subscription.id);
     const row = await getSubscription(env, USER_ID, subscription.id);
     expect(row).toMatchObject({ balance: "0", balance_currency: "EUR", currency: "GBP" });

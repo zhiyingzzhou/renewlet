@@ -356,5 +356,8 @@
   "url.privateOrLocalNotAllowedGeneric": "URL 不允许指向内网或本机地址",
   "validation.jsonParseFailed": "JSON 解析失败：请检查格式是否正确",
   "subscription.visibilityConflict": "订阅数据已变化，已保留选择，请重试以使用最新数据。",
-  "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。"
+  "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。",
+  "subscription.renewConflict": "订阅已更新或续订日期发生变化，请刷新信息并重新确认。",
+  "subscription.renewNotAllowed": "此订阅当前不支持手动续订，请检查状态与续订方式。",
+  "subscription.renewInvalidDate": "无法计算续订日期，请检查订阅日期和周期。"
 }

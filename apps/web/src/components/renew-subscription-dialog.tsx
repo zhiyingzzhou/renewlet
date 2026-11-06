@@ -1,5 +1,5 @@
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { FormEvent, RefObject } from "react";
+import { useCallback, useMemo, useRef } from "react";
+import type { RefObject } from "react";
 import { Loader2 } from "lucide-react";
 import {
   createRenewSubscriptionLoadingSlots,
@@ -15,29 +15,12 @@ import { useCustomConfigState } from "@/contexts/CustomConfigContext";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useManagedCurrencyOptions } from "@/hooks/use-managed-currency-options";
 import { useDeferredDialogInitialFocus } from "@/hooks/use-deferred-dialog-initial-focus";
-import { compareDateOnly, type DateOnly } from "@/lib/time/date-only";
-import { parseMoneyInput } from "@/lib/subscription-form";
+import { type DateOnly } from "@/lib/time/date-only";
+import { useRenewSubscriptionForm } from "@/hooks/use-renew-subscription-form";
 import type { Subscription, SubscriptionCollectionItem } from "@/types/subscription";
-import { advanceSubscriptionRenewal, calculateNextBillingDate } from "@renewlet/shared/subscription-renewal";
 import type { SubscriptionRenewBody } from "@renewlet/shared/schemas/subscriptions";
 
 type RenewMode = SubscriptionRenewBody["mode"];
-
-interface RenewFormState {
-  mode: RenewMode;
-  price: string;
-  currency: string;
-  startDate: DateOnly | null;
-  nextBillingDate: DateOnly;
-  autoCalculateNextBillingDate: boolean;
-}
-
-interface RenewFormErrors {
-  price?: string | undefined;
-  currency?: string | undefined;
-  startDate?: string | undefined;
-  nextBillingDate?: string | undefined;
-}
 
 export interface RenewSubscriptionDialogProps {
   subscription: Subscription | null;
@@ -45,188 +28,48 @@ export interface RenewSubscriptionDialogProps {
   open: boolean;
   today: DateOnly;
   submitting: boolean;
-  error?: string | null | undefined;
+  error?: unknown;
+  onRefresh?: (() => Promise<Subscription | null>) | undefined;
+  onEdit?: (() => void) | undefined;
   restoreFocusRef?: RefObject<HTMLElement | null> | undefined;
   onOpenChange: (open: boolean) => void;
   onSubmit: (payload: SubscriptionRenewBody) => Promise<void> | void;
   loading?: boolean | undefined;
 }
 
-function defaultContinueNextBillingDate(subscription: Subscription, today: DateOnly): DateOnly {
-  // continue 只能预览后端按原锚点会推进到哪里；用户在该模式下不能把日期当作新开始日提交。
-  const result = advanceSubscriptionRenewal({
-    billingCycle: subscription.billingCycle,
-    status: subscription.status,
-    startDate: subscription.startDate,
-    nextBillingDate: subscription.nextBillingDate,
-    autoRenew: subscription.autoRenew,
-    autoCalculateNextBillingDate: subscription.autoCalculateNextBillingDate,
-    customDays: subscription.customDays,
-    customCycleUnit: subscription.customCycleUnit,
-  }, today, "manual");
-  return result?.nextBillingDate as DateOnly | undefined ?? subscription.nextBillingDate;
-}
-
-function defaultRestartNextBillingDate(subscription: Subscription, startDate: DateOnly): DateOnly {
-  return calculateNextBillingDate(
-    startDate,
-    subscription.billingCycle,
-    subscription.customDays,
-    undefined,
-    subscription.customCycleUnit,
-  ) as DateOnly;
-}
-
-function createInitialState(subscription: Subscription, today: DateOnly): RenewFormState {
-  const mode: RenewMode = subscription.status === "expired" ? "restart" : "continue";
-  return {
-    mode,
-    price: subscription.price,
-    currency: subscription.currency,
-    startDate: today,
-    nextBillingDate: mode === "restart" ? defaultRestartNextBillingDate(subscription, today) : defaultContinueNextBillingDate(subscription, today),
-    autoCalculateNextBillingDate: mode === "restart",
-  };
-}
-
-function hasRenewBodyDates(value: SubscriptionRenewBody): value is SubscriptionRenewBody & { startDate: string } {
-  return value.mode !== "restart" || typeof value.startDate === "string";
-}
-
 export function RenewSubscriptionDialogContent({
-  subscription,
+  subscription: latestSubscription,
   open,
   today,
   submitting,
   error,
   onOpenChange,
   onSubmit,
+  onRefresh,
+  onEdit,
   loading,
   loadingPreview,
 }: RenewSubscriptionDialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const { config } = useCustomConfigState();
   const { t, locale, formatDateOnly } = useI18n();
-  const [form, setForm] = useState<RenewFormState | null>(() => (
-    open && subscription ? createInitialState(subscription, today) : null
-  ));
-  const [errors, setErrors] = useState<RenewFormErrors>({});
-  const includeDisabledCurrent = form?.currency ?? subscription?.currency ?? null;
-  const currencyOptions = useManagedCurrencyOptions({
+  const enabledCurrencyOptions = useManagedCurrencyOptions({
     currencies: config.currencies,
-    ...(includeDisabledCurrent ? { includeDisabledCurrent } : {}),
     locale,
   });
-
-  useLayoutEffect(() => {
-    if (!open || !subscription) return;
-    setForm(createInitialState(subscription, today));
-    setErrors({});
-  }, [open, subscription, today]);
-
-  const setField = useCallback(<K extends keyof RenewFormState>(key: K, value: RenewFormState[K]) => {
-    setForm((current) => current ? { ...current, [key]: value } : current);
-    setErrors((current) => ({ ...current, [key]: undefined }));
-  }, []);
-
-  const switchMode = useCallback((mode: RenewMode) => {
-    if (!subscription) return;
-    setForm((current) => {
-      const base = current ?? createInitialState(subscription, today);
-      if (mode === "continue") {
-        // continue 的日期只展示后端将采用的推进结果；restart 草稿日期不会进入该模式的提交 payload。
-        return {
-          ...base,
-          mode,
-          nextBillingDate: defaultContinueNextBillingDate(subscription, today),
-          autoCalculateNextBillingDate: false,
-        };
-      }
-      const startDate = base.startDate ?? today;
-      return {
-        ...base,
-        mode,
-        startDate,
-        nextBillingDate: defaultRestartNextBillingDate(subscription, startDate),
-        autoCalculateNextBillingDate: true,
-      };
-    });
-    setErrors({});
-  }, [subscription, today]);
-
-  const handleRestartStartDateChange = useCallback((value: DateOnly | undefined) => {
-    if (!subscription || !value) return;
-    setForm((current) => {
-      if (!current) return current;
-      return {
-        ...current,
-        startDate: value,
-        nextBillingDate: current.autoCalculateNextBillingDate ? defaultRestartNextBillingDate(subscription, value) : current.nextBillingDate,
-      };
-    });
-    setErrors((current) => ({ ...current, startDate: undefined, nextBillingDate: undefined }));
-  }, [subscription]);
-
-  const handleNextBillingDateChange = useCallback((value: DateOnly | undefined) => {
-    if (!value) return;
-    setForm((current) => current ? {
-      ...current,
-      nextBillingDate: value,
-      // restart 下手动改下次扣费日就是用户覆盖自动推算锚点，提交时必须保存这个选择。
-      autoCalculateNextBillingDate: current.mode === "restart" ? false : current.autoCalculateNextBillingDate,
-    } : current);
-    setErrors((current) => ({ ...current, nextBillingDate: undefined }));
-  }, []);
-
-  const validate = useCallback((value: RenewFormState): RenewFormErrors => {
-    const nextErrors: RenewFormErrors = {};
-    if (parseMoneyInput(value.price) === null) {
-      nextErrors.price = t("subscription.validation.amountInvalid");
-    }
-    if (!currencyOptions.some((option) => option.value === value.currency && option.disabled !== true)) {
-      nextErrors.currency = t("subscription.renew.validation.currencyRequired");
-    }
-    if (value.mode === "restart" && !value.startDate) {
-      nextErrors.startDate = t("subscription.renew.validation.startDateRequired");
-    }
-    if (value.mode === "restart" && value.startDate && compareDateOnly(value.nextBillingDate, value.startDate) < 0) {
-      nextErrors.nextBillingDate = t("subscription.validation.dateOrderInvalid");
-    }
-    return nextErrors;
-  }, [currencyOptions, t]);
-
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!form || submitting) return;
-    const nextErrors = validate(form);
-    if (Object.values(nextErrors).some(Boolean)) {
-      setErrors(nextErrors);
-      // 错误元素要等 React 提交 aria-invalid 后再查找；否则会把焦点留在提交按钮上。
-      window.requestAnimationFrame(() => {
-        formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]:not([disabled])')?.focus();
-      });
-      return;
-    }
-    const price = parseMoneyInput(form.price);
-    if (!price) return;
-    const payload: SubscriptionRenewBody = {
-      mode: form.mode,
-      price,
-      currency: form.currency,
-      startDate: form.mode === "restart" ? form.startDate : null,
-      nextBillingDate: form.nextBillingDate,
-      autoCalculateNextBillingDate: form.mode === "restart" ? form.autoCalculateNextBillingDate : false,
-    };
-    if (!hasRenewBodyDates(payload)) return;
-    await onSubmit(payload);
-  };
-
+  const {
+    source: subscription, currentForm, errors, setField, switchMode,
+    handleRestartStartDateChange, handleNextBillingDateChange, submit,
+    refresh, refreshing, saving, notice, submitError, calculationError, metadataError, recoveryRequired,
+  } = useRenewSubscriptionForm({ subscription: latestSubscription, today, submitting, currencyOptions: enabledCurrencyOptions, formRef, onSubmit, onRefresh });
+  const currencyOptions = useManagedCurrencyOptions({ currencies: config.currencies, includeDisabledCurrent: currentForm?.currency ?? null, locale });
+  const busy = submitting || saving || refreshing;
+  const visibleError = submitError ?? calculationError ?? metadataError ?? (error instanceof Error ? error.message : typeof error === "string" ? error : null);
   const titleSubscription = subscription ?? loadingPreview;
   const title = titleSubscription
     ? t("subscription.renew.title", { name: titleSubscription.name })
     : t("subscription.renew");
   const description = t("subscription.renew.description");
-  const currentForm = form ?? (subscription ? createInitialState(subscription, today) : null);
   const resolveInitialFocus = useCallback(
     () => formRef.current?.querySelector<HTMLElement>('[role="radio"][data-state="checked"]') ?? null,
     [],
@@ -237,7 +80,7 @@ export function RenewSubscriptionDialogContent({
     subscription?.id ?? "renew-subscription",
     resolveInitialFocus,
   );
-  const restartMode = currentForm?.mode === "restart" || (currentForm === null && loadingPreview?.status === "expired");
+  const restartMode = currentForm?.mode === "restart";
   const submitLabel = restartMode ? t("subscription.renew.restartSubmit") : t("subscription.renew.submit");
   const modeDescription = useMemo(() => {
     if (!currentForm) return "";
@@ -249,11 +92,12 @@ export function RenewSubscriptionDialogContent({
   const loadingSlots = loading
     ? createRenewSubscriptionLoadingSlots({ label: t("common.loading"), restartMode })
     : null;
-  if (!loading && !currentForm) return null;
+
 
   return (
     <RenewSubscriptionScaffold
       formRef={formRef}
+      disabled={busy}
       onSubmit={submit}
       noValidate
       data-testid={loading ? "renew-subscription-data-loading" : undefined}
@@ -336,6 +180,7 @@ export function RenewSubscriptionDialogContent({
       ) : null)}
       schedule={loadingSlots?.schedule ?? (currentForm ? (
         <>
+          {notice ? <p role="status" className="text-sm leading-6 text-muted-foreground">{notice}</p> : null}
           {restartMode ? (
             <FormFieldRow
               alignAt="sm"
@@ -408,22 +253,24 @@ export function RenewSubscriptionDialogContent({
           )}
         </>
       ) : null)}
-      actions={loadingSlots?.actions ?? (currentForm ? (
+      actions={loadingSlots?.actions ?? (
         <>
-          {error ? (
-            <p className="w-full min-w-0 wrap-break-word text-center text-sm text-destructive sm:mr-auto sm:w-auto sm:text-left">
-              {error}
-            </p>
+          {visibleError ? <p role="alert" className="w-full min-w-0 wrap-break-word text-sm text-destructive">{visibleError}</p> : null}
+          {onRefresh && (visibleError || !currentForm) ? (
+            <Button type="button" variant="outline" disabled={busy} onClick={() => void refresh()} className="w-full sm:w-auto">
+              {t("subscription.renew.refresh")}
+            </Button>
           ) : null}
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="w-full border-border sm:w-auto" disabled={submitting}>
+          {calculationError && onEdit ? <Button type="button" variant="outline" disabled={busy} onClick={onEdit}>{t("common.edit")}</Button> : null}
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="w-full border-border sm:w-auto" disabled={busy}>
             {t("common.cancel")}
           </Button>
-          <Button type="submit" disabled={submitting} className="w-full bg-primary text-primary-foreground hover:bg-primary-glow sm:w-auto">
-            {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          {currentForm ? <Button type="submit" disabled={busy || recoveryRequired || Boolean(calculationError || metadataError)} className="w-full bg-primary text-primary-foreground hover:bg-primary-glow sm:w-auto">
+            {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {submitLabel}
-          </Button>
+          </Button> : null}
         </>
-      ) : null)}
+      )}
     />
   );
 }

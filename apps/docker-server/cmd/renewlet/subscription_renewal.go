@@ -8,7 +8,6 @@ package main
 // 注意：所有输入输出都是 date-only 字符串，不引入服务器本地时区；today 由调用方按用户时区生成。
 import (
 	"errors"
-	"math"
 	"strings"
 	"time"
 )
@@ -137,32 +136,53 @@ func advanceBillingDate(input subscriptionRenewalInput, today string, mode renew
 }
 
 func firstCycleDateAfter(anchor time.Time, input subscriptionRenewalInput, threshold time.Time, strict bool) (string, error) {
-	cycleCount := maxInt(1, initialCycleCount(anchor, input, threshold, strict))
-	for attempts := 0; attempts < maxAdvanceCycles; attempts++ {
+	cycleCount := initialCycleCount(anchor, input, threshold, strict)
+	// 每次从原锚点夹取目标月底；月份距离已定位目标附近，最多修正一期，不能逐期遍历历史。
+	for attempts := 0; attempts < 2; attempts++ {
+		if exactDayStep(input) == 0 && cycleCount > maxAdvanceCycles {
+			break
+		}
 		candidate, err := addBillingCyclesDate(anchor, input.BillingCycle, cycleCount, input.CustomDays, input.CustomCycleUnit)
 		if err != nil {
 			return "", err
 		}
 		if (!strict && !candidate.Before(threshold)) || (strict && candidate.After(threshold)) {
-			return formatDateOnly(candidate), nil
+			value := formatDateOnly(candidate)
+			if !isValidDateOnly(value) {
+				return "", errors.New("SUBSCRIPTION_RENEWAL_DATE_OUT_OF_RANGE")
+			}
+			return value, nil
 		}
 		cycleCount++
 	}
-	// 脏数据或极端自定义周期不能让单条订阅把 cron 卡成无限循环。
 	return "", errors.New("SUBSCRIPTION_RENEWAL_ADVANCE_LIMIT_EXCEEDED")
 }
 
 func initialCycleCount(anchor time.Time, input subscriptionRenewalInput, threshold time.Time, strict bool) int {
-	dayStep := exactDayStep(input)
-	if dayStep <= 0 {
-		return 1
+	if dayStep := exactDayStep(input); dayStep > 0 {
+		// time.Duration 在跨越约 292 年时饱和；UTC date-only 用 Unix 秒差计算日距，保持与 Temporal 相同边界。
+		distance := int((threshold.Unix() - anchor.Unix()) / 86400)
+		if strict {
+			distance++
+		}
+		return maxInt(1, (distance+dayStep-1)/dayStep)
 	}
-	// 只有固定天数周期能直接跳到近似期数；月/年周期必须逐期推进以保留月末夹取语义。
-	diff := int(threshold.Sub(anchor).Hours() / 24)
-	if strict {
-		diff++
+	months := (threshold.Year()-anchor.Year())*12 + int(threshold.Month()-anchor.Month())
+	step := 1
+	switch input.BillingCycle {
+	case "quarterly":
+		step = 3
+	case "semi-annual":
+		step = 6
+	case "annual":
+		step = 12
+	case "custom":
+		step = maxInt(1, input.CustomDays)
+		if input.CustomCycleUnit == "year" {
+			step *= 12
+		}
 	}
-	return maxInt(1, int(math.Ceil(float64(diff)/float64(dayStep))))
+	return maxInt(1, (months+step-1)/step)
 }
 
 func exactDayStep(input subscriptionRenewalInput) int {

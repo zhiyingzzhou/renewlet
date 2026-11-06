@@ -371,6 +371,8 @@ type calendarFeedCreateRequest struct{}
 
 // subscriptionRenewRequest 是手动续订的显式 payload；URL id 和当前登录用户仍是 owner 写入边界。
 type subscriptionRenewRequest struct {
+	ExpectedNextBillingDate      string                    `json:"expectedNextBillingDate"`
+	ExpectedUpdatedAt            string                    `json:"expectedUpdatedAt"`
 	Mode                         string                    `json:"mode"`
 	Price                        string                    `json:"price"`
 	Currency                     string                    `json:"currency"`
@@ -380,6 +382,15 @@ type subscriptionRenewRequest struct {
 }
 
 func (r *subscriptionRenewRequest) Validate(locale appLocale) error {
+	if err := requireDateOnly(r.ExpectedNextBillingDate, "EXPECTED_NEXT_BILLING_DATE"); err != nil {
+		return errors.New(serverText(locale, "common.invalidRequestParameters"))
+	}
+	if len(r.ExpectedUpdatedAt) > 64 {
+		return errors.New(serverText(locale, "common.invalidRequestParameters"))
+	}
+	if _, err := time.Parse(time.RFC3339Nano, r.ExpectedUpdatedAt); err != nil {
+		return errors.New(serverText(locale, "common.invalidRequestParameters"))
+	}
 	r.Mode = strings.TrimSpace(r.Mode)
 	if r.Mode != "continue" && r.Mode != "restart" {
 		return errors.New(serverText(locale, "common.invalidRequestParameters"))

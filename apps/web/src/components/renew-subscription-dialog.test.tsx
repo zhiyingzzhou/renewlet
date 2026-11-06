@@ -1,9 +1,10 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRef, useState, type ComponentProps } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ApiError } from "@/lib/api-client";
 import { assertDateOnly } from "@/lib/time/date-only";
 import {
   subscriptionCycleFixture,
@@ -68,7 +69,7 @@ vi.mock("@/i18n/I18nProvider", () => ({
         "subscription.renew.continueNextBillingDate": "续订后下次扣费日",
         "subscription.renew.currentNextBillingDate": "当前下次扣费日",
         "subscription.renew.mode": "续订方式",
-        "subscription.renew.modeContinue": "延续下一期",
+        "subscription.renew.modeContinue": "延续原周期",
         "subscription.renew.modeContinueHelp": "适合订阅一直在用，只确认下一期继续。系统会按原周期自动推进下次扣费日。",
         "subscription.renew.modeContinueShort": "按原周期锚点推进日期。",
         "subscription.renew.modeRestart": "重新开始订阅",
@@ -84,6 +85,7 @@ vi.mock("@/i18n/I18nProvider", () => ({
       };
       return messages[key] ?? key;
     },
+    formatCurrency: (value: string, currency: string) => `${value} ${currency}`,
     formatDateOnly: (value: string) => value,
     formatDateTime: (value: Date | string) => {
       const date = value instanceof Date ? value : new Date(value);
@@ -109,6 +111,7 @@ function setupUser() {
 function makeSubscription(overrides: SubscriptionFixtureOverrides<Subscription> = {}): Subscription {
   return {
     id: "sub-renew",
+    updatedAt: "2026-01-31T00:00:00.000Z",
     name: "Renewable SaaS",
     logo: undefined,
     price: "12",
@@ -139,7 +142,7 @@ function makeSubscription(overrides: SubscriptionFixtureOverrides<Subscription> 
 function renderDialog(props: Partial<ComponentProps<typeof RenewSubscriptionDialog>> = {}) {
   const onSubmit = vi.fn<NonNullable<ComponentProps<typeof RenewSubscriptionDialog>["onSubmit"]>>();
   const onOpenChange = vi.fn();
-  render(
+  const view = render(
     <TooltipProvider delayDuration={0}>
       <RenewSubscriptionDialog
         subscription={makeSubscription()}
@@ -153,7 +156,9 @@ function renderDialog(props: Partial<ComponentProps<typeof RenewSubscriptionDial
       />
     </TooltipProvider>,
   );
-  return { onSubmit, onOpenChange };
+  return { onSubmit, onOpenChange, rerenderWith: (next: Partial<RenewSubscriptionDialogProps>) => view.rerender(
+    <TooltipProvider delayDuration={0}><RenewSubscriptionDialog subscription={makeSubscription()} loadingPreview={null} open today={assertDateOnly("2026-08-12")} submitting={false} onOpenChange={onOpenChange} onSubmit={onSubmit} {...props} {...next} /></TooltipProvider>,
+  ) };
 }
 
 function FocusRestoreHarness() {
@@ -215,20 +220,21 @@ describe("RenewSubscriptionDialog", () => {
     expect(screen.getByRole("dialog", { name: "续订「Renewable SaaS」" })).toBe(dialog);
     expect(dialog.querySelector("form")).toBe(form);
     expect(screen.queryByTestId("renew-subscription-data-loading")).not.toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: /重新开始订阅/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /延续原周期/ })).toBeChecked();
   });
 
-  it("opens expired subscriptions in restart mode by default", async () => {
+  it("defaults expired subscriptions to continue and opens restart only on explicit choice", async () => {
     renderDialog();
+    expect(screen.queryByRole("button", { name: /开始日期/ })).not.toBeInTheDocument();
 
     const dialog = screen.getByRole("dialog", { name: "续订「Renewable SaaS」" });
     expect(dialog).toBeInTheDocument();
     expect(dialog).toHaveClass("h5-dialog-auto-frame", "h-fit", "gap-0");
     expect(dialog).not.toHaveClass("h5-dialog-frame");
     const form = dialog.querySelector("form");
-    expect(form).toHaveClass("flex", "min-h-0", "flex-col", "overflow-hidden");
-    expect(form).not.toHaveClass("h5-subscription-dialog-form");
-    expect(screen.getByRole("radio", { name: /重新开始订阅/ })).toBeChecked();
+    expect(form).toHaveClass("h5-subscription-dialog-form", "overflow-hidden");
+    expect(screen.getByRole("radio", { name: /延续原周期/ })).toBeChecked();
+    await setupUser().click(screen.getByRole("radio", { name: /重新开始订阅/ }));
     expect(screen.getByRole("button", { name: /开始日期 2026-08-12/ })).toBeEnabled();
     expect(screen.getByRole("button", { name: /到期日期 2026-09-12/ })).toBeEnabled();
     expect(screen.getByRole("button", { name: "重新开始订阅" })).toBeEnabled();
@@ -245,7 +251,7 @@ describe("RenewSubscriptionDialog", () => {
     const { onSubmit } = renderDialog({ subscription: makeSubscription({ status: "active" }) });
 
     expect(screen.getByRole("dialog", { name: "续订「Renewable SaaS」" })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: /延续下一期/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /延续原周期/ })).toBeChecked();
     expect(screen.queryByRole("button", { name: /开始日期/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /到期日期/ })).not.toBeInTheDocument();
     expect(screen.getByText("当前下次扣费日")).toBeInTheDocument();
@@ -260,6 +266,8 @@ describe("RenewSubscriptionDialog", () => {
     await user.click(screen.getByRole("button", { name: "确认续订" }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({
+      expectedNextBillingDate: "2026-02-28",
+      expectedUpdatedAt: "2026-01-31T00:00:00.000Z",
       mode: "continue",
       price: "15.5",
       currency: "EUR",
@@ -306,7 +314,7 @@ describe("RenewSubscriptionDialog", () => {
       </TooltipProvider>,
     );
 
-    expect(screen.getByRole("button", { name: /重新开始订阅/ })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "确认续订" })).toBeDisabled();
 
     rerender(
       <TooltipProvider delayDuration={0}>
@@ -322,7 +330,7 @@ describe("RenewSubscriptionDialog", () => {
       </TooltipProvider>,
     );
     await user.clear(screen.getByLabelText("价格"));
-    await user.click(screen.getByRole("button", { name: "重新开始订阅" }));
+    await user.click(screen.getByRole("button", { name: "确认续订" }));
 
     const invalidPrice = screen.getByLabelText("价格");
     await waitFor(() => expect(invalidPrice).toHaveFocus());
@@ -336,5 +344,70 @@ describe("RenewSubscriptionDialog", () => {
     await user.click(screen.getByRole("button", { name: "取消" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: "续订入口" })).toHaveFocus());
+  });
+});
+
+
+describe("renewal draft and recovery", () => {
+  it("keeps amount and restart drafts through background refresh, midnight, and mode changes", async () => {
+    const user = setupUser();
+    const { rerenderWith, onSubmit } = renderDialog();
+    await user.clear(screen.getByLabelText("价格"));
+    await user.type(screen.getByLabelText("价格"), "23");
+    await user.click(screen.getByRole("radio", { name: /重新开始订阅/ }));
+    await user.click(screen.getByRole("button", { name: /到期日期 2026-09-12/ }));
+    await user.click(within(screen.getByRole("gridcell", { name: "15" })).getByRole("button"));
+    await user.click(screen.getByRole("radio", { name: /延续原周期/ }));
+    rerenderWith({ subscription: makeSubscription({ price: "99", updatedAt: "2026-08-13T00:00:00Z" }), today: assertDateOnly("2026-08-13") });
+    expect(screen.getByLabelText("价格")).toHaveValue("23");
+    await user.click(screen.getByRole("radio", { name: /重新开始订阅/ }));
+    expect(screen.getByRole("button", { name: /到期日期 2026-09-15/ })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "重新开始订阅" }));
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ price: "23", expectedUpdatedAt: "2026-01-31T00:00:00.000Z", nextBillingDate: "2026-09-15" }));
+  });
+
+  it.each([
+    new ApiError("Conflict", 409, undefined, "SUBSCRIPTION_RENEW_CONFLICT"),
+    new ApiError("Timeout", 0, undefined, "timeout"),
+    new ApiError("Invalid response", 200, undefined, "invalid_response"),
+  ])("preserves inputs and requires a read before another confirmation after $code", async (error) => {
+    const user = setupUser();
+    const submit = vi.fn().mockRejectedValueOnce(error).mockResolvedValueOnce(undefined);
+    const refresh = vi.fn().mockResolvedValue(makeSubscription({ nextBillingDate: assertDateOnly("2026-08-31"), updatedAt: "2026-08-12T00:00:00.000Z" }));
+    renderDialog({ onSubmit: submit, onRefresh: refresh });
+    await user.clear(screen.getByLabelText("价格"));
+    await user.type(screen.getByLabelText("价格"), "0");
+    await user.click(screen.getByRole("button", { name: "确认续订" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "确认续订" })).toBeDisabled());
+    expect(screen.getByLabelText("价格")).toHaveValue("0");
+    expect(screen.getByRole("button", { name: "取消" })).toBeEnabled();
+    expect(submit).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole("button", { name: "subscription.renew.refresh" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "确认续订" })).toBeEnabled());
+    expect(screen.getByLabelText("价格")).toHaveValue("0");
+    expect(submit).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole("button", { name: "确认续订" }));
+    expect(submit).toHaveBeenLastCalledWith(expect.objectContaining({ price: "0", expectedUpdatedAt: "2026-08-12T00:00:00.000Z", nextBillingDate: "2026-09-30" }));
+  });
+
+  it("locks synchronous double submission and all fields until the write settles", async () => {
+    let resolve!: () => void;
+    const submit = vi.fn(() => new Promise<void>(r => { resolve = r; }));
+    renderDialog({ onSubmit: submit });
+    const form = screen.getByLabelText("价格").closest("form")!;
+    act(() => { form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); });
+    expect(submit).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText("价格")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "取消" })).toBeDisabled();
+    await act(async () => { resolve(); });
+    expect(screen.getByLabelText("价格")).toBeEnabled();
+  });
+
+  it("reads missing metadata once and blocks unversioned writes", async () => {
+    const refresh = vi.fn().mockResolvedValue(makeSubscription({ updatedAt: undefined }));
+    const { onSubmit } = renderDialog({ subscription: makeSubscription({ updatedAt: undefined }), onRefresh: refresh });
+    await waitFor(() => expect(refresh).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.getByRole("button", { name: "确认续订" })).toBeDisabled());
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 });
