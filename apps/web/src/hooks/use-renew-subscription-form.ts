@@ -3,6 +3,8 @@ import type { FormEvent, RefObject } from "react";
 import { advanceSubscriptionRenewal, calculateNextBillingDate } from "@renewlet/shared/subscription-renewal";
 import type { SubscriptionRenewBody } from "@renewlet/shared/schemas/subscriptions";
 import { ApiError } from "@/lib/api-client";
+import { getDisplayErrorMessage } from "@/lib/display-error";
+import { renewalMemberDateFields } from "@/lib/renewal-cost-sharing";
 import { compareDateOnly, type DateOnly } from "@/lib/time/date-only";
 import { parseMoneyInput } from "@/lib/subscription-form";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -42,6 +44,8 @@ export function useRenewSubscriptionForm({ subscription, today, submitting, curr
   const [source, setSource] = useState(subscription);
   const [form, setForm] = useState<RenewFormState | null>(() => subscription ? initialForm(subscription, today) : null);
   const [errors, setErrors] = useState<RenewFormErrors>({});
+  const [memberDateDrafts, setMemberDateDrafts] = useState<ReadonlyMap<string, DateOnly>>(() => new Map());
+  const [memberDateErrors, setMemberDateErrors] = useState<ReadonlySet<string>>(() => new Set());
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [recoveryRequired, setRecoveryRequired] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -68,12 +72,13 @@ export function useRenewSubscriptionForm({ subscription, today, submitting, curr
       const latest = await onRefresh();
       if (!mounted.current || !latest) return;
       setSource(latest);
+      setMemberDateErrors(new Set());
       if (!initialized.current) { initialized.current = true; setForm(initialForm(latest, today)); }
       setSubmitError(null);
       setRecoveryRequired(false);
       setNotice(t("subscription.renew.refreshed", { amount: formatCurrency(latest.price, latest.currency), date: formatDateOnly(latest.nextBillingDate) }));
     } catch (error) {
-      if (mounted.current) setSubmitError(error instanceof Error ? error.message : t("subscription.renew.loadFailed"));
+      if (mounted.current) setSubmitError(getDisplayErrorMessage(error, t("subscription.renew.loadFailed")));
     } finally {
       lock.current = false;
       if (mounted.current) setRefreshing(false);
@@ -90,13 +95,21 @@ export function useRenewSubscriptionForm({ subscription, today, submitting, curr
   const calculationError = source && !preview ? t("subscription.renew.invalidDate") : null;
   const metadataError = source && !source.updatedAt ? t("subscription.renew.missingVersion") : null;
   const currentForm = form ? { ...form, nextBillingDate: form.mode === "continue" ? preview ?? source!.nextBillingDate : form.nextBillingDate } : null;
+  const memberDates = currentForm?.mode === "restart"
+    ? renewalMemberDateFields(source?.costSharing, currentForm.startDate, currentForm.nextBillingDate, memberDateDrafts) : [];
+  const setMemberDate = (id: string, value: DateOnly | undefined) => {
+    if (!value) return;
+    setMemberDateDrafts(current => new Map(current).set(id, value));
+    setMemberDateErrors(current => { const next = new Set(current); next.delete(id); return next; });
+    if (!recoveryRequired) setSubmitError(null);
+  };
 
   const setField = <K extends keyof RenewFormState>(key: K, value: RenewFormState[K]) => {
     setForm(current => current ? { ...current, [key]: value } : current);
     setErrors(current => ({ ...current, [key]: undefined }));
     if (!recoveryRequired) setSubmitError(null);
   };
-  const switchMode = (mode: RenewMode) => { setField("mode", mode); setErrors({}); };
+  const switchMode = (mode: RenewMode) => { setField("mode", mode); setErrors({}); setMemberDateErrors(new Set()); };
   const handleRestartStartDateChange = (value: DateOnly | undefined) => {
     if (!value || !source) return;
     setForm(current => {
@@ -106,11 +119,13 @@ export function useRenewSubscriptionForm({ subscription, today, submitting, curr
       return { ...current, startDate: value, nextBillingDate: next };
     });
     setErrors(current => ({ ...current, startDate: undefined, nextBillingDate: undefined }));
+    setMemberDateErrors(new Set());
   };
   const handleNextBillingDateChange = (value: DateOnly | undefined) => {
     if (!value) return;
     setForm(current => current ? { ...current, nextBillingDate: value, autoCalculateNextBillingDate: false } : null);
     setErrors(current => ({ ...current, nextBillingDate: undefined }));
+    setMemberDateErrors(new Set());
   };
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -122,7 +137,9 @@ export function useRenewSubscriptionForm({ subscription, today, submitting, curr
     if (currentForm.mode === "restart" && !currentForm.startDate) nextErrors.startDate = t("subscription.renew.validation.startDateRequired");
     if (currentForm.mode === "restart" && currentForm.startDate && compareDateOnly(currentForm.nextBillingDate, currentForm.startDate) < 0) nextErrors.nextBillingDate = t("subscription.validation.dateOrderInvalid");
     setErrors(nextErrors);
-    if (Object.values(nextErrors).some(Boolean) || price === null) {
+    const invalidMembers = new Set(memberDates.filter(member => member.invalid).map(member => member.id));
+    setMemberDateErrors(invalidMembers);
+    if (Object.values(nextErrors).some(Boolean) || invalidMembers.size > 0 || price === null) {
       requestAnimationFrame(() => formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]:not([disabled])')?.focus());
       return;
     }
@@ -136,6 +153,9 @@ export function useRenewSubscriptionForm({ subscription, today, submitting, curr
         startDate: currentForm.mode === "restart" ? currentForm.startDate : null,
         nextBillingDate: currentForm.nextBillingDate,
         autoCalculateNextBillingDate: currentForm.mode === "restart" ? currentForm.autoCalculateNextBillingDate : false,
+        ...(currentForm.mode === "restart" && memberDates.length > 0 ? {
+          costSharingMemberJoinedDates: memberDates.map(({ id, joinedDate }) => ({ id, joinedDate })),
+        } : {}),
       });
     } catch (error) {
       if (!mounted.current) return;
@@ -143,12 +163,13 @@ export function useRenewSubscriptionForm({ subscription, today, submitting, curr
       const uncertain = !(error instanceof ApiError) || error.status === 0 || error.status >= 500 || error.code === "invalid_response";
       const stale = error instanceof ApiError && (error.status === 409 || error.code === "SUBSCRIPTION_RENEW_NOT_ALLOWED");
       setRecoveryRequired(uncertain || stale);
-      setSubmitError(uncertain ? t("subscription.renew.resultUnknown") : error instanceof Error ? error.message : t("subscription.renew.loadFailed"));
+      setSubmitError(uncertain ? t("subscription.renew.resultUnknown") : getDisplayErrorMessage(error, t("subscription.renew.loadFailed")));
     } finally {
       lock.current = false;
       if (mounted.current) setSaving(false);
     }
   };
   return { source, currentForm, errors, setField, switchMode, handleRestartStartDateChange, handleNextBillingDateChange, submit,
+    memberDates, memberDateErrors, setMemberDate,
     refresh, refreshing, saving, notice, submitError, calculationError, metadataError, recoveryRequired };
 }

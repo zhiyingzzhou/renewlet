@@ -11,6 +11,8 @@ import { NumericInput } from "@/components/ui/numeric-input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { DateOnlyPickerField } from "@/components/date-only-picker-field";
+import { RenewSubscriptionMemberDates } from "@/components/renew-subscription-member-dates";
+import { getDisplayErrorMessage } from "@/lib/display-error";
 import { useCustomConfigState } from "@/contexts/CustomConfigContext";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useManagedCurrencyOptions } from "@/hooks/use-managed-currency-options";
@@ -59,12 +61,13 @@ export function RenewSubscriptionDialogContent({
   });
   const {
     source: subscription, currentForm, errors, setField, switchMode,
+    memberDates, memberDateErrors, setMemberDate,
     handleRestartStartDateChange, handleNextBillingDateChange, submit,
     refresh, refreshing, saving, notice, submitError, calculationError, metadataError, recoveryRequired,
   } = useRenewSubscriptionForm({ subscription: latestSubscription, today, submitting, currencyOptions: enabledCurrencyOptions, formRef, onSubmit, onRefresh });
   const currencyOptions = useManagedCurrencyOptions({ currencies: config.currencies, includeDisabledCurrent: currentForm?.currency ?? null, locale });
   const busy = submitting || saving || refreshing;
-  const visibleError = submitError ?? calculationError ?? metadataError ?? (error instanceof Error ? error.message : typeof error === "string" ? error : null);
+  const visibleError = submitError ?? calculationError ?? metadataError ?? (error ? getDisplayErrorMessage(error) : null);
   const titleSubscription = subscription ?? loadingPreview;
   const title = titleSubscription
     ? t("subscription.renew.title", { name: titleSubscription.name })
@@ -251,6 +254,8 @@ export function RenewSubscriptionDialogContent({
               </div>
             </div>
           )}
+          {restartMode && currentForm.startDate ? <RenewSubscriptionMemberDates members={memberDates} errors={memberDateErrors}
+            startDate={currentForm.startDate} nextBillingDate={currentForm.nextBillingDate} onChange={setMemberDate} /> : null}
         </>
       ) : null)}
       actions={loadingSlots?.actions ?? (

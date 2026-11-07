@@ -39,6 +39,28 @@ export interface CostSharing {
   collectionReminder?: CostSharingCollectionReminder | undefined;
 }
 
+/** 重开时只合并显式确认的日期；缺少调整的越界成员仍报错，不能在后端静默重置收款锚点。 */
+export function restartCostSharingMemberDates(
+  costSharing: CostSharing | undefined,
+  updates: readonly { id: string; joinedDate: string }[],
+  startDate: string,
+  nextBillingDate: string,
+): CostSharing | undefined {
+  const invalid = () => new Error("SUBSCRIPTION_RENEW_COST_SHARING_INVALID");
+  const members = costSharing?.enabled ? costSharing.members : [];
+  const memberIds = new Set(members.map((member) => member.id));
+  const dates = new Map<string, DateOnly>();
+  for (const update of updates) {
+    if (!memberIds.has(update.id) || dates.has(update.id) || !isValidDateOnly(update.joinedDate)) throw invalid();
+    dates.set(update.id, update.joinedDate as DateOnly);
+  }
+  if (!costSharing?.enabled) return costSharing;
+  const merged = { ...costSharing, members: members.map((member) => dates.has(member.id) ? { ...member, joinedDate: dates.get(member.id)! } : member) };
+  const range = { minDate: startDate as DateOnly, maxDate: nextBillingDate as DateOnly };
+  if (!merged.members.every((member) => costSharingMemberJoinedDateIsWithinRange(member, range))) throw invalid();
+  return merged;
+}
+
 export interface CostSharingSummary {
   enabled: boolean;
   total: number;

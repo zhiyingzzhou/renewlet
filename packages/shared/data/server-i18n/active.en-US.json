@@ -359,5 +359,6 @@
   "subscription.visibilityFailed": "Unable to update public visibility. Your selection is preserved; please retry.",
   "subscription.renewConflict": "The subscription or renewal date has changed. Refresh its details and confirm again.",
   "subscription.renewNotAllowed": "This subscription cannot be renewed manually in its current state.",
-  "subscription.renewInvalidDate": "The renewal date could not be calculated. Check the subscription dates and billing cycle."
+  "subscription.renewInvalidDate": "The renewal date could not be calculated. Check the subscription dates and billing cycle.",
+  "subscription.renewCostSharingInvalid": "Check member joining dates. Each date must be between the new start and due dates. Refresh renewal details if the members have changed."
 }

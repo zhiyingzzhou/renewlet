@@ -1,5 +1,5 @@
 // LogoPicker 测试覆盖私有资产、远端 URL、内置候选和上传状态，防止订阅 logo 契约回退到 data URL。
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { render as renderComponent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -60,6 +60,11 @@ vi.mock("@/lib/api-client", () => {
     apiFetch: mocks.apiFetch,
   };
 });
+
+// 选择器测试保留图片语义和交互，私有图片下载不属于候选选择与分页的验证边界。
+vi.mock("@/components/authorized-image", () => ({
+  AuthorizedImage: ({ alt, ...props }: ComponentProps<"img">) => <img alt={alt} {...props} />,
+}));
 
 vi.mock("@/hooks/use-cropped-image-upload", () => ({
   useCroppedImageUpload: (options: { onChange: (value: string | undefined) => void }) => ({

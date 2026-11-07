@@ -371,14 +371,28 @@ type calendarFeedCreateRequest struct{}
 
 // subscriptionRenewRequest 是手动续订的显式 payload；URL id 和当前登录用户仍是 owner 写入边界。
 type subscriptionRenewRequest struct {
-	ExpectedNextBillingDate      string                    `json:"expectedNextBillingDate"`
-	ExpectedUpdatedAt            string                    `json:"expectedUpdatedAt"`
-	Mode                         string                    `json:"mode"`
-	Price                        string                    `json:"price"`
-	Currency                     string                    `json:"currency"`
-	StartDate                    optionalJSONField[string] `json:"startDate"`
-	NextBillingDate              string                    `json:"nextBillingDate"`
-	AutoCalculateNextBillingDate bool                      `json:"autoCalculateNextBillingDate"`
+	ExpectedNextBillingDate      string                                           `json:"expectedNextBillingDate"`
+	ExpectedUpdatedAt            string                                           `json:"expectedUpdatedAt"`
+	Mode                         string                                           `json:"mode"`
+	Price                        string                                           `json:"price"`
+	Currency                     string                                           `json:"currency"`
+	StartDate                    optionalJSONField[string]                        `json:"startDate"`
+	NextBillingDate              string                                           `json:"nextBillingDate"`
+	AutoCalculateNextBillingDate bool                                             `json:"autoCalculateNextBillingDate"`
+	CostSharingMemberJoinedDates optionalJSONField[[]subscriptionRenewMemberDate] `json:"costSharingMemberJoinedDates"`
+}
+
+type subscriptionRenewMemberDate struct {
+	ID         string `json:"id"`
+	JoinedDate string `json:"joinedDate"`
+}
+
+func (r *subscriptionRenewMemberDate) UnmarshalJSON(data []byte) error {
+	// optionalJSONField 的泛型解码不继承外层 DisallowUnknownFields，成员日期字段必须自行保持严格边界。
+	type memberDate subscriptionRenewMemberDate
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	return decoder.Decode((*memberDate)(r))
 }
 
 func (r *subscriptionRenewRequest) Validate(locale appLocale) error {
@@ -422,6 +436,21 @@ func (r *subscriptionRenewRequest) Validate(locale appLocale) error {
 	}
 	if r.StartDate.Set && !r.StartDate.Null && r.StartDate.Value != "" && r.NextBillingDate < r.StartDate.Value {
 		return errors.New(serverText(locale, "common.invalidRequestParameters"))
+	}
+	if r.CostSharingMemberJoinedDates.Set {
+		if r.Mode != "restart" || r.CostSharingMemberJoinedDates.Null || len(r.CostSharingMemberJoinedDates.Value) > 20 {
+			return errors.New(serverText(locale, "subscription.renewCostSharingInvalid"))
+		}
+		seen := map[string]bool{}
+		for i := range r.CostSharingMemberJoinedDates.Value {
+			member := &r.CostSharingMemberJoinedDates.Value[i]
+			member.ID = strings.TrimSpace(member.ID)
+			member.JoinedDate = strings.TrimSpace(member.JoinedDate)
+			if member.ID == "" || len([]rune(member.ID)) > 80 || seen[member.ID] || !isValidDateOnly(member.JoinedDate) {
+				return errors.New(serverText(locale, "subscription.renewCostSharingInvalid"))
+			}
+			seen[member.ID] = true
+		}
 	}
 	return nil
 }

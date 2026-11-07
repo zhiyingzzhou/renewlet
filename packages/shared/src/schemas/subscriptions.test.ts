@@ -296,6 +296,18 @@ describe("subscription renew request contract", () => {
     autoCalculateNextBillingDate: false,
   } as const;
 
+  it("accepts only bounded, unique member date updates in restart mode", () => {
+    const body = { ...renewBody, mode: "restart", startDate: "2026-07-01" };
+    const member = { id: "member-1", joinedDate: "2026-07-01" };
+    expect(subscriptionRenewBodySchema.safeParse({ ...body, costSharingMemberJoinedDates: [member] }).success).toBe(true);
+    for (const members of [null, {}, [null], [member, member], [{ ...member, joinedDate: "2026-02-30" }],
+      [{ ...member, joinedDate: null }], [{ ...member, name: "replacement" }], [{ ...member, id: "" }],
+      Array.from({ length: 21 }, (_, id) => ({ ...member, id: String(id) }))]) {
+      expect(subscriptionRenewBodySchema.safeParse({ ...body, costSharingMemberJoinedDates: members }).success).toBe(false);
+    }
+    expect(subscriptionRenewBodySchema.safeParse({ ...renewBody, costSharingMemberJoinedDates: [] }).success).toBe(false);
+  });
+
   it("requires valid, exact renewal preconditions", () => {
     for (const patch of [
       { expectedNextBillingDate: undefined }, { expectedUpdatedAt: undefined },

@@ -14,47 +14,47 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:357
+#: src/i18n/descriptors/subscription.ts:362
 msgid "subscriptions.advanced.previewSeparator"
 msgstr ", "
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:665
+#: src/i18n/descriptors/subscription.ts:670
 msgid "statistics.trendAccessibleItemSeparator"
 msgstr "; "
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:272
+#: src/i18n/descriptors/subscription.ts:277
 msgid "subscriptions.filteredCount"
 msgstr "(из {count})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:682
+#: src/i18n/descriptors/subscription.ts:687
 msgid "statistics.monthlyCostHint"
 msgstr "(в среднем за месяц)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:684
+#: src/i18n/descriptors/subscription.ts:689
 msgid "statistics.monthlyBudgetHint"
 msgstr "(бюджет на месяц: {amount})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:637
+#: src/i18n/descriptors/subscription.ts:642
 msgid "statistics.ratesUpdatedAt"
 msgstr "(курсы обновлены {date})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:683
+#: src/i18n/descriptors/subscription.ts:688
 msgid "statistics.subscriptionCountHint"
 msgstr "(количество подписок)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:714
+#: src/i18n/descriptors/subscription.ts:719
 msgid "calendar.renewalCount"
 msgstr "{count, plural, one {# событие} few {# события} many {# событий} other {# события}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:675
+#: src/i18n/descriptors/subscription.ts:680
 msgid "statistics.trendDetailsCount"
 msgstr "Подписок: {count}"
 
@@ -64,147 +64,152 @@ msgid "subscription.costSharing.memberCount"
 msgstr "{count, plural, one {# участник} few {# участника} many {# участников} other {# участника}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:594
+#: src/i18n/descriptors/subscription.ts:599
 msgid "aiRecognition.draftsCount"
 msgstr "{count, plural, one {# черновик} few {# черновика} many {# черновиков} other {# черновика}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:595
+#: src/i18n/descriptors/subscription.ts:600
 msgid "aiRecognition.draftsCountWithElapsed"
 msgstr "{count, plural, one {# черновик} few {# черновика} many {# черновиков} other {# черновика}} · создано за {seconds} с"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:596
+#: src/i18n/descriptors/subscription.ts:601
 msgid "aiRecognition.draftBlockingSummary"
 msgstr "В {count, plural, one {# черновике} few {# черновиках} many {# черновиках} other {# черновика}} нужно заполнить обязательные поля ({issues}), прежде чем создать предпросмотр импорта."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:454
+#: src/i18n/descriptors/subscription.ts:459
 msgid "import.previewCount"
 msgstr "{count, plural, one {# запись} few {# записи} many {# записей} other {# записи}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:356
+#: src/i18n/descriptors/subscription.ts:361
 msgid "subscriptions.advanced.selectionCount"
 msgstr "{count, plural, one {Выбран #} few {Выбрано #} many {Выбрано #} other {Выбрано #}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:563
+#: src/i18n/descriptors/subscription.ts:568
 msgid "aiRecognition.imageCount"
 msgstr "Изображения: {count}/{max}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:666
+#: src/i18n/descriptors/subscription.ts:671
 msgid "statistics.trendItemSingleDate"
 msgstr "{date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:724
+#: src/i18n/descriptors/subscription.ts:729
 msgid "calendar.dayRenewalCount"
 msgstr "{date}: {count, plural, one {# событие} few {# события} many {# событий} other {# события}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:667
+#: src/i18n/descriptors/subscription.ts:672
 msgid "statistics.trendItemSingleDateCount"
 msgstr "{date} ×{count}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:706
+#: src/i18n/descriptors/subscription.ts:711
 msgid "upcoming.expiresOn"
 msgstr "Истекает {date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:705
+#: src/i18n/descriptors/subscription.ts:710
 msgid "upcoming.renewsOn"
 msgstr "Продление {date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:723
+#: src/i18n/descriptors/subscription.ts:728
 msgid "calendar.dayRenewals"
 msgstr "Продления и окончания {date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:258
+#: src/i18n/descriptors/subscription.ts:263
 msgid "subscription.card.expiresInDays"
 msgstr "Истекает через {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:256
+#: src/i18n/descriptors/subscription.ts:261
 msgid "subscription.card.renewsInDays"
 msgstr "Продление через {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:704
+#: src/i18n/descriptors/subscription.ts:709
 msgid "upcoming.daysShort"
 msgstr "{days} дн."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:489
+#: src/i18n/descriptors/subscription.ts:494
 msgid "import.warning.dateInvalid"
 msgstr "{field}: значение отсутствует или неверно. Renewlet использовал {fallback}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:362
+#: src/i18n/descriptors/subscription.ts:367
 msgid "subscriptions.advanced.rangeSummary"
 msgstr "{from} — {to}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:672
+#: src/i18n/descriptors/subscription.ts:677
 msgid "statistics.trendDetailsTitle"
 msgstr "Подробности за {month}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:663
+#: src/i18n/descriptors/subscription.ts:668
 msgid "statistics.trendAccessibleItem"
 msgstr "{month}: предстоящие списания {cashflow}, позиций: {cashflowItems}; распределённые расходы в месяц {amortized}, позиций: {amortizedItems}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:664
+#: src/i18n/descriptors/subscription.ts:669
 msgid "statistics.trendAccessibleItemDetail"
 msgstr "{name} {amount}, {meta}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:485
+#: src/i18n/descriptors/subscription.ts:490
 msgid "import.warning.forSubscription"
 msgstr "{name}: {warning}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:558
+#: src/i18n/descriptors/subscription.ts:230
+msgid "subscription.renew.memberDates.label"
+msgstr "Дата присоединения: {name}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:563
 msgid "aiRecognition.imageSizeBytes"
 msgstr "{size} Б"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:559
+#: src/i18n/descriptors/subscription.ts:564
 msgid "aiRecognition.imageSizeKb"
 msgstr "{size} КБ"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:560
+#: src/i18n/descriptors/subscription.ts:565
 msgid "aiRecognition.imageSizeMb"
 msgstr "{size} МБ"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:668
+#: src/i18n/descriptors/subscription.ts:673
 msgid "statistics.trendItemDateRange"
 msgstr "{start} - {end} ×{count}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:660
+#: src/i18n/descriptors/subscription.ts:665
 msgid "statistics.trendMonthLabel"
 msgstr "{year}-{month}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:632
+#: src/i18n/descriptors/subscription.ts:637
 msgid "statistics.perMonth"
 msgstr "/ мес."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:358
+#: src/i18n/descriptors/subscription.ts:363
 msgid "subscriptions.advanced.previewOverflow"
 msgstr "+{count}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:712
+#: src/i18n/descriptors/subscription.ts:717
 msgid "calendar.more"
 msgstr "Ещё {count}"
 
@@ -214,167 +219,167 @@ msgid "subscription.priceReference"
 msgstr "≈ {amount}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:527
+#: src/i18n/descriptors/subscription.ts:532
 msgid "import.warning.aiLowConfidence"
 msgstr "ИИ не уверен в данных этой подписки. Подтвердите их перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:519
+#: src/i18n/descriptors/subscription.ts:524
 msgid "import.warning.aiConfigSuggested"
 msgstr "ИИ предложил новую категорию или способ оплаты. Подтвердите их перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:511
+#: src/i18n/descriptors/subscription.ts:516
 msgid "import.warning.aiGroupSuggestions"
 msgstr "Предложения AI"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:613
+#: src/i18n/descriptors/subscription.ts:618
 msgid "aiRecognition.suggestedMetadata"
 msgstr "Поля, предложенные ИИ: {fields}. Подтвердите их перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:530
+#: src/i18n/descriptors/subscription.ts:535
 msgid "import.warning.aiPriceUncertain"
 msgstr "ИИ не смог уверенно определить цену. Проверьте её перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:518
+#: src/i18n/descriptors/subscription.ts:523
 msgid "import.warning.aiCategoryUncertain"
 msgstr "ИИ не смог уверенно определить категорию. Проверьте её перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:517
+#: src/i18n/descriptors/subscription.ts:522
 msgid "import.warning.aiBillingCycleUncertain"
 msgstr "ИИ не смог уверенно определить период оплаты. Проверьте его перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:531
+#: src/i18n/descriptors/subscription.ts:536
 msgid "import.warning.aiPaymentMethodUncertain"
 msgstr "ИИ не смог уверенно определить способ оплаты. Проверьте его перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:524
+#: src/i18n/descriptors/subscription.ts:529
 msgid "import.warning.aiDateUncertain"
 msgstr "ИИ не смог уверенно определить дату. Проверьте её перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:536
+#: src/i18n/descriptors/subscription.ts:541
 msgid "import.warning.aiStatusUncertain"
 msgstr "ИИ не смог уверенно определить статус подписки. Проверьте его перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:521
+#: src/i18n/descriptors/subscription.ts:526
 msgid "import.warning.aiCurrencyUncertain"
 msgstr "ИИ не смог уверенно определить валюту. Проверьте её перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:538
+#: src/i18n/descriptors/subscription.ts:543
 msgid "import.warning.aiWebsiteUncertain"
 msgstr "ИИ не смог уверенно определить официальный сайт. Проверьте поле «Сайт»."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:576
+#: src/i18n/descriptors/subscription.ts:581
 msgid "aiRecognition.recognizeFailedDescription"
 msgstr "Не удалось распознать с помощью ИИ. Проверьте ввод и настройки модели."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:279
+#: src/i18n/descriptors/subscription.ts:284
 msgid "subscriptions.aiRecognizeAdd"
 msgstr "Добавить с помощью ИИ"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:539
+#: src/i18n/descriptors/subscription.ts:544
 msgid "aiRecognition.dialogTitle"
 msgstr "Распознавание подписок с помощью ИИ"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:525
+#: src/i18n/descriptors/subscription.ts:530
 msgid "import.warning.aiEmptySubscriptionSkipped"
 msgstr "ИИ вернул пустую подписку, она пропущена."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:526
+#: src/i18n/descriptors/subscription.ts:531
 msgid "import.warning.aiGeneric"
 msgstr "ИИ оставил замечание, которое нужно проверить. Проверьте этот черновик."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:528
+#: src/i18n/descriptors/subscription.ts:533
 msgid "import.warning.aiOneTimeTermInvalid"
 msgstr "ИИ вернул неверный срок разовой услуги. Исправьте его в черновике."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:529
+#: src/i18n/descriptors/subscription.ts:534
 msgid "import.warning.aiPriceInvalid"
 msgstr "ИИ вернул неверную цену. Исправьте её в черновике."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:516
+#: src/i18n/descriptors/subscription.ts:521
 msgid "import.warning.aiBillingCycleInvalid"
 msgstr "ИИ вернул неверный период оплаты. Исправьте его в черновике."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:532
+#: src/i18n/descriptors/subscription.ts:537
 msgid "import.warning.aiReminderInvalid"
 msgstr "ИИ вернул неверные настройки напоминания. Исправьте их в черновике."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:523
+#: src/i18n/descriptors/subscription.ts:528
 msgid "import.warning.aiDateInvalid"
 msgstr "ИИ вернул неверную дату. Исправьте её в черновике."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:522
+#: src/i18n/descriptors/subscription.ts:527
 msgid "import.warning.aiCustomCycleInvalid"
 msgstr "ИИ вернул неверный пользовательский период. Исправьте его в черновике."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:537
+#: src/i18n/descriptors/subscription.ts:542
 msgid "import.warning.aiTooManySubscriptionsTruncated"
 msgstr "ИИ вернул больше подписок, чем допускает лимит, поэтому Renewlet оставил первые 100."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:535
+#: src/i18n/descriptors/subscription.ts:540
 msgid "import.warning.aiStatusInvalid"
 msgstr "ИИ вернул неверный статус подписки. Исправьте его в черновике."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:520
+#: src/i18n/descriptors/subscription.ts:525
 msgid "import.warning.aiCurrencyInvalid"
 msgstr "ИИ вернул неверную валюту. Исправьте её в черновике."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:533
+#: src/i18n/descriptors/subscription.ts:538
 msgid "import.warning.aiRepeatReminderInvalid"
 msgstr "ИИ вернул неверные настройки повторного напоминания. Исправьте их в черновике."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:426
+#: src/i18n/descriptors/subscription.ts:431
 msgid "import.wallosGuideApiTitle"
 msgstr "API JSON"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:433
+#: src/i18n/descriptors/subscription.ts:438
 msgid "import.wallosGuideZipTitle"
 msgstr "backup.zip"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:409
+#: src/i18n/descriptors/subscription.ts:414
 msgid "import.wallosGuideDescription"
 msgstr "backup.zip содержит базу данных и логотипы. UI JSON подходит только для простого переноса."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:435
+#: src/i18n/descriptors/subscription.ts:440
 msgid "import.wallosGuideValueCode"
 msgstr "code"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:429
+#: src/i18n/descriptors/subscription.ts:434
 msgid "import.wallosGuideValueCodeOrId"
 msgstr "code / id"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:434
+#: src/i18n/descriptors/subscription.ts:439
 msgid "import.wallosGuideZipNote"
 msgstr "База данных + локальные логотипы"
 
@@ -389,17 +394,17 @@ msgid "subscription.addToCalendarDownloadFailed"
 msgstr "Не удалось создать файл ICS"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:416
+#: src/i18n/descriptors/subscription.ts:421
 msgid "import.wallosGuideColumnLogo"
 msgstr "Логотип"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:479
+#: src/i18n/descriptors/subscription.ts:484
 msgid "import.assetProgress"
 msgstr "Логотипы {done}/{total}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:445
+#: src/i18n/descriptors/subscription.ts:450
 msgid "import.assetUploadFailed"
 msgstr "Не удалось загрузить логотип. Удалите проблемный логотип и попробуйте снова."
 
@@ -409,67 +414,67 @@ msgid "subscription.addToCalendarCalendarName"
 msgstr "Renewlet - {name}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:419
+#: src/i18n/descriptors/subscription.ts:424
 msgid "import.wallosGuideJsonTitle"
 msgstr "UI JSON"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:496
+#: src/i18n/descriptors/subscription.ts:501
 msgid "import.warning.wallosCurrencyIdOnly"
 msgstr "В данных API Wallos есть только currency_id, без currencies.code. Renewlet использовал текущую валюту по умолчанию."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:492
+#: src/i18n/descriptors/subscription.ts:497
 msgid "import.warning.wallosMissingLogoFile"
 msgstr "Файла логотипа Wallos нет в этом пакете импорта. Логотип пропущен, его можно изменить в предпросмотре."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:491
+#: src/i18n/descriptors/subscription.ts:496
 msgid "import.warning.wallosExternalLogo"
 msgstr "Логотип Wallos — внешний URL, он сохранён без изменений."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:499
+#: src/i18n/descriptors/subscription.ts:504
 msgid "import.error.wallosTableTooLarge"
 msgstr "В таблице SQLite из Wallos больше 1000 строк. Разделите резервную копию перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:488
+#: src/i18n/descriptors/subscription.ts:493
 msgid "import.warning.wallosDisplayLowConfidence"
 msgstr "UI JSON из Wallos не содержит исходных ID. При повторном импорте записи сопоставляются по названию, сайту, категории и периоду оплаты."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:497
+#: src/i18n/descriptors/subscription.ts:502
 msgid "import.warning.currencySymbolAmbiguous"
 msgstr "Символ цены {symbol} в Wallos может обозначать несколько валют. Импортировано как {currency}; это можно изменить в предпросмотре."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:483
+#: src/i18n/descriptors/subscription.ts:488
 msgid "import.field.wallosDueDate"
 msgstr "Дата платежа в Wallos"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:484
+#: src/i18n/descriptors/subscription.ts:489
 msgid "import.field.wallosStartDate"
 msgstr "Дата начала в Wallos"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:408
+#: src/i18n/descriptors/subscription.ts:413
 msgid "import.wallosGuideTitle"
 msgstr "Об источниках Wallos"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:447
+#: src/i18n/descriptors/subscription.ts:452
 msgid "import.wallosUser"
 msgstr "Пользователь Wallos"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:495
+#: src/i18n/descriptors/subscription.ts:500
 msgid "import.warning.wallosNotifyDisabled"
 msgstr "У этой подписки в Wallos уведомления были выключены, поэтому она импортирована с настройкой «Не напоминать». Это можно изменить в предпросмотре."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:438
+#: src/i18n/descriptors/subscription.ts:443
 msgid "import.wallosGuideDbTitle"
 msgstr "wallos.db"
 
@@ -479,7 +484,7 @@ msgid "subscription.oneTimeDateHelp"
 msgstr "Для разовых покупок следующая дата продления не рассчитывается автоматически."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:493
+#: src/i18n/descriptors/subscription.ts:498
 msgid "import.warning.wallosOneTime"
 msgstr "Разовая покупка импортирована как выкуп и не будет продлеваться автоматически."
 
@@ -489,7 +494,7 @@ msgid "subscription.field.oneTimeMode"
 msgstr "Тип разовой покупки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:709
+#: src/i18n/descriptors/subscription.ts:714
 msgid "calendar.previousMonth"
 msgstr "Предыдущий месяц"
 
@@ -499,17 +504,17 @@ msgid "subscription.costSharing.memberJoinedDate"
 msgstr "Дата начала участия"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:710
+#: src/i18n/descriptors/subscription.ts:715
 msgid "calendar.nextMonth"
 msgstr "Следующий месяц"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:242
+#: src/i18n/descriptors/subscription.ts:247
 msgid "subscription.detail.nextBilling"
 msgstr "Следующее списание"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:719
+#: src/i18n/descriptors/subscription.ts:724
 msgid "calendar.nextBilling"
 msgstr "Следующее списание"
 
@@ -534,12 +539,12 @@ msgid "subscription.reminderDisabledCsv"
 msgstr "Без напоминаний"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:265
+#: src/i18n/descriptors/subscription.ts:270
 msgid "subscription.card.reminderDisabled"
 msgstr "Без напоминаний"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:371
+#: src/i18n/descriptors/subscription.ts:376
 msgid "subscriptions.advanced.reminderDisabled"
 msgstr "Без напоминания"
 
@@ -549,12 +554,12 @@ msgid "subscription.reminderDisabled"
 msgstr "Не напоминать"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:339
+#: src/i18n/descriptors/subscription.ts:344
 msgid "subscriptions.advanced.any"
 msgstr "Любой"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:420
+#: src/i18n/descriptors/subscription.ts:425
 msgid "import.wallosGuideJsonNote"
 msgstr "Экспорт из профиля"
 
@@ -579,47 +584,47 @@ msgid "subscription.addToCalendarEventType"
 msgstr "Тип события"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:551
+#: src/i18n/descriptors/subscription.ts:556
 msgid "aiRecognition.imageInvalid"
 msgstr "Поддерживаются только изображения PNG, JPG или WebP размером до 5 МБ."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:440
+#: src/i18n/descriptors/subscription.ts:445
 msgid "import.wallosGuideValueFilenameOnly"
 msgstr "Только имя файла"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:366
+#: src/i18n/descriptors/subscription.ts:371
 msgid "subscriptions.advanced.unpinnedOnly"
 msgstr "Только незакреплённые"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:422
+#: src/i18n/descriptors/subscription.ts:427
 msgid "import.wallosGuideValueDefaultCurrency"
 msgstr "Только символ"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:365
+#: src/i18n/descriptors/subscription.ts:370
 msgid "subscriptions.advanced.pinnedOnly"
 msgstr "Только закреплённые"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:703
+#: src/i18n/descriptors/subscription.ts:708
 msgid "upcoming.todayShort"
 msgstr "Сегодня"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:257
+#: src/i18n/descriptors/subscription.ts:262
 msgid "subscription.card.expiresToday"
 msgstr "Истекает сегодня"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:255
+#: src/i18n/descriptors/subscription.ts:260
 msgid "subscription.card.renewsToday"
 msgstr "Продление сегодня"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:377
+#: src/i18n/descriptors/subscription.ts:382
 msgid "subscriptions.advanced.chipFrom"
 msgstr "С {date}"
 
@@ -629,22 +634,22 @@ msgid "subscription.publicHidden"
 msgstr "Скрыть на публичной странице"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:232
+#: src/i18n/descriptors/subscription.ts:237
 msgid "subscription.publicHide"
 msgstr "Скрыть на публичной странице"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:700
+#: src/i18n/descriptors/subscription.ts:705
 msgid "dashboard.emptyTitle"
 msgstr "Начните с первой подписки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:248
+#: src/i18n/descriptors/subscription.ts:253
 msgid "subscription.detail.paymentType"
 msgstr "Тип оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:296
+#: src/i18n/descriptors/subscription.ts:301
 msgid "subscriptions.paymentTypeFilter.label"
 msgstr "Тип оплаты"
 
@@ -654,7 +659,7 @@ msgid "subscription.field.price"
 msgstr "Цена"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:386
+#: src/i18n/descriptors/subscription.ts:391
 msgid "subscriptions.csv.price"
 msgstr "Цена"
 
@@ -664,27 +669,27 @@ msgid "subscription.oneTimeTermHelp"
 msgstr "Цена распределяется на весь срок обслуживания при расчёте средних расходов в месяц и в год. Об окончании срока можно напомнить, но оно не считается автопродлением."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:556
+#: src/i18n/descriptors/subscription.ts:561
 msgid "aiRecognition.imageOptimizingCount"
 msgstr "Оптимизация: {count, plural, one {# изображение} few {# изображения} many {# изображений} other {# изображения}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:250
+#: src/i18n/descriptors/subscription.ts:255
 msgid "subscription.publicVisibilityVisible"
 msgstr "Видна"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:601
+#: src/i18n/descriptors/subscription.ts:606
 msgid "aiRecognition.confidenceLowShort"
 msgstr "Низкая уверенность"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:606
+#: src/i18n/descriptors/subscription.ts:611
 msgid "aiRecognition.draftFilterLowConfidence"
 msgstr "Низкая уверенность"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:600
+#: src/i18n/descriptors/subscription.ts:605
 msgid "aiRecognition.confidenceLow"
 msgstr "Низкая уверенность, проверьте внимательно"
 
@@ -699,12 +704,12 @@ msgid "subscription.costSharing.yourShare"
 msgstr "Ваша доля"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:540
+#: src/i18n/descriptors/subscription.ts:545
 msgid "aiRecognition.dialogDescription"
 msgstr "Настроенная модель ИИ создаст редактируемые черновики подписок — проверьте их перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:626
+#: src/i18n/descriptors/subscription.ts:631
 msgid "aiRecognition.useCurrentDraftValue"
 msgstr "Использовать текущее значение"
 
@@ -729,12 +734,12 @@ msgid "subscription.balanceRemoveHint"
 msgstr "При сохранении записанный баланс будет удалён."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:472
+#: src/i18n/descriptors/subscription.ts:477
 msgid "import.logoEdit"
 msgstr "Изменить логотип"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:475
+#: src/i18n/descriptors/subscription.ts:480
 msgid "import.logoEditTitle"
 msgstr "Изменить логотип для импорта"
 
@@ -744,87 +749,87 @@ msgid "subscription.dialogEditDescription"
 msgstr "Измените название, цену, период, даты, логотип и теги подписки."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:653
+#: src/i18n/descriptors/subscription.ts:658
 msgid "statistics.annualSavings"
 msgstr "Экономия за год на неактивных подписках"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:651
+#: src/i18n/descriptors/subscription.ts:656
 msgid "statistics.monthlySavings"
 msgstr "Экономия за месяц на неактивных подписках"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:654
+#: src/i18n/descriptors/subscription.ts:659
 msgid "statistics.annualSavingsDescription"
 msgstr "Месячная экономия на неактивных подписках, умноженная на 12, — оценка сэкономленных за год расходов."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:614
+#: src/i18n/descriptors/subscription.ts:619
 msgid "aiRecognition.draftBlockingEditorTitle"
 msgstr "Сначала заполните {count, plural, one {# обязательное поле} few {# обязательных поля} many {# обязательных полей} other {# обязательного поля}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:281
+#: src/i18n/descriptors/subscription.ts:286
 msgid "subscriptions.bulkVisibilitySelectPage"
 msgstr "Выбрать все"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:282
+#: src/i18n/descriptors/subscription.ts:287
 msgid "subscriptions.bulkVisibilitySelectLoaded"
 msgstr "Выбрать все на странице"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:465
+#: src/i18n/descriptors/subscription.ts:470
 msgid "import.filter.all"
 msgstr "Все"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:604
+#: src/i18n/descriptors/subscription.ts:609
 msgid "aiRecognition.draftFilterAll"
 msgstr "Все"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:348
+#: src/i18n/descriptors/subscription.ts:353
 msgid "subscriptions.advanced.allPaymentMethods"
 msgstr "Все способы оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:353
+#: src/i18n/descriptors/subscription.ts:358
 msgid "subscriptions.advanced.allCurrencies"
 msgstr "Все валюты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:249
+#: src/i18n/descriptors/subscription.ts:254
 msgid "subscription.detail.publicVisibility"
 msgstr "Публичный статус"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:369
+#: src/i18n/descriptors/subscription.ts:374
 msgid "subscriptions.advanced.publicVisibleOnly"
 msgstr "Видимые на публичной странице"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:367
+#: src/i18n/descriptors/subscription.ts:372
 msgid "subscriptions.advanced.publicHidden"
 msgstr "Видимость на публичной странице"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:368
+#: src/i18n/descriptors/subscription.ts:373
 msgid "subscriptions.advanced.publicHiddenOnly"
 msgstr "Скрытые на публичной странице"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:271
+#: src/i18n/descriptors/subscription.ts:276
 msgid "subscriptions.count"
 msgstr "{count, plural, one {# подписка} few {# подписки} many {# подписок} other {# подписки}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:691
+#: src/i18n/descriptors/subscription.ts:696
 msgid "dashboard.totalSubscriptions"
 msgstr "Всего {count, plural, one {# подписка} few {# подписки} many {# подписок} other {# подписки}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:341
+#: src/i18n/descriptors/subscription.ts:346
 msgid "subscriptions.advanced.no"
 msgstr "Выкл."
 
@@ -834,27 +839,27 @@ msgid "subscription.reminderDisabledHelp"
 msgstr "Напоминание об окончании не отправляется, повторные напоминания выключены."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:550
+#: src/i18n/descriptors/subscription.ts:555
 msgid "aiRecognition.imageLimit"
 msgstr "Можно загрузить не более {count, plural, one {# изображения} few {# изображений} many {# изображений} other {# изображения}}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:646
+#: src/i18n/descriptors/subscription.ts:651
 msgid "statistics.mostExpensive"
 msgstr "Самая дорогая подписка"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:647
+#: src/i18n/descriptors/subscription.ts:652
 msgid "statistics.mostExpensiveNamed"
 msgstr "Самая дорогая: {name}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:450
+#: src/i18n/descriptors/subscription.ts:455
 msgid "import.conflictMode"
 msgstr "Обработка конфликтов"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:584
+#: src/i18n/descriptors/subscription.ts:589
 msgid "aiRecognition.streamStatus.error"
 msgstr "Ошибка"
 
@@ -869,22 +874,22 @@ msgid "subscription.field.category"
 msgstr "Категория"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:241
+#: src/i18n/descriptors/subscription.ts:246
 msgid "subscription.detail.category"
 msgstr "Категория"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:313
+#: src/i18n/descriptors/subscription.ts:318
 msgid "subscriptions.category.open"
 msgstr "Категория"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:389
+#: src/i18n/descriptors/subscription.ts:394
 msgid "subscriptions.csv.category"
 msgstr "Категория"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:718
+#: src/i18n/descriptors/subscription.ts:723
 msgid "calendar.category"
 msgstr "Категория"
 
@@ -894,12 +899,12 @@ msgid "subscription.addToCalendar.description.category"
 msgstr "Категория: {category}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:314
+#: src/i18n/descriptors/subscription.ts:319
 msgid "subscriptions.category.selectedCount"
 msgstr "Категории ({count})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:679
+#: src/i18n/descriptors/subscription.ts:684
 msgid "statistics.categoryView"
 msgstr "По категориям"
 
@@ -914,17 +919,17 @@ msgid "subscription.tags.create"
 msgstr "Создать тег «{tag}»"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:378
+#: src/i18n/descriptors/subscription.ts:383
 msgid "subscriptions.advanced.chipTo"
 msgstr "До {date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:259
+#: src/i18n/descriptors/subscription.ts:264
 msgid "subscription.card.expiresPrefix"
 msgstr "Истекает: {date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:262
+#: src/i18n/descriptors/subscription.ts:267
 msgid "subscription.card.duePrefix"
 msgstr "Оплата: {date}"
 
@@ -934,12 +939,12 @@ msgid "subscription.addToCalendarExpiryEvent"
 msgstr "Окончание срока"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:304
+#: src/i18n/descriptors/subscription.ts:309
 msgid "subscriptions.sort.renewalAsc"
 msgstr "Сначала ближайшие продления"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:305
+#: src/i18n/descriptors/subscription.ts:310
 msgid "subscriptions.sort.renewalDesc"
 msgstr "Сначала поздние продления"
 
@@ -959,12 +964,12 @@ msgid "subscription.field.nextBillingDate"
 msgstr "Дата продления"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:243
+#: src/i18n/descriptors/subscription.ts:248
 msgid "subscription.detail.expiryDate"
 msgstr "Дата окончания"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:392
+#: src/i18n/descriptors/subscription.ts:397
 msgid "subscriptions.csv.nextBillingDate"
 msgstr "Дата продления"
 
@@ -979,7 +984,7 @@ msgid "subscription.oneTimeTermDateHelp"
 msgstr "Дата окончания рассчитывается по дате покупки и сроку обслуживания."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:638
+#: src/i18n/descriptors/subscription.ts:643
 msgid "statistics.refreshRates"
 msgstr "Обновить курсы"
 
@@ -989,7 +994,7 @@ msgid "subscription.renew.refresh"
 msgstr "Обновить данные продления"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:635
+#: src/i18n/descriptors/subscription.ts:640
 msgid "statistics.budgetRemaining"
 msgstr "Остаток бюджета"
 
@@ -1009,12 +1014,12 @@ msgid "subscription.validation.tagTooLong"
 msgstr "Тег не может быть длиннее {count, plural, one {# символа} few {# символов} many {# символов} other {# символа}}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:309
+#: src/i18n/descriptors/subscription.ts:314
 msgid "subscriptions.sort.priceAsc"
 msgstr "Сначала меньший платёж"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:308
+#: src/i18n/descriptors/subscription.ts:313
 msgid "subscriptions.sort.priceDesc"
 msgstr "Сначала больший платёж"
 
@@ -1024,37 +1029,42 @@ msgid "subscription.addToCalendarOneTimeAdd"
 msgstr "Добавить однократно"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:676
+#: src/i18n/descriptors/subscription.ts:681
 msgid "statistics.trendDetailsShareLabel"
 msgstr "{percent} от общей суммы"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:692
+#: src/i18n/descriptors/subscription.ts:697
 msgid "dashboard.upcomingRenewals"
 msgstr "Ближайшие продления"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:428
+#: src/i18n/descriptors/subscription.ts:433
 msgid "import.wallosGuideValueOriginalId"
 msgstr "Исходный ID"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:557
+#: src/i18n/descriptors/subscription.ts:562
 msgid "aiRecognition.imageOptimizedFrom"
 msgstr "Исходный размер: {size}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:414
+#: src/i18n/descriptors/subscription.ts:419
 msgid "import.wallosGuideColumnId"
 msgstr "Исходный ID"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:543
+#: src/i18n/descriptors/subscription.ts:231
+msgid "subscription.renew.memberDates.original"
+msgstr "Прежняя дата: {date}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:548
 msgid "aiRecognition.openSettings"
 msgstr "Открыть настройки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:231
+#: src/i18n/descriptors/subscription.ts:236
 msgid "subscription.unpin"
 msgstr "Открепить"
 
@@ -1064,7 +1074,7 @@ msgid "subscription.oneTimeBuyoutDateHelp"
 msgstr "Сохраняется только дата покупки, подписка не попадает в календари продлений и окончаний."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:476
+#: src/i18n/descriptors/subscription.ts:481
 msgid "import.logoPreviewHint"
 msgstr "Влияет только на этот импорт. При предпросмотре файлы не загружаются."
 
@@ -1074,22 +1084,22 @@ msgid "subscription.costSharing.recoverableAmount"
 msgstr "К получению"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:455
+#: src/i18n/descriptors/subscription.ts:460
 msgid "import.ready"
 msgstr "Готово"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:581
+#: src/i18n/descriptors/subscription.ts:586
 msgid "aiRecognition.streamTextPreview"
 msgstr "Видимый вывод"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:431
+#: src/i18n/descriptors/subscription.ts:436
 msgid "import.wallosGuideValueOptional"
 msgstr "Необязательно"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:501
+#: src/i18n/descriptors/subscription.ts:506
 msgid "import.error.sourceIdDuplicate"
 msgstr "В файле импорта повторяются ID источника. Удалите дубликаты или пропустите один из них."
 
@@ -1099,17 +1109,17 @@ msgid "subscription.addToCalendarSyncStatus"
 msgstr "Статус синхронизации"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:385
+#: src/i18n/descriptors/subscription.ts:390
 msgid "subscriptions.csv.name"
 msgstr "Название"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:310
+#: src/i18n/descriptors/subscription.ts:315
 msgid "subscriptions.sort.nameAsc"
 msgstr "Название А–Я"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:311
+#: src/i18n/descriptors/subscription.ts:316
 msgid "subscriptions.sort.nameDesc"
 msgstr "Название Я–А"
 
@@ -1124,7 +1134,7 @@ msgid "subscription.customCycleUnit.week"
 msgstr "нед."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:449
+#: src/i18n/descriptors/subscription.ts:454
 msgid "import.conflictDescription"
 msgstr "Если подписка с тем же источником и ID источника уже существует, замените текущую запись или пропустите её. Замена перезаписывает всю запись: если в источнике нет баланса, текущий баланс будет удалён."
 
@@ -1134,27 +1144,27 @@ msgid "subscription.oneTimeMode.term"
 msgstr "Фиксированный срок"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:301
+#: src/i18n/descriptors/subscription.ts:306
 msgid "subscriptions.paymentTypeFilter.fixedTerm"
 msgstr "Фиксированный срок"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:554
+#: src/i18n/descriptors/subscription.ts:559
 msgid "aiRecognition.imageLargeAfterOptimization"
 msgstr "Изображение максимально оптимизировано, но всё ещё большое. Распознавание может занять больше времени."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:552
+#: src/i18n/descriptors/subscription.ts:557
 msgid "aiRecognition.imageTooLarge"
 msgstr "Изображение больше 5 МБ. Выберите чёткий скриншот меньшего размера."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:567
+#: src/i18n/descriptors/subscription.ts:572
 msgid "aiRecognition.imagePreviewTitle"
 msgstr "Предпросмотр изображения"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:233
+#: src/i18n/descriptors/subscription.ts:238
 msgid "subscription.publicShow"
 msgstr "Показать на публичной странице"
 
@@ -1174,7 +1184,7 @@ msgid "subscription.cloneDialogDescription"
 msgstr "Создать новую подписку на основе «{name}». Перед сохранением можно изменить любое поле."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:627
+#: src/i18n/descriptors/subscription.ts:632
 msgid "aiRecognition.editorSectionBasic"
 msgstr "Основные сведения и оплата"
 
@@ -1214,12 +1224,12 @@ msgid "subscription.cloneDialogTitle"
 msgstr "Дублировать подписку"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:430
+#: src/i18n/descriptors/subscription.ts:435
 msgid "import.wallosGuideValueExternalOrAutoLogo"
 msgstr "Внешний / автоподбор"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:417
+#: src/i18n/descriptors/subscription.ts:422
 msgid "import.wallosGuideColumnUsers"
 msgstr "Пользователи"
 
@@ -1244,12 +1254,12 @@ msgid "subscription.costSharing.doneManagingMembers"
 msgstr "Готово"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:338
+#: src/i18n/descriptors/subscription.ts:343
 msgid "subscriptions.advanced.done"
 msgstr "Готово"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:689
+#: src/i18n/descriptors/subscription.ts:694
 msgid "dashboard.realTimeRates"
 msgstr "Актуальные курсы валют ({currency})"
 
@@ -1259,107 +1269,107 @@ msgid "subscription.costSharing.title"
 msgstr "Семейный доступ"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:480
+#: src/i18n/descriptors/subscription.ts:485
 msgid "import.applyProgress"
 msgstr "Импорт {done}/{total}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:396
+#: src/i18n/descriptors/subscription.ts:401
 msgid "import.description"
 msgstr "Импортируйте резервную копию Renewlet или перенесите данные из Wallos: JSON, backup.zip и базы SQLite."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:505
+#: src/i18n/descriptors/subscription.ts:510
 msgid "import.error.confidenceInvalid"
 msgstr "Неверные данные сопоставления для импорта."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:444
+#: src/i18n/descriptors/subscription.ts:449
 msgid "import.applyFailed"
 msgstr "Не удалось выполнить импорт."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:482
+#: src/i18n/descriptors/subscription.ts:487
 msgid "import.successResult"
 msgstr "Импорт завершён: создано — {creates}, заменено — {replaces}, пропущено — {skips}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:278
+#: src/i18n/descriptors/subscription.ts:283
 msgid "subscriptions.importData"
 msgstr "Импорт данных"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:395
+#: src/i18n/descriptors/subscription.ts:400
 msgid "import.title"
 msgstr "Импорт данных"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:500
+#: src/i18n/descriptors/subscription.ts:505
 msgid "import.error.workerParseFailed"
 msgstr "Не удалось разобрать файл импорта в фоне."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:443
+#: src/i18n/descriptors/subscription.ts:448
 msgid "import.parseFailed"
 msgstr "Не удалось разобрать файл импорта."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:405
+#: src/i18n/descriptors/subscription.ts:410
 msgid "import.fileTooLarge"
 msgstr "Импорт превышает 8 МБ или 1000 подписок. Разделите его и попробуйте снова."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:504
+#: src/i18n/descriptors/subscription.ts:509
 msgid "import.error.sourceIdInvalid"
 msgstr "Неверный ID источника импорта."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:503
+#: src/i18n/descriptors/subscription.ts:508
 msgid "import.error.sourceInvalid"
 msgstr "Неверный источник импорта."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:407
+#: src/i18n/descriptors/subscription.ts:412
 msgid "import.optionsTitle"
 msgstr "Параметры импорта"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:502
+#: src/i18n/descriptors/subscription.ts:507
 msgid "import.error.keyRequired"
 msgstr "У элемента импорта нет данных сопоставления с источником."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:442
+#: src/i18n/descriptors/subscription.ts:447
 msgid "import.previewFailed"
 msgstr "Не удалось построить предпросмотр импорта."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:276
+#: src/i18n/descriptors/subscription.ts:281
 msgid "subscriptions.exportCsv"
 msgstr "Экспорт в CSV"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:274
+#: src/i18n/descriptors/subscription.ts:279
 msgid "subscriptions.exportJson"
 msgstr "Экспорт резервной копии ZIP"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:275
+#: src/i18n/descriptors/subscription.ts:280
 msgid "subscriptions.exportJsonWithSecrets"
 msgstr "Экспорт резервной копии ZIP с секретами уведомлений"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:277
+#: src/i18n/descriptors/subscription.ts:282
 msgid "subscriptions.exportFailed"
 msgstr "Не удалось выполнить экспорт. Попробуйте снова."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:273
+#: src/i18n/descriptors/subscription.ts:278
 msgid "subscriptions.exportMenu"
 msgstr "Экспорт подписок"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:288
+#: src/i18n/descriptors/subscription.ts:293
 msgid "subscriptions.bulkVisibilityConfirmSelected"
 msgstr "Видимость на публичной странице изменится для выбранных подписок: {count}."
 
@@ -1369,22 +1379,22 @@ msgid "subscription.renew.resultUnknown"
 msgstr "Результат сохранения неизвестен. Обновите данные перед повторной попыткой, чтобы избежать повторного продления."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:402
+#: src/i18n/descriptors/subscription.ts:407
 msgid "import.fileEmpty"
 msgstr "Файл не выбран"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:634
+#: src/i18n/descriptors/subscription.ts:639
 msgid "statistics.budgetUsed"
 msgstr "Использовано"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:292
+#: src/i18n/descriptors/subscription.ts:297
 msgid "subscriptions.bulkVisibilityPartial"
 msgstr "Обновлено: {changed}, с ошибкой: {failed}. Неудачные остались выбранными, чтобы повторить попытку."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:585
+#: src/i18n/descriptors/subscription.ts:590
 msgid "aiRecognition.streamStatus.stopped"
 msgstr "Остановлено"
 
@@ -1394,7 +1404,7 @@ msgid "subscription.addToCalendarSyncEnabled"
 msgstr "Включено"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:583
+#: src/i18n/descriptors/subscription.ts:588
 msgid "aiRecognition.streamStatus.complete"
 msgstr "Готово"
 
@@ -1404,22 +1414,22 @@ msgid "subscription.addToCalendarOpenSystemResult"
 msgstr "Попытались открыть системный календарь. Если он не открылся, скопируйте URL и добавьте его вручную."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:652
+#: src/i18n/descriptors/subscription.ts:657
 msgid "statistics.monthlySavingsDescription"
 msgstr "Месячный эквивалент приостановленных, отменённых и истёкших подписок. Активные подписки и пробные периоды не учитываются; это не остаток бюджета."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:448
+#: src/i18n/descriptors/subscription.ts:453
 msgid "import.conflictTitle"
 msgstr "Подписки из того же источника уже есть"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:591
+#: src/i18n/descriptors/subscription.ts:596
 msgid "aiRecognition.elapsedRunning"
 msgstr "Прошло {seconds} с"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:579
+#: src/i18n/descriptors/subscription.ts:584
 msgid "aiRecognition.streamDraftsSeen"
 msgstr "Найдено черновиков"
 
@@ -1429,37 +1439,37 @@ msgid "subscription.renew.refreshed"
 msgstr "Последние данные: {amount}, следующая дата оплаты — {date}. Введённые данные сохранены. Перед подтверждением нового продления проверьте, не было ли оно уже записано."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:564
+#: src/i18n/descriptors/subscription.ts:569
 msgid "aiRecognition.imageMaxReached"
 msgstr "Достигнут лимит"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:260
+#: src/i18n/descriptors/subscription.ts:265
 msgid "subscription.card.expired"
 msgstr "Истекла"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:261
+#: src/i18n/descriptors/subscription.ts:266
 msgid "subscription.card.expiredDays"
 msgstr "Истекла {days, plural, one {# день} few {# дня} many {# дней} other {# дня}} назад"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:286
+#: src/i18n/descriptors/subscription.ts:291
 msgid "subscriptions.bulkVisibilitySelected"
 msgstr "{count, plural, one {Выбрана #} few {Выбрано #} many {Выбрано #} other {Выбрано #}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:251
+#: src/i18n/descriptors/subscription.ts:256
 msgid "subscription.publicVisibilityHidden"
 msgstr "Скрыта"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:415
+#: src/i18n/descriptors/subscription.ts:420
 msgid "import.wallosGuideColumnCurrency"
 msgstr "Валюта"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:427
+#: src/i18n/descriptors/subscription.ts:432
 msgid "import.wallosGuideApiNote"
 msgstr "Лучше со справочными таблицами"
 
@@ -1469,7 +1479,7 @@ msgid "subscription.costSharing.equal"
 msgstr "Поровну"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:645
+#: src/i18n/descriptors/subscription.ts:650
 msgid "statistics.avgMonthly"
 msgstr "Средние расходы на подписки в месяц"
 
@@ -1479,7 +1489,7 @@ msgid "subscription.customCycleUnit.year"
 msgstr "г."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:644
+#: src/i18n/descriptors/subscription.ts:649
 msgid "statistics.annualCost"
 msgstr "Расходы в год ({currency})"
 
@@ -1494,7 +1504,7 @@ msgid "subscription.renew.modeContinue"
 msgstr "Продолжить текущий цикл"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:340
+#: src/i18n/descriptors/subscription.ts:345
 msgid "subscriptions.advanced.yes"
 msgstr "Вкл."
 
@@ -1509,7 +1519,7 @@ msgid "subscription.validation.startDateRequiredForAutoCalculate"
 msgstr "При автоматическом расчёте нужно указать дату начала."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:252
+#: src/i18n/descriptors/subscription.ts:257
 msgid "subscription.card.startPrefix"
 msgstr "Начало:"
 
@@ -1519,22 +1529,22 @@ msgid "subscription.field.startDate"
 msgstr "Дата начала"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:245
+#: src/i18n/descriptors/subscription.ts:250
 msgid "subscription.detail.startDate"
 msgstr "Дата начала"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:360
+#: src/i18n/descriptors/subscription.ts:365
 msgid "subscriptions.advanced.nextBillingFrom"
 msgstr "С"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:391
+#: src/i18n/descriptors/subscription.ts:396
 msgid "subscriptions.csv.startDate"
 msgstr "Дата начала"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:720
+#: src/i18n/descriptors/subscription.ts:725
 msgid "calendar.startDate"
 msgstr "Дата начала"
 
@@ -1544,7 +1554,7 @@ msgid "subscription.field.startDateOptional"
 msgstr "Дата начала (необязательно)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:729
+#: src/i18n/descriptors/subscription.ts:734
 msgid "subscription.addToCalendarFeedUrlCopyFailedDescription"
 msgstr "Копирование в один клик недоступно. Выделите и скопируйте URL вручную."
 
@@ -1554,12 +1564,12 @@ msgid "subscription.renew.currentNextBillingDate"
 msgstr "Текущая следующая дата оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:568
+#: src/i18n/descriptors/subscription.ts:573
 msgid "aiRecognition.imagePreviewUnavailable"
 msgstr "В текущем окружении предпросмотр этого изображения недоступен."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:471
+#: src/i18n/descriptors/subscription.ts:476
 msgid "import.previewFilterEmpty"
 msgstr "Нет записей, подходящих под фильтр"
 
@@ -1579,27 +1589,27 @@ msgid "subscription.costSharing.collectionReminderLeadToday"
 msgstr "В тот же день"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:608
+#: src/i18n/descriptors/subscription.ts:613
 msgid "aiRecognition.draftUnknownValue"
 msgstr "Требует проверки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:569
+#: src/i18n/descriptors/subscription.ts:574
 msgid "aiRecognition.thinking"
 msgstr "Управление рассуждениями"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:639
+#: src/i18n/descriptors/subscription.ts:644
 msgid "statistics.overview"
 msgstr "Обзор"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:474
+#: src/i18n/descriptors/subscription.ts:479
 msgid "import.restoreItem"
 msgstr "Вернуть строку"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:290
+#: src/i18n/descriptors/subscription.ts:295
 msgid "subscriptions.bulkVisibilityConfirmShowTitle"
 msgstr "Вернуть выбранные подписки на публичную страницу"
 
@@ -1639,32 +1649,32 @@ msgid "subscription.costSharing.memberCurrency"
 msgstr "Валюта суммы участника"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:297
+#: src/i18n/descriptors/subscription.ts:302
 msgid "subscriptions.paymentTypeFilter.all"
 msgstr "Все типы оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:294
+#: src/i18n/descriptors/subscription.ts:299
 msgid "subscriptions.allCategories"
 msgstr "Все категории"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:295
+#: src/i18n/descriptors/subscription.ts:300
 msgid "subscriptions.allStatuses"
 msgstr "Все статусы"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:291
+#: src/i18n/descriptors/subscription.ts:296
 msgid "subscriptions.bulkVisibilityUnchanged"
 msgstr "У выбранных подписок уже такая видимость, изменения не нужны"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:229
+#: src/i18n/descriptors/subscription.ts:234
 msgid "subscription.renewal.manual"
 msgstr "Ручное продление"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:299
+#: src/i18n/descriptors/subscription.ts:304
 msgid "subscriptions.paymentTypeFilter.manual"
 msgstr "Ручное продление"
 
@@ -1679,12 +1689,12 @@ msgid "subscription.field.billingCycle"
 msgstr "Период оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:342
+#: src/i18n/descriptors/subscription.ts:347
 msgid "subscriptions.advanced.billingCycle"
 msgstr "Период оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:388
+#: src/i18n/descriptors/subscription.ts:393
 msgid "subscriptions.csv.billingCycle"
 msgstr "Период оплаты"
 
@@ -1694,27 +1704,27 @@ msgid "subscription.addToCalendar.description.billingCycle"
 msgstr "Период оплаты: {cycle}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:508
+#: src/i18n/descriptors/subscription.ts:513
 msgid "import.error.billingCycleInvalid"
 msgstr "Неверный период оплаты."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:399
+#: src/i18n/descriptors/subscription.ts:404
 msgid "import.stepApply"
 msgstr "Применение"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:481
+#: src/i18n/descriptors/subscription.ts:486
 msgid "import.apply"
 msgstr "Импортировать"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:280
+#: src/i18n/descriptors/subscription.ts:285
 msgid "subscriptions.bulkPublicVisibility"
 msgstr "Массовая настройка видимости"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:512
+#: src/i18n/descriptors/subscription.ts:517
 msgid "import.warning.aiGroupBatch"
 msgstr "Результат пакетной обработки"
 
@@ -1724,17 +1734,17 @@ msgid "subscription.renew.modeRestartShort"
 msgstr "Новая дата сохраняется как дата начала."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:678
+#: src/i18n/descriptors/subscription.ts:683
 msgid "statistics.breakdown"
 msgstr "Структура расходов"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:240
+#: src/i18n/descriptors/subscription.ts:245
 msgid "subscription.detail.dailyCostToDate"
 msgstr "Расходы в день на сегодня"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:254
+#: src/i18n/descriptors/subscription.ts:259
 msgid "subscription.card.dailyCostToDate"
 msgstr "В день на сегодня {amount}"
 
@@ -1749,7 +1759,7 @@ msgid "subscription.addToCalendarContinuousSync"
 msgstr "Постоянная синхронизация"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:425
+#: src/i18n/descriptors/subscription.ts:430
 msgid "import.wallosGuideValueLowConfidence"
 msgstr "Сопоставление по данным"
 
@@ -1759,7 +1769,7 @@ msgid "subscription.renew.modeContinueShort"
 msgstr "Сдвиг от исходной точки отсчёта периода."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:659
+#: src/i18n/descriptors/subscription.ts:664
 msgid "statistics.trendAmortizedHint"
 msgstr "Оценка месячных расходов на каждый из следующих 12 месяцев исходя из текущего набора активных подписок."
 
@@ -1769,12 +1779,12 @@ msgid "subscription.costSharing.collectionReminderAnchorMemberJoined"
 msgstr "По дате присоединения участника"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:640
+#: src/i18n/descriptors/subscription.ts:645
 msgid "statistics.personalCostBasis"
 msgstr "Учитывать мою долю"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:658
+#: src/i18n/descriptors/subscription.ts:663
 msgid "statistics.trendCashflowHint"
 msgstr "Сумма ожидаемых списаний по датам продления или окончания за следующие 12 месяцев."
 
@@ -1784,17 +1794,17 @@ msgid "subscription.reminderEnabledHelp"
 msgstr "Напоминания отправляются по дате окончания или продления этой подписки."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:302
+#: src/i18n/descriptors/subscription.ts:307
 msgid "subscriptions.sort.label"
 msgstr "Сортировка"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:412
+#: src/i18n/descriptors/subscription.ts:417
 msgid "import.wallosGuideBest"
 msgstr "Лучший"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:411
+#: src/i18n/descriptors/subscription.ts:416
 msgid "import.wallosGuidePreferred"
 msgstr "Рекомендуется: backup.zip"
 
@@ -1814,17 +1824,17 @@ msgid "subscription.costSharing.collectionReminderLeadDays"
 msgstr "За {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:264
+#: src/i18n/descriptors/subscription.ts:269
 msgid "subscription.card.reminderDays"
 msgstr "Напомнить за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:247
+#: src/i18n/descriptors/subscription.ts:252
 msgid "subscription.detail.reminder"
 msgstr "Напоминание"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:721
+#: src/i18n/descriptors/subscription.ts:726
 msgid "calendar.reminder"
 msgstr "Напоминание"
 
@@ -1834,22 +1844,22 @@ msgid "subscription.renew.modeContinueHelp"
 msgstr "При досрочном продлении исходный цикл сохраняется. Просроченная подписка продлевается до ближайшей даты цикла после сегодняшнего дня."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:459
+#: src/i18n/descriptors/subscription.ts:464
 msgid "import.summaryWarning"
 msgstr "Предупреждения"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:469
+#: src/i18n/descriptors/subscription.ts:474
 msgid "import.filter.warning"
 msgstr "Предупреждения"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:580
+#: src/i18n/descriptors/subscription.ts:585
 msgid "aiRecognition.streamWarningsSeen"
 msgstr "Предупреждения"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:393
+#: src/i18n/descriptors/subscription.ts:398
 msgid "subscriptions.csv.reminderDays"
 msgstr "Дни напоминания"
 
@@ -1859,37 +1869,37 @@ msgid "subscription.validation.reminderInvalid"
 msgstr "Дни напоминания: «Не напоминать», «Как в настройках» или целое число от 0 до 3650."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:370
+#: src/i18n/descriptors/subscription.ts:375
 msgid "subscriptions.advanced.reminderMode"
 msgstr "Напоминания"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:693
+#: src/i18n/descriptors/subscription.ts:698
 msgid "dashboard.next7Days"
 msgstr "Период напоминаний"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:316
+#: src/i18n/descriptors/subscription.ts:321
 msgid "subscriptions.category.searchPlaceholder"
 msgstr "Поиск категорий..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:603
+#: src/i18n/descriptors/subscription.ts:608
 msgid "aiRecognition.draftSearchPlaceholder"
 msgstr "Поиск по названию, заметкам, сайту или тегам"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:323
+#: src/i18n/descriptors/subscription.ts:328
 msgid "subscriptions.tags.searchPlaceholder"
 msgstr "Поиск тегов..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:354
+#: src/i18n/descriptors/subscription.ts:359
 msgid "subscriptions.advanced.searchResults"
 msgstr "Результаты поиска"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:293
+#: src/i18n/descriptors/subscription.ts:298
 msgid "subscriptions.searchPlaceholder"
 msgstr "Поиск по подпискам, тегам и заметкам..."
 
@@ -1914,7 +1924,7 @@ msgid "subscription.field.paymentMethod"
 msgstr "Способ оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:343
+#: src/i18n/descriptors/subscription.ts:348
 msgid "subscriptions.advanced.paymentMethod"
 msgstr "Способ оплаты"
 
@@ -1924,27 +1934,27 @@ msgid "subscription.addToCalendar.description.paymentMethod"
 msgstr "Способ оплаты: {paymentMethod}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:680
+#: src/i18n/descriptors/subscription.ts:685
 msgid "statistics.paymentView"
 msgstr "По способам оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:699
+#: src/i18n/descriptors/subscription.ts:704
 msgid "dashboard.spendingDistribution"
 msgstr "Распределение расходов"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:437
+#: src/i18n/descriptors/subscription.ts:442
 msgid "import.wallosGuideValueSupported"
 msgstr "Поддерживается"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:403
+#: src/i18n/descriptors/subscription.ts:408
 msgid "import.fileHint"
 msgstr "Поддерживаются Renewlet ZIP/JSON, Wallos JSON, backup.zip и wallos.db."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:546
+#: src/i18n/descriptors/subscription.ts:551
 msgid "aiRecognition.inputHint"
 msgstr "Поддерживаются обычный текст, CSV/TSV и скопированные таблицы. Содержимое файлов .xlsx сначала скопируйте."
 
@@ -1979,37 +1989,37 @@ msgid "subscription.customCycleCountPlaceholder"
 msgstr "Число"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:544
+#: src/i18n/descriptors/subscription.ts:549
 msgid "aiRecognition.inputText"
 msgstr "Текст"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:456
+#: src/i18n/descriptors/subscription.ts:461
 msgid "import.summaryCreate"
 msgstr "Создать"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:461
+#: src/i18n/descriptors/subscription.ts:466
 msgid "import.action.create"
 msgstr "Создать"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:466
+#: src/i18n/descriptors/subscription.ts:471
 msgid "import.filter.create"
 msgstr "Создать"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:424
+#: src/i18n/descriptors/subscription.ts:429
 msgid "import.wallosGuideValueNone"
 msgstr "Нет"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:421
+#: src/i18n/descriptors/subscription.ts:426
 msgid "import.wallosGuideValueHash"
 msgstr "Нет исходного ID"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:553
+#: src/i18n/descriptors/subscription.ts:558
 msgid "aiRecognition.imageOptimizeFailed"
 msgstr "Не удалось оптимизировать изображение. Выберите чёткий скриншот меньшего размера."
 
@@ -2019,7 +2029,7 @@ msgid "subscription.renew.invalidDate"
 msgstr "Не удалось рассчитать дату продления. Проверьте статус, даты и период подписки."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:498
+#: src/i18n/descriptors/subscription.ts:503
 msgid "import.error.unrecognizedFile"
 msgstr "Файл импорта не распознан. Выберите экспорт Renewlet v1 либо экспорт или резервную копию Wallos."
 
@@ -2029,27 +2039,27 @@ msgid "subscription.renew.loadFailed"
 msgstr "Не удалось загрузить подписку. Повторите попытку."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:671
+#: src/i18n/descriptors/subscription.ts:676
 msgid "statistics.trendNoItems"
 msgstr "Нет данных о подписках"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:253
+#: src/i18n/descriptors/subscription.ts:258
 msgid "subscription.card.dailyAverage"
 msgstr "В день {amount}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:687
+#: src/i18n/descriptors/subscription.ts:692
 msgid "dashboard.monthlySpendSubtitle"
 msgstr "В день {amount} · {rates}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:239
+#: src/i18n/descriptors/subscription.ts:244
 msgid "subscription.detail.dailyAverage"
 msgstr "Расходы в день"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:643
+#: src/i18n/descriptors/subscription.ts:648
 msgid "statistics.dailyCost"
 msgstr "Расходы в день ({currency})"
 
@@ -2074,22 +2084,22 @@ msgid "subscription.tags.empty"
 msgstr "Сохранённых тегов пока нет"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:661
+#: src/i18n/descriptors/subscription.ts:666
 msgid "statistics.trendEmpty"
 msgstr "Пока нет данных для прогноза расходов"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:565
+#: src/i18n/descriptors/subscription.ts:570
 msgid "aiRecognition.imageEmpty"
 msgstr "Изображений пока нет"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:702
+#: src/i18n/descriptors/subscription.ts:707
 msgid "upcoming.noneNextTwoWeeks"
 msgstr "Нет предстоящих продлений и окончаний подписок"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:633
+#: src/i18n/descriptors/subscription.ts:638
 msgid "statistics.noSubscriptionData"
 msgstr "Нет данных о подписках"
 
@@ -2099,37 +2109,37 @@ msgid "subscription.moreActions"
 msgstr "Другие действия"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:363
+#: src/i18n/descriptors/subscription.ts:368
 msgid "subscriptions.advanced.moreState"
 msgstr "Другие состояния"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:327
+#: src/i18n/descriptors/subscription.ts:332
 msgid "subscriptions.advanced.open"
 msgstr "Другие фильтры"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:329
+#: src/i18n/descriptors/subscription.ts:334
 msgid "subscriptions.advanced.drawerTitle"
 msgstr "Другие фильтры"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:457
+#: src/i18n/descriptors/subscription.ts:462
 msgid "import.summaryReplace"
 msgstr "Заменить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:462
+#: src/i18n/descriptors/subscription.ts:467
 msgid "import.action.replace"
 msgstr "Заменить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:467
+#: src/i18n/descriptors/subscription.ts:472
 msgid "import.filter.replace"
 msgstr "Заменить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:452
+#: src/i18n/descriptors/subscription.ts:457
 msgid "import.conflictReplace"
 msgstr "Заменять существующие записи"
 
@@ -2139,47 +2149,47 @@ msgid "subscription.customCycleUnit.month"
 msgstr "мес."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:673
+#: src/i18n/descriptors/subscription.ts:678
 msgid "statistics.trendDetailsMonthLabel"
 msgstr "Месяц"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:674
+#: src/i18n/descriptors/subscription.ts:679
 msgid "statistics.trendDetailsMonthlyBadge"
 msgstr "Ежемесячно"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:669
+#: src/i18n/descriptors/subscription.ts:674
 msgid "statistics.trendItemMonthlyShare"
 msgstr "Доля в месяц"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:657
+#: src/i18n/descriptors/subscription.ts:662
 msgid "statistics.trendAmortized"
 msgstr "Распределённые"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:686
+#: src/i18n/descriptors/subscription.ts:691
 msgid "dashboard.monthlySpend"
 msgstr "Расходы в месяц"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:642
+#: src/i18n/descriptors/subscription.ts:647
 msgid "statistics.monthlyCost"
 msgstr "Расходы в месяц ({currency})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:307
+#: src/i18n/descriptors/subscription.ts:312
 msgid "subscriptions.sort.monthlyCostAsc"
 msgstr "Сначала дешёвые в месяц"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:306
+#: src/i18n/descriptors/subscription.ts:311
 msgid "subscriptions.sort.monthlyCostDesc"
 msgstr "Сначала дорогие в месяц"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:605
+#: src/i18n/descriptors/subscription.ts:610
 msgid "aiRecognition.draftFilterWarning"
 msgstr "С предупреждениями"
 
@@ -2214,17 +2224,17 @@ msgid "subscription.empty.currency"
 msgstr "Валюта не найдена"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:662
+#: src/i18n/descriptors/subscription.ts:667
 msgid "statistics.trendTableLabel"
 msgstr "Динамика расходов на следующие 12 месяцев"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:656
+#: src/i18n/descriptors/subscription.ts:661
 msgid "statistics.trendCashflow"
 msgstr "Предстоящие списания"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:494
+#: src/i18n/descriptors/subscription.ts:499
 msgid "import.warning.wallosUnknownCycle"
 msgstr "Неизвестный период Wallos. Импортировано как ежемесячная подписка."
 
@@ -2234,32 +2244,32 @@ msgid "subscription.saveError"
 msgstr "Не удалось подтвердить сохранение. Введённые данные сохранены в форме. Проверьте соединение и подписку перед повторной попыткой."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:344
+#: src/i18n/descriptors/subscription.ts:349
 msgid "subscriptions.advanced.paymentMethodNone"
 msgstr "Без способа оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:436
+#: src/i18n/descriptors/subscription.ts:441
 msgid "import.wallosGuideValueLocalLogo"
 msgstr "Локальный файл"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:713
+#: src/i18n/descriptors/subscription.ts:718
 msgid "calendar.monthlyRenewals"
 msgstr "Событий в этом месяце"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:648
+#: src/i18n/descriptors/subscription.ts:653
 msgid "statistics.thisMonthDue"
 msgstr "К оплате в этом месяце"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:726
+#: src/i18n/descriptors/subscription.ts:731
 msgid "calendar.mobileAgendaEmpty"
 msgstr "В этом месяце нет продлений и окончаний"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:725
+#: src/i18n/descriptors/subscription.ts:730
 msgid "calendar.mobileAgendaTitle"
 msgstr "Продления и окончания в этом месяце"
 
@@ -2269,72 +2279,72 @@ msgid "subscription.addToCalendarFeedUrl"
 msgstr "URL календаря для этой подписки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:328
+#: src/i18n/descriptors/subscription.ts:333
 msgid "subscriptions.advanced.selectedCount"
 msgstr "Условия ({count})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:413
+#: src/i18n/descriptors/subscription.ts:418
 msgid "import.wallosGuideColumnSource"
 msgstr "Источник"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:486
+#: src/i18n/descriptors/subscription.ts:491
 msgid "import.warning.lowConfidenceKey"
 msgstr "В источнике нет исходного ID. Renewlet будет искать существующие записи по названию, сайту, категории и периоду оплаты."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:487
+#: src/i18n/descriptors/subscription.ts:492
 msgid "import.warning.lowConfidenceNameMatched"
 msgstr "В источнике нет исходного ID. Renewlet нашёл существующую запись Wallos по названию — подтвердите замену."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:237
+#: src/i18n/descriptors/subscription.ts:242
 msgid "subscription.detailDescription"
 msgstr "Цена, период, даты, теги, сайт и заметки для {name}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:716
+#: src/i18n/descriptors/subscription.ts:721
 msgid "calendar.detailDescription"
 msgstr "Цена, период, даты, теги, сайт и заметки для {name}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:234
+#: src/i18n/descriptors/subscription.ts:239
 msgid "subscription.viewDetailsLabel"
 msgstr "Сведения о {name}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:697
+#: src/i18n/descriptors/subscription.ts:702
 msgid "dashboard.viewAll"
 msgstr "Показать все ({count})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:698
+#: src/i18n/descriptors/subscription.ts:703
 msgid "dashboard.viewAllSubscriptions"
 msgstr "Показать все подписки ({count})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:410
+#: src/i18n/descriptors/subscription.ts:415
 msgid "import.wallosGuideExpand"
 msgstr "Сравнить форматы"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:708
+#: src/i18n/descriptors/subscription.ts:713
 msgid "calendar.pageSubtitle"
 msgstr "Продления подписок, окончания срочных подписок и ожидаемые расходы за месяц"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:238
+#: src/i18n/descriptors/subscription.ts:243
 msgid "subscription.detailFallbackDescription"
 msgstr "Сведения о подписке."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:717
+#: src/i18n/descriptors/subscription.ts:722
 msgid "calendar.detailFallbackDescription"
 msgstr "Сведения о подписке."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:235
+#: src/i18n/descriptors/subscription.ts:240
 msgid "subscription.viewDetailsMenuLabel"
 msgstr "Подробнее"
 
@@ -2344,22 +2354,22 @@ msgid "subscription.field.tags"
 msgstr "Теги"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:320
+#: src/i18n/descriptors/subscription.ts:325
 msgid "subscriptions.tags.open"
 msgstr "Теги"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:394
+#: src/i18n/descriptors/subscription.ts:399
 msgid "subscriptions.csv.tags"
 msgstr "Теги"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:321
+#: src/i18n/descriptors/subscription.ts:326
 msgid "subscriptions.tags.selectedCount"
 msgstr "Теги ({count})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:589
+#: src/i18n/descriptors/subscription.ts:594
 msgid "aiRecognition.streamStage.validating"
 msgstr "Проверка черновиков"
 
@@ -2369,27 +2379,27 @@ msgid "subscription.autoCalculateHelp"
 msgstr "Рассчитывается по дате начала и периоду оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:513
+#: src/i18n/descriptors/subscription.ts:518
 msgid "import.warning.aiGroupFormat"
 msgstr "Ошибки формата"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:588
+#: src/i18n/descriptors/subscription.ts:593
 msgid "aiRecognition.streamStage.modelStream"
 msgstr "Модель передаёт ответ"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:555
+#: src/i18n/descriptors/subscription.ts:560
 msgid "aiRecognition.imageOptimizing"
 msgstr "Оптимизация"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:730
+#: src/i18n/descriptors/subscription.ts:735
 msgid "subscription.addToCalendarFeedStatusLoading"
 msgstr "Загрузка статуса ссылки на календарь…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:734
+#: src/i18n/descriptors/subscription.ts:739
 msgid "subscription.addToCalendarOpenSystemLoading"
 msgstr "Открытие системного календаря…"
 
@@ -2404,17 +2414,17 @@ msgid "subscription.addToCalendarGenerateFeedLoading"
 msgstr "Создание ссылки на календарь…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:446
+#: src/i18n/descriptors/subscription.ts:451
 msgid "import.loading"
 msgstr "Разбор и подготовка предпросмотра…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:733
+#: src/i18n/descriptors/subscription.ts:738
 msgid "subscription.addToCalendarFeedStatusRetrying"
 msgstr "Обновление…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:735
+#: src/i18n/descriptors/subscription.ts:740
 msgid "subscription.addToCalendarRegenerateLoading"
 msgstr "Пересоздание…"
 
@@ -2434,57 +2444,57 @@ msgid "subscription.validation.tagsTooMany"
 msgstr "У подписки может быть не более {count, plural, one {# тега} few {# тегов} many {# тегов} other {# тега}}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:688
+#: src/i18n/descriptors/subscription.ts:693
 msgid "dashboard.ratesLoading"
 msgstr "Загрузка курсов..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:439
+#: src/i18n/descriptors/subscription.ts:444
 msgid "import.wallosGuideDbNote"
 msgstr "Без файлов логотипов"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:317
+#: src/i18n/descriptors/subscription.ts:322
 msgid "subscriptions.category.emptyMatch"
 msgstr "Подходящих категорий нет"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:347
+#: src/i18n/descriptors/subscription.ts:352
 msgid "subscriptions.advanced.emptyPaymentMethod"
 msgstr "Подходящих способов оплаты нет"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:324
+#: src/i18n/descriptors/subscription.ts:329
 msgid "subscriptions.tags.emptyMatch"
 msgstr "Подходящих тегов нет"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:609
+#: src/i18n/descriptors/subscription.ts:614
 msgid "aiRecognition.draftNoMatches"
 msgstr "Подходящих черновиков нет."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:352
+#: src/i18n/descriptors/subscription.ts:357
 msgid "subscriptions.advanced.emptyCurrency"
 msgstr "Подходящих валют нет"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:380
+#: src/i18n/descriptors/subscription.ts:385
 msgid "subscriptions.emptyFilteredTitle"
 msgstr "Ничего не найдено"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:641
+#: src/i18n/descriptors/subscription.ts:646
 msgid "statistics.activeSubscriptions"
 msgstr "Активные подписки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:690
+#: src/i18n/descriptors/subscription.ts:695
 msgid "dashboard.activeSubscriptions"
 msgstr "Активные подписки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:624
+#: src/i18n/descriptors/subscription.ts:629
 msgid "aiRecognition.addAsNewConfig"
 msgstr "Добавить в новую конфигурацию"
 
@@ -2509,7 +2519,7 @@ msgid "subscription.addToCalendarAndroidSingleEvent"
 msgstr "Добавить разовое событие в календарь Android"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:547
+#: src/i18n/descriptors/subscription.ts:552
 msgid "aiRecognition.addImages"
 msgstr "Добавить изображения"
 
@@ -2524,12 +2534,12 @@ msgid "subscription.dialogCreateTitle"
 msgstr "Новая подписка"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:384
+#: src/i18n/descriptors/subscription.ts:389
 msgid "subscriptions.addFirst"
 msgstr "Добавить первую подписку"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:383
+#: src/i18n/descriptors/subscription.ts:388
 msgid "subscriptions.emptyNoData"
 msgstr "Добавьте первую подписку, чтобы отслеживать продления."
 
@@ -2544,72 +2554,72 @@ msgid "subscription.dialogCreateSubmit"
 msgstr "Добавить подписку"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:701
+#: src/i18n/descriptors/subscription.ts:706
 msgid "dashboard.emptyDescription"
 msgstr "Добавьте подписку, чтобы видеть здесь расходы, продления и напоминания."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:561
+#: src/i18n/descriptors/subscription.ts:566
 msgid "aiRecognition.imageFileInput"
 msgstr "Добавить изображения подписок"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:318
+#: src/i18n/descriptors/subscription.ts:323
 msgid "subscriptions.category.clearSelection"
 msgstr "Сбросить категории"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:336
+#: src/i18n/descriptors/subscription.ts:341
 msgid "subscriptions.advanced.clearNextBillingFrom"
 msgstr "Очистить начальную дату"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:355
+#: src/i18n/descriptors/subscription.ts:360
 msgid "subscriptions.advanced.clearSearch"
 msgstr "Очистить поиск"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:335
+#: src/i18n/descriptors/subscription.ts:340
 msgid "subscriptions.advanced.clearGroup"
 msgstr "Сбросить группу"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:334
+#: src/i18n/descriptors/subscription.ts:339
 msgid "subscriptions.advanced.clear"
 msgstr "Сбросить условия"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:325
+#: src/i18n/descriptors/subscription.ts:330
 msgid "subscriptions.tags.clearSelection"
 msgstr "Сбросить теги"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:337
+#: src/i18n/descriptors/subscription.ts:342
 msgid "subscriptions.advanced.clearNextBillingTo"
 msgstr "Очистить конечную дату"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:287
+#: src/i18n/descriptors/subscription.ts:292
 msgid "subscriptions.bulkVisibilityClear"
 msgstr "Снять выделение"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:477
+#: src/i18n/descriptors/subscription.ts:482
 msgid "import.logoClear"
 msgstr "Очистить логотип"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:312
+#: src/i18n/descriptors/subscription.ts:317
 msgid "subscriptions.clearFilters"
 msgstr "Сбросить фильтры"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:562
+#: src/i18n/descriptors/subscription.ts:567
 msgid "aiRecognition.imageDropDescription"
 msgstr "Нажмите, перетащите или вставьте сюда изображения PNG, JPG или WebP — не более {count, plural, one {# файла} few {# файлов} many {# файлов} other {# файла}}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:711
+#: src/i18n/descriptors/subscription.ts:716
 msgid "calendar.viewDetails"
 msgstr "Нажмите, чтобы посмотреть подробности"
 
@@ -2619,32 +2629,32 @@ msgid "subscription.field.status"
 msgstr "Статус"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:390
+#: src/i18n/descriptors/subscription.ts:395
 msgid "subscriptions.csv.status"
 msgstr "Статус"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:619
+#: src/i18n/descriptors/subscription.ts:624
 msgid "aiRecognition.statusPending"
 msgstr "Статус нужно подтвердить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:582
+#: src/i18n/descriptors/subscription.ts:587
 msgid "aiRecognition.streamStatus.running"
 msgstr "Создание"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:590
+#: src/i18n/descriptors/subscription.ts:595
 msgid "aiRecognition.streamStage.finalizing"
 msgstr "Завершение черновиков"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:630
+#: src/i18n/descriptors/subscription.ts:635
 msgid "aiRecognition.previewDrafts"
 msgstr "Создать предпросмотр импорта"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:570
+#: src/i18n/descriptors/subscription.ts:575
 msgid "aiRecognition.generateDrafts"
 msgstr "Создать черновики подписок"
 
@@ -2654,7 +2664,7 @@ msgid "subscription.addToCalendarGenerateFeed"
 msgstr "Создать ссылку на календарь"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:441
+#: src/i18n/descriptors/subscription.ts:446
 msgid "import.preview"
 msgstr "Предпросмотр"
 
@@ -2679,52 +2689,57 @@ msgid "subscription.addToCalendarYahoo"
 msgstr "Открыть в Yahoo Календаре"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:592
+#: src/i18n/descriptors/subscription.ts:597
 msgid "aiRecognition.elapsedFinal"
 msgstr "Заняло {seconds} с"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:319
+#: src/i18n/descriptors/subscription.ts:324
 msgid "subscriptions.category.apply"
 msgstr "Применить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:326
+#: src/i18n/descriptors/subscription.ts:331
 msgid "subscriptions.tags.apply"
 msgstr "Применить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:333
+#: src/i18n/descriptors/subscription.ts:338
 msgid "subscriptions.advanced.apply"
 msgstr "Применить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:269
+#: src/i18n/descriptors/subscription.ts:274
 msgid "subscription.deleteDescription"
 msgstr "Удалить «{name}»? Это действие нельзя отменить."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:612
+#: src/i18n/descriptors/subscription.ts:617
 msgid "aiRecognition.selectedDraftDescription"
 msgstr "Проверьте сумму, период, даты и основные сведения, созданные ИИ, прежде чем создавать предпросмотр импорта."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:268
+#: src/i18n/descriptors/subscription.ts:273
 msgid "subscription.deleteTitle"
 msgstr "Удалить подписку"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:620
+#: src/i18n/descriptors/subscription.ts:625
 msgid "aiRecognition.confirmStatus"
 msgstr "Подтвердить текущий статус"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:597
+#: src/i18n/descriptors/subscription.ts:602
 msgid "aiRecognition.confirmDefaults"
 msgstr "Подтвердить текущие значения"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:631
+#: src/i18n/descriptors/subscription.ts:228
+msgid "subscription.renew.memberDates.title"
+msgstr "Подтвердите даты присоединения участников"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:636
 msgid "aiRecognition.confirmImport"
 msgstr "Подтвердить добавление"
 
@@ -2734,12 +2749,12 @@ msgid "subscription.renew.submit"
 msgstr "Подтвердить продление"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:379
+#: src/i18n/descriptors/subscription.ts:384
 msgid "subscriptions.advanced.removeChip"
 msgstr "Убрать {label}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:549
+#: src/i18n/descriptors/subscription.ts:554
 msgid "aiRecognition.removeImage"
 msgstr "Удалить изображение"
 
@@ -2749,47 +2764,47 @@ msgid "subscription.tags.remove"
 msgstr "Удалить тег {tag}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:629
+#: src/i18n/descriptors/subscription.ts:634
 msgid "aiRecognition.removeDraft"
 msgstr "Удалить черновик"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:432
+#: src/i18n/descriptors/subscription.ts:437
 msgid "import.wallosGuideValueStable"
 msgstr "Надёжно"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:578
+#: src/i18n/descriptors/subscription.ts:583
 msgid "aiRecognition.streamWaiting"
 msgstr "Ожидание модели..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:315
+#: src/i18n/descriptors/subscription.ts:320
 msgid "subscriptions.category.drawerTitle"
 msgstr "Фильтр по категории"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:331
+#: src/i18n/descriptors/subscription.ts:336
 msgid "subscriptions.advanced.sectionListLabel"
 msgstr "Группы фильтров"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:346
+#: src/i18n/descriptors/subscription.ts:351
 msgid "subscriptions.advanced.filterPaymentMethod"
 msgstr "Фильтр способов оплаты..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:322
+#: src/i18n/descriptors/subscription.ts:327
 msgid "subscriptions.tags.drawerTitle"
 msgstr "Фильтр по тегам"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:351
+#: src/i18n/descriptors/subscription.ts:356
 msgid "subscriptions.advanced.filterCurrency"
 msgstr "Фильтр валют..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:284
+#: src/i18n/descriptors/subscription.ts:289
 msgid "subscriptions.publicVisibilityManagementDescription"
 msgstr "Управление видимостью на публичной странице"
 
@@ -2804,17 +2819,17 @@ msgid "subscription.costSharing.manageMembers"
 msgstr "Управлять участниками"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:401
+#: src/i18n/descriptors/subscription.ts:406
 msgid "import.tabPaste"
 msgstr "Вставить JSON"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:406
+#: src/i18n/descriptors/subscription.ts:411
 msgid "import.pastePlaceholder"
 msgstr "Вставьте JSON из Renewlet или Wallos…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:545
+#: src/i18n/descriptors/subscription.ts:550
 msgid "aiRecognition.inputPlaceholder"
 msgstr "Вставьте подписки из блокнота, заметок или скопированной таблицы Excel..."
 
@@ -2824,27 +2839,27 @@ msgid "subscription.addToCalendarOpenSystemFailed"
 msgstr "Не удалось открыть подписку в системном календаре"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:330
+#: src/i18n/descriptors/subscription.ts:335
 msgid "subscriptions.advanced.panelDescription"
 msgstr "Выберите расширенные фильтры подписок"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:361
+#: src/i18n/descriptors/subscription.ts:366
 msgid "subscriptions.advanced.nextBillingTo"
 msgstr "По"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:636
+#: src/i18n/descriptors/subscription.ts:641
 msgid "statistics.title"
 msgstr "Статистика"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:372
+#: src/i18n/descriptors/subscription.ts:377
 msgid "subscriptions.advanced.reminderInherit"
 msgstr "Напоминание по умолчанию"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:548
+#: src/i18n/descriptors/subscription.ts:553
 msgid "aiRecognition.addMoreImages"
 msgstr "Добавить ещё"
 
@@ -2869,12 +2884,12 @@ msgid "subscription.renew.mode"
 msgstr "Способ продления"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:707
+#: src/i18n/descriptors/subscription.ts:712
 msgid "calendar.title"
 msgstr "Календарь продлений и окончаний"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:359
+#: src/i18n/descriptors/subscription.ts:364
 msgid "subscriptions.advanced.nextBilling"
 msgstr "Дата продления / окончания"
 
@@ -2884,7 +2899,7 @@ msgid "subscription.addToCalendarRenewalEvent"
 msgstr "Продление"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:345
+#: src/i18n/descriptors/subscription.ts:350
 msgid "subscriptions.advanced.editPaymentMethod"
 msgstr "Изменить способы оплаты"
 
@@ -2894,22 +2909,22 @@ msgid "subscription.dialogEditTitle"
 msgstr "Изменить подписку"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:350
+#: src/i18n/descriptors/subscription.ts:355
 msgid "subscriptions.advanced.editCurrency"
 msgstr "Изменить валюты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:510
+#: src/i18n/descriptors/subscription.ts:515
 msgid "import.warning.aiGroupMissingFacts"
 msgstr "Не хватает данных счёта"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:602
+#: src/i18n/descriptors/subscription.ts:607
 msgid "aiRecognition.missingCoreShort"
 msgstr "Не хватает основных полей"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:607
+#: src/i18n/descriptors/subscription.ts:612
 msgid "aiRecognition.draftFilterMissingCore"
 msgstr "Не хватает основных полей"
 
@@ -2919,7 +2934,7 @@ msgid "subscription.field.website"
 msgstr "Сайт"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:628
+#: src/i18n/descriptors/subscription.ts:633
 msgid "aiRecognition.editorSectionMetadata"
 msgstr "Сайт, заметки и напоминания"
 
@@ -2929,32 +2944,32 @@ msgid "subscription.validation.websiteInvalid"
 msgstr "Адрес сайта должен начинаться с http:// или https://."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:490
+#: src/i18n/descriptors/subscription.ts:495
 msgid "import.warning.invalidWebsite"
 msgstr "URL сайта неверен и был пропущен. Его можно изменить в предпросмотре."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:515
+#: src/i18n/descriptors/subscription.ts:520
 msgid "import.warning.aiWebsiteSuggested"
 msgstr "Сайт предложен ИИ. Убедитесь, что он указан верно."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:230
+#: src/i18n/descriptors/subscription.ts:235
 msgid "subscription.pin"
 msgstr "Закрепить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:364
+#: src/i18n/descriptors/subscription.ts:369
 msgid "subscriptions.advanced.pinned"
 msgstr "Закреплённые"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:423
+#: src/i18n/descriptors/subscription.ts:428
 msgid "import.wallosGuideValueAutoLogo"
 msgstr "Автоподбор"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:478
+#: src/i18n/descriptors/subscription.ts:483
 msgid "import.logoAutoMatched"
 msgstr "Подобран автоматически"
 
@@ -2964,12 +2979,12 @@ msgid "subscription.autoRenew"
 msgstr "Автопродление"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:228
+#: src/i18n/descriptors/subscription.ts:233
 msgid "subscription.renewal.auto"
 msgstr "Автопродление"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:298
+#: src/i18n/descriptors/subscription.ts:303
 msgid "subscriptions.paymentTypeFilter.auto"
 msgstr "Автопродление"
 
@@ -3014,22 +3029,22 @@ msgid "subscription.validation.customCycleInvalid"
 msgstr "Свой период оплаты должен быть целым числом от 1 до 3650."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:373
+#: src/i18n/descriptors/subscription.ts:378
 msgid "subscriptions.advanced.reminderCustom"
 msgstr "Своё напоминание"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:542
+#: src/i18n/descriptors/subscription.ts:547
 msgid "aiRecognition.stepDraft"
 msgstr "Черновики"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:598
+#: src/i18n/descriptors/subscription.ts:603
 msgid "aiRecognition.draftTitle"
 msgstr "Черновик {index}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:611
+#: src/i18n/descriptors/subscription.ts:616
 msgid "aiRecognition.selectedDraftTitle"
 msgstr "Черновик {index}"
 
@@ -3059,22 +3074,22 @@ msgid "subscription.formIncomplete"
 msgstr "Данные подписки заполнены не полностью. Проверьте их и попробуйте снова."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:270
+#: src/i18n/descriptors/subscription.ts:275
 msgid "subscriptions.title"
 msgstr "Подписки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:507
+#: src/i18n/descriptors/subscription.ts:512
 msgid "import.error.subscriptionInvalid"
 msgstr "Поля подписки не соответствуют правилам записи Renewlet. Проверьте даты, логотип, сайт или заметки."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:509
+#: src/i18n/descriptors/subscription.ts:514
 msgid "import.error.statusInvalid"
 msgstr "Неверный статус подписки."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:236
+#: src/i18n/descriptors/subscription.ts:241
 msgid "subscription.detailFallbackTitle"
 msgstr "Сведения о подписке"
 
@@ -3099,7 +3114,7 @@ msgid "subscription.addToCalendarRevokeFailed"
 msgstr "Не удалось отозвать ссылку на календарь"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:731
+#: src/i18n/descriptors/subscription.ts:736
 msgid "subscription.addToCalendarFeedStatusFailed"
 msgstr "Не удалось загрузить статус ссылки на календарь"
 
@@ -3119,42 +3134,42 @@ msgid "subscription.balanceEnabled"
 msgstr "Учитывать баланс счёта"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:722
+#: src/i18n/descriptors/subscription.ts:727
 msgid "calendar.visit"
 msgstr "Перейти"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:575
+#: src/i18n/descriptors/subscription.ts:580
 msgid "aiRecognition.recognizing"
 msgstr "Распознавание..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:593
+#: src/i18n/descriptors/subscription.ts:598
 msgid "aiRecognition.draftsTitle"
 msgstr "Черновики распознавания"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:577
+#: src/i18n/descriptors/subscription.ts:582
 msgid "aiRecognition.streamTitle"
 msgstr "Ход распознавания"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:694
+#: src/i18n/descriptors/subscription.ts:699
 msgid "dashboard.trials"
 msgstr "Пробные периоды"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:267
+#: src/i18n/descriptors/subscription.ts:272
 msgid "subscription.card.trialEnds"
 msgstr "Пробный период заканчивается {date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:246
+#: src/i18n/descriptors/subscription.ts:251
 msgid "subscription.detail.trialEndDate"
 msgstr "Конец пробного периода"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:685
+#: src/i18n/descriptors/subscription.ts:690
 msgid "statistics.explain"
 msgstr "Пояснение: {label}"
 
@@ -3169,27 +3184,27 @@ msgid "subscription.validation.costSharingInvalid"
 msgstr "Проверьте участников и суммы к возмещению."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:622
+#: src/i18n/descriptors/subscription.ts:627
 msgid "aiRecognition.draftIssueCategoryRequired"
 msgstr "Подтвердите категорию."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:617
+#: src/i18n/descriptors/subscription.ts:622
 msgid "aiRecognition.draftIssueBillingCycleRequired"
 msgstr "Подтвердите период оплаты."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:623
+#: src/i18n/descriptors/subscription.ts:628
 msgid "aiRecognition.draftIssuePaymentMethodRequired"
 msgstr "Подтвердите способ оплаты."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:618
+#: src/i18n/descriptors/subscription.ts:623
 msgid "aiRecognition.draftIssueStatusRequired"
 msgstr "Подтвердите статус подписки."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:616
+#: src/i18n/descriptors/subscription.ts:621
 msgid "aiRecognition.draftIssueCurrencyRequired"
 msgstr "Подтвердите валюту."
 
@@ -3199,12 +3214,12 @@ msgid "subscription.validation.balanceInvalid"
 msgstr "Введите сумму от 0 до 1 миллиарда, не более шести знаков после запятой."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:615
+#: src/i18n/descriptors/subscription.ts:620
 msgid "aiRecognition.draftIssuePriceRequired"
 msgstr "Укажите цену."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:625
+#: src/i18n/descriptors/subscription.ts:630
 msgid "aiRecognition.draftIssueCustomCycleRequired"
 msgstr "Укажите свой период полностью."
 
@@ -3217,6 +3232,11 @@ msgstr "Введите название сервиса."
 #: src/i18n/descriptors/subscription.ts:10
 msgid "subscription.validation.balanceRequired"
 msgstr "Укажите баланс счёта. Если он нулевой, введите 0."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:232
+msgid "subscription.renew.memberDates.invalid"
+msgstr "Выберите дату между {start} и {end}"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:12
@@ -3244,17 +3264,17 @@ msgid "subscription.validation.purchaseDateRequired"
 msgstr "Выберите дату покупки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:586
+#: src/i18n/descriptors/subscription.ts:591
 msgid "aiRecognition.streamStage.inputRead"
 msgstr "Чтение ввода"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:382
+#: src/i18n/descriptors/subscription.ts:387
 msgid "subscriptions.emptyFiltered"
 msgstr "Измените запрос или фильтры и попробуйте снова."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:621
+#: src/i18n/descriptors/subscription.ts:626
 msgid "aiRecognition.statusPendingDescription"
 msgstr "Оплаченный счёт не подтверждает, что подписка всё ещё активна. Выберите фактический статус сервиса."
 
@@ -3269,12 +3289,12 @@ msgid "subscription.field.currency"
 msgstr "Валюта"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:349
+#: src/i18n/descriptors/subscription.ts:354
 msgid "subscriptions.advanced.currency"
 msgstr "Валюта"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:387
+#: src/i18n/descriptors/subscription.ts:392
 msgid "subscriptions.csv.currency"
 msgstr "Валюта"
 
@@ -3284,24 +3304,29 @@ msgid "subscription.field.purchaseDate"
 msgstr "Дата покупки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:244
+#: src/i18n/descriptors/subscription.ts:249
 msgid "subscription.detail.purchaseDate"
 msgstr "Дата покупки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:263
+#: src/i18n/descriptors/subscription.ts:268
 msgid "subscription.card.oneTimeDate"
 msgstr "Куплено: {date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:681
+#: src/i18n/descriptors/subscription.ts:686
 msgid "statistics.costBudget"
 msgstr "Расходы и бюджет"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:655
+#: src/i18n/descriptors/subscription.ts:660
 msgid "statistics.trendTitle"
 msgstr "Динамика расходов"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:229
+msgid "subscription.renew.memberDates.help"
+msgstr "Даты вне нового периода заменены на новую дату начала. Проверьте каждую дату. Изменения сохранятся при подтверждении продления и будут использоваться для напоминаний о сборе оплаты; данные остальных участников не изменятся."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:149
@@ -3309,62 +3334,62 @@ msgid "subscription.costSharing.collectionReminderInheritedCycle"
 msgstr "Как период оплаты: {cycle}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:458
+#: src/i18n/descriptors/subscription.ts:463
 msgid "import.summarySkip"
 msgstr "Пропустить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:463
+#: src/i18n/descriptors/subscription.ts:468
 msgid "import.action.skip"
 msgstr "Пропустить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:468
+#: src/i18n/descriptors/subscription.ts:473
 msgid "import.filter.skip"
 msgstr "Пропустить"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:451
+#: src/i18n/descriptors/subscription.ts:456
 msgid "import.conflictSkip"
 msgstr "Пропускать существующие записи"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:473
+#: src/i18n/descriptors/subscription.ts:478
 msgid "import.skipItem"
 msgstr "Пропустить строку"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:506
+#: src/i18n/descriptors/subscription.ts:511
 msgid "import.error.skipIndexInvalid"
 msgstr "Неверный индекс пропущенного элемента."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:541
+#: src/i18n/descriptors/subscription.ts:546
 msgid "aiRecognition.stepInput"
 msgstr "Ввод"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:574
+#: src/i18n/descriptors/subscription.ts:579
 msgid "aiRecognition.draftsStale"
 msgstr "Ввод изменён. Создайте черновики заново перед предпросмотром."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:534
+#: src/i18n/descriptors/subscription.ts:539
 msgid "import.warning.aiServiceUnspecified"
 msgstr "Во входных данных не указан конкретный сервис. ИИ заполнил данные на уровне бренда — подтвердите их перед импортом."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:696
+#: src/i18n/descriptors/subscription.ts:701
 msgid "dashboard.recentSubscriptions"
 msgstr "Недавние подписки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:332
+#: src/i18n/descriptors/subscription.ts:337
 msgid "subscriptions.advanced.backToSections"
 msgstr "Назад к группам фильтров"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:573
+#: src/i18n/descriptors/subscription.ts:578
 msgid "aiRecognition.backToDraft"
 msgstr "Назад к черновикам"
 
@@ -3374,32 +3399,32 @@ msgid "subscription.costSharing.backToForm"
 msgstr "Вернуться к форме"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:572
+#: src/i18n/descriptors/subscription.ts:577
 msgid "aiRecognition.backToInput"
 msgstr "Назад к вводу"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:670
+#: src/i18n/descriptors/subscription.ts:675
 msgid "statistics.trendMoreItems"
 msgstr "Ещё {count, plural, one {# подписка} few {# подписки} many {# подписок} other {# подписки}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:381
+#: src/i18n/descriptors/subscription.ts:386
 msgid "subscriptions.emptyNoDataTitle"
 msgstr "Подписок пока нет"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:677
+#: src/i18n/descriptors/subscription.ts:682
 msgid "statistics.trendDetailsEmpty"
 msgstr "Нет данных о подписках за этот месяц"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:587
+#: src/i18n/descriptors/subscription.ts:592
 msgid "aiRecognition.streamStage.modelStart"
 msgstr "Подключение к модели"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:285
+#: src/i18n/descriptors/subscription.ts:290
 msgid "subscriptions.publicVisibilityExit"
 msgstr "Выйти из режима управления"
 
@@ -3409,27 +3434,27 @@ msgid "subscription.renew.modeRestartHelp"
 msgstr "Подходит, если подписка какое-то время не действовала. Можно задать новую дату начала и следующую дату оплаты."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:397
+#: src/i18n/descriptors/subscription.ts:402
 msgid "import.stepSelect"
 msgstr "Выбор"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:727
+#: src/i18n/descriptors/subscription.ts:732
 msgid "calendar.dayListDescription"
 msgstr "Выберите подписку для просмотра на {date}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:283
+#: src/i18n/descriptors/subscription.ts:288
 msgid "subscriptions.bulkVisibilitySelectSubscription"
 msgstr "Выбрать {name}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:610
+#: src/i18n/descriptors/subscription.ts:615
 msgid "aiRecognition.noSelectedDraft"
 msgstr "Выберите черновик, чтобы изменить все поля."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:728
+#: src/i18n/descriptors/subscription.ts:733
 msgid "calendar.dayListFallbackDescription"
 msgstr "Выберите подписку для просмотра на этот день."
 
@@ -3444,12 +3469,12 @@ msgid "subscription.placeholder.paymentMethod"
 msgstr "Выберите способ оплаты"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:400
+#: src/i18n/descriptors/subscription.ts:405
 msgid "import.tabFile"
 msgstr "Выбрать файл"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:404
+#: src/i18n/descriptors/subscription.ts:409
 msgid "import.chooseFile"
 msgstr "Выбрать файл"
 
@@ -3469,12 +3494,12 @@ msgid "subscription.placeholder.currency"
 msgstr "Выберите валюту"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:514
+#: src/i18n/descriptors/subscription.ts:519
 msgid "import.warning.aiBatchPartial"
 msgstr "Некоторые элементы не удалось распознать; успешные элементы можно подтвердить."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:418
+#: src/i18n/descriptors/subscription.ts:423
 msgid "import.wallosGuideColumnMatch"
 msgstr "Повторный импорт"
 
@@ -3484,17 +3509,17 @@ msgid "subscription.repeatReminder"
 msgstr "Повтор"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:374
+#: src/i18n/descriptors/subscription.ts:379
 msgid "subscriptions.advanced.repeatReminder"
 msgstr "Повтор напоминания"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:376
+#: src/i18n/descriptors/subscription.ts:381
 msgid "subscriptions.advanced.repeatDisabled"
 msgstr "Повтор напоминания выкл."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:375
+#: src/i18n/descriptors/subscription.ts:380
 msgid "subscriptions.advanced.repeatEnabled"
 msgstr "Повтор напоминания вкл."
 
@@ -3504,7 +3529,7 @@ msgid "subscription.repeatReminderWindow"
 msgstr "Диапазон повторов"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:732
+#: src/i18n/descriptors/subscription.ts:737
 msgid "subscription.addToCalendarFeedStatusRetry"
 msgstr "Обновить"
 
@@ -3519,7 +3544,7 @@ msgid "subscription.renew.restartSubmit"
 msgstr "Возобновить подписку"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:571
+#: src/i18n/descriptors/subscription.ts:576
 msgid "aiRecognition.regenerateDrafts"
 msgstr "Создать черновики заново"
 
@@ -3544,17 +3569,17 @@ msgid "subscription.validation.amountInvalid"
 msgstr "Сумма должна быть числом от 0 до 1 000 000 000."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:460
+#: src/i18n/descriptors/subscription.ts:465
 msgid "import.summaryError"
 msgstr "Ошибки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:464
+#: src/i18n/descriptors/subscription.ts:469
 msgid "import.action.error"
 msgstr "Ошибка"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:470
+#: src/i18n/descriptors/subscription.ts:475
 msgid "import.filter.error"
 msgstr "Ошибки"
 
@@ -3564,7 +3589,7 @@ msgid "subscription.oneTimeMode.buyout"
 msgstr "Бессрочно"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:300
+#: src/i18n/descriptors/subscription.ts:305
 msgid "subscriptions.paymentTypeFilter.buyout"
 msgstr "Бессрочно"
 
@@ -3584,42 +3609,42 @@ msgid "subscription.repeatReminderInterval"
 msgstr "Интервал"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:289
+#: src/i18n/descriptors/subscription.ts:294
 msgid "subscriptions.bulkVisibilityConfirmHideTitle"
 msgstr "Скрыть выбранные подписки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:695
+#: src/i18n/descriptors/subscription.ts:700
 msgid "dashboard.trialsNeedAttention"
 msgstr "Следите за переходом на платный тариф"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:650
+#: src/i18n/descriptors/subscription.ts:655
 msgid "statistics.inactiveSubscriptions"
 msgstr "Неактивные подписки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:649
+#: src/i18n/descriptors/subscription.ts:654
 msgid "statistics.budgetPercent"
 msgstr "Использование бюджета"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:398
+#: src/i18n/descriptors/subscription.ts:403
 msgid "import.stepPreview"
 msgstr "Предпросмотр"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:566
+#: src/i18n/descriptors/subscription.ts:571
 msgid "aiRecognition.previewImage"
 msgstr "Предпросмотр изображения {name}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:453
+#: src/i18n/descriptors/subscription.ts:458
 msgid "import.previewTitle"
 msgstr "Результат предпросмотра"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:715
+#: src/i18n/descriptors/subscription.ts:720
 msgid "calendar.estimatedSpend"
 msgstr "Ожидаемые расходы"
 
@@ -3634,7 +3659,7 @@ msgid "subscription.repeatReminderPreview.finalWindow"
 msgstr "Первое напоминание отправляется по расписанию. Повторы выполняются только за {hours, plural, one {# час} few {# часа} many {# часов} other {# часа}} до продления."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:599
+#: src/i18n/descriptors/subscription.ts:604
 msgid "aiRecognition.confidenceHigh"
 msgstr "Высокая уверенность"
 
@@ -3654,11 +3679,11 @@ msgid "subscription.reminderInherit"
 msgstr "Как в настройках (за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}})"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:266
+#: src/i18n/descriptors/subscription.ts:271
 msgid "subscription.card.reminderInherit"
 msgstr "Напоминание по умолчанию: за {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:303
+#: src/i18n/descriptors/subscription.ts:308
 msgid "subscriptions.sort.default"
 msgstr "По умолчанию"

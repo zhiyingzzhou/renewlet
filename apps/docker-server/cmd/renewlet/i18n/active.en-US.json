@@ -266,6 +266,7 @@
   "smtp.usernamePasswordTogether": "SMTP username and password must be filled together",
   "subscription.notFound": "Subscription not found",
   "subscription.renewConflict": "The subscription or renewal date has changed. Refresh its details and confirm again.",
+  "subscription.renewCostSharingInvalid": "Check member joining dates. Each date must be between the new start and due dates. Refresh renewal details if the members have changed.",
   "subscription.renewInvalidDate": "The renewal date could not be calculated. Check the subscription dates and billing cycle.",
   "subscription.renewNotAllowed": "This subscription cannot be renewed manually in its current state.",
   "subscription.visibilityConflict": "Subscriptions have changed. Your selection is preserved; retry to use the latest data.",

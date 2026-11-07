@@ -319,6 +319,13 @@ export const subscriptionRenewBodySchema = z.object({
   startDate: nullableDateInputSchema.optional(),
   nextBillingDate: dateInputSchema,
   autoCalculateNextBillingDate: z.boolean(),
+  // 重开只允许确认成员日期；成员身份、金额及提醒配置仍从当前事实读取。
+  costSharingMemberJoinedDates: z.array(z.object({
+    id: z.string().trim().min(1).max(80),
+    joinedDate: dateInputSchema,
+  }).strict()).max(20).refine((members) => new Set(members.map((member) => member.id)).size === members.length, {
+    message: "Duplicate cost sharing member",
+  }).optional(),
 }).strict()
   .describe("手动续订请求：显式选择延续原锚点或从新日期重开，并允许同步调整价格/币种。")
   .refine((value) => value.mode !== "restart" || value.startDate !== undefined && value.startDate !== null, {
@@ -328,6 +335,10 @@ export const subscriptionRenewBodySchema = z.object({
   .refine((value) => value.startDate === undefined || value.startDate === null || value.nextBillingDate >= value.startDate, {
     path: ["nextBillingDate"],
     message: "Next billing date must not be before start date",
+  })
+  .refine((value) => value.mode === "restart" || value.costSharingMemberJoinedDates === undefined, {
+    path: ["costSharingMemberJoinedDates"],
+    message: "Member dates can only be changed when restarting a subscription",
   });
 
 const apiSubscriptionCollectionItemShape = {

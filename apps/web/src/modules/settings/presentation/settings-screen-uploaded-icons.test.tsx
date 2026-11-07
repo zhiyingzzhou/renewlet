@@ -1,5 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { UploadedAsset } from "@/lib/api/schemas/media";
 import {
@@ -9,6 +10,11 @@ import {
   mocks,
   renderSettingsScreen,
 } from "./settings-screen.test-utils";
+
+// 管理页验证列表与删除结果，私有图片下载不应影响这些交互测试。
+vi.mock("@/components/authorized-image", () => ({
+  AuthorizedImage: ({ alt, ...props }: ComponentProps<"img">) => <img alt={alt} {...props} />,
+}));
 
 describe("SettingsScreen uploaded icon management", () => {
   beforeEach(() => {

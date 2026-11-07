@@ -45,6 +45,7 @@ export const messages = [
   msg({ id: "error.code.REMINDER_DAYS_OUT_OF_RANGE", message: "提醒天数必须是不提醒、继承默认值或 0 到 3650 之间" }),
   msg({ id: "error.code.COST_SHARING_COLLECTION_ANCHOR_REQUIRED", message: "请为成员设置上车日期，或先填写订阅开始日期" }),
   msg({ id: "error.code.COST_SHARING_MEMBER_JOINED_DATE_OUT_OF_RANGE", message: "成员上车日期必须在订阅日期范围内" }),
+  msg({ id: "error.code.SUBSCRIPTION_RENEW_COST_SHARING_INVALID", message: "请核对成员上车日期，日期须在新的开始日期与到期日期之间。成员信息有变化时，请先刷新续订信息。" }),
   msg({ id: "error.code.COST_SHARING_COLLECTION_REMINDER_ONE_TIME_BUYOUT_INVALID", message: "长期有效的一次性购买不支持收款提醒" }),
   msg({ id: "error.code.SETTINGS_JSON_INVALID", message: "设置数据无效" }),
   msg({ id: "error.code.CUSTOM_CONFIG_JSON_INVALID", message: "自定义配置数据无效" }),
