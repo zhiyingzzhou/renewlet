@@ -281,24 +281,26 @@ function releaseNotesSection(rawVersion, locale) {
 
   const content = readFileSync(notesPath, "utf8").trim();
   return content
-    .replace(/^# .+\r?\n+/, "")
-    .replace(/^\[(?:English|中文) ->\]\(\.\/v[0-9]+\.[0-9]+\.[0-9]+-(?:en|zh)\.md\)\r?\n+/m, "")
+    .replace(/^# [^\r\n]+(?:\r?\n+|$)/, "")
+    .replace(/^\[(?:English|中文) ->\]\(\.\/v[0-9]+\.[0-9]+\.[0-9]+-(?:en|zh)\.md\)(?:\r?\n+|$)/m, "")
     .trim();
 }
 
 function markdownNotes(rawVersion, previous, options = {}) {
   const version = normalizeVersion(rawVersion);
   const stableVersion = version.replace(/-rc\.\d+$/, "");
-  const notes = releaseNotesSection(version, "zh");
+  const notes = releaseNotesSection(version, "en");
   const includeFullChangelog = options.includeFullChangelog ?? true;
   const lines = [];
 
   if (!notes) {
-    fail(`Missing release notes: docs/release-notes/v${stableVersion}-zh.md`);
+    // 英文是发布正文的必需输入；缺失或为空时阻断生成，不能静默退回另一种语言。
+    fail(`Missing or empty release notes: docs/release-notes/v${stableVersion}-en.md`);
   }
 
-  if (releaseNotesSection(version, "en")) {
-    lines.push(`[English ->](${githubBaseUrl}/blob/main/docs/release-notes/v${stableVersion}-en.md)`, "");
+  if (releaseNotesSection(version, "zh")) {
+    // RC 复用稳定版本文件名，但链接必须固定到本次 tag；main 此时可能尚未包含这份说明。
+    lines.push(`[简体中文](${githubBaseUrl}/blob/v${version}/docs/release-notes/v${stableVersion}-zh.md)`, "");
   }
   lines.push(notes, "");
 
@@ -339,7 +341,7 @@ function releaseBody(rawVersion, previous) {
   return [
     notes,
     "",
-    "## Docker 镜像",
+    "## Docker Images",
     "",
     "- Docker Hub",
     ...dockerHubTags.map((tag) => `  - \`${tag}\``),
