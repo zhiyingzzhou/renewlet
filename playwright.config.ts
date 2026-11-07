@@ -140,6 +140,7 @@ export default defineConfig({
         "**/calendar-feed-management.spec.ts",
         "**/subscriptions.spec.ts",
         "**/subscription-renewal.spec.ts",
+        "**/subscription-renewal-members.spec.ts",
         "**/settings.spec.ts",
         "**/lunar-calendar.spec.ts",
         "**/statistics.spec.ts",

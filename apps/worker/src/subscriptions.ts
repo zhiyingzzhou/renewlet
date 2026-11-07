@@ -3,6 +3,7 @@
  *
  * Worker 没有 PocketBase hook，因此 create/update/import/renew 都必须在这里复用同一套字段归一和 owner 过滤。
  */
+import { restartCostSharingMemberDates } from "@renewlet/shared/cost-sharing";
 import {
   subscriptionCreateBodySchema,
   subscriptionPayloadSchema,
@@ -182,7 +183,7 @@ export async function renewSubscription(request: Request, env: Env, id: string):
   const factStatement = env.DB.prepare(`
     UPDATE subscriptions SET
       price = ?, currency = ?, start_date = ?, next_billing_date = ?, auto_calculate_next_billing_date = ?,
-      cost_sharing_collection_reminder_enabled = ?, cost_sharing_next_collection_reminder_date = ?, status = ?, updated_at = ?
+      cost_sharing_collection_reminder_enabled = ?, cost_sharing_next_collection_reminder_date = ?, status = ?, updated_at = ?, cost_sharing_json = ?
     WHERE user_id = ? AND id = ?
   `).bind(
     merged.price,
@@ -194,6 +195,7 @@ export async function renewSubscription(request: Request, env: Env, id: string):
     merged.cost_sharing_next_collection_reminder_date,
     merged.status,
     timestamp,
+    merged.cost_sharing_json,
     auth.user.id,
     id,
   );
@@ -225,9 +227,18 @@ function renewSubscriptionRow(
     throw new HttpError(400, "INVALID_RENEW_START_DATE", "INVALID_PAYLOAD");
   }
   const existingBody = toBody(existing);
+  let costSharing = existingBody.costSharing;
+  if (body.mode === "restart") {
+    try {
+      costSharing = restartCostSharingMemberDates(costSharing ?? undefined, body.costSharingMemberJoinedDates ?? [], body.startDate!, body.nextBillingDate);
+    } catch {
+      throw new HttpError(400, serverText(locale, "subscription.renewCostSharingInvalid"), "SUBSCRIPTION_RENEW_COST_SHARING_INVALID");
+    }
+  }
   // continue 忽略请求里的日期，restart 才写入用户选择的新日期；两者都保留其它订阅字段并重新过 shared 写入 schema。
   const mergedBody = parseSubscriptionBodyForStorage({
     ...existingBody,
+    costSharing,
     price: body.price,
     currency: body.currency,
     startDate: body.mode === "restart" ? body.startDate : existingBody.startDate,

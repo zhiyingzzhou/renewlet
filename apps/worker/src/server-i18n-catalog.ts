@@ -374,7 +374,8 @@ export const SERVER_I18N_CATALOGS = {
     "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。",
     "subscription.renewConflict": "订阅已更新或续订日期发生变化，请刷新信息并重新确认。",
     "subscription.renewNotAllowed": "此订阅当前不支持手动续订，请检查状态与续订方式。",
-    "subscription.renewInvalidDate": "无法计算续订日期，请检查订阅日期和周期。"
+    "subscription.renewInvalidDate": "无法计算续订日期，请检查订阅日期和周期。",
+    "subscription.renewCostSharingInvalid": "请核对成员上车日期，日期须在新的开始日期与到期日期之间。成员信息有变化时，请先刷新续订信息。"
   },
   "en-US": {
     "admin.createFailed": "Failed to create admin",
@@ -737,7 +738,8 @@ export const SERVER_I18N_CATALOGS = {
     "subscription.visibilityFailed": "Unable to update public visibility. Your selection is preserved; please retry.",
     "subscription.renewConflict": "The subscription or renewal date has changed. Refresh its details and confirm again.",
     "subscription.renewNotAllowed": "This subscription cannot be renewed manually in its current state.",
-    "subscription.renewInvalidDate": "The renewal date could not be calculated. Check the subscription dates and billing cycle."
+    "subscription.renewInvalidDate": "The renewal date could not be calculated. Check the subscription dates and billing cycle.",
+    "subscription.renewCostSharingInvalid": "Check member joining dates. Each date must be between the new start and due dates. Refresh renewal details if the members have changed."
   },
   "ru-RU": {
     "admin.createFailed": "Не удалось создать администратора",
@@ -1100,7 +1102,8 @@ export const SERVER_I18N_CATALOGS = {
     "subscription.visibilityFailed": "Не удалось обновить публичную видимость. Ваш выбор сохранён, повторите попытку.",
     "subscription.renewConflict": "Подписка или дата продления изменились. Обновите данные и подтвердите ещё раз.",
     "subscription.renewNotAllowed": "Эту подписку нельзя продлить вручную в текущем состоянии.",
-    "subscription.renewInvalidDate": "Не удалось рассчитать дату продления. Проверьте даты и период подписки."
+    "subscription.renewInvalidDate": "Не удалось рассчитать дату продления. Проверьте даты и период подписки.",
+    "subscription.renewCostSharingInvalid": "Проверьте даты присоединения участников: они должны быть между новой датой начала и датой следующей оплаты. Если состав участников изменился, обновите данные продления."
   }
 } as const satisfies Record<ServerI18nLocale, ServerI18nCatalog>;
 

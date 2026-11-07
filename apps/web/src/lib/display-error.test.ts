@@ -12,9 +12,12 @@ describe("display-error", () => {
 
   it("uses problem detail from plain objects", () => {
     expect(getDisplayErrorMessage({ detail: "图片过大" }, "fallback")).toBe("图片过大");
+    expect(getDisplayErrorMessage("图片过大", "fallback")).toBe("图片过大");
   });
 
   it("localizes stable backend validation codes", () => {
+    expect(getDisplayErrorMessage(new ApiError("COST_SHARING_MEMBER_JOINED_DATE_OUT_OF_RANGE.", 400, undefined, "INVALID_PAYLOAD"))).toBe("成员上车日期必须在订阅日期范围内");
+    expect(getDisplayErrorMessage(new ApiError("请核对成员日期", 400, undefined, "INVALID_PAYLOAD"))).toBe("请核对成员日期");
     expect(getDisplayErrorMessage(new ApiError("SUBSCRIPTION_NAME_REQUIRED", 400))).toBe("请输入订阅名称");
     expect(getDisplayErrorMessage(new ApiError("NEXT_BILLING_DATE_BEFORE_START_DATE", 400))).toBe("到期日期不能早于开始日期");
     expect(getDisplayErrorMessage(new ApiError(

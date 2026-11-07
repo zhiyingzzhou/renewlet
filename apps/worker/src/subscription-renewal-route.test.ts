@@ -257,7 +257,7 @@ describe("Cloudflare subscription renewal route", () => {
       startDate: "2026-08-12",
       nextBillingDate: "2026-09-12",
       autoCalculateNextBillingDate: true,
-    }), fixture.env, "sub_manual")).rejects.toMatchObject({ status: 400, code: "INVALID_PAYLOAD" });
+    }), fixture.env, "sub_manual")).rejects.toMatchObject({ status: 400, code: "SUBSCRIPTION_RENEW_COST_SHARING_INVALID" });
 
     expect(fixture.updateParams).toBeNull();
   });

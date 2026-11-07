@@ -79,6 +79,9 @@ vi.mock("@/i18n/I18nProvider", () => ({
         "subscription.renew.submit": "确认续订",
         "subscription.renew.title": `续订「${String(values?.["name"] ?? "")}」`,
         "subscription.renew.validation.startDateRequired": "请选择新的开始日期",
+        "subscription.renew.memberDates.title": "确认成员上车日期",
+        "subscription.renew.memberDates.label": `${String(values?.["name"] ?? "")}的上车日期`,
+        "subscription.renew.memberDates.original": `原日期：${String(values?.["date"] ?? "")}`,
         "subscription.search.currency": "搜索货币、代码或符号...",
         "subscription.validation.amountInvalid": "金额必须是 0 到 1,000,000,000 之间的有效数字",
         "subscription.validation.dateOrderInvalid": "到期日期不能早于开始日期",
@@ -102,6 +105,32 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+});
+
+it("shows only affected member dates with original values and submits the confirmed proposal", async () => {
+  const user = setupUser();
+  const { onSubmit } = renderDialog({ subscription: makeSubscription({ costSharing: { enabled: true, splitMode: "equal", members: [
+    { id: "old", name: "Alice", joinedDate: assertDateOnly("2026-01-31") },
+    { id: "inside", name: "Bob", joinedDate: assertDateOnly("2026-08-20") },
+    { id: "blank", name: "Dan" },
+  ] } }) });
+  expect(screen.queryByText("确认成员上车日期")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("radio", { name: /重新开始订阅/ }));
+  const memberField = screen.getByRole("button", { name: /Alice的上车日期/ });
+  expect(memberField).toHaveTextContent("2026-08-12");
+  expect(memberField).toHaveAccessibleDescription("原日期：2026-01-31");
+  expect(screen.queryByRole("button", { name: /Bob的上车日期/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Dan的上车日期/ })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "重新开始订阅" }));
+  expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ costSharingMemberJoinedDates: [{ id: "old", joinedDate: "2026-08-12" }] }));
+});
+
+it("localizes nested domain codes instead of showing the raw server message", async () => {
+  const user = setupUser();
+  renderDialog({ onSubmit: vi.fn().mockRejectedValue(new ApiError("COST_SHARING_MEMBER_JOINED_DATE_OUT_OF_RANGE.", 400, undefined, "INVALID_PAYLOAD")) });
+  await user.click(screen.getByRole("button", { name: "确认续订" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("成员上车日期必须在订阅日期范围内");
+  expect(screen.queryByText(/COST_SHARING_MEMBER_JOINED_DATE_OUT_OF_RANGE/)).not.toBeInTheDocument();
 });
 
 function setupUser() {

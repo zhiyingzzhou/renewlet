@@ -77,13 +77,16 @@ func handleSubscriptionRenew(app core.App, e *core.RequestEvent) error {
 			record.Set("startDate", body.StartDate.Value)
 			record.Set("nextBillingDate", body.NextBillingDate)
 			record.Set("autoCalculateNextBillingDate", body.AutoCalculateNextBillingDate)
+			if err := restartCostSharingMemberDates(record, body.CostSharingMemberJoinedDates.Value); err != nil {
+				return err
+			}
 			if record.GetString("status") == "expired" {
 				record.Set("status", "active")
 			}
 		}
 		record.Set("price", body.Price)
 		record.Set("currency", body.Currency)
-		// 续订只写本次确认的字段；余额及家庭共享仍由最新事实和原有 hook/派生事务保护。
+		// 日期调整与续订同事务保存，余额和未确认的分摊字段仍取当前事实；hook 同步重算收款提醒。
 		// 校验与落库仍在同一事务内；分开执行才能让输入错误返回 400，而存储故障保持 500。
 		if err := tx.Validate(record); err != nil {
 			return e.BadRequestError(validationErrorMessage(locale, "common.invalidRequestBody", err), err)
@@ -102,6 +105,9 @@ func handleSubscriptionRenew(app core.App, e *core.RequestEvent) error {
 	}
 	if errors.Is(err, errSubscriptionRenewNotAllowed) {
 		return apiErrorJSON(e, http.StatusBadRequest, "SUBSCRIPTION_RENEW_NOT_ALLOWED", serverText(locale, "subscription.renewNotAllowed"), nil)
+	}
+	if errors.Is(err, errSubscriptionRenewCostSharingInvalid) {
+		return apiErrorJSON(e, http.StatusBadRequest, "SUBSCRIPTION_RENEW_COST_SHARING_INVALID", serverText(locale, "subscription.renewCostSharingInvalid"), nil)
 	}
 	if err != nil {
 		var apiErr *router.ApiError

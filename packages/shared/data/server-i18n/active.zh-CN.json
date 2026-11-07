@@ -359,5 +359,6 @@
   "subscription.visibilityFailed": "暂时无法更新公开可见性，已保留选择，请重试。",
   "subscription.renewConflict": "订阅已更新或续订日期发生变化，请刷新信息并重新确认。",
   "subscription.renewNotAllowed": "此订阅当前不支持手动续订，请检查状态与续订方式。",
-  "subscription.renewInvalidDate": "无法计算续订日期，请检查订阅日期和周期。"
+  "subscription.renewInvalidDate": "无法计算续订日期，请检查订阅日期和周期。",
+  "subscription.renewCostSharingInvalid": "请核对成员上车日期，日期须在新的开始日期与到期日期之间。成员信息有变化时，请先刷新续订信息。"
 }
