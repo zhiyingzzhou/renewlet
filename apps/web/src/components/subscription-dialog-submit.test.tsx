@@ -27,6 +27,11 @@ vi.mock("@/hooks/use-settings", () => ({
   }),
 }));
 
+// 提交锁和失败草稿测试不依赖外部汇率；异步请求由汇率 Hook 专门测试。
+vi.mock("@/hooks/use-exchange-rates", () => ({
+  useExchangeRates: () => ({ convert: (amount: number) => amount }),
+}));
+
 vi.mock("@/components/subscription-form-fields", () => ({
   SubscriptionFormFields: ({ setFormData, errors }: {
     setFormData: (updater: ReturnType<typeof createSubscriptionFormState>) => void;

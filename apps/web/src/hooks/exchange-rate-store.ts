@@ -58,7 +58,11 @@ export const FALLBACK_RATES: ExchangeRates = {
 
 const EXCHANGE_API_PRIMARY_USD_FEED = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json";
 const EXCHANGE_API_FALLBACK_USD_FEED = "https://latest.currency-api.pages.dev/v1/currencies/usd.min.json";
-const FRANKFURTER_USD_FEED = "https://api.frankfurter.dev/v2/rates?base=USD";
+// Frankfurter 默认响应包含加密资产；按产品法币清单限定请求，避免额外资产使整份响应无法通过校验。
+const FRANKFURTER_USD_FEED = `https://api.frankfurter.dev/v2/rates?${new URLSearchParams({
+  base: "USD",
+  quotes: SUPPORTED_EXCHANGE_RATE_CURRENCIES.join(","),
+})}`;
 const FLOATRATES_USD_FEED = "https://www.floatrates.com/daily/usd.json";
 // 已保存 provider 是用户偏好，不能因默认源升级而迁移；失败或少量缺口再按全局顺序补位。
 const EXCHANGE_RATE_PROVIDER_FALLBACK_ORDER = ["frankfurter", "floatrates", "exchange-api"] as const satisfies readonly ExchangeRateProvider[];
