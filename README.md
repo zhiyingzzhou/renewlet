@@ -80,6 +80,12 @@ Click the button to deploy. To manage the Cloudflare resources yourself, follow 
 
 For upgrades, update the existing repository as described in the guide instead of clicking the deploy button again.
 
+## Third-Party Hosting
+
+RepoCloud is an independent, paid VPS hosting provider. Availability, pricing, deployment behavior, and support are managed by RepoCloud, not by Renewlet.
+
+<a href="https://repocloud.io/details/Renewlet/"><img src="https://d16t0pc4846x52.cloudfront.net/deploylobe.svg" alt="Deploy on RepoCloud" height="39"></a>
+
 ## Upgrade
 
 Back up your data and configuration first:
