@@ -72,10 +72,6 @@ If Docker Hub is unavailable, use GHCR:
 RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.34"
 ```
 
-## One-Click Deploy
-
-<a href="https://repocloud.io/details/Renewlet/"><img src="https://d16t0pc4846x52.cloudfront.net/deploylobe.svg" alt="Deploy on RepoCloud" height="39"></a>
-
 ## Cloudflare Workers
 
 <a href="https://deploy.workers.cloudflare.com/?url=https://github.com/zhiyingzzhou/renewlet"><img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare"></a>
@@ -83,6 +79,12 @@ RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.34"
 Click the button to deploy. To manage the Cloudflare resources yourself, follow the [Cloudflare Workers deployment guide](docs/cloudflare-workers-deploy.md).
 
 For upgrades, update the existing repository as described in the guide instead of clicking the deploy button again.
+
+## Third-Party Hosting
+
+RepoCloud is an independent, paid VPS hosting provider. Availability, pricing, deployment behavior, and support are managed by RepoCloud, not by Renewlet.
+
+<a href="https://repocloud.io/details/Renewlet/"><img src="https://d16t0pc4846x52.cloudfront.net/deploylobe.svg" alt="Deploy on RepoCloud" height="39"></a>
 
 ## Upgrade
 
