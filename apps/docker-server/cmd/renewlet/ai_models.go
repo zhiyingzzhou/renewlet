@@ -159,11 +159,15 @@ func handleAIModelsList(app core.App, e *core.RequestEvent) error {
 	if err != nil {
 		var httpErr *aiModelListHTTPError
 		if errors.As(err, &httpErr) {
-			return apiErrorJSON(e, httpErr.status, httpErr.code, serverText(locale, "aiRecognition.modelListFailed"), aiModelListErrorDetails{
-				RawResponseText: optionalUpstreamBody(firstNonBlank(aiProviderResponseBody(httpErr.providerResponse), optionalStringValue(httpErr.message), httpErr.reason)),
+			if httpErr.providerResponse != nil && httpErr.providerResponse.Status != nil {
+				return writeAIRecognitionUpstreamResponse(e, httpErr.providerResponse)
+			}
+			message := firstNonBlank(aiProviderResponseBody(httpErr.providerResponse), optionalStringValue(httpErr.message), serverText(locale, "aiRecognition.modelListFailed"))
+			return apiErrorJSON(e, httpErr.status, httpErr.code, message, aiModelListErrorDetails{
+				RawResponseText: optionalUpstreamBody(message),
 			})
 		}
-		return apiErrorJSON(e, http.StatusBadRequest, "AI_MODEL_LIST_FAILED", serverText(locale, "aiRecognition.modelListFailed"), aiModelListErrorDetails{RawResponseText: optionalUpstreamBody(err.Error())})
+		return apiErrorJSON(e, http.StatusBadRequest, "AI_MODEL_LIST_FAILED", err.Error(), aiModelListErrorDetails{RawResponseText: optionalUpstreamBody(err.Error())})
 	}
 	return apiSuccessJSON(e, http.StatusOK, response)
 }

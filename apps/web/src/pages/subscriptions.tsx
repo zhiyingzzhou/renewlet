@@ -241,6 +241,8 @@ const Subscriptions = () => {
     handleTogglePublicHiddenSubscription,
     handleRenewSubscription,
     handleSubmitRenewSubscription,
+    handleRefreshRenewSubscription,
+    handleEditRenewSubscription,
     handleSaveSubscription,
     handleSaveClonedSubscription,
     handleEditDialogOpenChange,
@@ -740,7 +742,9 @@ const Subscriptions = () => {
         open={renewDialogOpen}
         today={today}
         submitting={renewSubmitting}
-        error={renewError instanceof Error ? renewError.message : null}
+        error={renewError}
+        onRefresh={handleRefreshRenewSubscription}
+        onEdit={handleEditRenewSubscription}
         restoreFocusRef={renewRestoreFocusRef}
         onOpenChange={handleRenewDialogOpenChange}
         onSubmit={handleSubmitRenewSubscription}

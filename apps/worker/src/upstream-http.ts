@@ -81,11 +81,11 @@ export async function sendUpstreamRequest(
 }
 
 // 协议SDK复用相同外发出口，但自行拥有整次认证操作的超时和错误语义，不能逐次握手重置。
-export function fetchUpstream(input: RequestInfo | URL, init: RequestInit, budget?: CronBudget): Promise<Response> {
+export function fetchUpstream(input: UpstreamRequestInput, init: RequestInit, budget?: CronBudget): Promise<Response> {
   return budget ? fetchWithBudget(input, init, budget) : fetch(input, init);
 }
 
-async function fetchWithBudget(input: RequestInfo | URL, init: RequestInit, budget: CronBudget): Promise<Response> {
+async function fetchWithBudget(input: UpstreamRequestInput, init: RequestInit, budget: CronBudget): Promise<Response> {
   const initial = new Request(input, init);
   const signal = init.signal ?? initial.signal;
   let url = new URL(initial.url);
@@ -123,6 +123,7 @@ export async function requireUpstreamHttpOk(
     throw new UpstreamOperationError(
       providerMessage ? `${options.provider} HTTP ${response.status}: ${providerMessage}` : `${options.provider} HTTP ${response.status}`,
       createUpstreamErrorDetails({ responseText: providerMessage, providerResponse }),
+      response.status,
     );
   }
   // 成功响应不需要 body 时主动 cancel，避免 provider 响应流悬挂到请求结束后才被运行时回收。

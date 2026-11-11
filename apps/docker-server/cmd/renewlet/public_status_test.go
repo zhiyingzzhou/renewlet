@@ -37,6 +37,8 @@ func TestPublicStatusPageLifecycleAndPublicRoute(t *testing.T) {
 		Website:         "https://billing.example.test",
 		Notes:           "private note",
 	})
+	visible.Set("balance", "98765.4321")
+	visible.Set("balanceCurrency", "EUR")
 	visible.Set("logo", "/api/app/assets/"+assetID)
 	if err := app.Save(visible); err != nil {
 		t.Fatal(err)
@@ -172,6 +174,9 @@ func TestPublicStatusPageLifecycleAndPublicRoute(t *testing.T) {
 	pricedRes := serveTestRequest(t, app, http.MethodGet, publicTarget, "", "")
 	if !strings.Contains(pricedRes.Body.String(), `"price":"12"`) || !strings.Contains(pricedRes.Body.String(), `"currency":"USD"`) {
 		t.Fatalf("expected showPrices to expose amount fields, got %s", pricedRes.Body.String())
+	}
+	if strings.Contains(pricedRes.Body.String(), "balance") || strings.Contains(pricedRes.Body.String(), "98765") {
+		t.Fatal("public status exposed balance")
 	}
 	pricedBody := decodeAPISuccessDataForTest[map[string]any](t, pricedRes.Body.Bytes())
 	if page, ok := pricedBody["page"].(map[string]any); !ok || page["currency"] != "USD" {

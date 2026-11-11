@@ -193,12 +193,12 @@ export function FormFieldRow({
       data-slot="form-field-row"
       data-align-at={alignAt}
       data-tracks={tracks}
-      className={cn("grid", visibleErrors.length > 0 && "gap-2", className)}
+      className={cn("grid min-w-0 grid-cols-1", visibleErrors.length > 0 && "gap-2", className)}
       {...props}
     >
       <FormFieldRowContext.Provider value={{ alignAt, tracks }}>
         {/* 说明与错误只能扩展各自轨道，不能反向改变同一行 label、控件或 action 的共享基线。 */}
-        <div className={cn("grid gap-x-4 gap-y-4", rowLayoutClasses[alignAt], rowClassName)}>
+        <div className={cn("grid min-w-0 grid-cols-1 gap-x-4 gap-y-4", rowLayoutClasses[alignAt], rowClassName)}>
           {children}
         </div>
       </FormFieldRowContext.Provider>

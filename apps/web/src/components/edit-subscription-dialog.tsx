@@ -20,7 +20,7 @@ interface EditSubscriptionDialogProps {
   open: boolean;
   /** 弹窗开关回调（由上层控制）。 */
   onOpenChange: (open: boolean) => void;
-  onSave: (submission: SubscriptionFormSubmission) => void;
+  onSave: (submission: SubscriptionFormSubmission) => void | Promise<void>;
   /** 当前用户已有标签建议。 */
   availableTags?: readonly string[] | undefined;
   loading?: boolean | undefined;

@@ -123,7 +123,7 @@ export function LogoPicker({
 
   return (
     <>
-    <div className="grid gap-2">
+    <div className="grid min-w-0 grid-cols-1 gap-2">
       <Label>{t("media.logo")}</Label>
       <div className="flex flex-wrap items-center gap-3" data-testid="logo-picker-control-row">
         <div className="group relative h-16 w-16 shrink-0 overflow-visible">
@@ -177,7 +177,7 @@ export function LogoPicker({
           />
         </div>
 
-        <div className="grid min-w-0 w-fit max-w-full gap-2">
+        <div className="grid min-w-0 w-fit max-w-full grid-cols-1 gap-2">
           <Button
             type="button"
             variant="outline"

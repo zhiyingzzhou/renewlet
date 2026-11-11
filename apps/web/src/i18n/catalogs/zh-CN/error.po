@@ -14,22 +14,22 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:98
+#: src/i18n/descriptors/error.ts:99
 msgid "error.code.AI_RECOGNITION_EMPTY"
 msgstr "AI 没有识别到可导入的订阅"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:99
+#: src/i18n/descriptors/error.ts:100
 msgid "error.code.AI_RECOGNITION_FAILED"
 msgstr "AI 识别失败，请检查输入和模型配置"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:100
+#: src/i18n/descriptors/error.ts:101
 msgid "error.code.AI_RECOGNITION_SCHEMA_MISMATCH"
 msgstr "AI 返回内容无法整理成订阅草稿，请换用更强的模型或补充更明确的信息"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:101
+#: src/i18n/descriptors/error.ts:102
 msgid "error.code.AI_RECOGNITION_TEST_FAILED"
 msgstr "AI 连接测试失败，请检查模型配置"
 
@@ -59,7 +59,7 @@ msgid "error.code.TURNSTILE_TEST_FAILED"
 msgstr "Turnstile 配置测试失败，请检查 Site key 和 Secret key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:63
+#: src/i18n/descriptors/error.ts:64
 msgid "error.code.ASSET_FILE_TOO_MANY"
 msgstr "一次只能上传一个图片文件"
 
@@ -79,12 +79,12 @@ msgid "error.turnstileFailed"
 msgstr "人机验证失败，请重新验证后再登录"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:65
+#: src/i18n/descriptors/error.ts:66
 msgid "error.code.ASSET_FILE_TYPE_INVALID"
 msgstr "仅支持 PNG、JPG、WebP、SVG 或 ICO 图片"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:83
+#: src/i18n/descriptors/error.ts:84
 msgid "error.code.IMPORT_CONFLICT_MODE_INVALID"
 msgstr "冲突处理方式无效"
 
@@ -99,22 +99,22 @@ msgid "error.code.TAG_TOO_LONG"
 msgstr "单个标签不能超过 40 个字符"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:91
+#: src/i18n/descriptors/error.ts:92
 msgid "error.code.IMPORT_SOURCE_ID_DUPLICATE"
 msgstr "同一导入文件内存在重复来源 ID"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:64
+#: src/i18n/descriptors/error.ts:65
 msgid "error.code.ASSET_FILE_SIZE_INVALID"
 msgstr "图片大小必须在 1 字节到 2MB 之间"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:62
+#: src/i18n/descriptors/error.ts:63
 msgid "error.code.ASSET_KIND_INVALID"
 msgstr "图片用途无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:97
+#: src/i18n/descriptors/error.ts:98
 msgid "error.code.AI_IMAGE_TYPE_INVALID"
 msgstr "图片类型无效，仅支持 PNG、JPG 或 WebP"
 
@@ -129,37 +129,37 @@ msgid "error.code.WEBSITE_URL_INVALID"
 msgstr "官网地址无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:76
+#: src/i18n/descriptors/error.ts:77
 msgid "error.code.USER_PASSWORD_INVALID"
 msgstr "密码长度无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:81
+#: src/i18n/descriptors/error.ts:82
 msgid "error.code.IMPORT_PREVIEW_FAILED"
 msgstr "导入内容存在错误，请先处理预览中的错误项"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:89
+#: src/i18n/descriptors/error.ts:90
 msgid "error.code.IMPORT_CONFIDENCE_INVALID"
 msgstr "导入匹配信息无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:88
+#: src/i18n/descriptors/error.ts:89
 msgid "error.code.IMPORT_SOURCE_ID_INVALID"
 msgstr "导入来源 ID 无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:87
+#: src/i18n/descriptors/error.ts:88
 msgid "error.code.IMPORT_KEY_REQUIRED"
 msgstr "导入来源匹配信息缺失"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:84
+#: src/i18n/descriptors/error.ts:85
 msgid "error.code.IMPORT_SOURCE_INVALID"
 msgstr "导入来源无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:85
+#: src/i18n/descriptors/error.ts:86
 msgid "error.code.IMPORT_TOO_MANY_SUBSCRIPTIONS"
 msgstr "导入订阅数量过多"
 
@@ -179,7 +179,7 @@ msgid "error.code.START_DATE_DATE_INVALID"
 msgstr "开始日期无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:96
+#: src/i18n/descriptors/error.ts:97
 msgid "error.code.AI_THINKING_PROVIDER_MISMATCH"
 msgstr "思考控制与当前平台或协议不匹配"
 
@@ -199,7 +199,7 @@ msgid "error.generic"
 msgstr "操作失败，请稍后重试"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:66
+#: src/i18n/descriptors/error.ts:67
 msgid "error.code.ASSET_FILE_READ_FAILED"
 msgstr "无法读取上传文件"
 
@@ -224,7 +224,7 @@ msgid "error.exchangeRatesContract"
 msgstr "汇率响应格式异常"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:74
+#: src/i18n/descriptors/error.ts:75
 msgid "error.code.USER_NAME_TOO_LONG"
 msgstr "用户名称不能超过 80 个字符"
 
@@ -234,7 +234,7 @@ msgid "error.loginUnavailable"
 msgstr "登录服务暂时不可用，请稍后重试"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:102
+#: src/i18n/descriptors/error.ts:103
 msgid "error.code.SUBSCRIPTION_COLLECTION_LIMIT_EXCEEDED"
 msgstr "结果超过可处理上限，请缩小搜索或筛选范围"
 
@@ -259,22 +259,22 @@ msgid "error.code.CUSTOM_DAYS_REQUIRED"
 msgstr "自定义周期数量必须大于 0"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:52
+#: src/i18n/descriptors/error.ts:53
 msgid "error.code.CUSTOM_CONFIG_GROUP_TOO_LARGE"
 msgstr "自定义配置分组最多支持 200 项"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:51
+#: src/i18n/descriptors/error.ts:52
 msgid "error.code.CUSTOM_CONFIG_GROUP_NOT_ARRAY"
 msgstr "自定义配置分组必须是数组"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:50
+#: src/i18n/descriptors/error.ts:51
 msgid "error.code.CUSTOM_CONFIG_JSON_INVALID"
 msgstr "自定义配置数据无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:53
+#: src/i18n/descriptors/error.ts:54
 msgid "error.code.CUSTOM_CONFIG_ITEM_INVALID"
 msgstr "自定义配置项无效"
 
@@ -294,17 +294,17 @@ msgid "error.code.SUBSCRIPTION_NAME_TOO_LONG"
 msgstr "订阅名称不能超过 120 个字符"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:90
+#: src/i18n/descriptors/error.ts:91
 msgid "error.code.IMPORT_SOURCE_MISMATCH"
 msgstr "订阅导入来源与当前 payload 不一致"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:86
+#: src/i18n/descriptors/error.ts:87
 msgid "error.code.IMPORT_SETTINGS_INVALID"
 msgstr "设置导入内容无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:49
+#: src/i18n/descriptors/error.ts:50
 msgid "error.code.SETTINGS_JSON_INVALID"
 msgstr "设置数据无效"
 
@@ -324,17 +324,17 @@ msgid "error.code.COST_SHARING_COLLECTION_ANCHOR_REQUIRED"
 msgstr "请为成员设置上车日期，或先填写订阅开始日期"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:94
+#: src/i18n/descriptors/error.ts:95
 msgid "error.code.AI_API_KEY_REQUIRED"
 msgstr "请先填写 AI API Key"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:93
+#: src/i18n/descriptors/error.ts:94
 msgid "error.code.AI_BASE_URL_REQUIRED"
 msgstr "请先填写 AI Base URL"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:92
+#: src/i18n/descriptors/error.ts:93
 msgid "error.code.AI_MODEL_REQUIRED"
 msgstr "请先填写 AI 模型"
 
@@ -344,7 +344,7 @@ msgid "error.turnstileRequired"
 msgstr "请先完成人机验证"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:95
+#: src/i18n/descriptors/error.ts:96
 msgid "error.code.AI_RECOGNITION_INPUT_REQUIRED"
 msgstr "请先粘贴文本或上传图片"
 
@@ -359,17 +359,22 @@ msgid "error.code.TURNSTILE_REQUIRED"
 msgstr "请完成人机验证"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:77
+#: src/i18n/descriptors/error.ts:48
+msgid "error.code.SUBSCRIPTION_RENEW_COST_SHARING_INVALID"
+msgstr "请核对成员上车日期，日期须在新的开始日期与到期日期之间。成员信息有变化时，请先刷新续订信息。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/error.ts:78
 msgid "error.code.INVALID_JSON"
 msgstr "请求体不是有效 JSON"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:78
+#: src/i18n/descriptors/error.ts:79
 msgid "error.code.EMPTY_BODY"
 msgstr "请求体不能为空"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:79
+#: src/i18n/descriptors/error.ts:80
 msgid "error.code.BODY_TOO_LARGE"
 msgstr "请求体过大"
 
@@ -379,7 +384,7 @@ msgid "error.invalidParams"
 msgstr "请求参数无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:80
+#: src/i18n/descriptors/error.ts:81
 msgid "error.code.INVALID_PAYLOAD"
 msgstr "请求参数无效"
 
@@ -394,12 +399,12 @@ msgid "error.timeout"
 msgstr "请求超时，请稍后重试"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:61
+#: src/i18n/descriptors/error.ts:62
 msgid "error.code.BUILT_IN_ICON_SOURCE_REQUIRED"
 msgstr "请至少启用一个内置图标来源"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:73
+#: src/i18n/descriptors/error.ts:74
 msgid "error.code.USER_NAME_REQUIRED"
 msgstr "请输入用户名称"
 
@@ -414,7 +419,7 @@ msgid "error.code.CURRENCY_CODE_INVALID"
 msgstr "货币代码必须是 3 位大写字母"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:82
+#: src/i18n/descriptors/error.ts:83
 msgid "error.code.IMPORT_SKIP_INDEX_INVALID"
 msgstr "跳过项索引无效"
 
@@ -424,32 +429,32 @@ msgid "error.moreErrors"
 msgstr "还有 {count} 个错误"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:71
+#: src/i18n/descriptors/error.ts:72
 msgid "error.code.NOTIFICATION_UTC_TIME_INVALID"
 msgstr "通知 UTC 时间无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:72
+#: src/i18n/descriptors/error.ts:73
 msgid "error.code.NOTIFICATION_ATTEMPTS_NEGATIVE"
 msgstr "通知尝试次数不能为负数"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:70
+#: src/i18n/descriptors/error.ts:71
 msgid "error.code.NOTIFICATION_TIMEZONE_INVALID"
 msgstr "通知时区无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:67
+#: src/i18n/descriptors/error.ts:68
 msgid "error.code.NOTIFICATION_LOCAL_DATE_DATE_FORMAT"
 msgstr "通知本地日期必须是 YYYY-MM-DD"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:68
+#: src/i18n/descriptors/error.ts:69
 msgid "error.code.NOTIFICATION_LOCAL_DATE_DATE_INVALID"
 msgstr "通知本地日期无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:69
+#: src/i18n/descriptors/error.ts:70
 msgid "error.code.NOTIFICATION_LOCAL_TIME_INVALID"
 msgstr "通知本地时间无效"
 
@@ -459,46 +464,46 @@ msgid "error.loginGeneric"
 msgstr "邮箱或密码不正确，请检查后重试"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:75
+#: src/i18n/descriptors/error.ts:76
 msgid "error.code.USER_EMAIL_INVALID"
 msgstr "邮箱格式无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:55
+#: src/i18n/descriptors/error.ts:56
 msgid "error.code.CONFIG_ITEM_LABELS_INVALID"
 msgstr "配置项名称结构无效"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:60
+#: src/i18n/descriptors/error.ts:61
 msgid "error.code.CONFIG_ITEM_ENABLED_NOT_BOOLEAN"
 msgstr "配置项启用状态必须是布尔值"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:59
+#: src/i18n/descriptors/error.ts:60
 msgid "error.code.CONFIG_ITEM_ICON_NOT_STRING"
 msgstr "配置项图标必须是字符串"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:57
+#: src/i18n/descriptors/error.ts:58
 msgid "error.code.CONFIG_ITEM_FIELDS_TOO_LONG"
 msgstr "配置项字段不能超过 128 个字符"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:54
+#: src/i18n/descriptors/error.ts:55
 msgid "error.code.CONFIG_ITEM_LABELS_REQUIRED"
 msgstr "配置项必须同时填写中文名和英文名"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:56
+#: src/i18n/descriptors/error.ts:57
 msgid "error.code.CONFIG_ITEM_REQUIRED_FIELDS"
 msgstr "配置项的键值、中文名和英文名不能为空"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:58
+#: src/i18n/descriptors/error.ts:59
 msgid "error.code.CONFIG_ITEM_COLOR_NOT_STRING"
 msgstr "配置项颜色必须是字符串"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/error.ts:48
+#: src/i18n/descriptors/error.ts:49
 msgid "error.code.COST_SHARING_COLLECTION_REMINDER_ONE_TIME_BUYOUT_INVALID"
 msgstr "长期有效的一次性购买不支持收款提醒"

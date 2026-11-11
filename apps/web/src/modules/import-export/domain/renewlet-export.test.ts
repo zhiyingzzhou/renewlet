@@ -88,6 +88,18 @@ describe("exportRenewletBackup", () => {
     expect(transfer).toContain(asset);
   });
 
+  it("preserves absent, zero and six-decimal balances in the recoverable ZIP data", async () => {
+    await exportRenewletBackup({
+      subscriptions: [subscriptionFixture(), subscriptionFixture({ id: "zero", balance: "0", balanceCurrency: "EUR" }),
+        subscriptionFixture({ id: "precise", balance: "0.000001", balanceCurrency: "JPY" })],
+      settings: DEFAULT_SETTINGS, customConfig: DEFAULT_CUSTOM_CONFIG, includeSecrets: false,
+    });
+    const { data } = readWorkerEntries();
+    expect(data.data.subscriptions[0]).not.toHaveProperty("balance");
+    expect(data.data.subscriptions[1]).toMatchObject({ balance: "0", balanceCurrency: "EUR" });
+    expect(data.data.subscriptions[2]).toMatchObject({ balance: "0.000001", balanceCurrency: "JPY" });
+  });
+
   it("writes exchange rate snapshots into the recoverable data payload", async () => {
     await exportRenewletBackup({
       subscriptions: [subscriptionFixture()],

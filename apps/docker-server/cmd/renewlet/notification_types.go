@@ -493,7 +493,7 @@ func defaultAppSettings() appSettings {
 		OnlineIconSources:                  defaultOnlineIconSourceSettings(),
 		AIRecognition: aiRecognitionSettings{
 			ProviderType:           aiProviderTypeOpenAI,
-			TransportProtocol:      aiProtocolOpenAIChat,
+			TransportProtocol:      aiProtocolOpenAIResponses,
 			Model:                  "",
 			ModelInputMode:         "select",
 			BaseURL:                "",

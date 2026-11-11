@@ -1,6 +1,6 @@
 package main
 
-// AI 识别测试 helper 复刻第三方 provider 的最小行为，用来稳定触发 raw JSON 恢复、repair 和 SSE 事件流。
+// AI 识别测试 helper 复刻第三方 provider 的最小行为，用来稳定触发 raw JSON 恢复、批量和 SSE 事件流。
 // helper 不能引入真实网络或本地品牌知识，否则会掩盖生产 runner 的脱敏和 schema 修复边界。
 import (
 	"bytes"
@@ -20,8 +20,8 @@ import (
 
 func testAIRecognitionDiagnostics() aiRecognitionDiagnostics {
 	return buildAIRecognitionDiagnostics(
-		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIChat, Model: "gpt-5.1"},
-		aiRecognitionInput{Text: "dmit 15元 1个月", MaxOutputTokens: 12000},
+		aiRecognitionSettings{ProviderType: aiProviderTypeOpenAI, TransportProtocol: aiProtocolOpenAIResponses, Model: "gpt-5.1"},
+		aiRecognitionInput{Text: "dmit 15元 1个月"},
 		"Return JSON only",
 		"Extract subscriptions",
 		`{"subscriptions":[],"warnings":[]}`,

@@ -83,3 +83,10 @@ describe("currency display", () => {
     expect(formatCompactCurrencyAmount(0, "CNY", "zh-CN")).toBe("¥0");
   });
 });
+
+it("preserves six-place balances without changing price precision", () => {
+  expect(formatCurrency("0.000001", "USD", "en-US", 6)).toBe("$0.000001 USD");
+  expect(formatCurrency("12.340000", "EUR", "en-US", 6)).toBe("€12.34 EUR");
+  expect(formatCurrency("0", "USD", "en-US", 6)).toBe("$0 USD");
+  expect(formatCurrency("12.345678", "USD", "en-US")).toBe("$12.35 USD");
+});

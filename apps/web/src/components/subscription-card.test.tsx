@@ -112,9 +112,13 @@ describe("SubscriptionCard", () => {
     expect(card.getAttribute("class")).not.toContain("@container/subscription-card");
     expect(metaFlow).toHaveClass("flex", "flex-wrap");
     expect(metaFlow.getAttribute("class")).not.toContain("@max-xs/subscription-card");
-    expect(dateGroup).toHaveClass("inline-flex", "min-w-0", "max-w-full", "flex-[0_1_auto]", "flex-wrap");
+    expect(dateGroup).toHaveClass("inline-flex", "min-w-0", "max-w-full", "shrink-0", "flex-wrap", "gap-x-1");
     expect(dateGroup).toContainElement(startDateMeta);
     expect(dateGroup).toContainElement(billingDateMeta);
+    expect(startDateMeta).toHaveClass("gap-1");
+    expect(billingDateMeta).toHaveClass("gap-1");
+    expect(startDateMeta.querySelector("svg")).toHaveClass("h-3", "w-3");
+    expect(billingDateMeta.querySelector("svg")).toHaveClass("h-3", "w-3");
     expect(metaFlow).toContainElement(paymentMethodMeta);
     expect(metaFlow).toContainElement(dailyAverageMeta);
     expect(dateGroup).not.toContainElement(paymentMethodMeta);

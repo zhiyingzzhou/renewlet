@@ -41,6 +41,9 @@ export type SubscriptionFormState = {
   logo: string | undefined;
   price: string;
   currency: string;
+  balanceEnabled: boolean;
+  balance: string;
+  balanceCurrency: string;
   billingCycle: BillingCycle;
   customDays: string;
   customCycleUnit: CustomCycleUnit;
@@ -77,6 +80,9 @@ export function createSubscriptionFormState(
     logo: undefined,
     price: "",
     currency: "CNY",
+    balanceEnabled: false,
+    balance: "",
+    balanceCurrency: "",
     billingCycle: "monthly",
     customDays: "",
     customCycleUnit: "day",

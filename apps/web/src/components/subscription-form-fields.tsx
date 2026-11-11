@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { compareDateOnly } from "@/lib/time/date-only";
 import { LogoPicker } from "@/components/logo-picker";
+import { SubscriptionBalanceFields } from "@/components/subscription-balance-fields";
 import { CostSharingFields } from "@/components/subscription-cost-sharing-fields";
 import { SubscriptionFormDateFields } from "@/components/subscription-form-date-fields";
 import { SubscriptionPaymentMethodSelect } from "@/components/subscription-payment-method-select";
@@ -71,10 +72,13 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
   formData,
   setFormData,
   currencyOptions,
+  balanceCurrencyOptions,
+  hasStoredBalance = false,
   availableTags = [],
   showLogoField = true,
   onLogoUploadStatusChange,
   onFieldChange,
+  pendingStatusConfirmation = false,
   errors = {},
   onClearFieldError,
   notificationReminderDays,
@@ -85,6 +89,10 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
 
   const update = useCallback(<K extends keyof SubscriptionFormState>(key: K, value: SubscriptionFormState[K]) => {
     setFormData((prev) => {
+      if (key === "balanceEnabled") {
+        // 同次会话关掉再开恢复输入；仅首次开启从订阅币种取默认值，后续独立维护。
+        return { ...prev, balanceEnabled: Boolean(value), balanceCurrency: prev.balanceCurrency || prev.currency };
+      }
       if (key === "billingCycle") {
         const nextBillingCycle = value as BillingCycle;
         const leavingImplicitBuyoutReminder =
@@ -256,11 +264,30 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
         </FormField>
       </FormFieldRow>
 
+      <SubscriptionBalanceFields
+        idPrefix={idPrefix}
+        formData={formData}
+        update={update}
+        currencyOptions={balanceCurrencyOptions}
+        hasStoredBalance={hasStoredBalance}
+        errors={errors}
+      />
+
       <FormFieldRow alignAt="sm" rowClassName="sm:grid-cols-2">
-        <FormField id={id("status")} label={t("subscription.field.status")}>
+        <FormField
+          id={id("status")}
+          label={t("subscription.field.status")}
+        >
           {({ id: fieldId }) => (
             <Select value={formData.status} onValueChange={(value) => update("status", value as SubscriptionStatus)}>
-              <SelectTrigger id={fieldId} className="border-border bg-secondary" tooltipContent={statusLabel ? label(statusLabel) : formData.status}>
+              <SelectTrigger
+                id={fieldId}
+                className={cn(
+                  "border-border bg-secondary",
+                  pendingStatusConfirmation && "border-amber-500/70 focus:ring-amber-500/40",
+                )}
+                tooltipContent={statusLabel ? label(statusLabel) : formData.status}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -720,16 +747,18 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
         )}
       </FormField>
 
-      <div className="grid gap-2">
-        <Label htmlFor={id("notes")}>{t("subscription.field.notes")}</Label>
-        <Input
-          id={id("notes")} name={id("notes")} enterKeyHint="done"
-          placeholder={t("subscription.placeholder.notes")}
-          value={formData.notes}
-          onChange={(e) => update("notes", e.target.value)}
-          className="border-border bg-secondary"
-        />
-      </div>
+      <FormField id={id("notes")} label={t("subscription.field.notes")}>
+        {(field) => (
+          <Input
+            id={field.id} name={field.id} enterKeyHint="done" maxLength={5000}
+            placeholder={t("subscription.placeholder.notes")}
+            value={formData.notes}
+            onChange={(e) => update("notes", e.target.value)}
+            aria-describedby={field.describedBy}
+            className="border-border bg-secondary"
+          />
+        )}
+      </FormField>
 
       <div className="grid gap-2">
         <Label htmlFor={id("tags")}>{t("subscription.field.tags")}</Label>

@@ -34,6 +34,7 @@ export type AIProviderEndpointSettings = Pick<AiRecognitionSettings, "providerTy
 };
 
 const DEFAULT_BASE_URLS: Record<AiRecognitionTransportProtocol, string> = {
+  "openai-responses": "https://api.openai.com/v1",
   "openai-chat": "https://api.openai.com/v1",
   "anthropic-messages": "https://api.anthropic.com/v1",
   "gemini-generate-content": "https://generativelanguage.googleapis.com/v1beta",

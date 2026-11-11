@@ -86,9 +86,8 @@ export const aiRecognitionService = {
 function createRecognizeSubscriptionsFormData(input: RecognizeSubscriptionsInput): FormData {
   const formData = new FormData();
   formData.set("text", input.text);
-  if (input.thinkingControl) {
-    formData.set("thinkingControl", JSON.stringify(input.thinkingControl));
-  }
+  // 始终发送字段：null 表示本次明确使用模型默认，缺字段才表示沿用设置页默认 control。
+  formData.set("thinkingControl", JSON.stringify(input.thinkingControl));
   for (const image of input.images) {
     formData.append("images[]", image, image.name);
   }
@@ -135,7 +134,13 @@ async function consumeRecognitionEventStream(
     onEvent?.(event);
     if (event.type === "recognition/error") {
       // SSE 错误事件已经是后端脱敏后的产品错误；这里不要再包装丢失 details.rawResponseText。
-      throw new ApiError(event.message, response.status, event.details, event.code, data);
+      throw new ApiError(
+        event.message,
+        event.upstreamResponse?.status ?? response.status,
+        event.details,
+        event.code,
+        event.upstreamResponse?.body ?? data,
+      );
     }
     if (event.type === "recognition/final") {
       finalResponse = event.response;

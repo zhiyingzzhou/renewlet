@@ -5,6 +5,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { recognizeSubscriptionsStream } from "./ai-recognition";
 import { generatedDraft } from "./ai-recognition.test-utils";
 import type { Env } from "./types";
+import { UpstreamOperationError } from "./upstream-response";
 
 const authMocks = vi.hoisted(() => ({
   requireAuth: vi.fn(),
@@ -18,6 +19,7 @@ const dbMocks = vi.hoisted(() => ({
 
 const aiMocks = vi.hoisted(() => ({
   streamText: vi.fn(),
+  isStepCount: vi.fn(() => () => false),
   outputObject: vi.fn((options: unknown) => options),
   wrapLanguageModel: vi.fn(({ model }: { model: unknown }) => model),
   isNoObjectGeneratedError: vi.fn((error: unknown) => Boolean(error && typeof error === "object" && "__noObjectGenerated" in error)),
@@ -36,6 +38,7 @@ vi.mock("./db", () => ({
 
 vi.mock("ai", () => ({
   streamText: aiMocks.streamText,
+  isStepCount: aiMocks.isStepCount,
   Output: {
     object: aiMocks.outputObject,
   },
@@ -49,9 +52,13 @@ vi.mock("ai", () => ({
 }));
 
 vi.mock("@ai-sdk/openai", () => ({
+  openai: { tools: { webSearch: vi.fn(() => ({ type: "provider-defined" })) } },
   createOpenAI: vi.fn(() => Object.assign(
     vi.fn(() => ({ provider: "openai.responses" })),
-    { chat: vi.fn(() => ({ provider: "openai.chat" })) },
+    {
+      chat: vi.fn(() => ({ provider: "openai.chat" })),
+      responses: vi.fn(() => ({ provider: "openai.responses" })),
+    },
   )),
 }));
 
@@ -172,7 +179,7 @@ describe("Cloudflare AI recognition stream", () => {
     dbMocks.getSettings.mockResolvedValue({
       aiRecognition: {
         providerType: "openai",
-        transportProtocol: "openai-chat",
+        transportProtocol: "openai-responses",
         model: "gpt-5.1",
         modelInputMode: "select",
         baseUrl: "",
@@ -228,7 +235,7 @@ describe("Cloudflare AI recognition stream", () => {
     expect(types).toContain("recognition/progress");
     expect(types).toContain("recognition/partial");
     expect(types).toContain("recognition/text-delta");
-    expect(types).toContain("recognition/reasoning-delta");
+    expect(types).not.toContain("recognition/reasoning-delta");
     expect(types.at(-1)).toBe("recognition/final");
     expect(aiMocks.streamText).toHaveBeenCalledWith(expect.objectContaining({
       abortSignal: expect.any(AbortSignal),
@@ -241,7 +248,7 @@ describe("Cloudflare AI recognition stream", () => {
     expect(events).toContainEqual({ type: "recognition/progress", stage: "input-read" });
     expect(events).toContainEqual({ type: "recognition/progress", stage: "model-start" });
     expect(events).toContainEqual({ type: "recognition/partial", subscriptionsSeen: 1, warningsSeen: 1 });
-    expect(events).toContainEqual({ type: "recognition/reasoning-delta", delta: "checking input" });
+    expect(JSON.stringify(events)).not.toContain("checking input");
     expect(final?.response.subscriptions[0]?.name).toBe("dmit");
     expect(JSON.stringify(events)).not.toContain("sk-test");
     expect(aiMocks.outputObject).toHaveBeenCalledWith(expect.objectContaining({ name: "renewlet_ai_subscription_recognition" }));
@@ -336,6 +343,69 @@ describe("Cloudflare AI recognition stream", () => {
     expect(payload).not.toContain("sk-test");
   });
 
+  it("preserves a provider body when the local deadline observes the provider error", async () => {
+    vi.useFakeTimers();
+    aiMocks.streamText.mockImplementation((options: unknown) => {
+      const signal = options && typeof options === "object" && "abortSignal" in options
+        ? (options as { abortSignal?: AbortSignal }).abortSignal
+        : undefined;
+      const output = new Promise<never>((_resolve, reject) => {
+        signal?.addEventListener("abort", () => reject(Object.assign(new Error("provider timeout"), {
+          __apiCallError: true,
+          statusCode: 504,
+          responseHeaders: { "content-type": "application/json" },
+          responseBody: "{\"error\":\"upstream timeout\"}",
+        })), { once: true });
+      });
+      return {
+        output,
+        fullStream: asyncIterable([]),
+        partialOutputStream: asyncIterable([]),
+        usage: Promise.resolve({ inputTokens: 5, outputTokens: 0, totalTokens: 5 }),
+        finishReason: Promise.resolve("error"),
+        providerMetadata: Promise.resolve(null),
+      };
+    });
+
+    const response = await recognizeSubscriptionsStream(requestForText("dmit 15元 1个月"), envFixture());
+    const eventsPromise = readSSEEvents(response);
+    await vi.advanceTimersByTimeAsync(90_000);
+    const events = await eventsPromise;
+    const error = events.find((event): event is Extract<AiRecognitionStreamEvent, { type: "recognition/error" }> => event.type === "recognition/error");
+
+    expect(error?.code).toBe("AI_RECOGNITION_TIMEOUT");
+    expect(error?.message).toBe("{\"error\":\"upstream timeout\"}");
+    expect(error?.details?.rawResponseText).toBe("{\"error\":\"upstream timeout\"}");
+  });
+
+  it("aborts the provider when the SSE reader is cancelled", async () => {
+    let providerSignal: AbortSignal | undefined;
+    aiMocks.streamText.mockImplementation((options: unknown) => {
+      providerSignal = options && typeof options === "object" && "abortSignal" in options
+        ? (options as { abortSignal?: AbortSignal }).abortSignal
+        : undefined;
+      const output = new Promise<never>((_resolve, reject) => {
+        providerSignal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
+      });
+      return {
+        output,
+        fullStream: asyncIterable([]),
+        partialOutputStream: asyncIterable([]),
+        usage: Promise.resolve({ inputTokens: 5, outputTokens: 0, totalTokens: 5 }),
+        finishReason: Promise.resolve("error"),
+        providerMetadata: Promise.resolve(null),
+      };
+    });
+
+    const response = await recognizeSubscriptionsStream(requestForText("dmit 15元 1个月"), envFixture());
+    const reader = response.body?.getReader();
+    expect(reader).toBeDefined();
+    await reader?.read();
+    await reader?.cancel();
+
+    expect(providerSignal?.aborted).toBe(true);
+  });
+
   it("streams raw provider response details when provider streaming fails", async () => {
     aiMocks.streamText.mockReturnValue(streamTextResult({
       outputError: Object.assign(new Error("provider failed sk-stream-secret123"), {
@@ -354,7 +424,8 @@ describe("Cloudflare AI recognition stream", () => {
     const payload = JSON.stringify(events);
 
     expect(response.status).toBe(200);
-    expect(error?.code).toBe("AI_RECOGNITION_FAILED");
+    expect(error?.code).toBe("UPSTREAM_HTTP_ERROR");
+    expect(error?.message).toBe("{\"code\":\"INVALID_API_KEY\",\"message\":\"bad [redacted]\"}");
     expect(error?.details?.rawResponseText).toBe("{\"code\":\"INVALID_API_KEY\",\"message\":\"bad [redacted]\"}");
     expect(payload).not.toContain("sk-test");
     expect(payload).not.toContain("sk-stream-secret123");
@@ -389,9 +460,33 @@ describe("Cloudflare AI recognition stream", () => {
     const payload = JSON.stringify(events);
 
     expect(response.status).toBe(200);
-    expect(error?.code).toBe("AI_RECOGNITION_FAILED");
+    expect(error?.code).toBe("UPSTREAM_HTTP_ERROR");
+    expect(error?.message).toBe("{\"code\":\"INVALID_API_KEY\",\"message\":\"Invalid API key\"}");
     expect(error?.details?.rawResponseText).toBe("{\"code\":\"INVALID_API_KEY\",\"message\":\"Invalid API key\"}");
     expect(payload).not.toContain("requestBodyValues");
     expect(payload).not.toContain("claude-sonnet-4-6");
+  });
+
+  it("keeps upstream adapter response when stream tasks fail through a non SDK wrapper", async () => {
+    aiMocks.streamText.mockReturnValue(streamTextResult({
+      outputError: new Error("No object generated: response did not match schema."),
+      fullStream: [{
+        type: "error",
+        error: new UpstreamOperationError(
+          "gateway rejected the request",
+          { rawResponseText: "{\"error\":\"gateway detail\"}" },
+          502,
+        ),
+      }],
+      partialOutputStream: [],
+    }));
+
+    const response = await recognizeSubscriptionsStream(requestForText("dmit 15元 1个月"), envFixture());
+    const events = await readSSEEvents(response);
+    const error = events.find((event): event is Extract<AiRecognitionStreamEvent, { type: "recognition/error" }> => event.type === "recognition/error");
+
+    expect(error?.code).toBe("UPSTREAM_HTTP_ERROR");
+    expect(error?.message).toBe("{\"error\":\"gateway detail\"}");
+    expect(error?.details?.rawResponseText).toBe("{\"error\":\"gateway detail\"}");
   });
 });

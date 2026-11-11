@@ -36,6 +36,7 @@ const ERROR_CODE_MESSAGES: Record<string, MessageKey> = {
   REMINDER_DAYS_OUT_OF_RANGE: "error.code.REMINDER_DAYS_OUT_OF_RANGE",
   COST_SHARING_COLLECTION_ANCHOR_REQUIRED: "error.code.COST_SHARING_COLLECTION_ANCHOR_REQUIRED",
   COST_SHARING_MEMBER_JOINED_DATE_OUT_OF_RANGE: "error.code.COST_SHARING_MEMBER_JOINED_DATE_OUT_OF_RANGE",
+  SUBSCRIPTION_RENEW_COST_SHARING_INVALID: "error.code.SUBSCRIPTION_RENEW_COST_SHARING_INVALID",
   COST_SHARING_COLLECTION_REMINDER_ONE_TIME_BUYOUT_INVALID: "error.code.COST_SHARING_COLLECTION_REMINDER_ONE_TIME_BUYOUT_INVALID",
   SETTINGS_JSON_INVALID: "error.code.SETTINGS_JSON_INVALID",
   CUSTOM_CONFIG_JSON_INVALID: "error.code.CUSTOM_CONFIG_JSON_INVALID",
@@ -132,6 +133,11 @@ function localizedFromRecord(error: Record<string, unknown>): string | null {
   // API message 由服务端 catalog 本地化；前端只把稳定 code 映射到自己的 Lingui 文案。
   const code = stringFromRecord(error, ["code"]);
   const codeMessage = localizeErrorCode(code);
+  // 通用校验 envelope 可能包着更具体的领域错误码；不能先用“参数无效”遮住可修正的原因。
+  if (code === "INVALID_PAYLOAD" || code === "VALIDATION_ERROR") {
+    const message = stringFromRecord(error, ["detail", "message"]);
+    if (message) return localizeErrorCode(message) ?? message;
+  }
   if (codeMessage) return codeMessage;
 
   const direct = stringFromRecord(error, ["detail", "message", "error", "title"]);
@@ -145,6 +151,7 @@ function localizedFromRecord(error: Record<string, unknown>): string | null {
 
 /** 普通业务场景：优先展示后端已经整理过的可读错误。 */
 export function getDisplayErrorMessage(error: unknown, fallback = translate(getApiLocale(), "error.generic")): string {
+  if (typeof error === "string") return localizeErrorCode(error) ?? (error.trim() || fallback);
   if (isRecord(error)) {
     const localized = localizedFromRecord(error);
     if (localized) return localized;

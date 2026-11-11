@@ -70,7 +70,7 @@ describe("ai image preprocess", () => {
       mimeType: "image/png",
       targetBytes: AI_RECOGNITION_IMAGE_SOFT_BYTES,
       maxBytes: HARD_BYTES,
-      maxEdge: 2048,
+      maxEdge: 3072,
     });
     expect(call[0].transfer).toEqual([sourceBuffer]);
   });

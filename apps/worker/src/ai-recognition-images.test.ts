@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_RECOGNITION_MAX_IMAGES } from "@renewlet/shared/schemas/ai-recognition";
 import { readSuccessData } from "./api-test-helpers";
 import { recognizeSubscriptions } from "./ai-recognition";
+import { buildAIRecognitionMessages } from "./ai-recognition-runtime";
 import { generatedDraft } from "./ai-recognition.test-utils";
 import type { Env } from "./types";
 
@@ -15,15 +16,20 @@ const dbMocks = vi.hoisted(() => ({
   listSubscriptionTags: vi.fn(),
 }));
 
-const aiMocks = vi.hoisted(() => ({
-  generateObject: vi.fn(),
-  generateText: vi.fn(),
-  streamText: vi.fn(),
-  outputObject: vi.fn((options: unknown) => options),
-  wrapLanguageModel: vi.fn(({ model }: { model: unknown }) => model),
-  isNoObjectGeneratedError: vi.fn((error: unknown) => Boolean(error && typeof error === "object" && "__noObjectGenerated" in error)),
-  isAPICallError: vi.fn((error: unknown) => Boolean(error && typeof error === "object" && "__apiCallError" in error)),
-}));
+const aiMocks = vi.hoisted(() => {
+  const generateObject = vi.fn();
+  const generateText = vi.fn();
+  return {
+    generateObject,
+    generateText,
+    streamText: vi.fn(),
+    isStepCount: vi.fn(() => () => false),
+    outputObject: vi.fn((options: unknown) => options),
+    wrapLanguageModel: vi.fn(({ model }: { model: unknown }) => model),
+    isNoObjectGeneratedError: vi.fn((error: unknown) => Boolean(error && typeof error === "object" && "__noObjectGenerated" in error)),
+    isAPICallError: vi.fn((error: unknown) => Boolean(error && typeof error === "object" && "__apiCallError" in error)),
+  };
+});
 
 vi.mock("./auth", () => ({
   requireAuth: authMocks.requireAuth,
@@ -39,6 +45,7 @@ vi.mock("ai", () => ({
   generateObject: aiMocks.generateObject,
   generateText: aiMocks.generateText,
   streamText: aiMocks.streamText,
+  isStepCount: aiMocks.isStepCount,
   Output: {
     object: aiMocks.outputObject,
   },
@@ -52,9 +59,13 @@ vi.mock("ai", () => ({
 }));
 
 vi.mock("@ai-sdk/openai", () => ({
+  openai: { tools: { webSearch: vi.fn(() => ({ type: "provider-defined" })) } },
   createOpenAI: vi.fn(() => Object.assign(
     vi.fn(() => ({ provider: "openai.responses" })),
-    { chat: vi.fn(() => ({ provider: "openai.chat" })) },
+    {
+      chat: vi.fn(() => ({ provider: "openai.chat" })),
+      responses: vi.fn(() => ({ provider: "openai.responses" })),
+    },
   )),
 }));
 
@@ -113,6 +124,13 @@ beforeEach(() => {
   dbMocks.listSubscriptionTags.mockReset();
   aiMocks.generateObject.mockReset();
   aiMocks.generateText.mockReset();
+  aiMocks.generateText.mockImplementation(async (...args: unknown[]) => {
+    const result = await aiMocks.generateObject(...args);
+    if (result && typeof result === "object" && "object" in result) {
+      return { ...result, output: (result as { object: unknown }).object };
+    }
+    return result;
+  });
   aiMocks.streamText.mockReset();
   aiMocks.outputObject.mockClear();
   aiMocks.wrapLanguageModel.mockClear();
@@ -122,7 +140,7 @@ beforeEach(() => {
   dbMocks.getSettings.mockResolvedValue({
     aiRecognition: {
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "gpt-5.1",
       modelInputMode: "select",
       baseUrl: "",
@@ -146,6 +164,30 @@ afterEach(() => {
 });
 
 describe("Cloudflare AI recognition image inputs", () => {
+  it("requests high image detail only on native OpenAI Responses", () => {
+    const input = {
+      text: "dmit 15元 1个月",
+      images: [{ data: new Uint8Array([1, 2, 3]), mediaType: "image/png" }],
+    };
+    const nativeMessage = buildAIRecognitionMessages(input, "prompt", {
+      providerType: "openai",
+      transportProtocol: "openai-responses",
+    });
+    const nativeMessagePart = nativeMessage[0];
+    if (!nativeMessagePart) throw new Error("native AI recognition message is missing");
+    const nativeImage = (nativeMessagePart.content as Array<{ type: string; providerOptions?: unknown }>)[1];
+    expect(nativeImage?.providerOptions).toEqual({ openai: { imageDetail: "high" } });
+
+    const compatibleMessage = buildAIRecognitionMessages(input, "prompt", {
+      providerType: "openai-compatible",
+      transportProtocol: "openai-chat",
+    });
+    const compatibleMessagePart = compatibleMessage[0];
+    if (!compatibleMessagePart) throw new Error("compatible AI recognition message is missing");
+    const compatibleImage = (compatibleMessagePart.content as Array<{ type: string; providerOptions?: unknown }>)[1];
+    expect(compatibleImage?.providerOptions).toBeUndefined();
+  });
+
   it("keeps image payloads out of diagnostics", async () => {
     aiMocks.generateObject.mockResolvedValue({
       object: {

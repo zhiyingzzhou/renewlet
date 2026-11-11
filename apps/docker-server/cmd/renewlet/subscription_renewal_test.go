@@ -54,3 +54,17 @@ func TestSubscriptionRenewalMatchesSharedFixtures(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkManualRenewalCalendarDistance(b *testing.B) {
+	for _, start := range []string{"2026-01-31", "1000-01-31"} {
+		b.Run(start, func(b *testing.B) {
+			input := subscriptionRenewalInput{BillingCycle: "monthly", StartDate: start, NextBillingDate: start, Status: "expired", AutoCalculateNextBillingDate: true}
+			for b.Loop() {
+				result, ok, err := advanceSubscriptionRenewal(input, "2026-11-06", renewalModeManual)
+				if err != nil || !ok || result.NextBillingDate != "2026-11-30" {
+					b.Fatalf("unexpected renewal: %+v %v", result, err)
+				}
+			}
+		})
+	}
+}

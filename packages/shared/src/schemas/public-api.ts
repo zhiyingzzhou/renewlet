@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { moneyStringSchema } from "../money";
+import { subscriptionBalanceCheck, subscriptionBalanceReadShape } from "./subscription-balance";
 import {
   BILLING_CYCLES,
   CUSTOM_CYCLE_UNITS,
@@ -64,6 +65,7 @@ export const publicApiMePayloadSchema = z.object({
 export const publicApiMeResponseSchema = apiSuccessResponseSchema(publicApiMePayloadSchema);
 
 const publicApiSubscriptionBaseShape = {
+  ...subscriptionBalanceReadShape,
   id: z.string(),
   name: z.string(),
   logo: logoReferenceSchema.optional(),
@@ -99,6 +101,7 @@ const publicApiSubscriptionBaseShape = {
 
 export const publicApiSubscriptionSchema = z.object(publicApiSubscriptionBaseShape)
   .strict()
+  .check(subscriptionBalanceCheck)
   .refine(oneTimeTermFieldsAreConsistent, {
     path: ["oneTimeTermCount"],
     message: "Invalid one-time term",

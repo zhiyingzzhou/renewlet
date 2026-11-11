@@ -65,7 +65,7 @@ describe("subscription dialog scaffolds", () => {
 
     const loadingSlots = createSubscriptionFormLoadingSlots({
       label: "加载中",
-      structure: { cycle: "custom", reminderEnabled: true, repeatReminderEnabled: false },
+      structure: { cycle: "custom", balanceEnabled: false, reminderEnabled: true, repeatReminderEnabled: false },
     });
     const loading = render(<SubscriptionFormScaffold {...loadingSlots} />);
     expect(regionOrder(loading.container)).toEqual(["subscription-fields", "subscription-actions"]);
@@ -85,22 +85,22 @@ describe("subscription dialog scaffolds", () => {
 
     const recurring = skeletonCount({
       cycle: "recurring",
-      reminderEnabled: true,
+      balanceEnabled: false, reminderEnabled: true,
       repeatReminderEnabled: false,
     });
     const custom = skeletonCount({
       cycle: "custom",
-      reminderEnabled: true,
+      balanceEnabled: false, reminderEnabled: true,
       repeatReminderEnabled: false,
     });
     const buyout = skeletonCount({
       cycle: "one-time-buyout",
-      reminderEnabled: true,
+      balanceEnabled: false, reminderEnabled: true,
       repeatReminderEnabled: false,
     });
     const fixedTerm = skeletonCount({
       cycle: "one-time-fixed-term",
-      reminderEnabled: true,
+      balanceEnabled: false, reminderEnabled: true,
       repeatReminderEnabled: false,
     });
 
@@ -164,7 +164,7 @@ describe("subscription dialog scaffolds", () => {
     const loadingSlots = createSubscriptionDetailLoadingSlots({
       structure: {
         showCalendarAction: false,
-        showCostSharing: false,
+        showBalance: false, showCostSharing: false,
         showDailyAverage: false,
         showNextBillingDate: false,
         showPaymentMethod: false,
@@ -190,7 +190,7 @@ describe("subscription dialog scaffolds", () => {
     const minimalSlots = createSubscriptionDetailLoadingSlots({
       structure: {
         showCalendarAction: true,
-        showCostSharing: false,
+        showBalance: false, showCostSharing: false,
         showDailyAverage: false,
         showNextBillingDate: true,
         showPaymentMethod: false,
@@ -204,7 +204,7 @@ describe("subscription dialog scaffolds", () => {
     const richSlots = createSubscriptionDetailLoadingSlots({
       structure: {
         showCalendarAction: true,
-        showCostSharing: true,
+        showBalance: false, showCostSharing: true,
         showDailyAverage: true,
         showNextBillingDate: true,
         showPaymentMethod: true,

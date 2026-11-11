@@ -179,7 +179,7 @@ describe("AIRecognizeSubscriptionDialog", () => {
     const dialog = screen.getByRole("dialog");
     const body = screen.getByTestId("ai-recognition-dialog-body");
 
-    expect(screen.getByRole("tab", { name: "文本" })).toBeInTheDocument();
+    expect(screen.getByTestId("ai-recognition-input-tabs")).toBeInTheDocument();
     const dialogDescription = screen.getByText("使用已配置的 AI 模型生成可编辑订阅草稿，确认后再导入。");
     expect(dialogDescription).toHaveClass("sr-only");
     expect(dialogDescription).not.toHaveTextContent("粘贴备忘录");
@@ -227,7 +227,7 @@ describe("AIRecognizeSubscriptionDialog", () => {
     expect(body).toHaveClass("overflow-hidden");
     expect(runSettingsPanel).toHaveAttribute("data-layout", "mobile-bar");
     expect(inputTabs).toHaveAttribute("data-layout", "mobile-compact");
-    expect(textPanel).toHaveClass("grid-rows-[minmax(0,1fr)_auto]");
+    expect(textPanel).toHaveClass("grid-rows-[minmax(10rem,1fr)_auto_auto]");
     expect(textarea).toHaveClass("h-full", "min-h-0", "resize-none");
   });
 
@@ -237,21 +237,17 @@ describe("AIRecognizeSubscriptionDialog", () => {
     mockMobile();
     renderDialog();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     const uploadButton = screen.getByTestId("ai-recognition-image-upload-button");
     expect(uploadButton).toHaveClass("min-h-48", "w-full");
-    expect(screen.getByTestId("ai-recognition-image-scrollport")).toHaveClass("min-h-0", "flex-1", "overflow-y-auto");
+    expect(screen.getByTestId("ai-recognition-image-scrollport")).toHaveClass("min-h-0", "overflow-y-auto");
 
     await user.upload(screen.getByLabelText("添加订阅图片"), image);
     expect(await screen.findByRole("button", { name: "预览图片 one.png" })).toBeInTheDocument();
     expect(screen.getByTestId("ai-recognition-image-upload-button")).toHaveClass("h-12", "w-full");
   });
 
-  it("输入 Tabs 是唯一模式标题并保留图片约束", async () => {
-    const user = userEvent.setup();
+  it("输入工作区同时展示文本和图片并保留图片约束", async () => {
     renderDialog();
-
-    await user.click(screen.getByRole("tab", { name: "图片" }));
 
     const imagePanel = screen.getByTestId("ai-recognition-image-panel");
     expect(screen.queryByRole("heading", { name: "上传订阅图片" })).not.toBeInTheDocument();
@@ -273,14 +269,12 @@ describe("AIRecognizeSubscriptionDialog", () => {
     const textarea = screen.getByPlaceholderText("粘贴记事本、备忘录或从 Excel 复制出的订阅列表...");
     await user.type(textarea, "apple 50刀 1年\nnetflix 10刀 1个月");
 
-    expect(screen.getByTestId("ai-recognition-text-panel")).toHaveClass("grid-rows-[minmax(0,1fr)_auto]");
+    expect(screen.getByTestId("ai-recognition-text-panel")).toHaveClass("grid-rows-[minmax(10rem,1fr)_auto_auto]");
     expect(textarea).toHaveClass("h-full", "min-h-0", "resize-none");
     expect(body).toHaveClass("overflow-hidden");
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
-    expect(body).toHaveClass("overflow-hidden");
     expect(screen.getByTestId("ai-recognition-image-panel")).toHaveClass("min-h-0", "overflow-hidden");
-    expect(screen.getByTestId("ai-recognition-image-scrollport")).toHaveClass("min-h-0", "flex-1", "overflow-y-auto");
+    expect(screen.getByTestId("ai-recognition-image-scrollport")).toHaveClass("min-h-0", "overflow-y-auto");
     expect(screen.queryByTestId("ai-draft-virtualized-list")).not.toBeInTheDocument();
     expect(screen.queryByTestId("import-preview-panel")).not.toBeInTheDocument();
 
@@ -294,12 +288,10 @@ describe("AIRecognizeSubscriptionDialog", () => {
     expect(screen.getByRole("dialog")).toHaveClass("h5-ai-recognition-input-dialog-frame");
   });
 
-  it("图片 tab 支持粘贴剪贴板图片并复用图片墙预览", async () => {
-    const user = userEvent.setup();
+  it("输入工作区支持粘贴剪贴板图片并复用图片墙预览", async () => {
     const pastedImage = new File(["pasted"], "clipboard.png", { type: "image/png" });
     renderDialog();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     const pasteAccepted = fireEvent.paste(screen.getByTestId("ai-recognition-image-panel"), {
       clipboardData: clipboardDataWithItems([{ file: pastedImage }]),
     });
@@ -309,12 +301,10 @@ describe("AIRecognizeSubscriptionDialog", () => {
     expect(mocks.createObjectURL).toHaveBeenCalledWith(pastedImage);
   });
 
-  it("图片 tab 粘贴可 fallback 到 clipboardData.files", async () => {
-    const user = userEvent.setup();
+  it("输入工作区粘贴可 fallback 到 clipboardData.files", async () => {
     const pastedImage = new File(["fallback"], "fallback.webp", { type: "image/webp" });
     renderDialog();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     fireEvent.paste(screen.getByTestId("ai-recognition-image-panel"), {
       clipboardData: clipboardDataWithFiles([pastedImage]),
     });
@@ -324,13 +314,11 @@ describe("AIRecognizeSubscriptionDialog", () => {
   });
 
   it("粘贴多张图片时沿用现有数量上限和错误提示", async () => {
-    const user = userEvent.setup();
     const pastedImages = Array.from({ length: 6 }, (_, index) => (
       new File([`image-${index + 1}`], `image-${index + 1}.png`, { type: "image/png" })
     ));
     renderDialog();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     fireEvent.paste(screen.getByTestId("ai-recognition-image-panel"), {
       clipboardData: clipboardDataWithItems(pastedImages.map((file) => ({ file }))),
     });
@@ -343,25 +331,48 @@ describe("AIRecognizeSubscriptionDialog", () => {
     expect(mocks.setError).toHaveBeenCalledWith("最多上传 5 张图片。");
   });
 
-  it("文本 tab 和非图片剪贴板内容不会触发图片上传", async () => {
-    const user = userEvent.setup();
+  it("文本和图片可以组合输入，非图片剪贴板内容不会触发图片上传", async () => {
     const image = new File(["pasted"], "clipboard.png", { type: "image/png" });
     const textFile = new File(["plain"], "note.txt", { type: "text/plain" });
     renderDialog();
 
     const textarea = screen.getByPlaceholderText("粘贴记事本、备忘录或从 Excel 复制出的订阅列表...");
-    const textTabPasteAccepted = fireEvent.paste(textarea, {
+    const imagePasteAccepted = fireEvent.paste(textarea, {
       clipboardData: clipboardDataWithItems([{ file: image }]),
     });
-    expect(textTabPasteAccepted).toBe(true);
-    expect(mocks.createObjectURL).not.toHaveBeenCalled();
+    expect(imagePasteAccepted).toBe(false);
+    expect(await screen.findByRole("button", { name: "预览图片 clipboard.png" })).toBeInTheDocument();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
-    const imageTabPasteAccepted = fireEvent.paste(screen.getByTestId("ai-recognition-image-panel"), {
+    const textOnlyPasteAccepted = fireEvent.paste(screen.getByTestId("ai-recognition-image-panel"), {
       clipboardData: clipboardDataWithItems([{ file: textFile }]),
     });
-    expect(imageTabPasteAccepted).toBe(true);
-    expect(mocks.createObjectURL).not.toHaveBeenCalled();
+    expect(textOnlyPasteAccepted).toBe(true);
+  });
+
+  it("提交时把同一工作区的文本和图片一起发送", async () => {
+    const user = userEvent.setup();
+    const image = new File(["receipt"], "receipt.png", { type: "image/png" });
+    mocks.prepareAIRecognitionImage.mockResolvedValueOnce({
+      file: image,
+      originalSizeBytes: image.size,
+      targetSizeBytes: image.size,
+      optimized: false,
+      warning: null,
+    });
+    mocks.recognizeSubscriptionsStream.mockResolvedValue(makeResponse([makeDraft()]));
+    renderDialog();
+
+    await user.type(screen.getByPlaceholderText("粘贴记事本、备忘录或从 Excel 复制出的订阅列表..."), "apple 50刀 1年");
+    await user.upload(screen.getByLabelText("添加订阅图片"), image);
+    await screen.findByRole("button", { name: "预览图片 receipt.png" });
+    await user.click(screen.getByRole("button", { name: "生成订阅草稿" }));
+
+    await waitFor(() => expect(mocks.recognizeSubscriptionsStream).toHaveBeenCalledTimes(1));
+    expectRecognizeStreamCalledWith(mocks.recognizeSubscriptionsStream.mock.calls, {
+      text: "apple 50刀 1年",
+      images: [image],
+      thinkingControl: null,
+    });
   });
 
   it("识别 loading 禁用状态下粘贴图片不会追加图片", async () => {
@@ -374,7 +385,6 @@ describe("AIRecognizeSubscriptionDialog", () => {
     }));
     renderDialog();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     await user.upload(screen.getByLabelText("添加订阅图片"), firstImage);
     await screen.findByRole("button", { name: "预览图片 first.png" });
     await user.click(screen.getByRole("button", { name: "生成订阅草稿" }));
@@ -496,7 +506,7 @@ describe("AIRecognizeSubscriptionDialog", () => {
     expect(mocks.previewPrepared).not.toHaveBeenCalled();
   });
 
-  it("可用当前表单默认值确认 AI 未返回的货币和周期", async () => {
+  it("可用当前表单默认值确认货币和周期", async () => {
     const user = userEvent.setup();
     mocks.recognizeSubscriptionsStream.mockResolvedValue(makeResponse([
       makeDraft({
@@ -530,35 +540,32 @@ describe("AIRecognizeSubscriptionDialog", () => {
     expect(prepared.payload.subscriptions[0]?.billingCycle).toBe("monthly");
   });
 
-  it("文本模式只提交文本，不混入已保留的图片", async () => {
+  it("文本和图片同时提交", async () => {
     const user = userEvent.setup();
     const image = new File(["image"], "subscriptions.png", { type: "image/png" });
     mocks.recognizeSubscriptionsStream.mockResolvedValue(makeResponse([makeDraft()]));
     renderDialog();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     await user.upload(screen.getByLabelText("添加订阅图片"), image);
     await screen.findByRole("button", { name: "预览图片 subscriptions.png" });
-    await user.click(screen.getByRole("tab", { name: "文本" }));
     await user.type(screen.getByPlaceholderText("粘贴记事本、备忘录或从 Excel 复制出的订阅列表..."), "apple 50刀 1年");
     await user.click(screen.getByRole("button", { name: "生成订阅草稿" }));
 
     await waitFor(() => expect(mocks.recognizeSubscriptionsStream).toHaveBeenCalledTimes(1));
     expectRecognizeStreamCalledWith(mocks.recognizeSubscriptionsStream.mock.calls, {
       text: "apple 50刀 1年",
-      images: [],
+      images: [image],
       thinkingControl: null,
     });
   });
 
-  it("图片模式只提交图片，并在删除缩略图时释放 object URL", async () => {
+  it("图片和文本同时提交，并在删除缩略图时释放 object URL", async () => {
     const user = userEvent.setup();
     const image = new File(["image"], "subscriptions.png", { type: "image/png" });
     mocks.recognizeSubscriptionsStream.mockResolvedValue(makeResponse([makeDraft()]));
     renderDialog();
 
     await user.type(screen.getByPlaceholderText("粘贴记事本、备忘录或从 Excel 复制出的订阅列表..."), "apple 50刀 1年");
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     await user.upload(screen.getByLabelText("添加订阅图片"), image);
     await screen.findByRole("button", { name: "预览图片 subscriptions.png" });
     await user.click(screen.getByRole("button", { name: "移除图片" }));
@@ -570,7 +577,7 @@ describe("AIRecognizeSubscriptionDialog", () => {
 
     await waitFor(() => expect(mocks.recognizeSubscriptionsStream).toHaveBeenCalledTimes(1));
     expectRecognizeStreamCalledWith(mocks.recognizeSubscriptionsStream.mock.calls, {
-      text: "",
+      text: "apple 50刀 1年",
       images: [image],
       thinkingControl: null,
     });
@@ -590,7 +597,6 @@ describe("AIRecognizeSubscriptionDialog", () => {
     mocks.recognizeSubscriptionsStream.mockResolvedValue(makeResponse([makeDraft()]));
     renderDialog();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     await user.upload(screen.getByLabelText("添加订阅图片"), original);
 
     expect(await screen.findByRole("button", { name: "预览图片 bill.webp" })).toBeInTheDocument();
@@ -617,7 +623,6 @@ describe("AIRecognizeSubscriptionDialog", () => {
     }));
     renderDialog();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     await user.upload(screen.getByLabelText("添加订阅图片"), image);
 
     expect(await screen.findByText("正在优化")).toBeInTheDocument();
@@ -639,7 +644,6 @@ describe("AIRecognizeSubscriptionDialog", () => {
     const image = new File([new Uint8Array(5 * 1024 * 1024 + 1)], "too-large.png", { type: "image/png" });
     renderDialog();
 
-    await user.click(screen.getByRole("tab", { name: "图片" }));
     await user.upload(screen.getByLabelText("添加订阅图片"), image);
 
     await waitFor(() => expect(mocks.setError).toHaveBeenCalledWith("图片超过 5MB，请选择更小且清晰的截图。"));
@@ -760,6 +764,11 @@ describe("AIRecognizeSubscriptionDialog", () => {
     expect(screen.queryByText("Personal card")).not.toBeInTheDocument();
     expect(screen.getByText("Apple")).toBeInTheDocument();
 
+    const addAsNewConfigButtons = screen.getAllByRole("button", { name: "添加为新配置" });
+    expect(addAsNewConfigButtons).toHaveLength(2);
+    await user.click(addAsNewConfigButtons[0]!);
+    await user.click(screen.getByRole("button", { name: "添加为新配置" }));
+
     const priceInput = screen.getByLabelText("价格");
     await user.clear(priceInput);
     await user.type(priceInput, "66");
@@ -773,20 +782,4 @@ describe("AIRecognizeSubscriptionDialog", () => {
     expect(prepared.payload.customConfig?.paymentMethods.some((item) => item.labels["zh-CN"] === "Personal card")).toBe(true);
   });
 
-  it("AI 识别预览隐藏通用导入设置并静默使用 skip 冲突策略", async () => {
-    const user = userEvent.setup();
-    mocks.recognizeSubscriptionsStream.mockResolvedValue(makeResponse([makeDraft()]));
-    renderDialog();
-
-    await user.type(screen.getByPlaceholderText("粘贴记事本、备忘录或从 Excel 复制出的订阅列表..."), "apple 50刀 1年");
-    await user.click(screen.getByRole("button", { name: "生成订阅草稿" }));
-    await screen.findByText("Apple Music");
-    await user.click(screen.getByRole("button", { name: "生成导入预览" }));
-
-    expect(await screen.findByTestId("import-preview-panel")).toBeInTheDocument();
-    const previewCall = mocks.previewPrepared.mock.calls[0];
-    expect(previewCall?.[1]).toBe("skip");
-    expect(previewCall?.[2]).toBeInstanceOf(AbortSignal);
-    expect(mocks.importPreviewPanel).toHaveBeenLastCalledWith(expect.objectContaining({ showImportOptions: false }));
-  });
 });

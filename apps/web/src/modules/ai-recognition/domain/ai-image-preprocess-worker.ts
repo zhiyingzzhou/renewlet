@@ -65,13 +65,15 @@ async function processImage(jobId: string, payload: AIImagePreprocessWorkerPaylo
           sameQualityCandidates.push({ blob, mimeType: actualMimeType });
         }
         // 同一质量下先比较所有 MIME，再决定是否提前结束；避免格式遍历顺序牺牲清晰度或体积。
-        const underTarget = smallestCandidate(sameQualityCandidates.filter((candidate) => candidate.blob.size <= payload.targetBytes));
+        // 同一质量和尺寸下，预算内体积最大的候选保留更多 OCR 细节；选择最小文件会主动损失账单小字。
+        const underTarget = largestCandidate(sameQualityCandidates.filter((candidate) => candidate.blob.size <= payload.targetBytes));
         if (underTarget) {
           await postCandidateResult(jobId, underTarget, null);
           return;
         }
-        const underHardLimit = smallestCandidate(sameQualityCandidates.filter((candidate) => candidate.blob.size <= payload.maxBytes));
-        if (underHardLimit && (!bestUnderHardLimit || underHardLimit.blob.size < bestUnderHardLimit.blob.size)) {
+        const underHardLimit = largestCandidate(sameQualityCandidates.filter((candidate) => candidate.blob.size <= payload.maxBytes));
+        // 质量步进按高到低排列；硬上限兜底优先保留最高质量，再在同一质量内保留更大候选。
+        if (underHardLimit && !bestUnderHardLimit) {
           bestUnderHardLimit = underHardLimit;
         }
       }
@@ -114,9 +116,9 @@ function fitImageSize(width: number, height: number, maxEdge: number) {
   };
 }
 
-function smallestCandidate(candidates: EncodedCandidate[]): EncodedCandidate | null {
+function largestCandidate(candidates: EncodedCandidate[]): EncodedCandidate | null {
   return candidates.reduce<EncodedCandidate | null>(
-    (smallest, candidate) => !smallest || candidate.blob.size < smallest.blob.size ? candidate : smallest,
+    (largest, candidate) => !largest || candidate.blob.size > largest.blob.size ? candidate : largest,
     null,
   );
 }

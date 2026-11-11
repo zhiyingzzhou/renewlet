@@ -2,7 +2,7 @@
   "name": "@renewlet/cloudflare",
   "private": true,
   "license": "MIT",
-  "version": "0.3.34",
+  "version": "0.3.36",
   "type": "module",
   "scripts": {
     "build": "pnpm typecheck && wrangler deploy --dry-run --config ../../wrangler.jsonc --outdir dist",
@@ -27,12 +27,12 @@
     "hono": "4.13.13",
     "otpauth": "^9.5.1",
     "webdav": "5.11.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "5.20261019.1",
+    "@cloudflare/workers-types": "5.20261104.1",
     "typescript": "6.0.3",
     "vitest": "^4.1.11",
-    "wrangler": "4.151.3"
+    "wrangler": "4.158.0"
   }
 }

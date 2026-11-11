@@ -74,7 +74,7 @@ export function createDefaultAppSettings(options: DefaultSettingsOptions = {}): 
     pushplusToken: "",
     aiRecognition: {
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "",
       modelInputMode: "select",
       baseUrl: "",

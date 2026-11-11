@@ -137,6 +137,16 @@ func executeSubscriptionDerivedMutation(e *core.RecordEvent, kind subscriptionDe
 			}
 			before = persisted.Clone()
 		}
+		if kind == subscriptionDerivedUpdate {
+			// 版本前置条件必须能识别同一毫秒内的连续编辑；不增加查询，复用事务事实快照。
+			stamp := time.Now().UTC().Truncate(time.Millisecond)
+			previous := before.GetDateTime("updated").Time().UTC().Truncate(time.Millisecond)
+			if !stamp.After(previous) {
+				stamp = previous.Add(time.Millisecond)
+			}
+			value, _ := types.ParseDateTime(stamp)
+			e.Record.SetRaw("updated", value)
+		}
 		originalApp := e.App
 		e.App = txApp
 		defer func() { e.App = originalApp }()
@@ -258,6 +268,9 @@ func normalizeSubscriptionRecordWithApp(app core.App, record *core.Record) error
 }
 
 func normalizeSubscriptionRecordWithSettings(record *core.Record, mirrorSettings appSettings) error {
+	if err := normalizeSubscriptionBalanceRecord(record); err != nil {
+		return err
+	}
 	name := strings.TrimSpace(record.GetString("name"))
 	if name == "" {
 		return errors.New("SUBSCRIPTION_NAME_REQUIRED")

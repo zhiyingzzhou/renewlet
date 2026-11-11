@@ -259,6 +259,8 @@ function subscriptionRow(overrides: Partial<SubscriptionRow> = {}): Subscription
     name: "Public API Plan",
     logo: null,
     price: "12",
+    balance: null,
+    balance_currency: null,
     currency: "USD",
     billing_cycle: "monthly",
     custom_days: null,
@@ -311,6 +313,8 @@ describe("Cloudflare Public API", () => {
       subscriptions: [
         subscriptionRow({
           id: "sub_renewal",
+          balance: "0",
+          balance_currency: "EUR",
           name: "Renewal Plan",
           status: "active",
           start_date: null,
@@ -395,7 +399,7 @@ describe("Cloudflare Public API", () => {
 
     const allSubscriptionsResponse = await publicApiSubscriptions(publicRequest("/api/public/v1/subscriptions?limit=3"), env);
     const allSubscriptionsBody = publicApiSubscriptionsListPayloadSchema.parse(await readSuccessData<unknown>(allSubscriptionsResponse));
-    expect(allSubscriptionsBody.subscriptions.find((item) => item.id === "sub_renewal")).toMatchObject({ startDate: null });
+    expect(allSubscriptionsBody.subscriptions.find((item) => item.id === "sub_renewal")).toMatchObject({ startDate: null, balance: "0", balanceCurrency: "EUR" });
     expect(allSubscriptionsBody.subscriptions.find((item) => item.id === "sub_expiry")).toMatchObject({
       autoCalculateNextBillingDate: true,
     });
@@ -403,7 +407,7 @@ describe("Cloudflare Public API", () => {
 
     const detailResponse = await publicApiSubscription(publicRequest("/api/public/v1/subscriptions/sub_renewal"), env, "sub_renewal");
     expect(publicApiSubscriptionPayloadSchema.parse(await readSuccessData<unknown>(detailResponse))).toMatchObject({
-      subscription: { id: "sub_renewal", name: "Renewal Plan", startDate: null },
+      subscription: { id: "sub_renewal", name: "Renewal Plan", startDate: null, balance: "0", balanceCurrency: "EUR" },
     });
     await expect(publicApiSubscription(publicRequest("/api/public/v1/subscriptions/sub_other"), env, "sub_other"))
       .rejects.toMatchObject({ status: 404 });
@@ -421,7 +425,7 @@ describe("Cloudflare Public API", () => {
       ["sub_trial", "trial"],
       ["sub_expiry", "expiry"],
     ]));
-    expect(dueBody.items.find((item) => item.subscription.id === "sub_renewal")?.subscription.startDate).toBeNull();
+    expect(dueBody.items.find((item) => item.subscription.id === "sub_renewal")?.subscription).toMatchObject({ balance: "0", balanceCurrency: "EUR" });
     expect(dueBody.items.map((item) => item.subscription.id)).not.toContain("sub_other");
 
     authMocks.requireAuth.mockResolvedValueOnce({ user: { id: OTHER_USER_ID }, session: { id: "ses_other" } });

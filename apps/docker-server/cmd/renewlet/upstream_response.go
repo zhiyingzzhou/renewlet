@@ -15,7 +15,8 @@ const (
 	upstreamProviderResponseCaptureBodyMaxBytes = 64 * 1024
 )
 
-// upstreamProviderResponse 是 Go 侧内部采集形状；公开 API 只透出 rawResponseText，避免前端重新依赖 status/header 元数据。
+// upstreamProviderResponse 是 Go 侧的统一采集形状；普通错误只透出 rawResponseText，AI SSE
+// error 事件额外带有有界的 status/header/body 元数据，因为 SSE 建立后无法再修改 HTTP status。
 type upstreamProviderResponse struct {
 	Status        *int              `json:"status"`
 	StatusText    *string           `json:"statusText"`
@@ -225,7 +226,7 @@ func safeUpstreamHeaderName(key string) bool {
 	if normalized == "" {
 		return false
 	}
-	if normalized == "authorization" || normalized == "proxy-authorization" || normalized == "cookie" || normalized == "set-cookie" {
+	if normalized == "authorization" || normalized == "proxy-authorization" || normalized == "cookie" || normalized == "set-cookie" || normalized == "content-length" || normalized == "content-encoding" || normalized == "transfer-encoding" || normalized == "connection" || normalized == "keep-alive" || normalized == "trailer" || normalized == "upgrade" {
 		return false
 	}
 	for _, marker := range []string{"secret", "token", "signature", "credential", "accesskey", "access-key", "api-key", "apikey", "auth-key", "authkey"} {

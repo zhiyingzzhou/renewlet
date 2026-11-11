@@ -296,9 +296,13 @@ function parseRetryAfter(value: string | null): number | undefined {
 function shouldClearAuthSession(status: number, payload: unknown, authMode: ApiAuthMode, sessionSnapshot: ProductSessionSnapshot | null): boolean {
   if (authMode !== "required" || !sessionSnapshot) return false;
   if (status !== 401) return false;
-  const code = getErrorCode(payload);
-  // 模型列表代理会透传 provider 401；它是业务错误，只展示，不应清 Renewlet 登录态。
-  return code !== "AI_MODEL_LIST_FAILED";
+  // 非 Renewlet envelope 的 401 是被代理透传的上游响应，不能清除当前产品登录态。
+  if (!apiErrorResponseSchema.safeParse(payload).success) return false;
+  const details = getErrorDetails(payload);
+  // 第三方 provider 的 401/403 经过产品 API 代理返回时仍是业务失败；rawResponseText
+  // 是统一的上游事实标记，不能因为 HTTP 状态相同而清除 Renewlet 登录态。
+  if (isRecord(details) && typeof details["rawResponseText"] === "string" && details["rawResponseText"].trim()) return false;
+  return true;
 }
 
 function getClientTimeZoneHeader(): string | null {
@@ -405,7 +409,7 @@ export async function apiFetch<Schema extends ApiSuccessResponseSchema>(
     const json = payload.json;
 
     if (!res.ok) {
-      const message = getErrorMessage(json) || res.statusText || "Request failed";
+      const message = getErrorMessage(json) || payload.text || res.statusText || "Request failed";
       if (shouldClearAuthSession(res.status, json, authMode, sessionSnapshot)) {
         clearAuthSession(sessionSnapshot);
       }
@@ -446,7 +450,7 @@ export async function apiFetchBlob(input: RequestInfo, init?: ApiFetchInit): Pro
     if (!response.ok) {
       const payload = await readResponsePayload(response);
       const json = payload.json;
-      const message = getErrorMessage(json) || response.statusText || "Request failed";
+      const message = getErrorMessage(json) || payload.text || response.statusText || "Request failed";
       if (shouldClearAuthSession(response.status, json, authMode, sessionSnapshot)) {
         clearAuthSession(sessionSnapshot);
       }
@@ -478,7 +482,7 @@ export async function apiFetchStream<T>(
     if (!response.ok) {
       const payload = await readResponsePayload(response);
       const json = payload.json;
-      const message = getErrorMessage(json) || response.statusText || "Request failed";
+      const message = getErrorMessage(json) || payload.text || response.statusText || "Request failed";
       if (shouldClearAuthSession(response.status, json, authMode, sessionSnapshot)) {
         clearAuthSession(sessionSnapshot);
       }

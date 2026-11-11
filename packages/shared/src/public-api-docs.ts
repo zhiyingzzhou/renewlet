@@ -57,6 +57,8 @@ const sampleSubscription = {
   name: "GitHub",
   price: "12",
   currency: "USD",
+  balance: "50.123456",
+  balanceCurrency: "EUR",
   billingCycle: "monthly",
   category: "developer_tools",
   status: "active",

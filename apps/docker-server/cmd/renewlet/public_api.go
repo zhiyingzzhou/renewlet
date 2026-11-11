@@ -78,6 +78,8 @@ type publicAPISubscriptionResponse struct {
 	ID                           string                 `json:"id"`
 	Name                         string                 `json:"name"`
 	Logo                         *string                `json:"logo,omitempty"`
+	Balance                      *string                `json:"balance,omitempty"`
+	BalanceCurrency              *string                `json:"balanceCurrency,omitempty"`
 	Price                        string                 `json:"price"`
 	Currency                     string                 `json:"currency"`
 	BillingCycle                 string                 `json:"billingCycle"`
@@ -468,6 +470,8 @@ func publicAPISubscriptionFromRecord(record *core.Record) publicAPISubscriptionR
 		ID:                           record.Id,
 		Name:                         record.GetString("name"),
 		Logo:                         trimmedSubscriptionString(record.GetString("logo")),
+		Balance:                      trimmedSubscriptionString(record.GetString("balance")),
+		BalanceCurrency:              trimmedSubscriptionString(record.GetString("balanceCurrency")),
 		Price:                        moneyForRecord(record.Get("price")),
 		Currency:                     record.GetString("currency"),
 		BillingCycle:                 billingCycle,

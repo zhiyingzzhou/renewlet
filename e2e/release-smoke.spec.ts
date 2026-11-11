@@ -243,7 +243,7 @@ function createAIRecognitionResponse(subscriptionName: string) {
       oneTimeTermUnit: null,
       category: "developer_tools",
       status: "active",
-      paymentMethod: null,
+      paymentMethod: "alipay",
       startDate: "2026-08-01",
       nextBillingDate: "2026-09-05",
       autoCalculateNextBillingDate: true,

@@ -23,6 +23,8 @@ const currentExportSubscription = {
   logo: undefined,
   price: "42",
   currency: "USD",
+  balance: "0.000001",
+  balanceCurrency: "EUR",
   billingCycle: "monthly",
   customDays: undefined,
   customCycleUnit: undefined,
@@ -54,6 +56,7 @@ describe("renewlet import", () => {
 
     for (const prepared of [jsonPrepared, zipPrepared]) {
       expect(prepared.payload.subscriptions[0]?.name).toBe("v0.3.22 Backup");
+      expect(prepared.payload.subscriptions[0]?.balance).toBeUndefined();
       expect(prepared.payload.settings).toMatchObject({ localePreference: "zh-CN", defaultCurrency: "USD" });
     }
   });
@@ -131,6 +134,7 @@ describe("renewlet import", () => {
       },
     }), context);
 
+    expect(prepared.payload.subscriptions[0]).toMatchObject({ balance: "0.000001", balanceCurrency: "EUR" });
     expect(prepared.payload.source).toBe("renewlet");
     expect(prepared.payload.subscriptions[0]?.extra.import).toEqual({
       source: "renewlet",

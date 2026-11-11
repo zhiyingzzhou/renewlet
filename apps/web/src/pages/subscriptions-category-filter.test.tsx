@@ -93,6 +93,11 @@ vi.mock("@/hooks/use-subscriptions", () => ({
   useSubscriptionDetail: () => ({ data: undefined, error: null, isPending: false }),
 }));
 
+// 分类筛选不依赖公开页管理状态；明确固定该边界，避免页面挂载时隐式发送请求。
+vi.mock("@/hooks/use-public-status-page", () => ({
+  usePublicStatusPageStatus: () => ({ data: { enabled: false }, isSuccess: true }),
+}));
+
 vi.mock("@/hooks/use-settings", () => ({
   useSettingsEnvelope: mocks.useSettingsEnvelope,
   useSettings: () => {

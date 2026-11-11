@@ -1,0 +1,272 @@
+[
+  {
+    "name": "evidence facts and existing config matching",
+    "input": {
+      "subscriptions": [
+        {
+          "name": "Cloud Backup",
+          "price": "15元",
+          "currency": "元",
+          "billingCycle": "1个月",
+          "customDays": null,
+          "customCycleUnit": null,
+          "oneTimeTermCount": null,
+          "oneTimeTermUnit": null,
+          "category": "云服务",
+          "status": null,
+          "paymentMethod": "Visa",
+          "startDate": "2026-11-01",
+          "nextBillingDate": null,
+          "autoCalculateNextBillingDate": true,
+          "trialEndDate": null,
+          "website": {
+            "value": null,
+            "source": "suggested"
+          },
+          "notes": null,
+          "tags": [
+            "VPS",
+            "vps",
+            "套餐2026"
+          ],
+          "reminderDays": null,
+          "repeatReminderEnabled": null,
+          "repeatReminderInterval": null,
+          "repeatReminderWindow": null,
+          "confidence": "high",
+          "warnings": []
+        }
+      ],
+      "warnings": []
+    },
+    "config": {
+      "categories": [
+        {
+          "value": "cloud_services",
+          "label": "云服务",
+          "zhCN": "云服务",
+          "enUS": "Cloud services"
+        }
+      ],
+      "paymentMethods": [
+        {
+          "value": "visa",
+          "label": "Visa",
+          "zhCN": "Visa",
+          "enUS": "Visa"
+        }
+      ],
+      "tags": [
+        "VPS"
+      ]
+    },
+    "expected": {
+      "providerType": "openai",
+      "transportProtocol": "openai-responses",
+      "model": "gpt-5.1",
+      "subscriptions": [
+        {
+          "name": "Cloud Backup",
+          "price": "15",
+          "currency": "CNY",
+          "billingCycle": "monthly",
+          "customDays": null,
+          "customCycleUnit": null,
+          "oneTimeTermCount": null,
+          "oneTimeTermUnit": null,
+          "category": "cloud_services",
+          "status": null,
+          "paymentMethod": "visa",
+          "startDate": "2026-11-01",
+          "nextBillingDate": null,
+          "autoCalculateNextBillingDate": true,
+          "trialEndDate": null,
+          "website": null,
+          "notes": null,
+          "tags": [
+            "VPS"
+          ],
+          "reminderDays": null,
+          "repeatReminderEnabled": null,
+          "repeatReminderInterval": null,
+          "repeatReminderWindow": null,
+          "confidence": "high",
+          "warnings": [
+            "AI_WARNING_STATUS_UNCERTAIN"
+          ]
+        }
+      ],
+      "warnings": []
+    }
+  },
+  {
+    "name": "missing facts and unknown config stay explicit",
+    "input": {
+      "subscriptions": [
+        {
+          "name": "Unknown app",
+          "price": null,
+          "currency": null,
+          "billingCycle": null,
+          "customDays": null,
+          "customCycleUnit": null,
+          "oneTimeTermCount": null,
+          "oneTimeTermUnit": null,
+          "category": "Cloud lab",
+          "status": null,
+          "paymentMethod": null,
+          "startDate": null,
+          "nextBillingDate": null,
+          "autoCalculateNextBillingDate": false,
+          "trialEndDate": null,
+          "website": null,
+          "notes": {
+            "value": "输入没有提供官网或更多上下文。",
+            "source": "suggested"
+          },
+          "tags": [],
+          "reminderDays": null,
+          "repeatReminderEnabled": null,
+          "repeatReminderInterval": null,
+          "repeatReminderWindow": null,
+          "confidence": "low",
+          "warnings": []
+        }
+      ],
+      "warnings": []
+    },
+    "config": {
+      "categories": [
+        {
+          "value": "cloud_services",
+          "label": "云服务",
+          "zhCN": "云服务",
+          "enUS": "Cloud services"
+        }
+      ],
+      "paymentMethods": [],
+      "tags": []
+    },
+    "expected": {
+      "providerType": "openai",
+      "transportProtocol": "openai-responses",
+      "model": "gpt-5.1",
+      "subscriptions": [
+        {
+          "name": "Unknown app",
+          "price": null,
+          "currency": null,
+          "billingCycle": null,
+          "customDays": null,
+          "customCycleUnit": null,
+          "oneTimeTermCount": null,
+          "oneTimeTermUnit": null,
+          "category": "Cloud lab",
+          "status": null,
+          "paymentMethod": null,
+          "startDate": null,
+          "nextBillingDate": null,
+          "autoCalculateNextBillingDate": false,
+          "trialEndDate": null,
+          "website": null,
+          "notes": null,
+          "tags": [],
+          "reminderDays": null,
+          "repeatReminderEnabled": null,
+          "repeatReminderInterval": null,
+          "repeatReminderWindow": null,
+          "confidence": "low",
+          "warnings": [
+            "AI_WARNING_PRICE_UNCERTAIN",
+            "AI_WARNING_CURRENCY_UNCERTAIN",
+            "AI_WARNING_CYCLE_UNCERTAIN",
+            "AI_WARNING_DATE_UNCERTAIN",
+            "AI_WARNING_STATUS_UNCERTAIN",
+            "AI_WARNING_PAYMENT_METHOD_UNCERTAIN",
+            "AI_WARNING_CONFIG_SUGGESTED",
+            "AI_WARNING_LOW_CONFIDENCE"
+          ]
+        }
+      ],
+      "warnings": []
+    }
+  },
+  {
+    "name": "bare duration stays recurring",
+    "input": {
+      "subscriptions": [
+        {
+          "name": "DMIT",
+          "price": "30",
+          "currency": "USD",
+          "billingCycle": "2 years",
+          "customDays": null,
+          "customCycleUnit": null,
+          "oneTimeTermCount": null,
+          "oneTimeTermUnit": null,
+          "category": null,
+          "status": null,
+          "paymentMethod": null,
+          "startDate": null,
+          "nextBillingDate": null,
+          "autoCalculateNextBillingDate": false,
+          "trialEndDate": null,
+          "website": null,
+          "notes": null,
+          "tags": [],
+          "reminderDays": null,
+          "repeatReminderEnabled": null,
+          "repeatReminderInterval": null,
+          "repeatReminderWindow": null,
+          "confidence": "high",
+          "warnings": []
+        }
+      ],
+      "warnings": []
+    },
+    "config": {
+      "categories": [],
+      "paymentMethods": [],
+      "tags": []
+    },
+    "expected": {
+      "providerType": "openai",
+      "transportProtocol": "openai-responses",
+      "model": "gpt-5.1",
+      "subscriptions": [
+        {
+          "name": "DMIT",
+          "price": "30",
+          "currency": "USD",
+          "billingCycle": "annual",
+          "customDays": null,
+          "customCycleUnit": null,
+          "oneTimeTermCount": null,
+          "oneTimeTermUnit": null,
+          "category": null,
+          "status": null,
+          "paymentMethod": null,
+          "startDate": null,
+          "nextBillingDate": null,
+          "autoCalculateNextBillingDate": false,
+          "trialEndDate": null,
+          "website": null,
+          "notes": null,
+          "tags": [],
+          "reminderDays": null,
+          "repeatReminderEnabled": null,
+          "repeatReminderInterval": null,
+          "repeatReminderWindow": null,
+          "confidence": "high",
+          "warnings": [
+            "AI_WARNING_DATE_UNCERTAIN",
+            "AI_WARNING_STATUS_UNCERTAIN",
+            "AI_WARNING_PAYMENT_METHOD_UNCERTAIN",
+            "AI_WARNING_CATEGORY_UNCERTAIN"
+          ]
+        }
+      ],
+      "warnings": []
+    }
+  }
+]

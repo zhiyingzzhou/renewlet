@@ -173,8 +173,8 @@ describe("AIRecognizeSubscriptionDialog stream overlay", () => {
     await act(async () => {
       streamHandlers?.onEvent?.({ type: "recognition/reasoning-delta", delta: "先确认服务名称" });
     });
-    expect(panel).toHaveTextContent("思考过程");
-    expect(panel).toHaveTextContent("先确认服务名称");
+    expect(panel).not.toHaveTextContent("思考过程");
+    expect(panel).not.toHaveTextContent("先确认服务名称");
 
     await act(async () => {
       streamHandlers?.onEvent?.({ type: "recognition/final", response: makeResponse([makeDraft()]) });

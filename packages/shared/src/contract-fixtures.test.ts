@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import {
   notificationScheduleFixtures,
+  aiRecognitionNormalizationFixtures,
   outboundUrlPolicyFixtures,
   subscriptionCollectionContractFixture,
   subscriptionNormalizationFixtures,
@@ -16,6 +17,10 @@ describe("contract fixtures", () => {
 
   it("loads subscription normalization fixtures", () => {
     expect(subscriptionNormalizationFixtures.length).toBeGreaterThan(0);
+  });
+
+  it("loads AI recognition normalization fixtures", () => {
+    expect(aiRecognitionNormalizationFixtures.length).toBeGreaterThan(0);
   });
 
   it("loads outbound URL policy fixtures", () => {

@@ -159,6 +159,8 @@ export interface SubscriptionRow {
   logo: string | null;
   price: string;
   currency: string;
+  balance: string | null;
+  balance_currency: string | null;
   billing_cycle: string;
   custom_days: number | null;
   custom_cycle_unit: CustomCycleUnit | null;
@@ -197,6 +199,8 @@ export type SubscriptionCollectionRow = Pick<SubscriptionRow,
   | "logo"
   | "price"
   | "currency"
+  | "balance"
+  | "balance_currency"
   | "billing_cycle"
   | "custom_days"
   | "custom_cycle_unit"

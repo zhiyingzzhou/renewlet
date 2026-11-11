@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,9 +31,20 @@ function handleSubscriptionDialogIntent(): void {
 /** 表单代码按 intent 加载；同步 shell 在单次 open session 内持续拥有 Portal、焦点域和退出动画。 */
 export function SubscriptionDialog(props: SubscriptionDialogProps) {
   const { t } = useI18n();
+  const { onOpenChange } = props;
+  const submittingRef = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
+  const handleSubmittingChange = useCallback((pending: boolean) => {
+    submittingRef.current = pending;
+    setSubmitting(pending);
+  }, []);
+  const handleOpenChange = useCallback((open: boolean) => {
+    if (!open && submittingRef.current) return;
+    onOpenChange(open);
+  }, [onOpenChange]);
   const { handleNestedDialogOpenChange, handleParentOpenChange } = useNestedDialogCloseGuard(
     props.open,
-    props.onOpenChange,
+    handleOpenChange,
   );
   const { value: Content, error, sessionKey } = useLazyDialogSession(props.open, subscriptionDialogResource);
   const handleRequestClose = useCallback(() => handleParentOpenChange(false), [handleParentOpenChange]);
@@ -61,10 +72,11 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
 
       <DialogContent
         closeLabel={t("common.close")}
+        closeDisabled={submitting}
         dismissMode="explicit"
         layout="frame"
         className="h5-dialog-frame h5-subscription-dialog-panel border-border bg-card p-0 sm:max-w-2xl"
-        aria-busy={modulePending || props.loading ? true : undefined}
+        aria-busy={submitting || modulePending || props.loading ? true : undefined}
       >
         <DialogHeader data-subscription-dialog-header="" className="shrink-0 p-6 pb-0">
           <DialogTitle className="text-xl font-semibold">
@@ -91,6 +103,7 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
             {...props}
             onNestedDialogOpenChange={handleNestedDialogOpenChange}
             onRequestClose={handleRequestClose}
+            onSubmittingChange={handleSubmittingChange}
           />
         )}
       </DialogContent>

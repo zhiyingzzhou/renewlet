@@ -10,7 +10,8 @@ import type {
 
 export const AI_RECOGNITION_IMAGE_SOFT_BYTES = 2 * 1024 * 1024;
 export const AI_RECOGNITION_IMAGE_TOTAL_SOFT_BYTES = 10 * 1024 * 1024;
-export const AI_RECOGNITION_IMAGE_MAX_EDGE = 2048;
+// 账单截图优先保留小字清晰度；3,072px 在 OCR 精度和单图 token 成本之间取平衡，最终仍受 5MB 硬上限约束。
+export const AI_RECOGNITION_IMAGE_MAX_EDGE = 3072;
 
 export type { AIRecognitionImagePreprocessWarning } from "./ai-image-preprocess-contract";
 

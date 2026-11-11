@@ -16,6 +16,7 @@ const (
 	aiProviderTypeAnthropic         = "anthropic"
 	aiProviderTypeGemini            = "gemini"
 	aiProviderTypeOpenAICompatible  = "openai-compatible"
+	aiProtocolOpenAIResponses       = "openai-responses"
 	aiProtocolOpenAIChat            = "openai-chat"
 	aiProtocolAnthropicMessages     = "anthropic-messages"
 	aiProtocolGeminiGenerateContent = "gemini-generate-content"
@@ -42,8 +43,12 @@ func canonicalAIRecognitionTransportProtocol(providerType string) string {
 		return aiProtocolAnthropicMessages
 	case aiProviderTypeGemini:
 		return aiProtocolGeminiGenerateContent
-	default:
+	case aiProviderTypeOpenAICompatible:
 		return aiProtocolOpenAIChat
+	case aiProviderTypeOpenAI:
+		return aiProtocolOpenAIResponses
+	default:
+		return aiProtocolOpenAIResponses
 	}
 }
 

@@ -1,6 +1,6 @@
 import { SUBSCRIPTION_INDEX_LIMIT, subscriptionBulkPublicVisibilityPayloadSchema, subscriptionBulkPublicVisibilityRequestSchema, type SubscriptionBulkPublicVisibilityRequest } from "@renewlet/shared/schemas/subscriptions";
 import { requireAuth } from "./auth";
-import { boolToInt, getSettings, nowIso } from "./db";
+import { boolToInt, getSettings } from "./db";
 import { HttpError, readJson, requestLocale, successJson, type AppLocale } from "./http";
 import { serverText } from "./server-i18n";
 import { dateOnlyInZone } from "./subscription-renewal";
@@ -75,7 +75,8 @@ export async function writePublicVisibility(env: Env, userId: string, rows: read
   const snapshot = visibilitySnapshotQuery(env, userId, rows);
   const ids = JSON.stringify(rows.map((row) => row.id));
   const target = boolToInt(publicHidden);
-  const timestamp = nowIso();
+  // 可见性也是事实修改；批量共用递增版本，避免同毫秒内的切换被续订前置条件漏掉。
+  const timestamp = new Date(rows.reduce((latest, row) => Math.max(latest, Date.parse(row.updated_at) + 1), Date.now())).toISOString();
   // 整个请求只提交一个 batch；按 200 条分别提交会留下前批成功、后批失败的半完成状态。
   // JSON1 将 5000 条压成固定四条 SQL；前后 guard 都在事务内，不能在 await batch 之后才发现索引缺行。
   const statements = [

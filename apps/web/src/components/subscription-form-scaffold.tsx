@@ -6,6 +6,7 @@ interface SubscriptionFormScaffoldProps extends ComponentPropsWithoutRef<"form">
   fields: ReactNode;
   actions: ReactNode;
   formRef?: Ref<HTMLFormElement>;
+  fieldsDisabled?: boolean;
 }
 
 export type SubscriptionFormScaffoldSlots = Pick<
@@ -13,11 +14,12 @@ export type SubscriptionFormScaffoldSlots = Pick<
   "actions" | "fields"
 >;
 
-// 该 scaffold 是数据等待态与真实表单的唯一布局所有者；两种状态只能替换 fields/actions 叶子。
+// 该 scaffold 是等待态与真实表单的布局所有者；显式单列 minmax(0,1fr) 防止长币种/俄语文案撑开窄屏滚动区。
 export function SubscriptionFormScaffold({
   fields,
   actions,
   formRef,
+  fieldsDisabled = false,
   className,
   ...formProps
 }: SubscriptionFormScaffoldProps) {
@@ -27,13 +29,14 @@ export function SubscriptionFormScaffold({
       className={cn("h5-subscription-dialog-form overflow-hidden", className)}
       {...formProps}
     >
-      <div
+      <fieldset
+        disabled={fieldsDisabled}
         data-subscription-dialog-scroll=""
         data-dialog-region="subscription-fields"
-        className="h5-mobile-sheet-scroll h5-subscription-dialog-scroll grid gap-5 px-6 py-4"
+        className="h5-mobile-sheet-scroll h5-subscription-dialog-scroll grid min-w-0 grid-cols-1 gap-5 px-6 py-4"
       >
         {fields}
-      </div>
+      </fieldset>
       <div
         data-subscription-dialog-footer=""
         data-dialog-region="subscription-actions"
@@ -48,6 +51,7 @@ export function SubscriptionFormScaffold({
 export interface SubscriptionFormLoadingStructure {
   cycle: "recurring" | "custom" | "one-time-buyout" | "one-time-fixed-term";
   reminderEnabled: boolean;
+  balanceEnabled: boolean;
   repeatReminderEnabled: boolean;
 }
 
@@ -90,6 +94,10 @@ export function createSubscriptionFormLoadingSlots({
         <FieldSkeleton />
         <PanelSkeleton className="h-24" />
         <PairSkeleton />
+        <div className="grid gap-3 rounded-lg border border-border bg-secondary/30 p-3">
+          <PanelSkeleton className="h-12" />
+          {structure.balanceEnabled ? <PairSkeleton /> : null}
+        </div>
         <PairSkeleton />
         <PairSkeleton />
         {fixedTerm ? <FieldSkeleton /> : null}

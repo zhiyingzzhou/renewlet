@@ -52,6 +52,7 @@ function Harness({
         formData={formData}
         setFormData={setFormData}
         currencyOptions={currencyOptions}
+        balanceCurrencyOptions={currencyOptions}
         showLogoField={false}
         onLogoUploadStatusChange={vi.fn()}
         errors={formErrors}
@@ -218,4 +219,18 @@ describe("SubscriptionFormFields layout", () => {
     expect(screen.queryByText("请选择到期日期")).not.toBeInTheDocument();
     expect(startDateButton).toHaveAttribute("aria-invalid", "false");
   });
+});
+
+it("unmounts disabled balance fields, clears errors, and restores the same session draft", async () => {
+  const user = userEvent.setup();
+  render(<Harness errors={{ balance: "余额错误" }} formOverrides={{ balanceEnabled: true, balance: "0.000001", balanceCurrency: "USD" }} />);
+  const toggle = screen.getByRole("switch", { name: "记录账户余额" });
+  expect(screen.getByLabelText("账户余额")).toHaveValue("0.000001");
+  await user.click(toggle);
+  expect(screen.queryByLabelText("账户余额")).not.toBeInTheDocument();
+  expect(screen.queryByText("余额错误")).not.toBeInTheDocument();
+  await user.click(toggle);
+  expect(screen.getByLabelText("账户余额")).toHaveValue("0.000001");
+  expect(screen.getByLabelText("余额币种")).toHaveTextContent("USD");
+  expect(toggle).toHaveFocus();
 });

@@ -4,7 +4,7 @@ import {
   isAIProviderBaseUrlRequired,
   resolveAIProviderEndpoint,
 } from "../ai-provider-endpoints";
-import { aiRecognitionPromptSpec } from "../ai-recognition-prompt";
+import { aiRecognitionPromptSpec, buildAIRecognitionSystemPrompt } from "../ai-recognition-prompt";
 import {
   AI_RECOGNITION_MAX_IMAGES,
   aiGeneratedRecognizeObjectSchema,
@@ -16,6 +16,8 @@ import {
   aiRecognitionSettingsSchema,
   aiRecognitionStreamEventSchema,
   aiRecognizeResponseSchema,
+  normalizeAIRecognitionThinkingControlForModel,
+  openAIReasoningEffortsForModel,
 } from "./ai-recognition";
 
 const success = <T>(data: T) => ({ ok: true, data });
@@ -115,21 +117,25 @@ describe("AI recognition generated schema", () => {
 });
 
 describe("AI recognition prompt contract", () => {
+  it("keeps the static system prompt within the token-cost budget", () => {
+    expect(buildAIRecognitionSystemPrompt().length).toBeLessThanOrEqual(6_000);
+  });
+
   it("tells models to use whole-field null for unknown websites", () => {
     const promptText = [
       ...aiRecognitionPromptSpec.outputContract,
       ...aiRecognitionPromptSpec.fieldRules,
     ].join("\n");
 
-    expect(promptText).toContain("website: null");
-    expect(promptText).toContain("never output {\"value\": null, \"source\": \"suggested\"}");
+    expect(promptText).toContain("website is null or {\"value\": string, \"source\": \"input\" | \"suggested\"}");
+    expect(promptText).toContain("notes must be an object {\"value\": string | null, \"source\": \"input\" | \"suggested\" | \"none\"}");
   });
 
   it("tells models not to infer unknown recurring start dates", () => {
     const promptText = aiRecognitionPromptSpec.fieldRules.join("\n");
 
-    expect(promptText).toContain("Recurring subscriptions may use startDate: null");
-    expect(promptText).toContain("If startDate is null, set autoCalculateNextBillingDate to false");
+    expect(promptText).toContain("Dates come from input/image. For an explicit start-end period, return both dates; fixed periods use one-time plus an exact term when the duration is visible.");
+    expect(promptText).toContain("Use autoCalculateNextBillingDate=true only with an explicit recurring startDate anchor; otherwise false or null.");
   });
 
   it("requires strict JSON and nulls for unknown billing facts", () => {
@@ -139,15 +145,19 @@ describe("AI recognition prompt contract", () => {
       ...aiRecognitionPromptSpec.fieldRules,
     ].join("\n");
 
-    expect(aiRecognitionPromptSpec.version).toBe("2026-06-24.strict-null-json");
-    expect(promptText).toContain("parseable by JSON.parse");
-    expect(promptText).toContain("Every field listed above must be present exactly once");
-    expect(promptText).toContain("If a billing fact is absent, hidden, unreadable, ambiguous, or inferred only from context, output null");
-    expect(promptText).toContain("Never invent price, currency, billing cycle, dates, status, payment method, or reminder fields");
-    expect(promptText).toContain("If the amount itself is uncertain or unreadable, set both price and currency to null");
-    expect(promptText).toContain("If the cycle is not explicit, output billingCycle: null");
-    expect(promptText).toContain("Do not calculate nextBillingDate unless the input explicitly provides enough billing anchor evidence");
-    expect(promptText).toContain("Do not default to active unless the input clearly shows the subscription is currently active");
+    expect(aiRecognitionPromptSpec.version).toBe("2026-11-06.service-description-v7");
+    expect(buildAIRecognitionSystemPrompt().length).toBeLessThanOrEqual(4500);
+    expect(promptText).toContain("Return exactly one strict JSON object");
+    expect(promptText).toContain("Billing facts come only from input/image.");
+    expect(promptText).toContain("Missing facts stay null; never use current date, defaults, service name, or examples as evidence.");
+    expect(promptText).toContain("billingCycle is weekly, monthly, quarterly, semi-annual, annual, custom, one-time, or null; never infer it.");
+    expect(promptText).toContain("Do not default to active: payment proves payment, not access");
+    expect(promptText).toContain("For a known service/product/merchant, source=suggested MUST contain a non-empty neutral description");
+    expect(promptText).toContain("payment proves payment, not access");
+
+    const examplesText = JSON.stringify(aiRecognitionPromptSpec.examples).toLowerCase();
+    expect(examplesText).not.toContain('"billingcycle":"monthly"');
+    expect(examplesText).not.toContain('"status":"active"');
   });
 });
 
@@ -168,10 +178,10 @@ describe("AI recognition diagnostics schema", () => {
       },
       request: {
         providerType: "openai",
-        transportProtocol: "openai-chat",
+        transportProtocol: "openai-responses",
         model: "gpt-5.1",
         thinkingControl: null,
-        maxOutputTokens: 12000,
+        maxOutputTokens: 1024,
         textCharCount: 0,
         images: Array.from({ length: AI_RECOGNITION_MAX_IMAGES }, () => ({ mediaType: "image/png", sizeBytes: 4 })),
       },
@@ -230,10 +240,10 @@ describe("AI recognition final response schema", () => {
       },
       request: {
         providerType: "openai",
-        transportProtocol: "openai-chat",
+        transportProtocol: "openai-responses",
         model: "gpt-5.1",
         thinkingControl: null,
-        maxOutputTokens: 12000,
+        maxOutputTokens: 1024,
         textCharCount: 12,
         images: [],
       },
@@ -246,7 +256,7 @@ describe("AI recognition final response schema", () => {
 
     expect(aiRecognizeResponseSchema.safeParse(success({
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "gpt-5.1",
       subscriptions: [generatedDraft({ website: { value: null, source: "suggested" } })],
       warnings: [],
@@ -272,10 +282,10 @@ describe("AI recognition stream event schema", () => {
       },
       request: {
         providerType: "openai",
-        transportProtocol: "openai-chat",
+        transportProtocol: "openai-responses",
         model: "gpt-5.1",
         thinkingControl: null,
-        maxOutputTokens: 12000,
+        maxOutputTokens: 1024,
         textCharCount: 12,
         images: [],
       },
@@ -287,7 +297,7 @@ describe("AI recognition stream event schema", () => {
     };
     const response = {
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "gpt-5.1",
       subscriptions: [generatedDraft({ price: "15" })],
       warnings: [],
@@ -359,7 +369,7 @@ describe("AI model list schema", () => {
 
     expect(aiModelListResponseSchema.safeParse(success({
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       models: [{
         id: "gpt-5.1",
         displayName: null,
@@ -381,19 +391,32 @@ describe("AI model list schema", () => {
 });
 
 describe("AI recognition settings schema", () => {
+  it("derives OpenAI reasoning controls by model family so new same-generation ids need no special case", () => {
+    expect(openAIReasoningEffortsForModel("gpt-6.1-terra")).toEqual(["low", "medium", "high", "xhigh", "max"]);
+    expect(openAIReasoningEffortsForModel("models/gpt-6.9-new-model")).toEqual(["low", "medium", "high", "xhigh", "max"]);
+    expect(openAIReasoningEffortsForModel("gpt-5.1")).toEqual(["none", "minimal", "low", "medium", "high", "xhigh"]);
+    expect(openAIReasoningEffortsForModel("o10-mini")).toEqual(["none", "minimal", "low", "medium", "high", "xhigh"]);
+    expect(openAIReasoningEffortsForModel("gpt-4.1")).toBeNull();
+    expect(openAIReasoningEffortsForModel("vendor-model")).toBeNull();
+    expect(normalizeAIRecognitionThinkingControlForModel("gpt-6.1-terra", { provider: "openai", effort: "minimal" })).toBeNull();
+    expect(normalizeAIRecognitionThinkingControlForModel("gpt-6.1-terra", { provider: "openai", effort: "max" })).toEqual({ provider: "openai", effort: "max" });
+  });
+
   it("defaults the model input mode to select for existing settings", () => {
-    expect(aiRecognitionSettingsSchema.parse({
+    const normalized = aiRecognitionSettingsSchema.parse({
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "gpt-5.1",
       baseUrl: "",
       apiKey: "sk-test",
       defaultThinkingControl: null,
-    }).modelInputMode).toBe("select");
+    });
+    expect(normalized.modelInputMode).toBe("select");
+    expect(normalized.transportProtocol).toBe("openai-responses");
 
     expect(aiRecognitionSettingsSchema.parse({
       providerType: "openai",
-      transportProtocol: "openai-chat",
+      transportProtocol: "openai-responses",
       model: "custom-model",
       modelInputMode: "manual",
       baseUrl: "",
@@ -441,6 +464,45 @@ describe("AI recognition settings schema", () => {
       transportProtocol: "openai-chat",
       defaultThinkingControl: null,
     });
+  });
+
+  it("keeps legacy credentials and manual model settings while dropping incompatible GPT-6.1-sol effort", () => {
+    const legacy = aiRecognitionSettingsSchema.parse({
+      provider: "openai",
+      transportProtocol: "openai-chat",
+      model: "gpt-6.1-sol",
+      modelInputMode: "manual",
+      baseUrl: "https://gateway.example.com/v1",
+      apiKey: "sk-legacy",
+      defaultThinkingControl: { provider: "openai", effort: "minimal" },
+    });
+
+    expect(legacy).toEqual({
+      providerType: "openai",
+      transportProtocol: "openai-responses",
+      model: "gpt-6.1-sol",
+      modelInputMode: "manual",
+      baseUrl: "https://gateway.example.com/v1",
+      apiKey: "sk-legacy",
+      defaultThinkingControl: null,
+    });
+    expect(aiRecognitionSettingsSchema.parse(legacy)).toEqual(legacy);
+  });
+
+  it("retains valid legacy GPT-5 effort values and rejects unknown fields", () => {
+    expect(aiRecognitionSettingsSchema.parse({
+      provider: "openai",
+      model: "gpt-5.1",
+      defaultThinkingControl: { provider: "openai", effort: "minimal" },
+      apiKey: "sk-test",
+    }).defaultThinkingControl).toEqual({ provider: "openai", effort: "minimal" });
+
+    expect(aiRecognitionSettingsSchema.safeParse({
+      provider: "openai",
+      model: "gpt-5.1",
+      apiKey: "sk-test",
+      unexpected: true,
+    }).success).toBe(false);
   });
 });
 

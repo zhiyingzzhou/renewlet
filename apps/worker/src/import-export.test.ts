@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { readSuccessData } from "./api-test-helpers";
 import { applyImport, previewImport } from "./import-export";
+import { SUBSCRIPTION_COLUMN_NAMES } from "./db";
 import { HttpError } from "./http";
 import type { Env, SubscriptionRow } from "./types";
 import {
@@ -180,6 +181,16 @@ describe("Cloudflare import", () => {
     dbMocks.getSettings.mockResolvedValue(createDefaultAppSettings());
     dbMocks.nowIso.mockReturnValue("2026-06-05T00:00:00.000Z");
     dbMocks.newId.mockReturnValue("sub_new");
+  });
+
+  it.each(["0", "0.000001", "1000000000"])("preserves balance %s in atomic bulk import", async (balance) => {
+    const { env, statements } = envFixture();
+    await applyImport(requestFor("/api/app/import/apply", importPayload([
+      importSubscription({ balance, balanceCurrency: "EUR" }),
+    ])), env);
+    const row = insertedSubscriptionRow(statements);
+    expect(row[SUBSCRIPTION_COLUMN_NAMES.indexOf("balance")]).toBe(balance);
+    expect(row[SUBSCRIPTION_COLUMN_NAMES.indexOf("balance_currency")]).toBe("EUR");
   });
 
   it("rejects invalid subscription date order during preview before D1 writes", async () => {
@@ -421,6 +432,8 @@ describe("Cloudflare import", () => {
         name: "Imported",
         logo: null,
         price: "12",
+        balance: "0",
+        balance_currency: "EUR",
         currency: "USD",
         billing_cycle: "monthly",
         custom_days: null,
@@ -452,7 +465,7 @@ describe("Cloudflare import", () => {
         updated_at: "2026-06-01T00:00:00.000Z",
       } satisfies SubscriptionRow,
     ]);
-    const { env } = envFixture();
+    const { env, db, statements } = envFixture();
 
     const response = await previewImport(requestFor("/api/app/import/preview", importPayload([
       importSubscription(),
@@ -462,5 +475,13 @@ describe("Cloudflare import", () => {
     expect(json.summary.skips).toBe(1);
     expect(json.summary.replaces).toBe(0);
     expect(json.items[0]).toMatchObject({ action: "skip", existingId: "sub_existing" });
+    const payload = importPayload([importSubscription()]);
+    await applyImport(requestFor("/api/app/import/apply", payload), env);
+    expect(db.batch).not.toHaveBeenCalled();
+    await applyImport(requestFor("/api/app/import/apply", { ...payload, conflictMode: "replace" }), env);
+    // 替换导入是完整事实快照；旧备份缺少余额必须清空，不能误用局部 PATCH 的保留语义。
+    const row = insertedSubscriptionRow(statements);
+    expect(row[SUBSCRIPTION_COLUMN_NAMES.indexOf("balance")]).toBeNull();
+    expect(row[SUBSCRIPTION_COLUMN_NAMES.indexOf("balance_currency")]).toBeNull();
   });
 });
