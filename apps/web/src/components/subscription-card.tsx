@@ -131,11 +131,14 @@ const metaToneClassNames = {
 } satisfies Record<SubscriptionCardMetaTone, string>;
 
 function SubscriptionCardMetaToken({ item }: { item: SubscriptionCardMetaItem }) {
+  const isPrimaryDate = item.key === "start-date" || item.key === "billing-date";
+
   return (
     <div
       data-testid={`subscription-card-meta-${item.key}`}
       className={cn(
-        "inline-flex min-w-0 max-w-full items-center gap-1.5 whitespace-nowrap text-xs",
+        "inline-flex min-w-0 max-w-full items-center whitespace-nowrap text-xs",
+        isPrimaryDate ? "gap-1" : "gap-1.5",
         item.tabular && "tabular-nums",
         metaToneClassNames[item.tone],
       )}
@@ -153,10 +156,10 @@ function SubscriptionCardMetaFlow({ items }: { items: readonly SubscriptionCardM
   return (
     <div data-testid="subscription-card-meta-flow" className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 sm:gap-x-4">
       {dateItems.length > 0 ? (
-        // 日期组是移动卡片的扫描单位，避免付款方式等次要字段抢占到期日期位置。
+        // 日期组使用紧凑间距且不为次要字段收缩，避免 Linux 字体较宽时把两项主日期拆行。
         <div
           data-testid="subscription-card-meta-date-group"
-          className="inline-flex min-w-0 max-w-full flex-[0_1_auto] flex-wrap items-center gap-x-2 gap-y-1 sm:gap-x-4"
+          className="inline-flex min-w-0 max-w-full shrink-0 flex-wrap items-center gap-x-1 gap-y-1 sm:gap-x-4"
         >
           {dateItems.map((item) => <SubscriptionCardMetaToken key={item.key} item={item} />)}
         </div>
@@ -280,7 +283,7 @@ function SubscriptionCardComponent({
     ...(subscription.startDate && !isBuyout
       ? [{
           key: "start-date",
-          icon: <CalendarClock className="h-3.5 w-3.5 shrink-0" />,
+          icon: <CalendarClock className="h-3 w-3 shrink-0" />,
           text: `${t("subscription.card.startPrefix")} ${formatDateOnly(subscription.startDate)}`,
           tone: "muted" as const,
         }]
@@ -288,7 +291,7 @@ function SubscriptionCardComponent({
     ...(billingDateText
       ? [{
           key: "billing-date",
-          icon: <Calendar className="h-3.5 w-3.5 shrink-0" />,
+          icon: <Calendar className="h-3 w-3 shrink-0" />,
           text: billingDateText,
           tone: "muted" as const,
         }]
