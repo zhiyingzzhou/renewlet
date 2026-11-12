@@ -80,12 +80,6 @@ RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.36"
 
 升级已有实例时不要再次点击部署按钮，按部署文档同步现有仓库即可。
 
-## 第三方托管服务
-
-RepoCloud 是独立于 Renewlet 的第三方付费 VPS 托管服务。资源可用性、价格、部署行为和技术支持由 RepoCloud 负责，Renewlet 不提供该服务。
-
-<a href="https://repocloud.io/details/Renewlet/"><img src="https://d16t0pc4846x52.cloudfront.net/deploylobe.svg" alt="在 RepoCloud 部署" height="39"></a>
-
 ## 升级
 
 升级前先备份数据和配置：
