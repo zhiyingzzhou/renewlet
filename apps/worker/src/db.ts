@@ -263,6 +263,21 @@ export async function getSettings(env: Env, userId: string): Promise<ApiAppSetti
   return settingsFromRowJson(row?.settings_json);
 }
 
+/** 集合只消费时区投影，不加载通知/备份凭据；每次按 owner 读取，设置修改会在下一请求生效。 */
+export async function getSettingsTimezone(env: Env, userId: string): Promise<string> {
+  const row = await env.DB.prepare(`
+    SELECT json_type(settings_json) AS settings_type,
+      json_type(settings_json, '$.timezone') AS timezone_type,
+      json_extract(settings_json, '$.timezone') AS timezone
+    FROM settings WHERE user_id = ? LIMIT 1
+  `).bind(userId).first<{ settings_type: string; timezone_type: string | null; timezone: unknown }>();
+  if (row && row.settings_type !== "object") throw new Error("Invalid stored settings object");
+  // 缺行/缺字段沿用 shared 默认值；显式 null、非法时区与损坏 JSON 仍报错，不能悄悄改变业务日界线。
+  return appSettingsSchema.shape.timezone.parse(
+    !row || row.timezone_type === null ? createDefaultAppSettings().timezone : row.timezone,
+  );
+}
+
 /** 首次补建 settings 固定写 auto；ON CONFLICT 后回读可承接并发登录已经创建的账号设置。 */
 export async function ensureSettings(env: Env, userId: string): Promise<ApiAppSettings> {
   const existing = await env.DB.prepare("SELECT settings_json FROM settings WHERE user_id = ? LIMIT 1").bind(userId).first<{ settings_json: string }>();
@@ -339,7 +354,8 @@ function apiOneTimeTermFields(row: Pick<SubscriptionRow, "one_time_term_count" |
   };
 }
 
-export function toApiSubscriptionCollectionItem(row: SubscriptionCollectionRow): ApiSubscriptionCollectionItem {
+/** 集合路由只规范化行，由外层 payload schema 完整校验一次；其它调用者继续使用已校验的转换入口。 */
+export function subscriptionCollectionItemInput(row: SubscriptionCollectionRow) {
   // cost_sharing_json 是 D1 唯一持久化形态，出站必须重新过 shared schema，防止 Worker 与 Docker costSharing 漂移。
   const costSharing = parseJsonObject(row.cost_sharing_json ?? "{}");
   const normalized = {
@@ -369,7 +385,11 @@ export function toApiSubscriptionCollectionItem(row: SubscriptionCollectionRow):
     reminderDays: row.reminder_days,
     ...(Object.keys(costSharing).length > 0 ? { costSharing } : {}),
   };
-  return apiSubscriptionCollectionItemSchema.parse(normalized);
+  return normalized;
+}
+
+export function toApiSubscriptionCollectionItem(row: SubscriptionCollectionRow): ApiSubscriptionCollectionItem {
+  return apiSubscriptionCollectionItemSchema.parse(subscriptionCollectionItemInput(row));
 }
 
 export function toApiSubscription(row: SubscriptionRow): ApiSubscription {

@@ -1,5 +1,6 @@
 import {
   SUBSCRIPTION_PAYMENT_METHOD_NONE,
+  type SubscriptionsCalendarQuery,
   type SubscriptionsListQuery,
 } from "@renewlet/shared/schemas/subscriptions";
 import { DISABLED_REMINDER_DAYS, INHERIT_REMINDER_DAYS } from "@renewlet/shared/runtime";
@@ -24,16 +25,13 @@ export interface PrivateSubscriptionCursor {
   id: string;
 }
 
-export type SubscriptionCollectionFilters = Omit<SubscriptionsListQuery, "cursor" | "limit">;
+export type SubscriptionCollectionFilters = Omit<SubscriptionsListQuery, "cursor" | "limit"> & {
+  calendarRange?: SubscriptionsCalendarQuery;
+};
 
 export interface SubscriptionSqlQueryPlan {
   sql: string;
   params: unknown[];
-}
-
-export interface BoundedSubscriptionCollectionQueryPlan {
-  preflight: SubscriptionSqlQueryPlan;
-  facts: SubscriptionSqlQueryPlan;
 }
 
 /**
@@ -53,7 +51,7 @@ export async function listSubscriptionsForQuery(
   return await readSubscriptionCollectionPage(env, plan);
 }
 
-/** 完整集合先在投影层确认上限，再读取轻量事实列；超限请求不会触碰 subscriptions facts。 */
+/** 完整集合在同一快照中预检上限并读取事实，减少 D1 往返；超限时 SQL 不连接事实。 */
 export async function listBoundedSubscriptionsForQuery(
   env: Env,
   userId: string,
@@ -62,13 +60,12 @@ export async function listBoundedSubscriptionsForQuery(
   maxItems: number,
 ): Promise<{ rows: SubscriptionCollectionRow[]; total: number; exceeded: boolean }> {
   const plan = boundedSubscriptionCollectionQueryPlan(userId, query, today, maxItems + 1);
-  const total = await countSubscriptionProjection(env, plan.preflight);
+  const result = await env.DB.prepare(plan.sql).bind(...plan.params)
+    .all<NullableSubscriptionCollectionRow & { collection_total: number }>();
+  const total = result.results[0]?.collection_total ?? 0;
   if (total > maxItems) return { rows: [], total, exceeded: true };
-
-  // count 与读取之间若发生并发写入，额外一行仍会把请求收敛为 422，不能返回伪完整集合。
-  const rows = await readSubscriptionCollectionFacts(env, plan.facts);
-  if (rows.length > maxItems) return { rows: [], total: rows.length, exceeded: true };
-  // 成功响应以事实行数为 total，避免 count 后并发删除留下与返回数组不一致的元数据。
+  // LEFT JOIN 为零条/超限保留总数行；只有真实事实可进入 DTO，额外查询列不会越过白名单转换边界。
+  const rows = result.results.filter((row) => typeof row.id === "string") as SubscriptionCollectionRow[];
   return { rows, total: rows.length, exceeded: false };
 }
 
@@ -127,32 +124,25 @@ export function boundedSubscriptionCollectionQueryPlan(
   query: SubscriptionCollectionFilters,
   today: string,
   limit: number,
-): BoundedSubscriptionCollectionQueryPlan {
+): SubscriptionSqlQueryPlan {
   const base = subscriptionListBaseQuery(userId, query, today);
   return {
-    preflight: {
-      sql: `SELECT COUNT(*) AS total FROM (
-        SELECT 1 FROM subscription_list_index AS idx WHERE ${base.where} LIMIT ?
-      )`,
-      params: [...base.params, limit],
-    },
-    facts: {
-      sql: `
-        WITH filtered AS (
-          SELECT idx.subscription_id, idx.user_id, idx.pinned, idx.created_at,
-            ${subscriptionInactiveRankSql("idx")} AS inactive
-          FROM subscription_list_index AS idx
-          WHERE ${base.where}
-          ORDER BY idx.pinned DESC, inactive ASC, idx.created_at DESC, idx.subscription_id DESC
-          LIMIT ?
+    // 同一快照先数至上限；超限把连接 owner 置为 NULL，索引直接跳过第二轮扫描和事实读取。
+    // 只追加布尔 JOIN 条件仍会扫描整个 owner 投影；不要恢复它或反复物化中间集合增加 D1 读量。
+    sql: `
+      WITH totals AS MATERIALIZED (
+        SELECT COUNT(*) AS collection_total FROM (
+          SELECT 1 FROM subscription_list_index AS idx WHERE ${base.where} LIMIT ?
         )
-        SELECT ${SUBSCRIPTION_COLLECTION_COLUMNS_FROM_FACT}
-        FROM filtered AS idx
-        INNER JOIN subscriptions AS sub ON sub.user_id = idx.user_id AND sub.id = idx.subscription_id
-        ORDER BY ${DEFAULT_SUBSCRIPTION_ORDER_SQL}
-      `,
-      params: [today, ...base.params, limit],
-    },
+      )
+      SELECT totals.collection_total, ${SUBSCRIPTION_COLLECTION_COLUMNS_FROM_FACT}
+      FROM totals
+      LEFT JOIN subscription_list_index AS idx
+        ON idx.user_id = CASE WHEN totals.collection_total < ? THEN ? END AND ${base.filterWhere}
+      LEFT JOIN subscriptions AS sub ON sub.user_id = idx.user_id AND sub.id = idx.subscription_id
+      ORDER BY idx.pinned DESC, ${subscriptionInactiveRankSql("idx")} ASC, idx.created_at DESC, idx.subscription_id DESC
+    `,
+    params: [...base.params, limit, limit, userId, ...base.filterParams, today],
   };
 }
 
@@ -259,21 +249,6 @@ function isDateOnly(value: unknown): value is string {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-async function countSubscriptionProjection(env: Env, plan: SubscriptionSqlQueryPlan): Promise<number> {
-  const row = await env.DB.prepare(plan.sql)
-    .bind(...plan.params)
-    .first<{ total: number }>();
-  return row?.total ?? 0;
-}
-
-async function readSubscriptionCollectionFacts(
-  env: Env,
-  plan: SubscriptionSqlQueryPlan,
-): Promise<SubscriptionCollectionRow[]> {
-  const page = await env.DB.prepare(plan.sql).bind(...plan.params).all<SubscriptionCollectionRow>();
-  return page.results;
-}
-
 type NullableSubscriptionCollectionRow = {
   [Key in keyof SubscriptionCollectionRow]: SubscriptionCollectionRow[Key] | null;
 };
@@ -298,7 +273,7 @@ function subscriptionListBaseQuery(
   userId: string,
   query: SubscriptionCollectionFilters,
   today: string,
-): { where: string; params: unknown[] } {
+): { where: string; params: unknown[]; filterWhere: string; filterParams: unknown[] } {
   // 所有筛选都在 owner-scoped 投影中完成；事实表 JOIN 只负责返回规范化 DTO 所需字段。
   const conditions = ["idx.user_id = ?"];
   const params: unknown[] = [userId];
@@ -308,12 +283,20 @@ function subscriptionListBaseQuery(
   appendPaymentMethodCondition(conditions, params, query.paymentMethod);
   appendPaymentTypeCondition(conditions, query.paymentType);
   appendTagCondition(conditions, params, query.tag);
+  if (query.calendarRange) {
+    // 日历读取 owner 范围内的周期候选，旧扣费日仍可预测未来；普通列表日期筛选继续只匹配保存的日期。
+    const { from, to } = query.calendarRange;
+    conditions.push("idx.status IN ('active', 'trial')");
+    conditions.push("NOT (idx.billing_cycle = 'one-time' AND COALESCE(idx.one_time_term_count, 0) <= 0)");
+    conditions.push("((idx.billing_cycle <> 'one-time' AND idx.next_billing_date <= ?) OR (idx.next_billing_date >= ? AND idx.next_billing_date <= ?) OR (idx.status = 'trial' AND idx.trial_end_date >= ? AND idx.trial_end_date <= ?))");
+    params.push(to, from, to, from, to);
+  }
   if (query.nextBillingFrom || query.nextBillingTo) {
     // D1 用 NULL 表示长期买断服务期；日期范围覆盖续费日和试用结束日，固定服务期仍正常参与。
     conditions.push("NOT (idx.billing_cycle = 'one-time' AND COALESCE(idx.one_time_term_count, 0) <= 0)");
   }
   if (query.nextBillingFrom && query.nextBillingTo) {
-    // 日历按客户可见的下一事件取数；试用结束日可能早于 next_billing_date，不能只筛后者。
+    // 保存的日期范围同时包含试用结束日，保持列表筛选的既有含义。
     conditions.push("((idx.next_billing_date >= ? AND idx.next_billing_date <= ?) OR (idx.status = 'trial' AND idx.trial_end_date >= ? AND idx.trial_end_date <= ?))");
     params.push(query.nextBillingFrom, query.nextBillingTo, query.nextBillingFrom, query.nextBillingTo);
   } else if (query.nextBillingFrom) {
@@ -349,7 +332,10 @@ function subscriptionListBaseQuery(
     END) = ?`);
     params.push(today, query.status);
   }
-  return { where: conditions.join(" AND "), params };
+  return {
+    where: conditions.join(" AND "), params,
+    filterWhere: conditions.slice(1).join(" AND ") || "1 = 1", filterParams: params.slice(1),
+  };
 }
 
 function appendSqlJsonArrayCondition(conditions: string[], params: unknown[], column: string, values: readonly string[] | undefined): void {

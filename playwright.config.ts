@@ -155,6 +155,8 @@ export default defineConfig({
     },
     {
       name: performanceMode ? "performance-mobile" : "mobile",
+      // mobile-* 通配符也会命中独立线上巡检；后者使用自己的账号、限流与配置入口，不能混入本地旅程。
+      testIgnore: ["**/cloudflare-check/**"],
       dependencies: [performanceMode ? "performance-seed" : "setup"],
       repeatEach: performanceMode && !profilingMode ? performanceSampleCount : 1,
       testMatch: previousDist ? ["**/version-upgrade.spec.ts"] : performanceMode ? ["**/performance.spec.ts", ...(profilingMode ? [] : ["**/performance-vitals.spec.ts"])] : ["**/mobile-*.spec.ts", "**/lunar-calendar.spec.ts", "**/route-progress.spec.ts", "**/report-exchange-rates.spec.ts"],

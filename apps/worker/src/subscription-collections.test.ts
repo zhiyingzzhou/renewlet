@@ -7,6 +7,7 @@ import {
   subscriptionsIndexPayloadSchema,
 } from "@renewlet/shared/schemas/subscriptions";
 import { readSuccessData } from "./api-test-helpers";
+import { toResponse } from "./http";
 import {
   readSubscriptionAnalytics,
   readSubscriptionCalendar,
@@ -20,7 +21,7 @@ import type { Env } from "./types";
 import { dateOnlyInZone } from "./subscription-renewal";
 
 const mocks = vi.hoisted(() => ({
-  getSettings: vi.fn(),
+  getSettingsTimezone: vi.fn(),
   getSubscription: vi.fn(),
   listSubscriptions: vi.fn(),
   listBoundedSubscriptionsForQuery: vi.fn(),
@@ -36,11 +37,11 @@ vi.mock("./subscription-facets", () => ({
   readSubscriptionFacetsForUser: mocks.readSubscriptionFacetsForUser,
 }));
 vi.mock("./db", () => ({
-  getSettings: mocks.getSettings,
+  getSettingsTimezone: mocks.getSettingsTimezone,
   getSubscription: mocks.getSubscription,
   listSubscriptions: mocks.listSubscriptions,
   toApiSubscription: (row: unknown) => row,
-  toApiSubscriptionCollectionItem: (row: unknown) => row,
+  subscriptionCollectionItemInput: (row: unknown) => row,
 }));
 
 const USER_ID = "usr_collection_owner";
@@ -73,7 +74,7 @@ describe("Cloudflare subscription collection routes", () => {
       user: { id: USER_ID },
       session: { id: "ses" },
     });
-    mocks.getSettings.mockResolvedValue({ timezone: "UTC" });
+    mocks.getSettingsTimezone.mockResolvedValue("UTC");
     mocks.getSubscription.mockResolvedValue(completeSubscription);
     mocks.listSubscriptions.mockResolvedValue([completeSubscription]);
     mocks.listBoundedSubscriptionsForQuery.mockResolvedValue({
@@ -116,10 +117,24 @@ describe("Cloudflare subscription collection routes", () => {
     expect(mocks.listBoundedSubscriptionsForQuery).toHaveBeenCalledWith(
       env,
       USER_ID,
-      { nextBillingFrom: "2026-01-01", nextBillingTo: "2026-01-31" },
+      { calendarRange: { from: "2026-01-01", to: "2026-01-31" } },
       "2026-09-14",
       subscriptionCollectionContractFixture.collectionLimit,
     );
+  });
+
+  it.each([
+    "from=2026-12-31&to=2026-12-01",
+    "from=2026-02-30&to=2026-03-01",
+    "from=2026-12-01",
+    "from=2026-12-01&from=2026-12-02&to=2026-12-31",
+    "from=2026-12-01&to=2026-12-31&unknown=true",
+  ])("returns a 400 envelope before querying invalid calendar input: %s", async (query) => {
+    const response = await readSubscriptionCalendar(request(`/api/app/subscriptions/calendar?${query}`), envFixture())
+      .catch((error: unknown) => toResponse(error));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: { code: "INVALID_QUERY" } });
+    expect(mocks.listBoundedSubscriptionsForQuery).not.toHaveBeenCalled();
   });
 
   it("accepts total 5000 and rejects 5001 for every complete collection route", async () => {
@@ -150,6 +165,14 @@ describe("Cloudflare subscription collection routes", () => {
         details: { limit: subscriptionCollectionContractFixture.collectionLimit },
       });
     }
+  });
+
+  it.each([readSubscriptionAnalytics, readSubscriptionCalendar])("still rejects malformed normalized rows at the response boundary", async (read) => {
+    mocks.listBoundedSubscriptionsForQuery.mockResolvedValueOnce({
+      rows: [{ ...recurringCollectionItem, nextBillingDate: "2026-02-30" }], total: 1, exceeded: false,
+    });
+    await expect(read(request("/api/app/subscriptions/calendar?from=2026-01-01&to=2026-12-31"), envFixture()))
+      .rejects.toThrow();
   });
 
   it("rejects index pagination and calendar query parameters outside the shared contract", async () => {

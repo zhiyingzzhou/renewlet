@@ -39,6 +39,8 @@ type subscriptionListQuery struct {
 	PaymentType     string
 	NextBillingFrom string
 	NextBillingTo   string
+	CalendarFrom    string
+	CalendarTo      string
 	Pinned          *bool
 	PublicHidden    *bool
 	ReminderMode    string
@@ -288,12 +290,22 @@ func subscriptionProjectionBaseQuery(userID string, query subscriptionListQuery)
 	appendSQLPaymentMethodCondition(&base, query.PaymentMethods)
 	appendSQLPaymentTypeCondition(&base, query.PaymentType)
 	appendSQLTagCondition(&base, query.Tags)
+	if query.CalendarFrom != "" && query.CalendarTo != "" {
+		// 日历读取 owner 范围内的周期候选，旧扣费日仍可预测未来；不改变普通列表保存日期的筛选含义。
+		base.conditions = append(base.conditions,
+			"idx.status IN ('active', 'trial')",
+			"NOT (idx.billing_cycle = 'one-time' AND COALESCE(idx.one_time_term_count, 0) <= 0)",
+			"((idx.billing_cycle <> 'one-time' AND idx.next_billing_date <= {:calendarTo}) OR (idx.next_billing_date >= {:calendarFrom} AND idx.next_billing_date <= {:calendarTo}) OR (idx.status = 'trial' AND idx.trial_end_date >= {:calendarFrom} AND idx.trial_end_date <= {:calendarTo}))",
+		)
+		base.params["calendarFrom"] = query.CalendarFrom
+		base.params["calendarTo"] = query.CalendarTo
+	}
 	if query.NextBillingFrom != "" || query.NextBillingTo != "" {
 		// PocketBase 投影用 0 表示长期买断服务期；日期范围覆盖续费日和试用结束日，不能把购买日占位值算进去。
 		base.conditions = append(base.conditions, "NOT (idx.billing_cycle = 'one-time' AND COALESCE(idx.one_time_term_count, 0) <= 0)")
 	}
 	if query.NextBillingFrom != "" && query.NextBillingTo != "" {
-		// 日历按客户可见的下一事件取数；试用结束日可能早于 next_billing_date，不能只筛后者。
+		// 保存的日期范围同时包含试用结束日，保持列表筛选的既有含义。
 		base.conditions = append(base.conditions, "((idx.next_billing_date >= {:nextBillingFrom} AND idx.next_billing_date <= {:nextBillingTo}) OR (idx.status = 'trial' AND idx.trial_end_date >= {:nextBillingFrom} AND idx.trial_end_date <= {:nextBillingTo}))")
 		base.params["nextBillingFrom"] = query.NextBillingFrom
 		base.params["nextBillingTo"] = query.NextBillingTo

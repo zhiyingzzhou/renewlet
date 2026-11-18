@@ -23,7 +23,7 @@ RUN pnpm --filter @renewlet/client build
 # 预压缩只属于 Go 嵌入式运行面；Cloudflare 构建继续交给平台自动协商，避免上传无用 sidecar。
 RUN pnpm --filter @renewlet/client build:docker-sidecars
 
-FROM --platform=$BUILDPLATFORM golang:1.27.3-alpine3.24 AS server-builder
+FROM --platform=$BUILDPLATFORM golang:1.27.4-alpine3.24 AS server-builder
 
 # Release workflow 和 Docker buildx 会注入这些元数据；页面内更新和版本弹窗都依赖 ldflags 中的值。
 ARG TARGETOS=linux

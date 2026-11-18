@@ -10,6 +10,8 @@ allowBuilds:
 # 安全约束只覆盖漏洞版本范围，其余传递依赖通过 pnpm update 正常更新锁文件。
 overrides:
   "browserslist@<=4.28.6": "^4.28.7"
+  # GHSA-fc5q-39xc-vjpf：上游尚未发布修复版，构建工具暂用已核对来源的 4.x 分支；正式修复发布后移除此项。
+  "picomatch@>=4.0.0 <=4.0.7": "npm:@ryotsu/picomatch@4.0.7-a"
   "undici@>=7.18.0 <7.30.1": "7.30.1"
   "undici@>=8.0.0 <8.12.2": "8.12.4"
 # pnpm 11 默认拦截发布不足 24 小时的包；只对已审计的精确版本放行，不关闭全仓冷却期。
@@ -29,3 +31,5 @@ minimumReleaseAgeExclude:
   # 工程优化已审计并指定Vite版本；仅放行该版本的发布冷却期，不扩大后续升级范围。
   - vite@8.3.4
   - undici@8.12.4
+  - miniflare@5.20261117.0-beta
+  - wrangler@4.164.0

@@ -12,6 +12,20 @@ test.beforeEach(async ({ page }) => {
 
 test.afterEach(() => mock.restoreAll());
 
+test("forecast readiness waits for the data region while controls remain usable", async ({ page }) => {
+  const states = await page.evaluate(() => {
+    document.body.innerHTML = '<main><div data-testid="dashboard-stat-grid">Summary</div><button aria-label="下个月">Next</button><section aria-busy="true">Calculating</section></main>';
+    const scenarios = ["dashboard", "calendar", "calendar-switch"];
+    const pending = scenarios.map((name) => window.__renewletPerformance.hasContent(name));
+    document.querySelector("section")?.setAttribute("aria-busy", "false");
+    const complete = scenarios.map((name) => window.__renewletPerformance.hasContent(name));
+    document.querySelector("main")?.setAttribute("aria-busy", "true");
+    const fetching = scenarios.map((name) => window.__renewletPerformance.hasContent(name));
+    return { pending, complete, fetching };
+  });
+  expect(states).toEqual({ pending: [false, false, false], complete: [true, true, true], fetching: [false, false, false] });
+});
+
 test("SPA timing starts on click rather than hover or automation preparation", async ({ page }) => {
   await page.evaluate(() => {
     document.body.innerHTML = '<header><a href="/next">Navigate</a></header><div data-testid="dashboard-stat-grid">Content</div>';

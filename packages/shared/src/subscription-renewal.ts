@@ -120,6 +120,92 @@ export function advanceBillingDate(
   return firstCycleDateAfter(anchor, input, threshold, strict);
 }
 
+export interface BillingDateWindow {
+  from: DateOnly;
+  to: DateOnly;
+  start: Temporal.PlainDate;
+  end: Temporal.PlainDate;
+}
+
+export interface BillingDateSummary {
+  count: number;
+  firstDate: DateOnly | null;
+  lastDate: DateOnly | null;
+}
+
+/** 同一预测窗口由所有订阅复用；窗口与锚点各解析一次，不在排序或每个事件上重复验证日期。 */
+export function prepareBillingDateWindow(from: string, to = "9999-12-31"): BillingDateWindow {
+  return { from: from as DateOnly, to: to as DateOnly, start: parseProjectionDate(from), end: parseProjectionDate(to) };
+}
+
+function parseProjectionDate(value: string): Temporal.PlainDate {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error(`Invalid date-only value: ${value}`);
+  return Temporal.PlainDate.from(value);
+}
+
+/** 固定当前快照的锚点，既可展开事件，也可直接求窗口内次数；保存的首期独立于自动锚点。 */
+export function createBillingDateProjector(input: AdvanceBillingDateInput) {
+  const original = input.nextBillingDate as DateOnly;
+  const originalDate = parseProjectionDate(original);
+  const period = input.billingCycle === "one-time" ? null
+    : billingPeriod(input.billingCycle, input.customDays, input.customCycleUnit);
+  let anchor: Temporal.PlainDate | undefined;
+  const getAnchor = () => anchor ??= input.autoCalculateNextBillingDate
+    ? parseProjectionDate(input.startDate ?? "") : originalDate;
+  const datesByCycle = new Map<number, DateOnly>();
+  const dateAt = (cycle: number) => {
+    let date = datesByCycle.get(cycle);
+    if (date === undefined) {
+      date = addPeriod(getAnchor(), period!, cycle).toString() as DateOnly;
+      datesByCycle.set(cycle, date);
+    }
+    return date;
+  };
+  const distance = (date: Temporal.PlainDate) => period!.unit === "day"
+    ? getAnchor().until(date, { largestUnit: "day" }).days
+    : (date.year - getAnchor().year) * 12 + date.month - getAnchor().month;
+
+  function bounds(window: BillingDateWindow) {
+    if (!period || window.from > window.to || original > window.to) return null;
+    const includeOriginal = original >= window.from;
+    if (original === window.to) return { includeOriginal, first: 1, last: 0 };
+    // 先限制期数再做日历加法，超长周期不会对窗口外日期求值；月末始终从原锚点夹取。
+    let last = Math.floor(distance(window.end) / period.count);
+    let first = Math.max(1, Math.floor(distance(original > window.from ? originalDate : window.start) / period.count));
+    if (first <= last) {
+      const candidate = dateAt(first);
+      if (candidate < window.from || candidate <= original) first += 1;
+    }
+    if (first <= last && dateAt(last) > window.to) last -= 1;
+    return { includeOriginal, first, last };
+  }
+
+  return {
+    *dates(window: BillingDateWindow): Generator<DateOnly> {
+      const range = bounds(window);
+      if (!range) return;
+      if (range.includeOriginal) yield original;
+      for (let cycle = range.first; cycle <= range.last; cycle += 1) yield dateAt(cycle);
+    },
+    summarize(window: BillingDateWindow): BillingDateSummary {
+      const range = bounds(window);
+      if (!range) return { count: 0, firstDate: null, lastDate: null };
+      const projectedCount = Math.max(0, range.last - range.first + 1);
+      return {
+        count: Number(range.includeOriginal) + projectedCount,
+        firstDate: range.includeOriginal ? original : projectedCount ? dateAt(range.first) : null,
+        lastDate: projectedCount ? dateAt(range.last) : range.includeOriginal ? original : null,
+      };
+    },
+  };
+}
+
+/** 按快照展开有效 date-only 范围内的账期；无结束日期时调用方按数量停止，不产生续订副作用。 */
+export function* iterateBillingDates(input: AdvanceBillingDateInput, from: string, to?: string): Generator<DateOnly> {
+  if (input.billingCycle === "one-time") return;
+  yield* createBillingDateProjector(input).dates(prepareBillingDateWindow(from, to));
+}
+
 /** 表单自动推算下一账单日的纯函数入口，保持 date-only 输出，不引入浏览器时区。 */
 export function calculateNextBillingDate(
   startDate: string,

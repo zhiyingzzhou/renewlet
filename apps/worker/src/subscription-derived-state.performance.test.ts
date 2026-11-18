@@ -74,7 +74,7 @@ describe.each(subscriptionPerformanceFixture.scenarios)("Worker derived mutation
 describe.each(subscriptionPerformanceFixture.scenarios.flatMap((scenario) =>
   (["none", "mixed", "all"] as const).map((balanceMode) => ({ ...scenario, balanceMode })),
 ))("Worker collection read budget: $size / $balanceMode", (scenario) => {
-  it("uses one private-page query, two bounded-index queries, and indexed fact lookups", async () => {
+  it("uses one query for either collection shape and indexed fact lookups", async () => {
     const db = openSubscriptionReadDatabase();
     try {
       const { final } = buildSubscriptionPerformanceScenario(scenario.size);
@@ -100,7 +100,9 @@ describe.each(subscriptionPerformanceFixture.scenarios.flatMap((scenario) =>
         const boundedPage = await listBoundedSubscriptionsForQuery(env, "subscription-perf-owner", {}, "2026-08-17", scenario.size);
         expect(boundedPage).toMatchObject({ total: scenario.expected.total, exceeded: false });
         expect(boundedPage.rows).toHaveLength(scenario.expected.total);
-        expect(database.readQueries).toBe(scenario.operationBudget.listReadQueries);
+        expect(database.readQueries).toBe(1);
+        expect(boundedPage.rows.slice(0, privatePage.rows.length).map((row) => row.id))
+          .toEqual(privatePage.rows.map((row) => row.id));
         console.info(`[perf] worker_sqlite ${JSON.stringify({ size: scenario.size, balanceMode: scenario.balanceMode, sample, operation: "bounded-index", reads: database.reads })}`);
       }
 
@@ -158,6 +160,18 @@ describe("Worker collection SQL limits", () => {
 
       expect(page).toEqual({ rows: [], total: 5_001, exceeded: true });
       expect(database.readQueries).toBe(1);
+      let factValuesRead = 0;
+      db.function("observe_fact", (value) => { if (value !== null) factValuesRead += 1; return value; });
+      const plan = boundedSubscriptionCollectionQueryPlan("subscription-perf-owner", {}, "2026-08-17", 5_001);
+      db.prepare(plan.sql.replace("sub.price", "observe_fact(sub.price)"))
+        .all(...(plan.params as SQLInputValue[]));
+      expect(factValuesRead).toBe(0);
+      const allowed = boundedSubscriptionCollectionQueryPlan("subscription-perf-owner", {}, "2026-08-17", 5_002);
+      db.prepare(allowed.sql.replace("sub.price", "observe_fact(sub.price)"))
+        .all(...(allowed.params as SQLInputValue[]));
+      expect(factValuesRead).toBe(5_001);
+      expect(await listBoundedSubscriptionsForQuery(env, "another-owner", {}, "2026-08-17", 5_000))
+        .toEqual({ rows: [], total: 0, exceeded: false });
     } finally {
       db.close();
     }
@@ -185,7 +199,7 @@ describe("Worker collection SQL limits", () => {
       const page = subscriptionCollectionPageQueryPlan("subscription-perf-owner", filters, "2026-08-17", 51);
       const bounded = boundedSubscriptionCollectionQueryPlan("subscription-perf-owner", filters, "2026-08-17", 5_001);
 
-      for (const plan of [page, bounded.preflight, bounded.facts]) {
+      for (const plan of [page, bounded]) {
         expect(plan.params.length).toBeLessThan(100);
         expect(() => db.prepare(plan.sql).all(...(plan.params as SQLInputValue[]))).not.toThrow();
       }

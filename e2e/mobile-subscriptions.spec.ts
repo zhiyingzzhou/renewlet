@@ -276,7 +276,7 @@ test("mobile upcoming renewal amounts stay single-line and right-aligned without
       });
     }
     await page.reload();
-    const upcomingSection = page.getByRole("heading", { name: "即将续费/到期", exact: true }).last().locator("..");
+    const upcomingSection = page.getByRole("heading", { name: "即将续费/到期", exact: true }).last().locator("../..");
     const amounts: Locator[] = [];
     for (const record of upcomingRecords) {
       const name = upcomingSection.getByText(record.name, { exact: true });

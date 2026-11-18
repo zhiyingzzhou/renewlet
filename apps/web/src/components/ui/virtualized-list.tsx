@@ -10,6 +10,7 @@
  */
 import { useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
+  defaultRangeExtractor,
   measureElement as measureVirtualElement,
   observeElementRect,
   useVirtualizer,
@@ -36,6 +37,7 @@ type VirtualizedListProps = {
   overscan?: number;
   gap?: number;
   testId?: string;
+  retainKeyboardFocus?: boolean;
 };
 
 function getInitialRect() {
@@ -83,9 +85,20 @@ export function VirtualizedList({
   overscan = 4,
   gap = 0,
   testId,
+  retainKeyboardFocus = false,
 }: VirtualizedListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollMargin, setScrollMargin] = useState(0);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const rangeExtractor = useCallback((range: Parameters<typeof defaultRangeExtractor>[0]) => {
+    const indexes = defaultRangeExtractor(range);
+    if (!retainKeyboardFocus || focusedIndex === null) return indexes;
+    // 焦点行及前后两行（含日期标题）必须留在 DOM，Tab/Shift+Tab 才能跨虚拟窗口继续，滚动也不会卸载当前焦点。
+    for (const index of [focusedIndex - 2, focusedIndex - 1, focusedIndex, focusedIndex + 1, focusedIndex + 2]) {
+      if (index >= 0 && index < range.count) indexes.push(index);
+    }
+    return [...new Set(indexes)].sort((a, b) => a - b);
+  }, [focusedIndex, retainKeyboardFocus]);
   const initialRect = useMemo(() => getInitialRect(), []);
   const estimateSize = useCallback(() => estimatedItemSize, [estimatedItemSize]);
   const measureElementWithFallback = useCallback(
@@ -161,6 +174,7 @@ export function VirtualizedList({
     observeElementRect: observeRectWithFallback,
     overscan,
     scrollMargin,
+    rangeExtractor,
   });
 
   return (
@@ -168,6 +182,13 @@ export function VirtualizedList({
       ref={containerRef}
       className={cn("relative w-full", className)}
       data-testid={testId}
+      onFocusCapture={retainKeyboardFocus ? (event) => {
+        const row = event.target.closest<HTMLElement>("[data-index]");
+        if (row) setFocusedIndex(Number(row.dataset["index"]));
+      } : undefined}
+      onBlurCapture={retainKeyboardFocus ? (event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setFocusedIndex(null);
+      } : undefined}
       style={{ height: `${virtualizer.getTotalSize()}px` }}
     >
       {virtualizer.getVirtualItems().map((virtualItem) => {

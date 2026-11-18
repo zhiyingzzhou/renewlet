@@ -12,8 +12,10 @@ vi.mock("@/i18n/I18nProvider", () => ({
         "upcoming.noneNextTwoWeeks": "暂无未来续费或到期",
         "upcoming.todayShort": "今",
         "upcoming.daysShort": "{days}天",
-        "upcoming.renewsOn": "{date} 续费",
-        "upcoming.expiresOn": "{date} 到期",
+        "upcoming.eventOn": "{date} · {event}",
+        "upcoming.renewal": "续费",
+        "upcoming.projectedRenewal": "预计续费",
+        "upcoming.trial": "试用结束",
         "subscription.card.trialEnds": "试用期将于 {date} 结束",
         "subscription.oneTimeMode.term": "固定服务期",
         "subscription.renewal.auto": "自动续订",
@@ -83,11 +85,14 @@ describe("UpcomingRenewals", () => {
       />,
     );
 
-    expect(screen.getByText("Netflix")).toBeInTheDocument();
+    expect(screen.getAllByText("Netflix")).toHaveLength(5);
     expect(screen.getByText("30天")).toBeInTheDocument();
-    expect(screen.getByText("USD 10")).toBeInTheDocument();
-    expect(screen.getByText("手动续订")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "按此订阅的到期或续费日期发送提醒。" })).toBeInTheDocument();
+    expect(screen.getAllByText("USD 10")).toHaveLength(5);
+    expect(screen.getByText("7月15日 · 续费")).toBeInTheDocument();
+    expect(screen.getByText("2027/7/15 · 预计续费")).toBeInTheDocument();
+    expect(screen.getByText("2030/7/15 · 预计续费")).toBeInTheDocument();
+    expect(screen.getAllByText("手动续订")).toHaveLength(5);
+    expect(screen.getAllByRole("img", { name: "按此订阅的到期或续费日期发送提醒。" })).toHaveLength(5);
   });
 
   it("shares compact columns while only the subscription name can shrink and wrap", () => {
@@ -98,7 +103,7 @@ describe("UpcomingRenewals", () => {
       />,
     );
 
-    const name = screen.getByText("AnExtremelyLongSubscriptionNameWithoutNaturalBreaks");
+    const name = screen.getAllByText("AnExtremelyLongSubscriptionNameWithoutNaturalBreaks")[0]!;
     const details = name.parentElement;
     const row = details?.parentElement;
     const list = row?.parentElement;
@@ -106,7 +111,7 @@ describe("UpcomingRenewals", () => {
       throw new Error("Expected the upcoming renewal content to render inside its shared grid row.");
     }
 
-    const price = screen.getByText("USD 10");
+    const price = screen.getAllByText("USD 10")[0]!;
     expect(list).toHaveClass("grid", "min-w-0", "grid-cols-[max-content_minmax(0,1fr)_max-content]");
     expect(row).toHaveClass("col-span-3", "grid", "min-w-0", "grid-cols-subgrid");
     expect(row.children[1]).toBe(details);
@@ -124,7 +129,7 @@ describe("UpcomingRenewals", () => {
       />,
     );
 
-    expect(screen.getByText("Netflix")).toBeInTheDocument();
+    expect(screen.getAllByText("Netflix")).toHaveLength(5);
     expect(screen.queryByRole("img", { name: "按此订阅的到期或续费日期发送提醒。" })).not.toBeInTheDocument();
   });
 
@@ -137,8 +142,9 @@ describe("UpcomingRenewals", () => {
     );
 
     expect(screen.getByText("5天")).toBeInTheDocument();
-    expect(screen.getByText("试用期将于 6月20日 结束")).toBeInTheDocument();
-    expect(screen.getByText("自动续订")).toBeInTheDocument();
+    expect(screen.getByText("6月20日 · 试用结束")).toBeInTheDocument();
+    expect(screen.getAllByText("自动续订")).toHaveLength(5);
+    expect(screen.getByText("—")).toBeInTheDocument();
   });
 
   it("keeps the compact five-item presentation limit after sorting all events", () => {

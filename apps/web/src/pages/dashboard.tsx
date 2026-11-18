@@ -258,7 +258,12 @@ export default function Index() {
 
             {/* 即将续费 */}
             <div className="rounded-xl border border-border bg-card p-6 shadow-card">
-              <h3 className="mb-4 text-lg font-semibold text-foreground">{t("dashboard.upcomingRenewals")}</h3>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-lg font-semibold text-foreground">{t("dashboard.upcomingRenewals")}</h3>
+                <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                  <Link href="/calendar">{t("upcoming.viewCalendar")}</Link>
+                </Button>
+              </div>
               <UpcomingRenewals
                 subscriptions={subscriptions}
                 today={today}

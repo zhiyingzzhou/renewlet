@@ -8,7 +8,7 @@ import { getSubscriptionCalendarRange } from "@/modules/subscriptions/domain/sub
 export async function preload(queryClient: QueryClient): Promise<void> {
   const { from, to } = getSubscriptionCalendarRange(new Date());
   await Promise.all([
-    queryClient.prefetchQuery(subscriptionCalendarQueryOptions(from, to)),
+    queryClient.prefetchQuery(subscriptionCalendarQueryOptions(from, to, queryClient)),
     queryClient.prefetchQuery(subscriptionFacetsQueryOptions()),
   ]);
 }

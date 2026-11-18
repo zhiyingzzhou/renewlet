@@ -76,19 +76,23 @@ const LOCAL_TIME_RE = /^([01]\d|2[0-3]):([0-5]\d)$/;
 export function isValidDateOnly(value: string): boolean {
   // date-only 是跨 Go/PocketBase、D1 和前端的契约；禁止带时区的 ISO datetime 混入。
   if (!DATE_ONLY_RE.test(value)) return false;
-  const timestamp = Date.parse(`${value}T00:00:00Z`);
-  if (Number.isNaN(timestamp)) return false;
-  return new Date(timestamp).toISOString().slice(0, 10) === value;
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 export function isValidLocalTime(value: string): boolean {
   return LOCAL_TIME_RE.test(value);
 }
 
+// 同一次设置解析会多次校验同一时区；只记住最近通过 Intl 的名称，不缓存账号设置或增长内存。
+let validTimeZone: string | undefined;
+
 export function isValidTimeZone(value: string): boolean {
+  if (value === validTimeZone) return true;
   try {
     // Intl 是浏览器、Node 和 Workers 都可用的 IANA timezone 共同裁判，避免维护本地时区表。
-    new Intl.DateTimeFormat("en-US", { timeZone: value }).format(new Date());
+    new Intl.DateTimeFormat("en-US", { timeZone: value });
+    validTimeZone = value;
     return true;
   } catch {
     return false;

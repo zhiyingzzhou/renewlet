@@ -197,7 +197,8 @@ test("short desktop calendar and long detail keep their scroll and footer geomet
 
 test("desktop subscription create, tag filter, edit, and reload persistence", async ({ page }, testInfo) => {
   const plainName = uniqueE2EName(testInfo, "Plain Cloud");
-  const taggedName = uniqueE2EName(testInfo, "Tagged Cloud");
+  // 同日预测事件可能超过两条；固定名称排序让本用例的详情入口可见，“更多”弹层由日历专项覆盖。
+  const taggedName = uniqueE2EName(testInfo, "000-Tagged Cloud");
   const editedName = `${taggedName} Pro`;
   const tagName = uniqueE2EName(testInfo, "work");
 
@@ -254,14 +255,8 @@ test("desktop subscription create, tag filter, edit, and reload persistence", as
 
   await page.goto("/calendar");
   await expect(page.getByRole("heading", { name: "续费/到期日历", level: 1 })).toBeVisible();
-  for (let attempts = 0; attempts < 3; attempts += 1) {
-    const calendarEntry = page.getByRole("button", { name: editedName, exact: true }).first();
-    if (await calendarEntry.isVisible().catch(() => false)) {
-      await calendarEntry.click();
-      break;
-    }
-    await page.getByRole("button", { name: "下个月" }).click();
-  }
+  // 表单选择的就是本月日期；等待事件查询完成，不能在加载空隙把月份连续翻走。
+  await page.getByRole("button", { name: editedName, exact: true }).first().click();
   const detailDialog = page.getByRole("dialog", { name: editedName });
   await expect(detailDialog).toBeVisible();
   await expectActionNearContainerBottom(

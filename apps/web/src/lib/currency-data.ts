@@ -100,6 +100,9 @@ export interface IntlCurrencyIdentityLabel {
   label: string;
 }
 
+// 只复用内置货币的 Intl 结果；账号配置的顺序、禁用状态和自定义标签仍由调用方读取。
+const currencyIdentities = new Map<string, IntlCurrencyIdentityLabel>();
+
 function isCurrencySymbolCode(symbol: string, code: string): boolean {
   return symbol.trim().toUpperCase() === code;
 }
@@ -113,11 +116,14 @@ function formatCurrencyIdentityLabel(code: string, name: string, symbol: string)
 
 export function getIntlCurrencyIdentityLabel(currency: string, locale: Locale = DEFAULT_LOCALE): IntlCurrencyIdentityLabel {
   const code = currency.toUpperCase();
+  const key = `${locale}:${code}`;
+  const cached = currencyIdentities.get(key);
+  if (cached) return cached;
   const name = getIntlCurrencyName(code, locale);
   const symbol = getIntlCurrencySymbol(code, locale);
-  const label = formatCurrencyIdentityLabel(code, name, symbol);
-
-  return { code, name, symbol, label };
+  const identity = { code, name, symbol, label: formatCurrencyIdentityLabel(code, name, symbol) };
+  if (isSupportedExchangeRateCurrency(code)) currencyIdentities.set(key, identity);
+  return identity;
 }
 
 export function getIntlCurrencyOptionLabel(currency: string, locale: Locale = DEFAULT_LOCALE): string {

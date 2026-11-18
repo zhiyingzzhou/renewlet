@@ -122,18 +122,15 @@ describe("subscription collection query plan", () => {
   it("bounds index preflight at 5001 before reading facts", () => {
     const plan = boundedSubscriptionCollectionQueryPlan(USER_ID, { status: "active" }, "2026-08-18", 5_001);
 
-    expect(plan.preflight.sql).toContain("SELECT 1 FROM subscription_list_index AS idx");
-    expect(plan.preflight.sql).toContain("LIMIT ?");
-    expect(plan.preflight.sql).not.toContain("JOIN subscriptions");
-    expect(plan.preflight.params).toEqual([USER_ID, "2026-08-18", "active", 5_001]);
-    expect(plan.facts.sql).toContain("INNER JOIN subscriptions AS sub");
-    expect(plan.facts.params).toEqual(["2026-08-18", USER_ID, "2026-08-18", "active", 5_001]);
+    expect(plan.sql).toContain("totals AS MATERIALIZED");
+    expect(plan.sql).toContain("idx.user_id = CASE WHEN totals.collection_total < ? THEN ? END");
+    expect(plan.sql).toContain("LEFT JOIN subscriptions AS sub ON sub.user_id = idx.user_id AND sub.id = idx.subscription_id");
+    expect(plan.params).toEqual([USER_ID, "2026-08-18", "active", 5_001, 5_001, USER_ID, "2026-08-18", "active", "2026-08-18"]);
   });
 
   it("ranks the complete public collection before limiting fact reads", () => {
     const plan = publicStatusSubscriptionQueryPlan(USER_ID, "2026-08-18", 501);
 
-    expect(plan.sql).toContain("page AS MATERIALIZED");
     expect(plan.sql.indexOf("LIMIT ?")).toBeLessThan(plan.sql.indexOf("INNER JOIN subscriptions AS sub"));
     expect(plan.params).toEqual(["2026-08-18", USER_ID, 501]);
   });

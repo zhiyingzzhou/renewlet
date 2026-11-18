@@ -7,7 +7,9 @@
  * 注意： 弹窗中的金额、周期和状态标签必须继续复用 subscription domain 常量，避免日历视图口径分叉。
  */
 import type { SubscriptionCollectionItem } from '@/types/subscription';
-import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
+import { CalendarEventList } from './calendar-event-list';
 import { CalendarDays } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { MobileBottomDrawerContent, MobileDrawerRoot } from '@/components/ui/mobile-drawer';
@@ -19,6 +21,7 @@ import { getEffectiveSubscriptionStatus } from '@/modules/subscriptions/domain/s
 import { SubscriptionLogo } from '@/components/subscription-logo';
 import { formatBillingCycleLabel } from '@/lib/subscription-billing';
 import { SubscriptionStatusBadge } from '@/components/subscription-status-badge';
+import { subscriptionEventLabelKey, type UpcomingSubscriptionEvent } from '@/modules/subscriptions/domain/upcoming-reminders';
 
 const DEFAULT_LOGO_FALLBACK_COLOR = "hsl(var(--primary))";
 
@@ -34,7 +37,7 @@ function CalendarSubscriptionLogo({ subscription, categoryColor, className }: Ca
 
 export interface CalendarDaySubscriptions {
   date: Date;
-  subscriptions: SubscriptionCollectionItem[];
+  events: UpcomingSubscriptionEvent[];
 }
 
 export interface DaySubscriptionsDialogProps {
@@ -45,33 +48,43 @@ export interface DaySubscriptionsDialogProps {
   onPrefetchSubscription: (id: string) => void;
   today: DateOnly | string;
   isMobile?: boolean | undefined;
+  pending?: boolean;
 }
 
 interface DaySubscriptionsListProps {
-  subscriptions: SubscriptionCollectionItem[];
+  pending: boolean;
+  events: UpcomingSubscriptionEvent[];
   onSelectSubscription: (subscription: SubscriptionCollectionItem) => void;
   onPrefetchSubscription: (id: string) => void;
   today: DateOnly | string;
 }
 
-function DaySubscriptionsList({ subscriptions, onSelectSubscription, onPrefetchSubscription, today }: DaySubscriptionsListProps) {
+function DaySubscriptionsList({ events, onSelectSubscription, onPrefetchSubscription, today, pending }: DaySubscriptionsListProps) {
   const { config } = useCustomConfigState();
-  const { locale, formatCurrency } = useI18n();
+  const { t, locale, formatCurrency } = useI18n();
+
+  if (pending) return <div aria-busy="true"><Skeleton className="h-48 w-full rounded-lg" /></div>;
+
+  if (events.length === 0) {
+    return <p role="status" className="py-4 text-center text-sm text-muted-foreground">{t("common.noData")}</p>;
+  }
 
   return (
-    <div className="grid min-w-0 max-w-full grid-cols-1 gap-2" data-testid="calendar-day-subscription-list">
-      {subscriptions.map((sub) => {
+    <CalendarEventList count={events.length} getItemKey={(index) => events[index]!.id}
+      estimatedItemSize={82} testId="calendar-day-subscription-list" renderItem={(index) => {
+        const event = events[index]!;
+        const sub = event.subscription;
         // 当天列表和详情弹窗保持同一口径，确保旧过期数据不会在同一个日历流程里显示成不同状态。
         const effectiveStatus = getEffectiveSubscriptionStatus(sub, today);
 
         return (
           <button
-            key={sub.id}
+            key={event.id}
             type="button"
             onClick={() => onSelectSubscription(sub)}
             onPointerEnter={() => onPrefetchSubscription(sub.id)}
             onFocus={() => onPrefetchSubscription(sub.id)}
-            className="group flex min-w-0 w-full max-w-full items-center gap-3 rounded-lg border border-border bg-secondary/30 p-3 text-left transition-colors hover:bg-secondary/60"
+            className={cn("group flex min-w-0 w-full max-w-full items-center gap-3 rounded-lg border border-border bg-secondary/30 p-3 text-left transition-colors hover:bg-secondary/60", index < events.length - 1 && "mb-2")}
             data-testid="calendar-day-subscription-item"
           >
             <CalendarSubscriptionLogo
@@ -84,19 +97,19 @@ function DaySubscriptionsList({ subscriptions, onSelectSubscription, onPrefetchS
             <div className="min-w-0 flex-1">
               <TruncatedTooltipText as="p" text={sub.name} className="text-sm font-medium" />
               <p className="text-xs text-muted-foreground">
-                {formatBillingCycleLabel(sub, locale)}
+                {t(subscriptionEventLabelKey(event))} · {formatBillingCycleLabel(sub, locale)}
               </p>
             </div>
             <div className="min-w-0 max-w-[42%] shrink-0 text-right">
               <p className="truncate font-semibold text-foreground">
-                {formatCurrency(sub.price, sub.currency)}
+                {event.amount === null ? "—" : formatCurrency(event.amount, sub.currency)}
               </p>
               <SubscriptionStatusBadge status={effectiveStatus} className="max-w-full truncate" />
             </div>
           </button>
         );
-      })}
-    </div>
+      }}
+    />
   );
 }
 
@@ -108,6 +121,7 @@ export function DaySubscriptionsDialog({
   onPrefetchSubscription,
   today,
   isMobile = false,
+  pending = false,
 }: DaySubscriptionsDialogProps) {
   const { t, formatDateTime } = useI18n();
   const selectedDayLabel = selectedDaySubs
@@ -133,7 +147,8 @@ export function DaySubscriptionsDialog({
           >
               {selectedDaySubs && (
                 <DaySubscriptionsList
-                  subscriptions={selectedDaySubs.subscriptions}
+                  pending={pending}
+                  events={selectedDaySubs.events}
                   onSelectSubscription={onSelectSubscription}
                   onPrefetchSubscription={onPrefetchSubscription}
                   today={today}
@@ -163,7 +178,8 @@ export function DaySubscriptionsDialog({
         {selectedDaySubs && (
           <div className="grid max-h-[calc(var(--app-viewport-height)-8rem)] gap-2 overflow-y-auto">
             <DaySubscriptionsList
-              subscriptions={selectedDaySubs.subscriptions}
+              pending={pending}
+              events={selectedDaySubs.events}
               onSelectSubscription={onSelectSubscription}
               onPrefetchSubscription={onPrefetchSubscription}
               today={today}

@@ -105,9 +105,11 @@ export async function installPerformanceProbe(page: Page, fixtureDay: string) {
         const box = element.getBoundingClientRect();
         return box.width > 0 && box.height > 0 && getComputedStyle(element).visibility === "visible";
     };
+    // 分片预测保留页头与翻月按钮；必须等数据区提交，不能把可操作的外壳计为内容就绪。
+    const contentBusy = document.querySelector('main[aria-busy="true"], main [aria-busy="true"]') !== null;
     let ready = false;
     switch (name) {
-      case "dashboard": ready = visible(document.querySelector('[data-testid="dashboard-stat-grid"]')); break;
+      case "dashboard": ready = visible(document.querySelector('[data-testid="dashboard-stat-grid"]')) && !contentBusy; break;
       case "subscriptions": ready = visible(document.querySelector('[data-testid="subscription-card"]')); break;
       case "statistics": {
         const charts = [...document.querySelectorAll('[data-testid="statistics-chart-frame"]')];
@@ -115,7 +117,7 @@ export async function installPerformanceProbe(page: Page, fixtureDay: string) {
         break;
       }
       case "calendar":
-      case "calendar-switch": ready = visible(document.querySelector('button[aria-label="下个月"]')) && document.querySelector("main")?.getAttribute("aria-busy") !== "true"; break;
+      case "calendar-switch": ready = visible(document.querySelector('button[aria-label="下个月"]')) && !contentBusy; break;
       // 保留远端语言已提交这一条件；不把初始 auto 草稿或页面外壳算成就绪。
       case "settings": ready = visible(document.querySelector('[data-testid="settings-section-content"]')) && document.querySelector("#locale")?.textContent?.trim() === "中文"; break;
       case "search": {

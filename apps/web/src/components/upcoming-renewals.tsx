@@ -1,20 +1,11 @@
-/**
- * 即将续费/到期列表（侧边栏卡片）。
- *
- * 规则：
- * - 展示所有有效订阅的下一项未来事件，提醒关闭不影响可见性
- * - 试用结束日早于正式续费日时展示试用事件
- * - 展示续费或一次性固定服务期到期
- * - 最多展示 5 条
- */
-
 import { useMemo } from 'react';
 import type { SubscriptionCollectionItem } from '@/types/subscription';
 import { cn } from '@/lib/utils';
-import { formatDateOnlyMonthDay, type DateOnly } from '@/lib/time/date-only';
+import { formatDateOnlyForDisplay, formatDateOnlyMonthDay, type DateOnly } from '@/lib/time/date-only';
 import { useI18n } from '@/i18n/I18nProvider';
-import { buildUpcomingSubscriptionEvents } from '@/modules/subscriptions/domain/upcoming-reminders';
-import { Badge } from '@/components/ui/badge';
+import { upcomingSubscriptionEventsTask, subscriptionEventLabelKey } from '@/modules/subscriptions/domain/upcoming-reminders';
+import { useForecastTask } from '@/modules/subscriptions/application/use-forecast-task';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Bell } from 'lucide-react';
 
 interface UpcomingRenewalsProps {
@@ -27,10 +18,13 @@ interface UpcomingRenewalsProps {
 /** 即将续费列表组件。 */
 export function UpcomingRenewals({ subscriptions, today }: UpcomingRenewalsProps) {
   const { t, formatCurrency, locale } = useI18n();
-  const upcoming = useMemo(
-    () => buildUpcomingSubscriptionEvents({ subscriptions, today }).slice(0, 5),
+  const factory = useMemo(
+    () => () => upcomingSubscriptionEventsTask({ subscriptions, today }),
     [subscriptions, today],
   );
+
+  const upcoming = useForecastTask(factory);
+  if (!upcoming) return <div aria-busy="true"><Skeleton className="h-64 w-full rounded-lg" /></div>;
 
   if (upcoming.length === 0) {
     return (
@@ -39,18 +33,18 @@ export function UpcomingRenewals({ subscriptions, today }: UpcomingRenewalsProps
   }
 
   return (
-    <ul className="grid min-w-0 grid-cols-[max-content_minmax(0,1fr)_max-content] gap-3">
+    <ul className="@container/upcoming grid min-w-0 grid-cols-[max-content_minmax(0,1fr)_max-content] gap-3">
       {upcoming.map((item) => (
         <li
-          key={item.subscriptionId}
+          key={item.id}
           className={cn(
-            "col-span-3 grid min-w-0 grid-cols-subgrid items-center rounded-lg border border-border bg-secondary/50 p-4 transition-colors hover:bg-secondary",
-            item.daysUntil <= 3 && "border-warning/30 bg-warning/5"
+            "col-span-3 grid min-w-0 grid-cols-subgrid items-center rounded-lg border border-border bg-secondary/50 p-4 transition-colors hover:bg-secondary @max-xs/upcoming:grid-cols-[max-content_minmax(0,1fr)] @max-xs/upcoming:gap-x-3 @max-xs/upcoming:gap-y-1",
+            !item.projected && item.daysUntil <= 3 && "border-warning/30 bg-warning/5"
           )}
         >
           <div className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold",
-            item.daysUntil <= 3
+            "flex h-10 min-w-10 items-center justify-center rounded-lg px-1 text-sm font-bold",
+            !item.projected && item.daysUntil <= 3
               ? "bg-warning/20 text-warning"
               : "bg-muted text-muted-foreground"
           )}>
@@ -59,23 +53,21 @@ export function UpcomingRenewals({ subscriptions, today }: UpcomingRenewalsProps
           <div className="min-w-0">
             <p className="min-w-0 wrap-break-word font-medium text-foreground">{item.subscription.name}</p>
             <p className="text-xs text-muted-foreground">
-              {item.kind === "trial"
-                ? t("subscription.card.trialEnds", { date: formatDateOnlyMonthDay(item.dueDate, locale) })
-                : item.kind === "expiry"
-                  ? t("upcoming.expiresOn", { date: formatDateOnlyMonthDay(item.dueDate, locale) })
-                  : t("upcoming.renewsOn", { date: formatDateOnlyMonthDay(item.dueDate, locale) })}
+              {t("upcoming.eventOn", {
+                date: item.dueDate.slice(0, 4) === today.slice(0, 4)
+                  ? formatDateOnlyMonthDay(item.dueDate, locale)
+                  : formatDateOnlyForDisplay(item.dueDate, locale),
+                event: t(subscriptionEventLabelKey(item)),
+              })}
             </p>
-            <div className="mt-1 flex flex-wrap items-center gap-1.5">
-              <Badge
-                variant={(item.kind === "renewal" || item.kind === "trial") && item.subscription.autoRenew ? "outline" : "secondary"}
-                className="px-1.5 py-0 text-[11px]"
-              >
+            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="min-w-0 wrap-break-word">
                 {item.kind === "expiry"
                   ? t("subscription.oneTimeMode.term")
                   : item.subscription.autoRenew
                     ? t("subscription.renewal.auto")
                     : t("subscription.renewal.manual")}
-              </Badge>
+              </span>
               {item.reminderEnabled ? (
                 <span
                   role="img"
@@ -88,8 +80,8 @@ export function UpcomingRenewals({ subscriptions, today }: UpcomingRenewalsProps
               ) : null}
             </div>
           </div>
-          <p className="whitespace-nowrap text-right font-semibold tabular-nums text-foreground">
-            {formatCurrency(item.subscription.price, item.subscription.currency)}
+          <p className="whitespace-nowrap text-right font-semibold tabular-nums text-foreground @max-xs/upcoming:col-span-2">
+            {item.amount === null ? "—" : formatCurrency(item.amount, item.subscription.currency)}
           </p>
         </li>
       ))}
