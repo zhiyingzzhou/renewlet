@@ -26,6 +26,8 @@ import {
 } from "@/hooks/subscription-query-cache";
 import { invalidateNotificationOverview } from "@/hooks/notification-query-cache";
 
+import { calendarInitialSnapshot } from "./subscription-calendar-cache";
+
 const SUBSCRIPTIONS_STALE_TIME_MS = 60_000;
 const INITIAL_SUBSCRIPTION_CURSOR: string | null = null;
 
@@ -67,8 +69,10 @@ export function subscriptionAnalyticsQueryOptions() {
   });
 }
 
-export function subscriptionCalendarQueryOptions(from: DateOnly, to: DateOnly) {
+export function subscriptionCalendarQueryOptions(from: DateOnly, to: DateOnly, queryClient: QueryClient) {
+  const initial = calendarInitialSnapshot(queryClient, from, to);
   return queryOptions({
+    ...(initial ? { initialData: initial.data, initialDataUpdatedAt: initial.updatedAt } : {}),
     queryKey: subscriptionQueryKeys.calendar(from, to),
     queryFn: ({ signal }) => subscriptionService.calendar(from, to, signal),
     // 月份范围属于缓存身份；换月沿用上一份成功结果，避免参数切换退回首次加载态。
@@ -125,7 +129,8 @@ export function useSubscriptionAnalytics() {
 }
 
 export function useSubscriptionCalendar(from: DateOnly, to: DateOnly) {
-  return useQuery(subscriptionCalendarQueryOptions(from, to));
+  const queryClient = useQueryClient();
+  return useQuery(subscriptionCalendarQueryOptions(from, to, queryClient));
 }
 
 export function useSubscriptionFacets() {

@@ -36,7 +36,7 @@ function subscription(overrides: SubscriptionOverrides): Subscription {
     startDate: assertDateOnly("2026-01-01"),
     nextBillingDate: assertDateOnly("2026-01-05"),
     autoRenew: false,
-    autoCalculateNextBillingDate: true,
+    autoCalculateNextBillingDate: false,
     trialEndDate: undefined,
     website: undefined,
     notes: undefined,
@@ -309,6 +309,7 @@ describe("subscription statistics models", () => {
       now: new Date("2026-01-01T00:00:00.000Z"),
     });
 
+    expect(model.thisMonthDue).toBe(12);
     expect(model.trendData[0]).toEqual(expect.objectContaining({ cashflow: 12 }));
     expect(model.trendData[0]?.cashflowItems).toEqual([
       {
@@ -452,6 +453,24 @@ describe("subscription statistics models", () => {
     });
 
     expect(model.trendData[0]?.monthKey).toBe("2026-07");
+  });
+
+  it("forecasts only remaining charges and keeps the month-end anchor after overdue periods", () => {
+    const model = buildStatisticsModel({
+      subscriptions: [
+        subscription({ id: "weekly", price: "3", billingCycle: "weekly", nextBillingDate: assertDateOnly("2026-01-01"), reminderDays: -2 }),
+        subscription({ id: "month-end", price: "10", startDate: assertDateOnly("2026-01-31"), nextBillingDate: assertDateOnly("2026-02-28"), autoCalculateNextBillingDate: true }),
+        subscription({ id: "stopped", price: "100", status: "expired" }),
+      ],
+      config: DEFAULT_CUSTOM_CONFIG, monthlyBudget: "0", defaultCurrency: "USD", convert,
+      today: assertDateOnly("2026-03-15"),
+    });
+    expect(model.thisMonthDue).toBe(16);
+    expect(model.trendData[0]?.cashflowItems).toEqual([
+      expect.objectContaining({ subscriptionId: "month-end", firstDate: "2026-03-31", occurrenceCount: 1, amount: 10 }),
+      expect.objectContaining({ subscriptionId: "weekly", firstDate: "2026-03-19", lastDate: "2026-03-26", occurrenceCount: 2, amount: 6 }),
+    ]);
+    expect(model.trendData[1]?.cashflowItems).toContainEqual(expect.objectContaining({ subscriptionId: "month-end", firstDate: "2026-04-30" }));
   });
 
   it("dashboard upcoming count reuses the reminder window model", () => {

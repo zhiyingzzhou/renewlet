@@ -188,25 +188,14 @@ function uniq(values: readonly (string | undefined | null)[]): string[] {
 export function createCurrencyKeywords(
   currency: Pick<CurrencyOption, "value" | "labels" | "region">,
 ): string[] {
-  const zhLabel = localizedLabel(currency.labels, "zh-CN");
-  const enLabel = localizedLabel(currency.labels, "en-US");
-  const zhIdentity = getIntlCurrencyIdentityLabel(currency.value, "zh-CN");
-  const enIdentity = getIntlCurrencyIdentityLabel(currency.value, "en-US");
-  const otherIdentities = SUPPORTED_LOCALES
-    .filter((locale) => locale !== "zh-CN" && locale !== "en-US")
-    .map((locale) => getIntlCurrencyIdentityLabel(currency.value, locale));
   return uniq([
     currency.value,
-    currency.value.toLowerCase(),
-    zhLabel,
-    enLabel,
-    zhIdentity.label,
-    enIdentity.label,
-    zhIdentity.symbol,
-    enIdentity.symbol,
-    zhIdentity.name,
-    enIdentity.name,
-    ...otherIdentities.flatMap((identity) => [identity.label, identity.symbol, identity.name]),
+    localizedLabel(currency.labels, "zh-CN"),
+    localizedLabel(currency.labels, "en-US"),
+    ...SUPPORTED_LOCALES.flatMap((locale) => {
+      const { label, symbol, name } = getIntlCurrencyIdentityLabel(currency.value, locale);
+      return [label, symbol, name];
+    }),
     ...CURRENCY_REGION_KEYWORDS[currency.region],
   ]);
 }

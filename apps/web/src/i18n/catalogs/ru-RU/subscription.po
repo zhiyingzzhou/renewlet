@@ -49,7 +49,7 @@ msgid "statistics.subscriptionCountHint"
 msgstr "(количество подписок)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:719
+#: src/i18n/descriptors/subscription.ts:725
 msgid "calendar.renewalCount"
 msgstr "{count, plural, one {# событие} few {# события} many {# событий} other {# события}}"
 
@@ -99,7 +99,12 @@ msgid "statistics.trendItemSingleDate"
 msgstr "{date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:729
+#: src/i18n/descriptors/subscription.ts:710
+msgid "upcoming.eventOn"
+msgstr "{date} · {event}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:735
 msgid "calendar.dayRenewalCount"
 msgstr "{date}: {count, plural, one {# событие} few {# события} many {# событий} other {# события}}"
 
@@ -109,17 +114,7 @@ msgid "statistics.trendItemSingleDateCount"
 msgstr "{date} ×{count}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:711
-msgid "upcoming.expiresOn"
-msgstr "Истекает {date}"
-
-#. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:710
-msgid "upcoming.renewsOn"
-msgstr "Продление {date}"
-
-#. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:728
+#: src/i18n/descriptors/subscription.ts:734
 msgid "calendar.dayRenewals"
 msgstr "Продления и окончания {date}"
 
@@ -209,7 +204,7 @@ msgid "subscriptions.advanced.previewOverflow"
 msgstr "+{count}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:717
+#: src/i18n/descriptors/subscription.ts:723
 msgid "calendar.more"
 msgstr "Ещё {count}"
 
@@ -494,7 +489,7 @@ msgid "subscription.field.oneTimeMode"
 msgstr "Тип разовой покупки"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:714
+#: src/i18n/descriptors/subscription.ts:720
 msgid "calendar.previousMonth"
 msgstr "Предыдущий месяц"
 
@@ -504,7 +499,7 @@ msgid "subscription.costSharing.memberJoinedDate"
 msgstr "Дата начала участия"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:715
+#: src/i18n/descriptors/subscription.ts:721
 msgid "calendar.nextMonth"
 msgstr "Следующий месяц"
 
@@ -514,7 +509,7 @@ msgid "subscription.detail.nextBilling"
 msgstr "Следующее списание"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:724
+#: src/i18n/descriptors/subscription.ts:730
 msgid "calendar.nextBilling"
 msgstr "Следующее списание"
 
@@ -627,6 +622,11 @@ msgstr "Продление сегодня"
 #: src/i18n/descriptors/subscription.ts:382
 msgid "subscriptions.advanced.chipFrom"
 msgstr "С {date}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:663
+msgid "statistics.trendCashflowHint"
+msgstr "Прогноз списаний на 12 месяцев начиная с сегодняшнего дня по текущим периодам и ценам."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:199
@@ -889,7 +889,7 @@ msgid "subscriptions.csv.category"
 msgstr "Категория"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:723
+#: src/i18n/descriptors/subscription.ts:729
 msgid "calendar.category"
 msgstr "Категория"
 
@@ -1544,7 +1544,7 @@ msgid "subscriptions.csv.startDate"
 msgstr "Дата начала"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:725
+#: src/i18n/descriptors/subscription.ts:731
 msgid "calendar.startDate"
 msgstr "Дата начала"
 
@@ -1554,7 +1554,7 @@ msgid "subscription.field.startDateOptional"
 msgstr "Дата начала (необязательно)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:734
+#: src/i18n/descriptors/subscription.ts:740
 msgid "subscription.addToCalendarFeedUrlCopyFailedDescription"
 msgstr "Копирование в один клик недоступно. Выделите и скопируйте URL вручную."
 
@@ -1784,11 +1784,6 @@ msgid "statistics.personalCostBasis"
 msgstr "Учитывать мою долю"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:663
-msgid "statistics.trendCashflowHint"
-msgstr "Сумма ожидаемых списаний по датам продления или окончания за следующие 12 месяцев."
-
-#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:189
 msgid "subscription.reminderEnabledHelp"
 msgstr "Напоминания отправляются по дате окончания или продления этой подписки."
@@ -1834,7 +1829,7 @@ msgid "subscription.detail.reminder"
 msgstr "Напоминание"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:726
+#: src/i18n/descriptors/subscription.ts:732
 msgid "calendar.reminder"
 msgstr "Напоминание"
 
@@ -2194,6 +2189,11 @@ msgid "aiRecognition.draftFilterWarning"
 msgstr "С предупреждениями"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:716
+msgid "upcoming.expiry"
+msgstr "Окончание срока"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:95
 msgid "subscription.field.name"
 msgstr "Название сервиса"
@@ -2254,24 +2254,24 @@ msgid "import.wallosGuideValueLocalLogo"
 msgstr "Локальный файл"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:718
+#: src/i18n/descriptors/subscription.ts:724
 msgid "calendar.monthlyRenewals"
 msgstr "Событий в этом месяце"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:653
-msgid "statistics.thisMonthDue"
-msgstr "К оплате в этом месяце"
-
-#. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:731
+#: src/i18n/descriptors/subscription.ts:737
 msgid "calendar.mobileAgendaEmpty"
 msgstr "В этом месяце нет продлений и окончаний"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:730
+#: src/i18n/descriptors/subscription.ts:736
 msgid "calendar.mobileAgendaTitle"
 msgstr "Продления и окончания в этом месяце"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:653
+msgid "statistics.thisMonthDue"
+msgstr "Ожидаемые списания за месяц"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:38
@@ -2304,7 +2304,7 @@ msgid "subscription.detailDescription"
 msgstr "Цена, период, даты, теги, сайт и заметки для {name}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:721
+#: src/i18n/descriptors/subscription.ts:727
 msgid "calendar.detailDescription"
 msgstr "Цена, период, даты, теги, сайт и заметки для {name}."
 
@@ -2329,7 +2329,12 @@ msgid "import.wallosGuideExpand"
 msgstr "Сравнить форматы"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:713
+#: src/i18n/descriptors/subscription.ts:717
+msgid "upcoming.viewCalendar"
+msgstr "Открыть календарь"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:719
 msgid "calendar.pageSubtitle"
 msgstr "Продления подписок, окончания срочных подписок и ожидаемые расходы за месяц"
 
@@ -2339,7 +2344,7 @@ msgid "subscription.detailFallbackDescription"
 msgstr "Сведения о подписке."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:722
+#: src/i18n/descriptors/subscription.ts:728
 msgid "calendar.detailFallbackDescription"
 msgstr "Сведения о подписке."
 
@@ -2394,12 +2399,12 @@ msgid "aiRecognition.imageOptimizing"
 msgstr "Оптимизация"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:735
+#: src/i18n/descriptors/subscription.ts:741
 msgid "subscription.addToCalendarFeedStatusLoading"
 msgstr "Загрузка статуса ссылки на календарь…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:739
+#: src/i18n/descriptors/subscription.ts:745
 msgid "subscription.addToCalendarOpenSystemLoading"
 msgstr "Открытие системного календаря…"
 
@@ -2419,12 +2424,12 @@ msgid "import.loading"
 msgstr "Разбор и подготовка предпросмотра…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:738
+#: src/i18n/descriptors/subscription.ts:744
 msgid "subscription.addToCalendarFeedStatusRetrying"
 msgstr "Обновление…"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:740
+#: src/i18n/descriptors/subscription.ts:746
 msgid "subscription.addToCalendarRegenerateLoading"
 msgstr "Пересоздание…"
 
@@ -2619,7 +2624,7 @@ msgid "aiRecognition.imageDropDescription"
 msgstr "Нажмите, перетащите или вставьте сюда изображения PNG, JPG или WebP — не более {count, plural, one {# файла} few {# файлов} many {# файлов} other {# файла}}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:716
+#: src/i18n/descriptors/subscription.ts:722
 msgid "calendar.viewDetails"
 msgstr "Нажмите, чтобы посмотреть подробности"
 
@@ -2884,7 +2889,12 @@ msgid "subscription.renew.mode"
 msgstr "Способ продления"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:712
+#: src/i18n/descriptors/subscription.ts:711
+msgid "upcoming.renewal"
+msgstr "Продление"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:718
 msgid "calendar.title"
 msgstr "Календарь продлений и окончаний"
 
@@ -3114,7 +3124,7 @@ msgid "subscription.addToCalendarRevokeFailed"
 msgstr "Не удалось отозвать ссылку на календарь"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:736
+#: src/i18n/descriptors/subscription.ts:742
 msgid "subscription.addToCalendarFeedStatusFailed"
 msgstr "Не удалось загрузить статус ссылки на календарь"
 
@@ -3134,7 +3144,7 @@ msgid "subscription.balanceEnabled"
 msgstr "Учитывать баланс счёта"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:727
+#: src/i18n/descriptors/subscription.ts:733
 msgid "calendar.visit"
 msgstr "Перейти"
 
@@ -3167,6 +3177,16 @@ msgstr "Пробный период заканчивается {date}"
 #: src/i18n/descriptors/subscription.ts:251
 msgid "subscription.detail.trialEndDate"
 msgstr "Конец пробного периода"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:714
+msgid "upcoming.trial"
+msgstr "Конец пробного периода"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:715
+msgid "upcoming.trialCharge"
+msgstr "Конец пробного периода и продление"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:690
@@ -3439,7 +3459,7 @@ msgid "import.stepSelect"
 msgstr "Выбор"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:732
+#: src/i18n/descriptors/subscription.ts:738
 msgid "calendar.dayListDescription"
 msgstr "Выберите подписку для просмотра на {date}."
 
@@ -3454,7 +3474,7 @@ msgid "aiRecognition.noSelectedDraft"
 msgstr "Выберите черновик, чтобы изменить все поля."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:733
+#: src/i18n/descriptors/subscription.ts:739
 msgid "calendar.dayListFallbackDescription"
 msgstr "Выберите подписку для просмотра на этот день."
 
@@ -3529,7 +3549,7 @@ msgid "subscription.repeatReminderWindow"
 msgstr "Диапазон повторов"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:737
+#: src/i18n/descriptors/subscription.ts:743
 msgid "subscription.addToCalendarFeedStatusRetry"
 msgstr "Обновить"
 
@@ -3644,9 +3664,19 @@ msgid "import.previewTitle"
 msgstr "Результат предпросмотра"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:720
+#: src/i18n/descriptors/subscription.ts:712
+msgid "upcoming.projected"
+msgstr "Прогноз"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:726
 msgid "calendar.estimatedSpend"
 msgstr "Ожидаемые расходы"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:713
+msgid "upcoming.projectedRenewal"
+msgstr "Ожидаемое продление"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:197

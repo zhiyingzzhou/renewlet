@@ -123,8 +123,8 @@ func handleSubscriptionsCalendar(app core.App, e *core.RequestEvent) error {
 		return e.BadRequestError(serverText(requestLocale(e.Request), "common.invalidRequestParameters"), nil)
 	}
 	return writeSubscriptionCollection(app, e, subscriptionListQuery{
-		NextBillingFrom: from,
-		NextBillingTo:   to,
+		CalendarFrom: from,
+		CalendarTo:   to,
 	})
 }
 

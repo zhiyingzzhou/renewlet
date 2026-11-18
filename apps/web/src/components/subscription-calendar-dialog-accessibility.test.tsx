@@ -1,5 +1,5 @@
 // 日历弹窗可访问性测试保护移动/桌面详情弹层的标题、焦点和订阅入口语义。
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { assertDateOnly } from "@/lib/time/date-only";
@@ -28,7 +28,7 @@ vi.mock("@/contexts/CustomConfigContext", () => ({
 
 vi.mock("@/hooks/use-exchange-rates", () => ({
   useExchangeRates: () => ({
-    convert: (amount: number) => amount,
+    convert: (amount: number | string) => Number(amount),
     getCurrencySymbol: (currency: string) => (currency === "USD" ? "$" : currency),
     loading: false,
     sourceDate: "2026-08-01",
@@ -97,7 +97,7 @@ function subscription(overrides: SubscriptionOverrides = {}): Subscription {
   };
 }
 
-function renderCalendar(subscriptions: Subscription[]) {
+function renderCalendar(subscriptions: Subscription[], currentMonth = new Date(2026, 4, 1), onCurrentMonthChange = vi.fn()) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
@@ -109,8 +109,8 @@ function renderCalendar(subscriptions: Subscription[]) {
       <TooltipProvider delayDuration={0}>
         <SubscriptionCalendar
           subscriptions={subscriptions}
-          currentMonth={new Date(2026, 4, 1)}
-          onCurrentMonthChange={vi.fn()}
+          currentMonth={currentMonth}
+          onCurrentMonthChange={onCurrentMonthChange}
         />
       </TooltipProvider>
     </QueryClientProvider>,
@@ -136,8 +136,27 @@ function mockMobileCalendar(matches = true) {
 
 describe("SubscriptionCalendar dialogs", () => {
   afterEach(() => {
+    vi.restoreAllMocks();
     vi.useRealTimers();
     Reflect.deleteProperty(window, "matchMedia");
+  });
+
+  it("keeps month navigation usable while a large calendar is being calculated", () => {
+    vi.useFakeTimers();
+    let elapsed = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => elapsed += 4);
+    vi.setSystemTime(new Date("2026-05-14T12:00:00Z"));
+    const onCurrentMonthChange = vi.fn();
+    renderCalendar(
+      Array.from({ length: 101 }, (_, index) => subscription({ id: `sub-${index}` })),
+      new Date(2026, 4, 1),
+      onCurrentMonthChange,
+    );
+
+    const nextMonth = screen.getByRole("button", { name: "下个月" });
+    expect(nextMonth.closest("[aria-busy]")).toHaveAttribute("aria-busy", "true");
+    fireEvent.click(nextMonth);
+    expect(onCurrentMonthChange).toHaveBeenCalledWith(new Date(2026, 5, 1));
   });
 
   it("describes the subscription detail dialog", async () => {
@@ -300,8 +319,8 @@ describe("SubscriptionCalendar dialogs", () => {
     expect(screen.getByText("本月续费/到期明细")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Aws/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Netflix/ })).toBeInTheDocument();
-    expect(screen.getByText("每月")).toBeInTheDocument();
-    expect(screen.getByText("每年")).toBeInTheDocument();
+    expect(screen.getByText("续费 · 每月")).toBeInTheDocument();
+    expect(screen.getByText("续费 · 每年")).toBeInTheDocument();
     expect(screen.queryByText("Paused Cloud")).not.toBeInTheDocument();
     expect(screen.queryByText("Cancelled Tool")).not.toBeInTheDocument();
   });
@@ -381,5 +400,57 @@ describe("SubscriptionCalendar dialogs", () => {
     expect(screen.getByRole("dialog", { name: /Aws/ })).toHaveAccessibleDescription(
       "查看 Aws 的价格、周期、日期、标签、网站和备注。",
     );
+  });
+
+  it("opens future projected events using the real subscription detail dates", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-14T12:00:00Z"));
+    renderCalendar([subscription()], new Date(2026, 6, 1));
+
+    fireEvent.click(screen.getByRole("button", { name: /Aws.*预计/ }));
+    const dialog = screen.getByRole("dialog", { name: /Aws/ });
+    expect(within(dialog).getAllByText("2026年5月14日").length).toBeGreaterThan(0);
+    expect(within(dialog).queryByText("2026年7月14日")).not.toBeInTheDocument();
+  });
+
+  it("counts weekly occurrences and a coincident trial charge without charging for expiry", () => {
+    mockMobileCalendar();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-14T12:00:00Z"));
+    renderCalendar([
+      subscription({ id: "weekly", name: "Weekly", billingCycle: "weekly", price: "10", status: "trial", trialEndDate: assertDateOnly("2026-05-14") }),
+      subscription({ id: "fixed", name: "Fixed", billingCycle: "one-time", oneTimeTermCount: 1, oneTimeTermUnit: "month", nextBillingDate: assertDateOnly("2026-05-20"), price: "100" }),
+      subscription({ id: "trial", name: "Trial", status: "trial", trialEndDate: assertDateOnly("2026-05-16"), nextBillingDate: assertDateOnly("2026-06-14") }),
+    ]);
+    expect(screen.getAllByRole("button", { name: /Weekly/ })).toHaveLength(3);
+    expect(screen.getByText("试用结束并续费 · 每周")).toBeInTheDocument();
+    expect(screen.getAllByText("预计续费 · 每周")).toHaveLength(2);
+    expect(screen.getAllByText("—")).toHaveLength(2);
+    expect(screen.getAllByText("5 个事件")).toHaveLength(2);
+    expect(screen.getByText("$30 USD")).toBeInTheDocument();
+  });
+
+  it("keeps an open day list in sync with edited and stopped subscriptions", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-14T12:00:00Z"));
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const items = [subscription(), subscription({ id: "other", name: "Other" }), subscription({ id: "stopped", name: "Stopped" })];
+    for (const item of items) queryClient.setQueryData(subscriptionQueryKeys.detail(item.id), item);
+    const view = (subscriptions: Subscription[]) => (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <SubscriptionCalendar subscriptions={subscriptions} currentMonth={new Date(2026, 4, 1)} onCurrentMonthChange={vi.fn()} />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+    const { rerender } = render(view(items));
+    fireEvent.click(screen.getByRole("button", { name: "+1 更多" }));
+
+    rerender(view([subscription({ name: "Updated", price: "99" }), items[1]!, subscription({ id: "stopped", name: "Stopped", status: "paused" })]));
+    const dialog = screen.getByRole("dialog", { name: "5月14日 续费/到期" });
+    expect(within(dialog).getByRole("button", { name: /Updated/ })).toHaveTextContent("$99 USD");
+    expect(within(dialog).queryByText("Stopped")).not.toBeInTheDocument();
+    rerender(view([]));
+    expect(within(dialog).getByRole("status")).toHaveTextContent("暂无数据");
   });
 });

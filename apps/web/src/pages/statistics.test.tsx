@@ -7,15 +7,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DEFAULT_CUSTOM_CONFIG } from "@/types/config";
 import type { Subscription, SubscriptionCollectionItem } from "@/types/subscription";
 import { assertDateOnly } from "@/lib/time/date-only";
-import {
-  subscriptionCycleFixture,
-  type SubscriptionFixtureOverrides,
-} from "@/test/subscription-fixtures";
+import { subscription, toSubscriptionDetail } from "./statistics-test-fixtures";
 import { moneyToNumber } from "@renewlet/shared/money";
 import Statistics from "./statistics";
-
-type SubscriptionBaseFixture = Omit<SubscriptionCollectionItem, "billingCycle" | "customDays" | "customCycleUnit" | "oneTimeTermCount" | "oneTimeTermUnit">;
-type SubscriptionOverrides = SubscriptionFixtureOverrides<SubscriptionCollectionItem>;
 
 interface MockSubscriptionAnalyticsResult {
   data: SubscriptionCollectionItem[] | undefined;
@@ -63,7 +57,9 @@ vi.mock("@/components/header", () => ({
 
 vi.mock("@/components/statistics-charts-loader", async () => {
   const module = await vi.importActual<typeof import("@/components/statistics-charts")>("@/components/statistics-charts");
-  return { DeferredStatisticsCharts: module.StatisticsCharts };
+  return { DeferredStatisticsCharts: ({ data }: { data: React.ComponentProps<typeof module.StatisticsCharts> | undefined }) => (
+    data ? <module.StatisticsCharts {...data} /> : null
+  ) };
 });
 
 vi.mock("@/components/edit-subscription-dialog", () => ({
@@ -196,46 +192,6 @@ vi.mock("@/modules/subscriptions/application/use-subscription-crud", () => ({
   useSubscriptionCrud: mocks.useSubscriptionCrud,
 }));
 
-function subscription(overrides: SubscriptionOverrides): SubscriptionCollectionItem {
-  const base: SubscriptionBaseFixture = {
-    id: "sub",
-    name: "Service",
-    logo: undefined,
-    price: "10",
-    currency: "CNY",
-    category: "productivity",
-    status: "active",
-    paymentMethod: undefined,
-    startDate: assertDateOnly("2026-01-01"),
-    nextBillingDate: assertDateOnly("2099-01-05"),
-    autoRenew: false,
-    autoCalculateNextBillingDate: true,
-    trialEndDate: undefined,
-    reminderDays: 3,
-    pinned: false,
-    publicHidden: false,
-  };
-
-  return {
-    ...base,
-    ...overrides,
-    ...subscriptionCycleFixture(overrides),
-  };
-}
-
-function toSubscriptionDetail(item: SubscriptionCollectionItem): Subscription {
-  return {
-    ...item,
-    website: undefined,
-    notes: undefined,
-    tags: [],
-    repeatReminderEnabled: false,
-    repeatReminderInterval: "1h",
-    repeatReminderWindow: "72h",
-    extra: {},
-  };
-}
-
 function renderStatistics() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
@@ -332,6 +288,25 @@ describe("Statistics page", () => {
     expect(skeleton).toHaveAttribute("aria-hidden", "true");
     expect(skeleton.querySelectorAll(".rounded-xl.border.border-border.bg-card")).toHaveLength(16);
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("keeps the cost basis switch usable while a large model is being calculated", () => {
+    vi.useFakeTimers();
+    let elapsed = 0;
+    const clock = vi.spyOn(performance, "now").mockImplementation(() => elapsed += 4);
+    try {
+      const data = Array.from({ length: 101 }, (_, index) => subscription({ id: `sub-${index}` }));
+      mocks.useSubscriptionAnalytics.mockReturnValue({ data, isPending: false });
+      const { unmount } = renderStatistics();
+      const costBasis = screen.getByRole("switch", { name: "按我的份额统计" });
+      expect(screen.getByRole("main")).toHaveAttribute("aria-busy", "true");
+      fireEvent.click(costBasis);
+      expect(costBasis).toBeChecked();
+      unmount();
+    } finally {
+      clock.mockRestore();
+      vi.useRealTimers();
+    }
   });
 
   it("shows a recoverable error instead of empty analytics", async () => {
@@ -507,7 +482,7 @@ describe("Statistics page", () => {
     renderStatistics();
 
     expect(screen.getByRole("heading", { name: "费用走势" })).toBeInTheDocument();
-    expect(screen.getByText("按未来 12 个月到期或续费日汇总预计扣费。")).toBeInTheDocument();
+    expect(screen.getByText("从今天起按当前周期和金额预测未来 12 个月扣费。")).toBeInTheDocument();
     const cashflowBarChartProps = mocks.rechartsBarChartProps.find((props) => props["title"] === "未来扣费");
     expect(cashflowBarChartProps).toEqual(
       expect.objectContaining({
@@ -653,6 +628,7 @@ describe("Statistics page", () => {
         price: String(10 + index),
         billingCycle: "monthly",
         nextBillingDate: assertDateOnly("2026-01-10"),
+        autoCalculateNextBillingDate: false,
       })),
       isPending: false,
     });

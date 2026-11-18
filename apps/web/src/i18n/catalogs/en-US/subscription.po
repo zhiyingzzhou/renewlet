@@ -49,7 +49,7 @@ msgid "statistics.subscriptionCountHint"
 msgstr "(subscription count)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:719
+#: src/i18n/descriptors/subscription.ts:725
 msgid "calendar.renewalCount"
 msgstr "{count} events"
 
@@ -99,7 +99,12 @@ msgid "statistics.trendItemSingleDate"
 msgstr "{date}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:729
+#: src/i18n/descriptors/subscription.ts:710
+msgid "upcoming.eventOn"
+msgstr "{date} · {event}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:735
 msgid "calendar.dayRenewalCount"
 msgstr "{date}: {count, plural, one {# event} other {# events}}"
 
@@ -109,17 +114,7 @@ msgid "statistics.trendItemSingleDateCount"
 msgstr "{date} ×{count}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:711
-msgid "upcoming.expiresOn"
-msgstr "Expires {date}"
-
-#. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:710
-msgid "upcoming.renewsOn"
-msgstr "Renews {date}"
-
-#. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:728
+#: src/i18n/descriptors/subscription.ts:734
 msgid "calendar.dayRenewals"
 msgstr "{date} renewals / expiries"
 
@@ -209,7 +204,7 @@ msgid "subscriptions.advanced.previewOverflow"
 msgstr "+{count}"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:717
+#: src/i18n/descriptors/subscription.ts:723
 msgid "calendar.more"
 msgstr "+{count} more"
 
@@ -494,7 +489,7 @@ msgid "subscription.field.oneTimeMode"
 msgstr "One-time purchase type"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:714
+#: src/i18n/descriptors/subscription.ts:720
 msgid "calendar.previousMonth"
 msgstr "Previous month"
 
@@ -504,7 +499,7 @@ msgid "subscription.costSharing.memberJoinedDate"
 msgstr "Joined date"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:715
+#: src/i18n/descriptors/subscription.ts:721
 msgid "calendar.nextMonth"
 msgstr "Next month"
 
@@ -514,7 +509,7 @@ msgid "subscription.detail.nextBilling"
 msgstr "Next billing"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:724
+#: src/i18n/descriptors/subscription.ts:730
 msgid "calendar.nextBilling"
 msgstr "Next billing"
 
@@ -627,6 +622,11 @@ msgstr "Renews today"
 #: src/i18n/descriptors/subscription.ts:382
 msgid "subscriptions.advanced.chipFrom"
 msgstr "From {date}"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:663
+msgid "statistics.trendCashflowHint"
+msgstr "Projects charges over the next 12 months from today, using current billing cycles and prices."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:199
@@ -889,7 +889,7 @@ msgid "subscriptions.csv.category"
 msgstr "Category"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:723
+#: src/i18n/descriptors/subscription.ts:729
 msgid "calendar.category"
 msgstr "Category"
 
@@ -1544,7 +1544,7 @@ msgid "subscriptions.csv.startDate"
 msgstr "Start date"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:725
+#: src/i18n/descriptors/subscription.ts:731
 msgid "calendar.startDate"
 msgstr "Start date"
 
@@ -1554,7 +1554,7 @@ msgid "subscription.field.startDateOptional"
 msgstr "Start date (optional)"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:734
+#: src/i18n/descriptors/subscription.ts:740
 msgid "subscription.addToCalendarFeedUrlCopyFailedDescription"
 msgstr "One-click copy is unavailable. Select and copy this URL manually."
 
@@ -1784,11 +1784,6 @@ msgid "statistics.personalCostBasis"
 msgstr "Use my share"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:663
-msgid "statistics.trendCashflowHint"
-msgstr "Sums expected charges by renewal or expiry date across the next 12 months."
-
-#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:189
 msgid "subscription.reminderEnabledHelp"
 msgstr "Send reminders based on this subscription’s expiry or renewal date."
@@ -1834,7 +1829,7 @@ msgid "subscription.detail.reminder"
 msgstr "Reminder"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:726
+#: src/i18n/descriptors/subscription.ts:732
 msgid "calendar.reminder"
 msgstr "Reminder"
 
@@ -2194,6 +2189,11 @@ msgid "aiRecognition.draftFilterWarning"
 msgstr "With warnings"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:716
+msgid "upcoming.expiry"
+msgstr "Service expires"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:95
 msgid "subscription.field.name"
 msgstr "Service name"
@@ -2254,24 +2254,24 @@ msgid "import.wallosGuideValueLocalLogo"
 msgstr "Local file"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:718
+#: src/i18n/descriptors/subscription.ts:724
 msgid "calendar.monthlyRenewals"
 msgstr "Events this month"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:653
-msgid "statistics.thisMonthDue"
-msgstr "Amount due this month"
-
-#. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:731
+#: src/i18n/descriptors/subscription.ts:737
 msgid "calendar.mobileAgendaEmpty"
 msgstr "No renewals or expiries this month"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:730
+#: src/i18n/descriptors/subscription.ts:736
 msgid "calendar.mobileAgendaTitle"
 msgstr "This month's renewals / expiries"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:653
+msgid "statistics.thisMonthDue"
+msgstr "Expected charges this month"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:38
@@ -2304,7 +2304,7 @@ msgid "subscription.detailDescription"
 msgstr "View price, cycle, dates, tags, website, and notes for {name}."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:721
+#: src/i18n/descriptors/subscription.ts:727
 msgid "calendar.detailDescription"
 msgstr "View price, cycle, dates, tags, website, and notes for {name}."
 
@@ -2329,7 +2329,12 @@ msgid "import.wallosGuideExpand"
 msgstr "Compare formats"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:713
+#: src/i18n/descriptors/subscription.ts:717
+msgid "upcoming.viewCalendar"
+msgstr "View calendar"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:719
 msgid "calendar.pageSubtitle"
 msgstr "View subscription renewals, fixed-term expiries, and estimated monthly spend"
 
@@ -2339,7 +2344,7 @@ msgid "subscription.detailFallbackDescription"
 msgstr "View subscription details."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:722
+#: src/i18n/descriptors/subscription.ts:728
 msgid "calendar.detailFallbackDescription"
 msgstr "View subscription details."
 
@@ -2394,12 +2399,12 @@ msgid "aiRecognition.imageOptimizing"
 msgstr "Optimizing"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:735
+#: src/i18n/descriptors/subscription.ts:741
 msgid "subscription.addToCalendarFeedStatusLoading"
 msgstr "Loading subscription link status..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:739
+#: src/i18n/descriptors/subscription.ts:745
 msgid "subscription.addToCalendarOpenSystemLoading"
 msgstr "Opening system calendar..."
 
@@ -2419,12 +2424,12 @@ msgid "import.loading"
 msgstr "Parsing and building preview..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:738
+#: src/i18n/descriptors/subscription.ts:744
 msgid "subscription.addToCalendarFeedStatusRetrying"
 msgstr "Reloading..."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:740
+#: src/i18n/descriptors/subscription.ts:746
 msgid "subscription.addToCalendarRegenerateLoading"
 msgstr "Regenerating..."
 
@@ -2619,7 +2624,7 @@ msgid "aiRecognition.imageDropDescription"
 msgstr "Click, drag, or paste PNG, JPG, or WebP images here, up to {count} files."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:716
+#: src/i18n/descriptors/subscription.ts:722
 msgid "calendar.viewDetails"
 msgstr "Click to view details"
 
@@ -2884,7 +2889,12 @@ msgid "subscription.renew.mode"
 msgstr "Renewal mode"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:712
+#: src/i18n/descriptors/subscription.ts:711
+msgid "upcoming.renewal"
+msgstr "Renewal"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:718
 msgid "calendar.title"
 msgstr "Renewal / expiry calendar"
 
@@ -3114,7 +3124,7 @@ msgid "subscription.addToCalendarRevokeFailed"
 msgstr "Failed to revoke subscription link"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:736
+#: src/i18n/descriptors/subscription.ts:742
 msgid "subscription.addToCalendarFeedStatusFailed"
 msgstr "Failed to load subscription link status"
 
@@ -3134,7 +3144,7 @@ msgid "subscription.balanceEnabled"
 msgstr "Track account balance"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:727
+#: src/i18n/descriptors/subscription.ts:733
 msgid "calendar.visit"
 msgstr "Visit"
 
@@ -3167,6 +3177,16 @@ msgstr "Trial ends on {date}"
 #: src/i18n/descriptors/subscription.ts:251
 msgid "subscription.detail.trialEndDate"
 msgstr "Trial ends"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:714
+msgid "upcoming.trial"
+msgstr "Trial ends"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:715
+msgid "upcoming.trialCharge"
+msgstr "Trial ends and renews"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:690
@@ -3439,7 +3459,7 @@ msgid "import.stepSelect"
 msgstr "Select"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:732
+#: src/i18n/descriptors/subscription.ts:738
 msgid "calendar.dayListDescription"
 msgstr "Choose a subscription to view for {date}."
 
@@ -3454,7 +3474,7 @@ msgid "aiRecognition.noSelectedDraft"
 msgstr "Select a draft to edit all fields."
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:733
+#: src/i18n/descriptors/subscription.ts:739
 msgid "calendar.dayListFallbackDescription"
 msgstr "Choose a subscription to view for this day."
 
@@ -3529,7 +3549,7 @@ msgid "subscription.repeatReminderWindow"
 msgstr "Repeat range"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:737
+#: src/i18n/descriptors/subscription.ts:743
 msgid "subscription.addToCalendarFeedStatusRetry"
 msgstr "Reload"
 
@@ -3644,9 +3664,19 @@ msgid "import.previewTitle"
 msgstr "Preview result"
 
 #. js-lingui-explicit-id
-#: src/i18n/descriptors/subscription.ts:720
+#: src/i18n/descriptors/subscription.ts:712
+msgid "upcoming.projected"
+msgstr "Estimated"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:726
 msgid "calendar.estimatedSpend"
 msgstr "Estimated spend"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:713
+msgid "upcoming.projectedRenewal"
+msgstr "Estimated renewal"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:197

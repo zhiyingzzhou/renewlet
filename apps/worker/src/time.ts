@@ -1,15 +1,22 @@
+import { isValidTimeZone } from "@renewlet/shared/runtime";
+
+const dateFormatters = new Map<string, Intl.DateTimeFormat>();
+
 export function safeTimeZone(timezone: string): string {
-  try {
-    new Intl.DateTimeFormat("en-US", { timeZone: timezone }).format(new Date(0));
-    return timezone;
-  } catch {
-    // settings 的 timezone 契约是 IANA 名称；历史坏值只能在读取边界回退 UTC，不能让 Cron/ICS 永久跳过。
-    return "UTC";
-  }
+  // settings 的 timezone 契约是 IANA 名称；历史坏值只能在读取边界回退 UTC，不能让 Cron/ICS 永久跳过。
+  return isValidTimeZone(timezone) ? timezone : "UTC";
 }
 
 export function dateOnlyInZone(date: Date, timezone: string): string {
-  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: safeTimeZone(timezone), year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
+  const zone = safeTimeZone(timezone);
+  let formatter = dateFormatters.get(zone);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-CA", { timeZone: zone, year: "numeric", month: "2-digit", day: "2-digit" });
+    // 缓存格式器而非日期结果：每次仍按当前 instant 处理跨日/DST；32 个时区限制长期 isolate 的内存。
+    if (dateFormatters.size >= 32) dateFormatters.delete(dateFormatters.keys().next().value!);
+    dateFormatters.set(zone, formatter);
+  }
+  const parts = formatter.formatToParts(date);
   return `${part(parts, "year")}-${part(parts, "month")}-${part(parts, "day")}`;
 }
 

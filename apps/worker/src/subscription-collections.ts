@@ -11,11 +11,11 @@ import {
 } from "@renewlet/shared/schemas/subscriptions";
 import { requireAuth } from "./auth";
 import {
-  getSettings,
+  getSettingsTimezone,
   getSubscription,
   listSubscriptions,
   toApiSubscription,
-  toApiSubscriptionCollectionItem,
+  subscriptionCollectionItemInput,
 } from "./db";
 import { HttpError, requestLocale, successJson } from "./http";
 import { listBoundedSubscriptionsForQuery, type SubscriptionCollectionFilters } from "./subscription-list-filters";
@@ -30,7 +30,7 @@ export async function readSubscriptionIndex(request: Request, env: Env): Promise
   const filters = subscriptionsIndexQuerySchema.parse(subscriptionCollectionQueryInput(new URL(request.url).searchParams));
   const page = await readBoundedCollection(request, env, auth.user.id, filters);
   return successJson(subscriptionsIndexPayloadSchema.parse({
-    subscriptions: page.rows.map(toApiSubscriptionCollectionItem),
+    subscriptions: page.rows.map(subscriptionCollectionItemInput),
     total: page.total,
   }));
 }
@@ -39,20 +39,23 @@ export async function readSubscriptionAnalytics(request: Request, env: Env): Pro
   const auth = await requireAuth(request, env);
   const page = await readBoundedCollection(request, env, auth.user.id, {});
   return successJson(subscriptionsAnalyticsPayloadSchema.parse({
-    subscriptions: page.rows.map(toApiSubscriptionCollectionItem),
+    subscriptions: page.rows.map(subscriptionCollectionItemInput),
   }));
 }
 
 export async function readSubscriptionCalendar(request: Request, env: Env): Promise<Response> {
   const auth = await requireAuth(request, env);
   const url = new URL(request.url);
-  const range = subscriptionsCalendarQuerySchema.parse(subscriptionSingleValueQueryInput(url.searchParams));
+  const range = subscriptionsCalendarQuerySchema.safeParse(subscriptionSingleValueQueryInput(url.searchParams));
+  // 查询参数错误在请求边界转成 400；响应契约解析仍保留 500，不能把服务端数据错误归咎于用户。
+  if (!range.success) {
+    throw new HttpError(400, serverText(requestLocale(request), "common.invalidRequestParameters"), "INVALID_QUERY", range.error.flatten());
+  }
   const page = await readBoundedCollection(request, env, auth.user.id, {
-    nextBillingFrom: range.from,
-    nextBillingTo: range.to,
+    calendarRange: range.data,
   });
   return successJson(subscriptionsCalendarPayloadSchema.parse({
-    subscriptions: page.rows.map(toApiSubscriptionCollectionItem),
+    subscriptions: page.rows.map(subscriptionCollectionItemInput),
   }));
 }
 
@@ -71,8 +74,7 @@ export async function readSubscriptionExport(request: Request, env: Env): Promis
 
 export async function readSubscriptionFacets(request: Request, env: Env): Promise<Response> {
   const auth = await requireAuth(request, env);
-  const settings = await getSettings(env, auth.user.id);
-  const today = dateOnlyInZone(new Date(), settings.timezone);
+  const today = dateOnlyInZone(new Date(), await getSettingsTimezone(env, auth.user.id));
   return successJson(subscriptionFacetsPayloadSchema.parse(
     await readSubscriptionFacetsForUser(env, auth.user.id, today),
   ));
@@ -84,7 +86,7 @@ async function readBoundedCollection(
   userId: string,
   query: SubscriptionCollectionFilters,
 ): Promise<{ rows: SubscriptionCollectionRow[]; total: number }> {
-  const today = dateOnlyInZone(new Date(), (await getSettings(env, userId)).timezone);
+  const today = dateOnlyInZone(new Date(), await getSettingsTimezone(env, userId));
   const page = await listBoundedSubscriptionsForQuery(env, userId, query, today, SUBSCRIPTION_INDEX_LIMIT);
   if (page.exceeded) {
     // 5001 只用于发现超限；不能把前 5000 条作为“完整结果”返回给搜索或统计。

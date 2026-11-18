@@ -3,7 +3,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { StatisticsChartsProps } from "@/components/statistics-charts";
 
 const LazyStatisticsCharts = lazy(() =>
-  import("@/components/statistics-charts").then((module) => ({ default: module.StatisticsCharts })),
+  import("@/components/statistics-charts").then((module) => ({
+    default: ({ data }: { data: StatisticsChartsProps | undefined }) => data
+      ? <module.StatisticsCharts {...data} />
+      : <StatisticsChartsLoading />,
+  })),
 );
 
 function StatisticsChartsLoading() {
@@ -19,11 +23,11 @@ function StatisticsChartsLoading() {
   );
 }
 
-/** 图表在统计数据就绪后独立加载，避免 Recharts 阻塞页面概要与交互控制的首次渲染。 */
-export function DeferredStatisticsCharts(props: StatisticsChartsProps) {
+/** 模型分片与图表模块并行就绪，避免模型提交后再触发第二轮 Suspense；概要和开关始终可用。 */
+export function DeferredStatisticsCharts({ data }: { data: StatisticsChartsProps | undefined }) {
   return (
     <Suspense fallback={<StatisticsChartsLoading />}>
-      <LazyStatisticsCharts {...props} />
+      <LazyStatisticsCharts data={data} />
     </Suspense>
   );
 }

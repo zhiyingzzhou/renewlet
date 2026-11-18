@@ -5,10 +5,12 @@
  * 注意： `config` 对象来自 Context，若未来拆分 Context，需要保持引用稳定以避免图表重算过频。
  */
 import { useMemo } from "react";
+import type { DateOnly } from "@/lib/time/date-only";
 import type { Locale } from "@/i18n/locales";
 import type { CustomConfig } from "@/types/config";
 import type { SubscriptionCollectionItem } from "@/types/subscription";
-import { buildStatisticsModel } from "../domain/statistics-model";
+import { statisticsModelTask } from "../domain/statistics-model";
+import { useForecastTask } from "./use-forecast-task";
 
 /** 统计页视图模型 hook。 */
 export function useStatisticsModel(
@@ -17,12 +19,13 @@ export function useStatisticsModel(
   monthlyBudget: string,
   defaultCurrency: string,
   convert: (amount: number | string, from: string, to: string) => number,
-  timeZone: string,
+  today: DateOnly,
   locale: Locale,
   costBasis: "total" | "personal" = "total",
 ) {
-  return useMemo(
-    () => buildStatisticsModel({ subscriptions, config, monthlyBudget, defaultCurrency, convert, timeZone, locale, costBasis }),
-    [config, convert, costBasis, defaultCurrency, locale, monthlyBudget, subscriptions, timeZone],
+  const factory = useMemo(
+    () => () => statisticsModelTask({ subscriptions, config, monthlyBudget, defaultCurrency, convert, locale, costBasis, today }),
+    [today, config, convert, costBasis, defaultCurrency, locale, monthlyBudget, subscriptions],
   );
+  return useForecastTask(factory);
 }

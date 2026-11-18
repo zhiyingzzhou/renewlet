@@ -2,7 +2,7 @@
  * 续费日历页（/calendar）。
  *
  * 功能：
- * - 以日历方式展示订阅的 nextBillingDate
+ * - 以日历方式展示订阅续费预测、试用结束和服务到期
  * - 支持从日历点击订阅并进入编辑
  */
 
@@ -13,6 +13,9 @@ import { BackToTopFloatButton } from '@/components/back-to-top-float-button';
 import { SubscriptionCalendar } from '@/components/subscription-calendar';
 import { EditSubscriptionDialog } from '@/components/edit-subscription-dialog';
 import { CalendarPageSkeleton } from '@/components/loading-skeleton';
+import { useSettings } from '@/hooks/use-settings';
+import { useZonedToday } from '@/hooks/use-zoned-today';
+import { dateOnlyToLocalDate } from '@/lib/time/date-only';
 import { useRouteReady } from '@/components/route-progress';
 import { QueryErrorState } from '@/components/query-error-state';
 import { useSubscriptionCalendar, useSubscriptionFacets } from '@/hooks/use-subscriptions';
@@ -25,7 +28,10 @@ const EMPTY_SUBSCRIPTIONS: SubscriptionCollectionItem[] = [];
 
 /** 日历页组件。 */
 const Calendar = () => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const { data: settings } = useSettings();
+  const today = useZonedToday(settings?.timezone ?? "UTC");
+  const [selectedMonth, setCurrentMonth] = useState<Date | null>(null);
+  const currentMonth = useMemo(() => selectedMonth ?? dateOnlyToLocalDate(today), [selectedMonth, today]);
   const range = useMemo(() => getSubscriptionCalendarRange(currentMonth), [currentMonth]);
   const subscriptionsQuery = useSubscriptionCalendar(range.from, range.to);
   const hasCalendarData = subscriptionsQuery.data !== undefined;

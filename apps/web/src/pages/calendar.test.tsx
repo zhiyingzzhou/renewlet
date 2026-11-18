@@ -1,11 +1,14 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Calendar from "./calendar";
 
 const mocks = vi.hoisted(() => ({
   useSubscriptionCalendar: vi.fn(),
+  timezone: "UTC",
 }));
+
+vi.mock("@/hooks/use-settings", () => ({ useSettings: () => ({ data: { timezone: mocks.timezone } }) }));
 
 vi.mock("@/hooks/use-subscriptions", () => ({
   useSubscriptionCalendar: mocks.useSubscriptionCalendar,
@@ -84,12 +87,23 @@ function renderCalendarPage({ mobile }: { mobile: boolean }) {
 
 describe("Calendar page", () => {
   beforeEach(() => {
+    mocks.timezone = "UTC";
     mocks.useSubscriptionCalendar.mockReturnValue({
       data: [],
       error: null,
       isFetching: false,
       isPending: false,
     });
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it("opens the account's current month across a timezone boundary", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-01-31T16:30:00Z"));
+    mocks.timezone = "Asia/Shanghai";
+    renderCalendarPage({ mobile: false });
+    expect(mocks.useSubscriptionCalendar).toHaveBeenLastCalledWith("2026-01-26", "2026-03-01");
   });
 
   it("renders a page-isomorphic skeleton while subscriptions are pending", () => {

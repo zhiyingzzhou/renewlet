@@ -7,24 +7,14 @@
  * - 所有加天/月/年和跨日差值都使用 Temporal.PlainDate，避免运行环境时区影响。
  */
 import { Temporal } from "@js-temporal/polyfill";
+import { isValidDateOnly } from "@renewlet/shared/runtime";
 import { translate } from "@/i18n/messages";
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales";
 
 /** `YYYY-MM-DD` 业务日期品牌类型，表示日历日期而不是 UTC instant。 */
 export type DateOnly = string & { readonly __brand: "DateOnly" };
 
-const DATE_ONLY_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
-
-/** 校验字符串是否为真实存在的 `YYYY-MM-DD` 日期。 */
-export function isValidDateOnly(input: string): boolean {
-  if (!DATE_ONLY_RE.test(input)) return false;
-  try {
-    Temporal.PlainDate.from(input);
-    return true;
-  } catch {
-    return false;
-  }
-}
+export { isValidDateOnly };
 
 /** 断言并品牌化 date-only 字符串；非法值会抛错让调用方停止写入。 */
 export function assertDateOnly(input: string): DateOnly {
@@ -75,7 +65,10 @@ export function addDateOnly(
 
 /** 比较两个 DateOnly 的先后顺序。 */
 export function compareDateOnly(a: DateOnly | string, b: DateOnly | string): number {
-  return Temporal.PlainDate.compare(toPlainDate(a), toPlainDate(b));
+  // 只在 shared 校验后的定宽 ISO 日期上比较；排序与日历顺序一致，无须重复创建 Temporal 对象。
+  const left = assertDateOnly(a);
+  const right = assertDateOnly(b);
+  return left < right ? -1 : left > right ? 1 : 0;
 }
 
 /** 计算两个 DateOnly 的自然日差值。 */
@@ -85,9 +78,7 @@ export function daysBetweenDateOnly(start: DateOnly | string, end: DateOnly | st
 
 /** 判断两个 DateOnly 是否处于同一年月。 */
 export function isSameMonthDateOnly(date: DateOnly | string, month: DateOnly | string): boolean {
-  const left = toPlainDate(date);
-  const right = toPlainDate(month);
-  return left.year === right.year && left.month === right.month;
+  return assertDateOnly(date).slice(0, 7) === assertDateOnly(month).slice(0, 7);
 }
 
 export type DateOnlyDisplayStyle = "short" | "monthDay" | "full";
@@ -100,12 +91,12 @@ const ZERO_PADDED_DATE_STYLES: Partial<Record<Locale, readonly DateOnlyDisplaySt
 
 /** 生成日期 catalog 消息参数；只影响展示，DateOnly 值本身不变。 */
 export function dateOnlyMessageParams(date: DateOnly | string, locale: Locale, style: DateOnlyDisplayStyle) {
-  const value = toPlainDate(date);
+  const [year, month, day] = assertDateOnly(date).split("-");
   const width = ZERO_PADDED_DATE_STYLES[locale]?.includes(style) ? 2 : 1;
   return {
-    year: value.year,
-    month: String(value.month).padStart(width, "0"),
-    day: String(value.day).padStart(width, "0"),
+    year: Number(year),
+    month: String(Number(month)).padStart(width, "0"),
+    day: String(Number(day)).padStart(width, "0"),
   };
 }
 
@@ -116,8 +107,7 @@ export function formatDateOnlyForDisplay(date: DateOnly | string, locale: Locale
 
 /** 格式化为月日短格式，用于即将续费等紧凑 UI。 */
 export function formatDateOnlyMonthDay(date: DateOnly | string, locale: Locale = DEFAULT_LOCALE): string {
-  const { month, day } = dateOnlyMessageParams(date, locale, "monthDay");
-  return translate(locale, "date.monthDay", { month, day });
+  return translate(locale, "date.monthDay", dateOnlyMessageParams(date, locale, "monthDay"));
 }
 
 /** 格式化为当前语言的完整日期。 */

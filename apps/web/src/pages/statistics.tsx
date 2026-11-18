@@ -19,6 +19,7 @@ import type { Subscription, SubscriptionCollectionItem } from '@/types/subscript
 import { EditSubscriptionDialog } from '@/components/edit-subscription-dialog';
 import { DeferredRenewSubscriptionDialog } from '@/components/renew-subscription-dialog-loader';
 import { Header } from '@/components/header';
+import { Skeleton } from '@/components/ui/skeleton';
 import { StatisticsPageSkeleton } from '@/components/loading-skeleton';
 import { useRouteReady } from '@/components/route-progress';
 import { QueryErrorState } from '@/components/query-error-state';
@@ -42,7 +43,7 @@ import { useSubscriptionCrud } from '@/modules/subscriptions/application/use-sub
 import { resolveSubscriptionPriceReferenceCurrency } from '@/modules/subscriptions/domain/subscription-price-reference';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useSubscriptionDetailDialog } from '@/hooks/use-subscription-detail-dialog';
-import { todayDateOnlyInTimeZone } from '@/lib/time/date-only';
+import { useZonedToday } from '@/hooks/use-zoned-today';
 
 /** 空订阅数组：用于在数据未加载完成时提供稳定引用，避免 useMemo 依赖抖动。 */
 const EMPTY_SUBSCRIPTIONS: SubscriptionCollectionItem[] = [];
@@ -124,7 +125,8 @@ const Statistics = () => {
   } = useReportExchangeRates(settings?.exchangeRateProvider);
   const ratesRefreshPending = ratesLoading || ratesRefreshing;
   const currencyRatesReady = Boolean(ratesSourceDate) && !ratesLoading;
-  const stats = useStatisticsModel(subscriptions, config, monthlyBudget, defaultCurrency, convert, timeZone, locale, personalCostBasis ? "personal" : "total");
+  const today = useZonedToday(timeZone);
+  const stats = useStatisticsModel(subscriptions, config, monthlyBudget, defaultCurrency, convert, today, locale, personalCostBasis ? "personal" : "total");
   const {
     editingSubscription,
     editingCollectionItem,
@@ -148,7 +150,6 @@ const Statistics = () => {
     handleRenewDialogOpenChange,
   } = useSubscriptionCrud(subscriptions);
   const availableTags = facetsQuery.data?.tags ?? [];
-  const today = useMemo(() => todayDateOnlyInTimeZone(new Date(), timeZone), [timeZone]);
   const {
     detailDialogOpen,
     selectedDetailSubscription,
@@ -167,7 +168,7 @@ const Statistics = () => {
     }
   }, [refreshRates, t]);
 
-  useRouteReady(subscriptionsQuery.isPending || settingsQuery.isPending);
+  useRouteReady(subscriptionsQuery.isPending || settingsQuery.isPending || stats === undefined);
   // 汇率 hook 有内置 fallback；远端刷新中继续渲染统计内容，避免切页后因为第三方汇率慢而整页回退骨架。
   if (subscriptionsQuery.isPending || settingsQuery.isPending) {
     return (
@@ -195,7 +196,7 @@ const Statistics = () => {
     <div className="app-page bg-background">
       <Header onAddSubscription={handleAddSubscription} availableTags={availableTags} />
 
-      <main className="app-main mx-auto max-w-7xl">
+      <main className="app-main mx-auto max-w-7xl" aria-busy={stats === undefined}>
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <h1 className="text-2xl font-bold text-foreground">{t("statistics.title")}</h1>
@@ -226,81 +227,87 @@ const Statistics = () => {
               {t("statistics.personalCostBasis")}
             </label>
           </div>
-          <div className="grid grid-cols-1 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            <StatBox
-              value={stats.activeCount}
-              label={t("statistics.activeSubscriptions")}
-              variant="primary"
-            />
-            <StatBox
-              value={formatCurrency(stats.totalMonthly, defaultCurrency)}
-              label={t("statistics.monthlyCost", { currency: defaultCurrency })}
-              variant="primary"
-            />
-            <StatBox
-              value={formatCompactCurrencyAmount(stats.totalDaily, defaultCurrency, locale)}
-              label={t("statistics.dailyCost", { currency: defaultCurrency })}
-              variant="primary"
-            />
-            <StatBox
-              value={formatCurrency(stats.totalAnnual, defaultCurrency)}
-              label={t("statistics.annualCost", { currency: defaultCurrency })}
-              variant="primary"
-            />
-            <StatBox
-              value={formatCurrency(stats.avgMonthlyPerSub, defaultCurrency)}
-              label={t("statistics.avgMonthly")}
-            />
-            <StatBox
-              value={stats.mostExpensive ? formatCurrency(convert(stats.mostExpensive.price, stats.mostExpensive.currency, defaultCurrency), defaultCurrency) : '-'}
-              label={stats.mostExpensive ? t("statistics.mostExpensiveNamed", { name: stats.mostExpensive.name }) : t("statistics.mostExpensive")}
-            />
-            <StatBox
-              value={formatCurrency(stats.thisMonthDue, defaultCurrency)}
-              label={t("statistics.thisMonthDue")}
-              variant="warning"
-            />
-            <StatBox
-              value={`${stats.budgetUsedPercent.toFixed(1)}%`}
-              label={t("statistics.budgetPercent")}
-              variant={stats.budgetUsedPercent > 80 ? 'warning' : 'primary'}
-            />
-            <StatBox
-              value={formatCurrency(stats.budgetRemaining, defaultCurrency)}
-              label={t("statistics.budgetRemaining")}
-              variant={stats.budgetRemaining < 0 ? 'warning' : 'success'}
-            />
-            <StatBox
-              value={stats.inactiveCount}
-              label={t("statistics.inactiveSubscriptions")}
-            />
-            <StatBox
-              value={formatCurrency(stats.monthlySavings, defaultCurrency)}
-              label={t("statistics.monthlySavings")}
-              variant="success"
-              description={t("statistics.monthlySavingsDescription")}
-            />
-            <StatBox
-              value={formatCurrency(stats.annualSavings, defaultCurrency)}
-              label={t("statistics.annualSavings")}
-              variant="success"
-              description={t("statistics.annualSavingsDescription")}
-            />
-          </div>
+          {stats ? (
+            <div className="grid grid-cols-1 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <StatBox
+                value={stats.activeCount}
+                label={t("statistics.activeSubscriptions")}
+                variant="primary"
+              />
+              <StatBox
+                value={formatCurrency(stats.totalMonthly, defaultCurrency)}
+                label={t("statistics.monthlyCost", { currency: defaultCurrency })}
+                variant="primary"
+              />
+              <StatBox
+                value={formatCompactCurrencyAmount(stats.totalDaily, defaultCurrency, locale)}
+                label={t("statistics.dailyCost", { currency: defaultCurrency })}
+                variant="primary"
+              />
+              <StatBox
+                value={formatCurrency(stats.totalAnnual, defaultCurrency)}
+                label={t("statistics.annualCost", { currency: defaultCurrency })}
+                variant="primary"
+              />
+              <StatBox
+                value={formatCurrency(stats.avgMonthlyPerSub, defaultCurrency)}
+                label={t("statistics.avgMonthly")}
+              />
+              <StatBox
+                value={stats.mostExpensive ? formatCurrency(convert(stats.mostExpensive.price, stats.mostExpensive.currency, defaultCurrency), defaultCurrency) : '-'}
+                label={stats.mostExpensive ? t("statistics.mostExpensiveNamed", { name: stats.mostExpensive.name }) : t("statistics.mostExpensive")}
+              />
+              <StatBox
+                value={formatCurrency(stats.thisMonthDue, defaultCurrency)}
+                label={t("statistics.thisMonthDue")}
+                variant="warning"
+              />
+              <StatBox
+                value={`${stats.budgetUsedPercent.toFixed(1)}%`}
+                label={t("statistics.budgetPercent")}
+                variant={stats.budgetUsedPercent > 80 ? 'warning' : 'primary'}
+              />
+              <StatBox
+                value={formatCurrency(stats.budgetRemaining, defaultCurrency)}
+                label={t("statistics.budgetRemaining")}
+                variant={stats.budgetRemaining < 0 ? 'warning' : 'success'}
+              />
+              <StatBox
+                value={stats.inactiveCount}
+                label={t("statistics.inactiveSubscriptions")}
+              />
+              <StatBox
+                value={formatCurrency(stats.monthlySavings, defaultCurrency)}
+                label={t("statistics.monthlySavings")}
+                variant="success"
+                description={t("statistics.monthlySavingsDescription")}
+              />
+              <StatBox
+                value={formatCurrency(stats.annualSavings, defaultCurrency)}
+                label={t("statistics.annualSavings")}
+                variant="success"
+                description={t("statistics.annualSavingsDescription")}
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+              {Array.from({ length: 12 }, (_, index) => <Skeleton key={index} className="h-24 rounded-xl" />)}
+            </div>
+          )}
         </section>
 
-        <DeferredStatisticsCharts
-          trendData={stats.trendData}
-          categoryData={stats.categoryData}
-          paymentData={stats.paymentData}
-          budgetChartData={stats.budgetChartData}
-          defaultCurrency={defaultCurrency}
-          monthlyBudget={monthlyBudget}
-          monthlyBudgetAmount={monthlyBudgetAmount}
-          totalMonthly={stats.totalMonthly}
-          budgetRemaining={stats.budgetRemaining}
-          onViewSubscriptionDetails={handleViewTrendSubscriptionDetails}
-        />
+        <DeferredStatisticsCharts data={stats ? {
+          trendData: stats.trendData,
+          categoryData: stats.categoryData,
+          paymentData: stats.paymentData,
+          budgetChartData: stats.budgetChartData,
+          defaultCurrency,
+          monthlyBudget,
+          monthlyBudgetAmount,
+          totalMonthly: stats.totalMonthly,
+          budgetRemaining: stats.budgetRemaining,
+          onViewSubscriptionDetails: handleViewTrendSubscriptionDetails,
+        } : undefined} />
       </main>
 
       <EditSubscriptionDialog

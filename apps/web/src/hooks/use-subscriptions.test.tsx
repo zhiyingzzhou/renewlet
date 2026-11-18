@@ -30,6 +30,8 @@ import {
 } from "./use-subscriptions";
 import { subscriptionQueryKeys } from "./subscription-query-cache";
 import { notificationQueryKeys } from "./notification-query-cache";
+import { preload as preloadCalendar } from "@/lib/route-preloads/calendar";
+import { getSubscriptionCalendarRange } from "@/modules/subscriptions/domain/subscription-calendar-range";
 
 type RecurringSubscriptionDraft = Extract<
   SubscriptionDraft,
@@ -516,4 +518,67 @@ describe("use-subscriptions collection queries", () => {
 
     expect(requestSignal?.aborted).toBe(true);
   });
+  it("seeds a calendar from complete analytics without resetting its age", () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const updatedAt = Date.now() - 30_000;
+    const included = subscriptionFromDraft("included", subscriptionDraft());
+    const paused = subscriptionFromDraft("paused", subscriptionDraft({ status: "paused" }));
+    queryClient.setQueryData(subscriptionQueryKeys.analytics, [included, paused], { updatedAt });
+    const { result } = renderHook(() => useSubscriptionCalendar(assertDateOnly("2026-12-01"), assertDateOnly("2026-12-31")), { wrapper: createWrapper(queryClient) });
+    expect(result.current.data?.map((item) => item.id)).toEqual(["included"]);
+    expect(result.current.dataUpdatedAt).toBe(updatedAt);
+    expect(mocks.apiFetch).not.toHaveBeenCalled();
+  });
+
+  it("reuses complete analytics during route preloading without resetting its age", async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const updatedAt = Date.now() - 30_000;
+    const item = subscriptionFromDraft("included", subscriptionDraft());
+    queryClient.setQueryData(subscriptionQueryKeys.analytics, [item], { updatedAt });
+    queryClient.setQueryData(subscriptionQueryKeys.facets, {
+      total: 1, categoryCounts: { productivity: 1 }, tags: [], visibleCount: 1,
+      hiddenCount: 0, expiredCount: 0, lifetimeCount: 0,
+    });
+    const { from, to } = getSubscriptionCalendarRange(new Date());
+
+    await preloadCalendar(queryClient);
+
+    expect(mocks.apiFetch).not.toHaveBeenCalled();
+    expect(queryClient.getQueryData(subscriptionQueryKeys.calendar(from, to))).toEqual([item]);
+    expect(queryClient.getQueryState(subscriptionQueryKeys.calendar(from, to))?.dataUpdatedAt).toBe(updatedAt);
+  });
+
+  it("does not reuse invalidated analytics or a partial list page", async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(subscriptionQueryKeys.analytics, [subscriptionFromDraft("old", subscriptionDraft())]);
+    await queryClient.invalidateQueries({ queryKey: subscriptionQueryKeys.analytics, refetchType: "none" });
+    queryClient.setQueryData(subscriptionQueryKeys.page(), { subscriptions: [subscriptionFromDraft("page", subscriptionDraft())] });
+    mocks.apiFetch.mockResolvedValue({ subscriptions: [] });
+    const { result } = renderHook(() => useSubscriptionCalendar(assertDateOnly("2026-12-01"), assertDateOnly("2026-12-31")), { wrapper: createWrapper(queryClient) });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual([]);
+    expect(mocks.apiFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("reuses only a covering calendar window and still refetches aged snapshots", async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const item = subscriptionFromDraft("covered", subscriptionDraft());
+    const from = assertDateOnly("2026-12-01"), to = assertDateOnly("2026-12-31");
+    queryClient.setQueryData(subscriptionQueryKeys.calendar(assertDateOnly("2026-11-30"), assertDateOnly("2027-01-03")), [item], { updatedAt: Date.now() - 120_000 });
+    mocks.apiFetch.mockResolvedValue({ subscriptions: [] });
+    const { result } = renderHook(() => useSubscriptionCalendar(from, to), { wrapper: createWrapper(queryClient) });
+    expect(result.current.data).toEqual([item]);
+    await waitFor(() => expect(result.current.data).toEqual([]));
+    expect(mocks.apiFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("fetches a wider window instead of treating a narrow cache as complete", async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(subscriptionQueryKeys.calendar(assertDateOnly("2026-12-01"), assertDateOnly("2026-12-10")), []);
+    mocks.apiFetch.mockResolvedValue({ subscriptions: [] });
+    const { result } = renderHook(() => useSubscriptionCalendar(assertDateOnly("2026-12-01"), assertDateOnly("2026-12-31")), { wrapper: createWrapper(queryClient) });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mocks.apiFetch).toHaveBeenCalledTimes(1);
+  });
+
 });
