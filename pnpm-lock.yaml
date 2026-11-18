@@ -6,6 +6,7 @@ settings:
 
 overrides:
   browserslist@<=4.28.6: ^4.28.7
+  picomatch@>=4.0.0 <=4.0.7: npm:@ryotsu/picomatch@4.0.7-a
   undici@>=7.18.0 <7.30.1: 7.30.1
   undici@>=8.0.0 <8.12.2: 8.12.4
 
@@ -2384,6 +2385,10 @@ packages:
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
 
+  '@ryotsu/picomatch@4.0.7-a':
+    resolution: {integrity: sha512-JroBFEmaejC7szGSfqOhF1QZHLKvX2wTA1+fWyfkpy3BjzdQKNPLKa2FtgeKVUDy5/UPUNkXEeCHJ5ZRBMLTVA==}
+    engines: {node: '>=12'}
+
   '@simplewebauthn/browser@13.3.0':
     resolution: {integrity: sha512-BE/UWv6FOToAdVk0EokzkqQQDOWtNydYlY6+OrmiZ5SCNmb41VehttboTetUM3T/fr6EAFYVXjz4My2wg230rQ==}
 
@@ -4006,14 +4011,6 @@ packages:
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
-
-  picomatch@4.0.5:
-    resolution: {integrity: sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==}
-    engines: {node: '>=12'}
-
-  picomatch@4.0.7:
-    resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
-    engines: {node: '>=12'}
 
   playwright-core@1.62.1:
     resolution: {integrity: sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==}
@@ -6414,13 +6411,15 @@ snapshots:
   '@rolldown/plugin-babel@0.2.4(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.2)(rolldown@1.2.13)(vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.9))':
     dependencies:
       '@babel/core': 7.29.7(supports-color@10.2.2)
-      picomatch: 4.0.7
+      picomatch: '@ryotsu/picomatch@4.0.7-a'
       rolldown: 1.2.13
     optionalDependencies:
       '@babel/runtime': 7.29.2
       vite: 8.3.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.9)
 
   '@rolldown/pluginutils@1.0.1': {}
+
+  '@ryotsu/picomatch@4.0.7-a': {}
 
   '@simplewebauthn/browser@13.3.0': {}
 
@@ -7529,9 +7528,9 @@ snapshots:
       strnum: 2.4.2
       xml-naming: 0.3.0
 
-  fdir@6.5.0(picomatch@4.0.7):
+  fdir@6.5.0(@ryotsu/picomatch@4.0.7-a):
     optionalDependencies:
-      picomatch: 4.0.7
+      picomatch: '@ryotsu/picomatch@4.0.7-a'
 
   fetch-blob@3.2.0:
     dependencies:
@@ -7977,10 +7976,6 @@ snapshots:
 
   picocolors@1.1.1: {}
 
-  picomatch@4.0.5: {}
-
-  picomatch@4.0.7: {}
-
   playwright-core@1.62.1: {}
 
   playwright@1.62.1:
@@ -8188,7 +8183,7 @@ snapshots:
   rollup-plugin-visualizer@7.1.1(rolldown@1.2.13):
     dependencies:
       open: 11.0.1
-      picomatch: 4.0.5
+      picomatch: '@ryotsu/picomatch@4.0.7-a'
       source-map: 0.8.0
       yargs: 18.1.0
     optionalDependencies:
@@ -8323,8 +8318,8 @@ snapshots:
 
   tinyglobby@0.2.17:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.7)
-      picomatch: 4.0.7
+      fdir: 6.5.0(@ryotsu/picomatch@4.0.7-a)
+      picomatch: '@ryotsu/picomatch@4.0.7-a'
 
   tinyrainbow@3.1.0: {}
 
@@ -8454,7 +8449,7 @@ snapshots:
   vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.9):
     dependencies:
       lightningcss: 1.33.0
-      picomatch: 4.0.7
+      picomatch: '@ryotsu/picomatch@4.0.7-a'
       postcss: 8.5.29
       rolldown: 1.2.13
       tinyglobby: 0.2.17
@@ -8468,7 +8463,7 @@ snapshots:
   vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.9):
     dependencies:
       lightningcss: 1.33.0
-      picomatch: 4.0.7
+      picomatch: '@ryotsu/picomatch@4.0.7-a'
       postcss: 8.5.29
       rolldown: 1.2.13
       tinyglobby: 0.2.17
@@ -8493,7 +8488,7 @@ snapshots:
       magic-string: 0.30.21
       obug: 2.1.1
       pathe: 2.0.3
-      picomatch: 4.0.5
+      picomatch: '@ryotsu/picomatch@4.0.7-a'
       std-env: 4.1.0
       tinybench: 2.9.0
       tinyexec: 1.1.2
@@ -8522,7 +8517,7 @@ snapshots:
       magic-string: 0.30.21
       obug: 2.1.1
       pathe: 2.0.3
-      picomatch: 4.0.5
+      picomatch: '@ryotsu/picomatch@4.0.7-a'
       std-env: 4.1.0
       tinybench: 2.9.0
       tinyexec: 1.1.2
