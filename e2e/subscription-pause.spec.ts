@@ -20,7 +20,10 @@ test("More pauses once and resumes only after an explicit status selection", asy
     await page.getByRole("menuitem", { name: "暂停订阅" }).click();
     await expect(page.getByText(`已暂停「${name}」`, { exact: true })).toBeVisible();
     expect(writes).toEqual([{ status: "paused", expectedUpdatedAt: expect.any(String) }]);
+    // 暂停写入可能先于 Radix 退出动画完成；旧 Portal 仍有菜单项时不能用它判断第二次打开成功。
+    await expect(page.getByRole("menu", { includeHidden: true })).toHaveCount(0);
     await more.click();
+    await expect(more).toHaveAttribute("aria-expanded", "true");
     await page.getByRole("menuitem", { name: "恢复订阅…" }).click();
     const dialog = page.getByRole("dialog", { name: "恢复订阅" });
     const status = dialog.getByRole("combobox", { name: "状态", exact: true });
@@ -49,6 +52,7 @@ test("dashboard metrics keep their full text inside each card across grid breakp
     await page.reload();
     const grid = page.getByTestId("dashboard-stat-grid");
     await expect(grid).toBeVisible();
+    await expect(grid.locator("p")).toHaveCount(12);
     for (const width of [320, 390, 768, 1024, 1280]) {
       await page.setViewportSize({ width, height: 900 });
       expect(await grid.locator("p").evaluateAll(paragraphs => paragraphs.every(paragraph => {
