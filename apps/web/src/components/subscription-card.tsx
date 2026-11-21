@@ -22,7 +22,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { colorWithAlpha } from '@/lib/color';
-import { Wallet, Calendar, MoreHorizontal, CalendarClock, Bell, CreditCard, CalendarPlus, Copy, Eye, EyeOff, Gauge, Pencil, Pin, PinOff, RotateCw, Trash2 } from 'lucide-react';
+import { Wallet, Calendar, MoreHorizontal, CalendarClock, Bell, CreditCard, CalendarPlus, Copy, Eye, EyeOff, Gauge, Pause, Play, Pencil, Pin, PinOff, RotateCw, Trash2 } from 'lucide-react';
 import {
   daysBetweenDateOnly,
   type DateOnly,
@@ -74,7 +74,8 @@ interface SubscriptionCardProps {
   /** 展示模式：grid（卡片）/ list（列表行）。 */
   viewMode?: 'grid' | 'list';
   /** 编辑动作只传 id，页面控制器再从当前缓存快照取完整对象，避免卡片持有编辑弹窗状态。 */
-  onEdit?: (id: string) => void;
+  onEdit?: (id: string, intent?: "resume", trigger?: HTMLElement | null) => void;
+  onPause?: ((id: string, status: "active" | "trial", trigger: HTMLElement | null) => Promise<void>) | undefined;
   /** 删除动作只上抛 id，真正 mutation 和缓存失效统一留在页面应用层。 */
   onDelete?: (id: string) => void;
   /** 复制动作只上抛 id，页面控制器负责打开克隆弹窗并创建新记录。 */
@@ -174,6 +175,7 @@ function SubscriptionCardComponent({
   subscription,
   viewMode = 'grid',
   onEdit,
+  onPause,
   onDelete,
   onClone,
   onTogglePinned,
@@ -203,6 +205,8 @@ function SubscriptionCardComponent({
     color: categoryColor,
   };
 
+  const [pausing, setPausing] = useState(false);
+  const handingFocusToResume = useRef(false);
   const moreActionsRef = useRef<HTMLButtonElement>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const daysUntilRenewal = daysBetweenDateOnly(today, subscription.nextBillingDate);
@@ -449,13 +453,19 @@ function SubscriptionCardComponent({
                   variant="ghost"
                   size="icon"
                   className="pointer-events-auto h-8 w-8 shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+                  data-subscription-actions=""
                   ref={moreActionsRef}
                   aria-label={t("subscription.moreActions")}
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className={CARD_ACTION_MENU_CONTENT_CLASSNAME}>
+              <DropdownMenuContent align="end" className={CARD_ACTION_MENU_CONTENT_CLASSNAME} onCloseAutoFocus={(event) => {
+                if (handingFocusToResume.current) {
+                  event.preventDefault();
+                  handingFocusToResume.current = false;
+                }
+              }}>
                 {selectionMode && onViewDetails ? (
                   <DropdownMenuItem className={CARD_ACTION_MENU_ITEM_CLASSNAME} onClick={handleViewDetails}>
                     <Eye className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -490,6 +500,23 @@ function SubscriptionCardComponent({
                     {t("subscription.renew")}
                   </DropdownMenuItem>
                 ) : null}
+                {onPause && (subscription.status === "active" || subscription.status === "trial") && (
+                  <DropdownMenuItem className={CARD_ACTION_MENU_ITEM_CLASSNAME} disabled={pausing} onSelect={() => {
+                    if (subscription.status !== "active" && subscription.status !== "trial") return;
+                    setPausing(true);
+                    void onPause(subscription.id, subscription.status, moreActionsRef.current).finally(() => setPausing(false));
+                  }}>
+                    <Pause className="h-4 w-4 shrink-0 text-muted-foreground" />{t("subscription.pauseTitle")}
+                  </DropdownMenuItem>
+                )}
+                {onEdit && subscription.status === "paused" && (
+                  <DropdownMenuItem className={CARD_ACTION_MENU_ITEM_CLASSNAME} onSelect={() => {
+                    handingFocusToResume.current = true;
+                    onEdit(subscription.id, "resume", moreActionsRef.current);
+                  }}>
+                    <Play className="h-4 w-4 shrink-0 text-muted-foreground" />{t("subscription.resumeMenu")}
+                  </DropdownMenuItem>
+                )}
                 {onTogglePinned ? (
                   <DropdownMenuItem className={CARD_ACTION_MENU_ITEM_CLASSNAME} onClick={() => onTogglePinned(subscription.id)}>
                     {subscription.pinned ? (
@@ -608,6 +635,7 @@ function areSubscriptionCardPropsEqual(prev: SubscriptionCardProps, next: Subscr
     prev.currencyConvert === next.currencyConvert &&
     prev.currencyRatesReady === next.currencyRatesReady &&
     prev.priceReferenceCurrency === next.priceReferenceCurrency &&
+    prev.onPause === next.onPause &&
     prev.onEdit === next.onEdit &&
     prev.onDelete === next.onDelete &&
     prev.onClone === next.onClone &&

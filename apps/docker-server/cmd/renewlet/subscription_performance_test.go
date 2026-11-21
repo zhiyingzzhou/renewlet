@@ -554,7 +554,7 @@ func assertGoSubscriptionPerformanceOracle(
 		(SELECT COUNT(*) FROM subscription_list_index WHERE user_id = {:user}) AS projection,
 		(SELECT COUNT(*) FROM subscription_tags WHERE user_id = {:user}) AS tags,
 		(SELECT COUNT(*) FROM subscriptions WHERE user = {:user} AND autoRenew = true) AS auto_renew,
-		(SELECT COUNT(*) FROM subscriptions WHERE user = {:user} AND repeatReminderEnabled = true AND status != 'cancelled') AS repeat_reminder`).
+		(SELECT COUNT(*) FROM subscriptions WHERE user = {:user} AND repeatReminderEnabled = true AND status NOT IN ('paused', 'cancelled')) AS repeat_reminder`).
 		Bind(dbx.Params{"user": userID}).One(&counts); err != nil {
 		t.Fatal(err)
 	}

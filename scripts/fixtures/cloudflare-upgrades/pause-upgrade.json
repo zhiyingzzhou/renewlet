@@ -1,0 +1,20 @@
+[
+  {
+    "version": "v0.3.28",
+    "sourceCommit": "2b3e89dbf7168b5266370c3095676f32f12cbeea",
+    "migrationCount": 44,
+    "lastMigration": "0044_exclusive_settings_locale_guard.sql",
+    "migrationSourceSha256": "503ac24e89b9363d649fe61eaa6f6bad0e0bff382061e6d32534cae0eefd47c6",
+    "fixture": "v0.3.28.sql",
+    "fixtureSha256": "1b376936bed456d2d549025e59a19803b4963285e1efb4a5895770eda1adff01"
+  },
+  {
+    "version": "v0.3.37",
+    "sourceCommit": "2aa8c8e1134d2d9670e888e03e9222c2ce00fbed",
+    "migrationCount": 47,
+    "lastMigration": "0047_subscription_balance.sql",
+    "migrationSourceSha256": "3f48179fd3efa2f80a2eb2093a9f96133b32b9bd471b57bd98aab5620a6fe7e6",
+    "fixture": "v0.3.37.sql",
+    "fixtureSha256": "6d6089b4c6a06ef480a98ac2a6a3e7ff20bf786ecaf0c6006a1a6762287c6513"
+  }
+]

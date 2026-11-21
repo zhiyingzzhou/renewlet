@@ -288,7 +288,10 @@ export const subscriptionCreateBodySchema = z.object(subscriptionCreateBodyShape
     message: "Cost sharing member joined date is outside the subscription date range",
   });
 
-export const subscriptionUpdateBodySchema = z.object(subscriptionWriteFieldShape)
+export const subscriptionUpdateBodySchema = z.object({
+  ...subscriptionWriteFieldShape,
+  expectedUpdatedAt: z.string().max(64).datetime({ offset: true }),
+})
   .strict()
   .partial()
   .check(subscriptionBalanceCheck)
@@ -307,7 +310,7 @@ export const subscriptionUpdateBodySchema = z.object(subscriptionWriteFieldShape
     path: ["oneTimeTermCount"],
     message: "Invalid one-time term",
   })
-  .refine((obj) => Object.keys(obj).length > 0, { message: "Empty payload" });
+  .refine((obj) => Object.keys(obj).some((key) => key !== "expectedUpdatedAt"), { message: "Empty payload" });
 
 export const subscriptionRenewBodySchema = z.object({
   // 同一次确认绑定原账单日和服务端版本，过期草稿或响应丢失后的重放不能多推进一期。

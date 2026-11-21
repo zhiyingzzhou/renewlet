@@ -93,7 +93,7 @@ function storedDailyOccurrenceValid(value: string | null, timezone: string, loca
 }
 
 /**
- * 复验已有 v4 marker 的 scheduler：合法逾期值可能代表失败重试，不能按当前 now 强制改写成新的 due。
+ * 复验已有 v5 marker 的 scheduler：合法逾期值可能代表失败重试，不能按当前 now 强制改写成新的 due。
  * 聚合计数和 repeat 最小值仍必须与 subscriptions/repeat schedule 双向一致。
  */
 export async function assertStoredSubscriptionSchedulerRowsValid(
@@ -115,7 +115,7 @@ export async function assertStoredSubscriptionSchedulerRowsValid(
         scheduler.next_daily_notification_due_at_utc AS stored_next_daily_notification_due_at_utc,
         scheduler.next_repeat_notification_due_at_utc AS stored_next_repeat_notification_due_at_utc,
         (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND auto_renew = 1) AS fact_auto_renew_count,
-        (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND repeat_reminder_enabled = 1 AND status != 'cancelled')
+        (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND repeat_reminder_enabled = 1 AND status NOT IN ('paused', 'cancelled'))
           AS fact_repeat_reminder_count,
         (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id) AS fact_subscription_count,
         (SELECT next_due_at_utc FROM subscription_repeat_schedule
@@ -166,7 +166,7 @@ export async function assertStoredSubscriptionSchedulerRowsValid(
   }
 }
 
-/** 新建 v4 marker 前按本轮冻结的 now 精确核对刚重建的 scheduler，防止分页跨分钟产生漂移。 */
+/** 新建 v5 marker 前按本轮冻结的 now 精确核对刚重建的 scheduler，防止分页跨分钟产生漂移。 */
 export async function assertSubscriptionSchedulerRows(
   client: D1Client,
   now: Date,
@@ -186,7 +186,7 @@ export async function assertSubscriptionSchedulerRows(
         scheduler.next_daily_notification_due_at_utc AS stored_next_daily_notification_due_at_utc,
         scheduler.next_repeat_notification_due_at_utc AS stored_next_repeat_notification_due_at_utc,
         (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND auto_renew = 1) AS fact_auto_renew_count,
-        (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND repeat_reminder_enabled = 1 AND status != 'cancelled')
+        (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND repeat_reminder_enabled = 1 AND status NOT IN ('paused', 'cancelled'))
           AS fact_repeat_reminder_count,
         (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id) AS fact_subscription_count,
         (SELECT next_due_at_utc FROM subscription_repeat_schedule

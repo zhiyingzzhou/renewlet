@@ -18,9 +18,9 @@ describe("renewal with real transactional D1 facts and projections", () => {
   const fixtures: ReturnType<typeof openDerivedStateDatabase>[] = [];
   beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date("2026-02-01T08:00:00Z")); });
   afterEach(() => { for (const f of fixtures.splice(0)) f.db.close(); vi.useRealTimers(); });
-  async function setup() {
+  async function setup(overrides: Record<string, unknown> = {}) {
     const f = openDerivedStateDatabase(); fixtures.push(f);
-    const { subscription } = await readSuccessData<{ subscription: { id: string; updatedAt: string; nextBillingDate: string } }>(await createSubscription(request(draft), f.env));
+    const { subscription } = await readSuccessData<{ subscription: { id: string; updatedAt: string; nextBillingDate: string } }>(await createSubscription(request({ ...draft, ...overrides }), f.env));
     const payload = { expectedUpdatedAt: subscription.updatedAt, expectedNextBillingDate: subscription.nextBillingDate,
       mode: "continue", price: "0", currency: "EUR", startDate: null, nextBillingDate: "2026-03-31", autoCalculateNextBillingDate: false };
     return { ...f, id: subscription.id, payload };
@@ -47,6 +47,30 @@ describe("renewal with real transactional D1 facts and projections", () => {
     const { env, id, payload } = await setup();
     await updateSubscription(request({ publicHidden: true }), env, id);
     await expect(renewSubscription(request(payload), env, id)).rejects.toMatchObject({ status: 409 });
+  });
+  it("pauses with a version and resumes only with reviewed dates, retaining billing facts", async () => {
+    const { db, env, id, payload } = await setup({ costSharing: {
+      enabled: true, splitMode: "custom", collectionReminder: { enabled: true, reminderDays: 3 },
+      members: [{ id: "member", name: "Alex", customAmount: "4" }],
+    } });
+    db.prepare("UPDATE subscriptions SET cost_sharing_next_collection_reminder_date = ?, extra_json = ? WHERE id = ?")
+      .run("2026-01-31", '{ "source": "import" }', id);
+    const before = await getSubscription(env, USER_ID, id);
+    const patch = (body: unknown) => updateSubscription(request(body), env, id);
+    await expect(patch({ status: "paused", price: "99" })).rejects.toMatchObject({ status: 400, code: "SUBSCRIPTION_VERSION_REQUIRED" });
+    const results = await Promise.allSettled([1, 2].map(() => patch({ status: "paused", expectedUpdatedAt: payload.expectedUpdatedAt })));
+    expect(results.filter(result => result.status === "fulfilled")).toHaveLength(1);
+    expect(results.find(result => result.status === "rejected")).toMatchObject({ reason: { status: 409 } });
+    const paused = await getSubscription(env, USER_ID, id);
+    expect(paused).toEqual({ ...before, status: "paused", updated_at: paused!.updated_at });
+    expect(paused!.updated_at).not.toBe(before!.updated_at);
+    vi.setSystemTime(new Date("2026-03-01T12:00:00Z"));
+    const resume = { status: "trial", expectedUpdatedAt: paused!.updated_at };
+    await expect(patch(resume)).rejects.toMatchObject({ status: 400, code: "SUBSCRIPTION_RESUME_DATES" });
+    await expect(patch({ ...resume, nextBillingDate: "2026-03-31", trialEndDate: "2026-02-10" })).rejects.toMatchObject({ status: 400 });
+    expect(await getSubscription(env, USER_ID, id)).toEqual(paused);
+    await patch({ ...resume, nextBillingDate: "2026-03-31", trialEndDate: "2026-03-15" });
+    expect(await getSubscription(env, USER_ID, id)).toMatchObject({ status: "trial", trial_end_date: "2026-03-15", balance: "0", price: "12" });
   });
   it("rolls back both facts and projections on storage failure without misreporting a conflict", async () => {
     const { db, env, id, payload } = await setup();

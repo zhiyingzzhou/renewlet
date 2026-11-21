@@ -7,7 +7,7 @@ import {
   type DerivedSchemaShape,
 } from "./cloudflare-derived-backfill-state";
 
-// migration 记录只能证明文件曾被执行；部署放行还必须同时证明列定义、键、索引、约束和 v4 marker 互相一致。
+// migration 记录只能证明文件曾被执行；部署放行还必须同时证明列定义、键、索引、约束和 v5 marker 互相一致。
 const backfillName = SUBSCRIPTION_DERIVED_BACKFILL_NAME;
 
 const migrationRowSchema = z.object({ name: z.string() }).passthrough();
@@ -239,7 +239,7 @@ async function foreignKeysValid(client: D1Client): Promise<boolean> {
 }
 
 /**
- * 从数据库持久事实分类升级状态；旧 v2/v3 marker 或单独一条 migration 记录都不能授权跳过 v4。
+ * 从数据库持久事实分类升级状态；旧 v2/v3 marker 或单独一条 migration 记录都不能授权跳过 v5。
  * 返回 invalid-mixed 时调用方只能阻断部署，不能现场 ALTER 或猜测缺失结构。
  */
 export async function probeDerivedBackfillState(client: D1Client): Promise<DerivedBackfillState> {

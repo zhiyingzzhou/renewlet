@@ -33,6 +33,8 @@ const mocks = vi.hoisted(() => ({
   handleTogglePublicHiddenSubscription: vi.fn(),
   handleSaveSubscription: vi.fn(),
   ratesLoading: false,
+  ratesLocked: true,
+  provider: "exchange-api",
   upcomingRenewalsCalls: [] as Array<{ count: number; today: string }>,
   useSettings: vi.fn(),
   useSubscriptionAnalytics: vi.fn<() => MockSubscriptionAnalyticsResult>(),
@@ -141,8 +143,9 @@ vi.mock("@/hooks/use-report-exchange-rates", () => ({
       return value;
     },
     loading: mocks.ratesLoading,
+    activeProvider: mocks.provider,
     sourceDate: "2026-08-01",
-    reportBasisStatus: { month: "2026-08", locked: true, sourceDate: "2026-08-01", capturedAt: "2026-08-06T00:00:00Z" },
+    reportBasisStatus: { month: "2026-08", locked: mocks.ratesLocked, sourceDate: "2026-08-01", capturedAt: "2026-08-06T00:00:00Z" },
   }),
 }));
 
@@ -258,6 +261,8 @@ describe("Dashboard page loading state", () => {
   beforeEach(() => {
     detailSubscriptions.clear();
     mocks.ratesLoading = false;
+    mocks.ratesLocked = true;
+    mocks.provider = "exchange-api";
     mocks.upcomingRenewalsCalls = [];
     mockResolvedDashboardData();
     mocks.useSubscriptionDetail.mockImplementation((id: string | null) => {
@@ -273,6 +278,7 @@ describe("Dashboard page loading state", () => {
 
   it("keeps dashboard content visible while exchange rates are loading", () => {
     mocks.ratesLoading = true;
+    mocks.ratesLocked = false;
 
     renderDashboard();
 
@@ -323,6 +329,13 @@ describe("Dashboard page loading state", () => {
     expect(screen.getByTestId("upcoming-renewals")).toHaveTextContent("0");
   });
 
+  it.each([["builtin", "按内置参考汇率换算"], ["exchange-api", "实时汇率换算 (CNY)"]])("shows the actual unlocked %s rate source", (provider, expected) => {
+    mocks.provider = provider;
+    mocks.ratesLocked = false;
+    renderDashboard();
+    expect(screen.getByTestId("dashboard-stat-monthly-spend")).toHaveTextContent(expected);
+  });
+
   it("uses compact mobile-first summary cards without changing the desktop columns", () => {
     renderDashboard();
 
@@ -337,7 +350,7 @@ describe("Dashboard page loading state", () => {
     expect(activeSubscriptions).toHaveClass("p-4", "lg:p-6");
     expect(trials).toHaveClass("p-4", "lg:p-6", "col-span-full", "sm:col-span-1");
     expect(monthlySpend).not.toHaveClass("p-6");
-    expect(screen.getByText("日均 ¥46.67 · 实时汇率换算 (CNY)")).toBeInTheDocument();
+    expect(screen.getByText("日均 ¥46.67 · 使用 2026-08 锁定汇率")).toBeInTheDocument();
   });
 
   it("opens subscription details from a recent subscription card", async () => {

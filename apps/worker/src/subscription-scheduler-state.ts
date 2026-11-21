@@ -1,3 +1,4 @@
+import { ordinaryRemindersAllowed } from "@renewlet/shared/runtime";
 import { getSettings, listRepeatReminderCandidateSubscriptions, nowIso, toApiSubscription } from "./db";
 import type { ApiAppSettings } from "@renewlet/shared/schemas/settings";
 import type { ApiSubscription } from "@renewlet/shared/schemas/subscriptions";
@@ -9,7 +10,6 @@ import {
   getNextLocalScheduleOccurrence,
   getNextRepeatScheduleOccurrence,
   getRepeatScheduleDecision,
-  isCancelledSubscriptionStatus,
   scheduleOccurrence,
   toRfc3339Seconds,
 } from "./notification-schedule";
@@ -72,7 +72,7 @@ export async function buildSubscriptionSchedulerRefreshStatements(
   const counts = options.aggregateCounts ?? await env.DB.prepare(`
       SELECT
         COALESCE(SUM(CASE WHEN auto_renew = 1 THEN 1 ELSE 0 END), 0) AS autoRenewCount,
-        COALESCE(SUM(CASE WHEN repeat_reminder_enabled = 1 AND status != 'cancelled' THEN 1 ELSE 0 END), 0) AS repeatReminderCount
+        COALESCE(SUM(CASE WHEN repeat_reminder_enabled = 1 AND status NOT IN ('paused', 'cancelled') THEN 1 ELSE 0 END), 0) AS repeatReminderCount
       FROM subscriptions
       WHERE user_id = ?
     `).bind(userId).first<{ autoRenewCount: number; repeatReminderCount: number }>();
@@ -211,11 +211,11 @@ export function subscriptionSchedulerMutationStatement(
   return subscriptionSchedulerDeltaStatement(env, row.user_id, autoDelta, repeatDelta, settings, now);
 }
 
-/** scheduler count 与 repeat schedule 必须把 cancelled 视为无资格，状态切换才能产生对称 delta。 */
+/** scheduler count 与 repeat schedule 必须排除暂停及取消记录，状态切换才能产生对称 delta。 */
 export function subscriptionRepeatReminderContribution(
   row: Pick<SubscriptionRow, "status" | "repeat_reminder_enabled"> | null,
 ): number {
-  return row?.repeat_reminder_enabled === 1 && !isCancelledSubscriptionStatus(row?.status ?? "") ? 1 : 0;
+  return row?.repeat_reminder_enabled === 1 && ordinaryRemindersAllowed(row.status) ? 1 : 0;
 }
 
 export function subscriptionSchedulerDeltaStatement(

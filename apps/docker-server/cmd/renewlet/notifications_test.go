@@ -214,35 +214,37 @@ func TestBuildDueNotificationSkipsDisabledReminderSubscription(t *testing.T) {
 	}
 }
 
-func TestBuildDueNotificationCancelledStopsOrdinaryButKeepsCostSharing(t *testing.T) {
+func TestInactiveStatusStopsOrdinaryButKeepsCostSharing(t *testing.T) {
 	settings := defaultAppSettings()
 	settings.Timezone = "UTC"
 	reminderDays := 3
 
-	message := buildDueNotificationForLocalDate("2026-05-14", time.Date(2026, 5, 14, 8, 0, 0, 0, time.UTC), settings, []notificationSubscription{
-		{
-			ID:              "cancelled-family",
-			Name:            "Cancelled Family Plan",
-			Price:           "30",
-			Currency:        "USD",
-			Status:          "cancelled",
-			BillingCycle:    "monthly",
-			NextBillingDate: "2026-05-17",
-			ReminderDays:    reminderDays,
-			CostSharing: costSharingPayload{
-				Enabled:   true,
-				SplitMode: "equal",
-				CollectionReminder: &costSharingCollectionReminder{
-					Enabled:      true,
-					ReminderDays: &reminderDays,
+	for _, status := range []string{"paused", "cancelled"} {
+		message := buildDueNotificationForLocalDate("2026-05-14", time.Date(2026, 5, 14, 8, 0, 0, 0, time.UTC), settings, []notificationSubscription{
+			{
+				ID:              "cancelled-family",
+				Name:            "Cancelled Family Plan",
+				Price:           "30",
+				Currency:        "USD",
+				Status:          status,
+				BillingCycle:    "monthly",
+				NextBillingDate: "2026-05-17",
+				ReminderDays:    reminderDays,
+				CostSharing: costSharingPayload{
+					Enabled:   true,
+					SplitMode: "equal",
+					CollectionReminder: &costSharingCollectionReminder{
+						Enabled:      true,
+						ReminderDays: &reminderDays,
+					},
+					Members: []costSharingMember{{ID: "partner", Name: "Partner", JoinedDate: "2026-04-17", Currency: "USD"}},
 				},
-				Members: []costSharingMember{{ID: "partner", Name: "Partner", JoinedDate: "2026-04-17", Currency: "USD"}},
 			},
-		},
-	}, true, accountContentLocale(settings))
+		}, true, accountContentLocale(settings))
 
-	if !message.HasPayload || len(message.Items) != 1 || message.Items[0].Type != "costSharing" {
-		t.Fatalf("cancelled subscription should keep only family collection reminder, got %#v", message.Items)
+		if !message.HasPayload || len(message.Items) != 1 || message.Items[0].Type != "costSharing" {
+			t.Fatalf("%s subscription should keep only family collection reminder, got %#v", status, message.Items)
+		}
 	}
 }
 

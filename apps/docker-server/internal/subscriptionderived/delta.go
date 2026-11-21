@@ -66,8 +66,13 @@ func contributionForUser(snapshot *Snapshot, userID string) (Delta, error) {
 	if snapshot.AutoRenew {
 		contribution.AutoRenew = 1
 	}
-	if snapshot.RepeatReminderEnabled && snapshot.Status != "cancelled" {
+	if snapshot.RepeatReminderEnabled && OrdinaryRemindersAllowed(snapshot.Status) {
 		contribution.RepeatReminder = 1
 	}
 	return contribution, nil
+}
+
+// OrdinaryRemindersAllowed 只控制订阅自身的提醒；家庭收款按未完成责任独立投递。
+func OrdinaryRemindersAllowed(status string) bool {
+	return status != "paused" && status != "cancelled"
 }

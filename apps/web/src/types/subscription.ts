@@ -214,6 +214,11 @@ type SubscriptionFormSubmissionFrom<T extends Subscription> = T extends Subscrip
   ? Omit<T, "id" | "pinned" | "extra" | "trialEndDate" | "updatedAt">
   : never;
 export type SubscriptionFormSubmission = SubscriptionFormSubmissionFrom<Subscription>;
+export type SubscriptionEditSubmission = SubscriptionFormSubmission & {
+  source: Subscription;
+  baseline?: SubscriptionFormSubmission;
+  trialEndDate?: DateOnly | null;
+};
 type SubscriptionDraftFrom<T extends SubscriptionFormSubmission> = T extends SubscriptionFormSubmission
   ? T & { pinned: boolean; extra?: Record<string, unknown> }
   : never;

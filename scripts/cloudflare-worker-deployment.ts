@@ -1,6 +1,8 @@
 import { isJsonObject } from "./cloudflare-wrangler-config";
+import type { MaintenanceCheckpoint } from "./cloudflare-maintenance";
 
 export interface ActiveDeployment {
+  maintenance?: MaintenanceCheckpoint;
   versionId: string;
 }
 

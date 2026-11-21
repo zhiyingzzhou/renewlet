@@ -18,6 +18,7 @@ interface OperationFixture {
   failAt?: string | readonly string[];
   maintenanceVersion?: string;
   normalVersion?: string;
+  recovery?: { workerVersion: string; bookmark?: string };
 }
 
 function operationsFixture(options: OperationFixture = {}): { events: string[]; operations: DeploymentOperations } {
@@ -35,7 +36,7 @@ function operationsFixture(options: OperationFixture = {}): { events: string[]; 
       async ensureQueues() { await event("ensure-queues"); },
       async readActiveDeployment() {
         await event("read-active");
-        return options.active ? { versionId: options.active } : undefined;
+        return options.active ? { versionId: options.active, ...(options.recovery && { maintenance: options.recovery }) } : undefined;
       },
       async readAppliedExclusiveMigrations() {
         await event("read-migrations");
@@ -48,7 +49,7 @@ function operationsFixture(options: OperationFixture = {}): { events: string[]; 
       },
       async deployMaintenance() {
         maintenanceSequence += 1;
-        await event(maintenanceSequence === 1 ? "deploy-maintenance" : "redeploy-maintenance");
+        await event(maintenanceSequence === 1 ? "deploy-maintenance" : maintenanceSequence === 2 ? "seal-maintenance" : "redeploy-maintenance");
         return { versionId: options.maintenanceVersion ?? `maintenance-${maintenanceSequence}` };
       },
       async waitForBackgroundDrain() { await event("drain"); },
@@ -100,9 +101,12 @@ test("a pending exclusive migration drains background executions before its firs
 
   await runCloudflareDeployment(fixture.operations, [exclusiveMigration]);
 
-  assert.deepEqual(fixture.events.slice(6), [
+  assert.deepEqual(fixture.events.slice(4), [
     "deploy-maintenance",
     "drain",
+    "checkpoint",
+    "seal-maintenance",
+    "record:bookmark-1:old",
     "migrate",
     "verify-db",
     "deploy-normal",
@@ -110,14 +114,17 @@ test("a pending exclusive migration drains background executions before its firs
   ]);
 });
 
-test("a pending v4 derived backfill drains background executions without a new exclusive migration", async () => {
+test("a pending v5 derived backfill drains background executions without a new exclusive migration", async () => {
   const fixture = operationsFixture({ active: "old", applied: true, derivedBackfillPending: true });
 
   await runCloudflareDeployment(fixture.operations, [exclusiveMigration]);
 
-  assert.deepEqual(fixture.events.slice(6), [
+  assert.deepEqual(fixture.events.slice(4), [
     "deploy-maintenance",
     "drain",
+    "checkpoint",
+    "seal-maintenance",
+    "record:bookmark-1:old",
     "migrate",
     "verify-db",
     "deploy-normal",
@@ -210,7 +217,7 @@ test("post-write containment reports a maintenance redeploy failure without roll
 });
 
 test("a final deployment that remains on maintenance is contained", async () => {
-  const fixture = operationsFixture({ active: "old", normalVersion: "maintenance-1" });
+  const fixture = operationsFixture({ active: "old", normalVersion: "maintenance-2" });
 
   await assert.rejects(
     runCloudflareDeployment(fixture.operations, [exclusiveMigration]),
@@ -219,14 +226,13 @@ test("a final deployment that remains on maintenance is contained", async () => 
   assert.deepEqual(fixture.events.slice(-2), ["recovery:bookmark-1:old", "redeploy-maintenance"]);
 });
 
-test("rerunning after the exclusive marker restores normal service without another drain", async () => {
-  const fixture = operationsFixture({ active: "maintenance-old", applied: true });
-
+test("retry after a committed marker keeps the original checkpoint and normal version", async () => {
+  const fixture = operationsFixture({ active: "maintenance-old", applied: true,
+    recovery: { workerVersion: "normal-original", bookmark: "bookmark-original" } });
   await runCloudflareDeployment(fixture.operations, [exclusiveMigration]);
-
-  assert.equal(fixture.events.includes("deploy-maintenance"), false);
-  assert.equal(fixture.events.includes("drain"), false);
-  assert.equal(fixture.events.includes("deploy-normal"), true);
+  assert.ok(!fixture.events.includes("checkpoint"));
+  assert.ok(fixture.events.includes("record:bookmark-original:normal-original"));
+  assert.ok(fixture.events.indexOf("drain") < fixture.events.indexOf("migrate"));
 });
 
 test("manual recovery restores D1 before the previous Worker", async () => {
@@ -276,13 +282,13 @@ test("manual recovery returns to maintenance when restoring the old Worker fails
     }),
     /restore-worker:worker-old-version failed/,
   );
-  assert.deepEqual(fixture.events.slice(-2), ["restore-worker:worker-old-version", "redeploy-maintenance"]);
+  assert.deepEqual(fixture.events.slice(-2), ["restore-worker:worker-old-version", "seal-maintenance"]);
 });
 
 test("manual recovery reports both Worker restore and maintenance containment failures", async () => {
   const fixture = operationsFixture({
     active: "maintenance",
-    failAt: ["restore-worker:worker-old-version", "redeploy-maintenance"],
+    failAt: ["restore-worker:worker-old-version", "seal-maintenance"],
   });
 
   await assert.rejects(

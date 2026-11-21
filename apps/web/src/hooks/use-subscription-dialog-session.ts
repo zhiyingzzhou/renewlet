@@ -61,7 +61,7 @@ export function useSubscriptionDialogSession({
     mode === "create"
       ? createCreateFormState(defaultCreateCurrency, initialSubscription)
       : editSubscription
-        ? subscriptionToFormState(editSubscription)
+        ? { ...subscriptionToFormState(editSubscription), editSource: editSubscription }
         : createSubscriptionFormState(),
   );
 
@@ -148,9 +148,9 @@ export function useSubscriptionDialogSession({
 
     if (initializedSnapshotRef.current === editSubscription.id) return;
     initializedSnapshotRef.current = editSubscription.id;
-    // 未保存修改属于本次会话；同一对象的缓存刷新不能重新初始化输入。
     setHasStoredBalance(editSubscription.balance !== undefined);
-    setFormData(subscriptionToFormState(editSubscription));
+    // 原始详情与草稿同时冻结，后台刷新不能替旧草稿换上新版本号。
+    setFormData({ ...subscriptionToFormState(editSubscription), editSource: editSubscription });
     setCreateCurrencyManuallySelected(false);
     resetTransientState();
   }, [editSubscription, mode, open, resetTransientState]);
@@ -228,7 +228,7 @@ function isCreateFormPristine(formData: SubscriptionFormState): boolean {
   );
 }
 
-function subscriptionToFormState(subscription: Subscription): SubscriptionFormState {
+export function subscriptionToFormState(subscription: Subscription): SubscriptionFormState {
   const isDisabledReminder = subscription.reminderDays === DISABLED_REMINDER_DAYS;
   const isInheritReminder = subscription.reminderDays === INHERIT_REMINDER_DAYS;
   const isPresetReminder = REMINDER_DAYS_OPTIONS.some((opt) => opt.value === subscription.reminderDays);
@@ -250,6 +250,7 @@ function subscriptionToFormState(subscription: Subscription): SubscriptionFormSt
     oneTimeTermUnit: subscription.billingCycle === "one-time" ? subscription.oneTimeTermUnit ?? "month" : "month",
     category: subscription.category,
     status: subscription.status,
+    trialEndDate: subscription.trialEndDate,
     publicHidden: subscription.publicHidden,
     paymentMethod: subscription.paymentMethod || "",
     startDate: subscription.startDate ?? undefined,

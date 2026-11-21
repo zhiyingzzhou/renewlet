@@ -156,7 +156,7 @@ function openFixture(filename: string): SqliteUpgradeClient {
 }
 
 function seedUntrustedV2State(db: DatabaseSync): void {
-  // 旧 v2/v3 marker 不能证明 cancelled 语义下的集合投影和调度状态可信；v4 必须从订阅事实重新收敛。
+  // 旧 v2/v3 marker 不能证明 cancelled 语义下的集合投影和调度状态可信；v5 必须从订阅事实重新收敛。
   db.prepare(`INSERT INTO subscription_derived_backfills (name, completed_at)
     VALUES ('subscription-derived-state-v2', ?)`).run(timestamp);
   db.prepare(`INSERT OR REPLACE INTO subscription_list_index (
@@ -366,7 +366,7 @@ function assertRebuiltState(db: DatabaseSync): void {
     repeat_reminder_count: 1,
   });
   assert.equal(db.prepare(`SELECT COUNT(*) AS count FROM subscription_derived_backfills
-    WHERE name = 'subscription-derived-state-v4'`).get()?.["count"], 1);
+    WHERE name = 'subscription-derived-state-v5'`).get()?.["count"], 1);
   assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
 }
 
@@ -409,7 +409,7 @@ function assertUpgradeMarkersComplete(db: DatabaseSync): void {
     migrationNames(),
   );
   assert.equal(db.prepare(`SELECT COUNT(*) AS count FROM subscription_derived_backfills
-    WHERE name = 'subscription-derived-state-v4'`).get()?.["count"], 1);
+    WHERE name = 'subscription-derived-state-v5'`).get()?.["count"], 1);
   assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
 }
 
@@ -524,3 +524,41 @@ test("0047 adds nullable balance without touching facts, rolls back failure, and
     assert.deepEqual(client.db.prepare("PRAGMA foreign_key_check").all(), []);
   } finally { client.db.close(); }
 });
+
+for (const [version, marker, hash] of [
+  ["v0.3.28", "v3", "1b376936bed456d2d549025e59a19803b4963285e1efb4a5895770eda1adff01"],
+  ["v0.3.37", "v4", "6d6089b4c6a06ef480a98ac2a6a3e7ff20bf786ecaf0c6006a1a6762287c6513"],
+] as const) {
+  test(`${version} paused schedule upgrades and replays a lost commit acknowledgement`, async (context) => {
+    assert.equal(sha256(readFileSync(resolve(fixturesDir, `${version}.sql`), "utf8")), hash);
+    const client = openFixture(`${version}.sql`);
+    context.after(() => client.db.close());
+    const all = (sql: string) => client.db.prepare(sql).all();
+    assert.ok(client.db.prepare("SELECT name FROM subscription_derived_backfills WHERE name = ?").get(`subscription-derived-state-${marker}`));
+    const schedules = "SELECT * FROM subscription_repeat_schedule ORDER BY subscription_id";
+    assert.equal(all(schedules).length, 2);
+    applyPendingMigrations(client.db);
+    const facts = all("SELECT * FROM subscriptions ORDER BY id");
+    const active = all(schedules).find(row => row["subscription_id"] === "sub_fixture");
+    const originalBatch = client.batch.bind(client);
+    let loseResponse = true;
+    client.batch = async (statements) => {
+      const result = await originalBatch(statements);
+      if (loseResponse) { loseResponse = false; throw new Error("lost batch response"); }
+      return result;
+    };
+    await assert.rejects(runBackfill(client, backfillNow), /lost batch response/);
+    assert.equal(all("SELECT * FROM subscription_derived_backfills WHERE name = 'subscription-derived-state-v5'").length, 0);
+    client.batch = async (statements) => {
+      const result = await originalBatch(statements);
+      if (statements.some(s => s.sql.includes("INSERT INTO subscription_derived_backfills"))) throw new Error("lost marker response");
+      return result;
+    };
+    await assert.rejects(runBackfill(client, backfillNow), /lost marker response/);
+    client.batch = async () => { throw new Error("completed upgrade attempted a write"); };
+    await runBackfill(client, backfillNow);
+    assert.deepEqual(all("SELECT * FROM subscriptions ORDER BY id"), facts);
+    assert.deepEqual(all(schedules), [active]);
+    assert.deepEqual(plainRows(all("SELECT repeat_reminder_count FROM subscription_scheduler_state")), [{ repeat_reminder_count: 1 }]);
+  });
+}

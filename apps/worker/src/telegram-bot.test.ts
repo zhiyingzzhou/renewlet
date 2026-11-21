@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createDefaultAppSettings } from "@renewlet/shared/settings-defaults";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { subscriptionRepeatReminderContribution } from "./subscription-scheduler-state";
 import { readSuccessData } from "./api-test-helpers";
 import { updateSettings } from "./settings";
 import { countSubscriptionStatuses } from "./subscription-derived-state";
@@ -139,7 +140,7 @@ class TelegramBotTestStatement {
       const rows = this.state.subscriptions.filter((row) => row.user_id === userId);
       return {
         auto_renew_count: rows.filter((row) => row.auto_renew === 1).length,
-        repeat_reminder_count: rows.filter((row) => row.repeat_reminder_enabled === 1 && row.status !== "cancelled").length,
+        repeat_reminder_count: rows.reduce((sum, row) => sum + subscriptionRepeatReminderContribution(row), 0),
       } as T;
     }
     return null;

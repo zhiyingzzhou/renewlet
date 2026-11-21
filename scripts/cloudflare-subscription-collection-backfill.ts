@@ -117,7 +117,7 @@ function sameScalarValues(actual: readonly unknown[], expected: readonly unknown
 
 /**
  * 用 Worker 同源规则从 subscriptions 重算 list/tag 投影，并以全局基数反向排除孤儿或额外派生行。
- * 该校验是 v4 marker 的前置条件，不能改成抽样或只核对行数。
+ * 该校验是 v5 marker 的前置条件，不能改成抽样或只核对行数。
  */
 export async function assertSubscriptionCollectionProjectionRows(
   client: D1Client,

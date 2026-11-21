@@ -17,6 +17,12 @@ export type ThemeVariant = (typeof THEME_VARIANTS)[number];
 
 /** `expired` 是当前正式状态，状态变更必须同步 D1、PocketBase hook、前端筛选和导入导出。 */
 export const SUBSCRIPTION_STATUSES = ["trial", "active", "expired", "paused", "cancelled"] as const;
+
+/** 暂停与取消只抑制订阅自身的提醒，家庭成员的收款责任独立计算。 */
+export function ordinaryRemindersAllowed(status: string): boolean {
+  return status !== "paused" && status !== "cancelled";
+}
+
 export type SubscriptionStatus = (typeof SUBSCRIPTION_STATUSES)[number];
 
 /** `one-time` 默认是买断；携带 oneTimeTermCount/unit 时才按固定权益期摊销并提醒到期。 */

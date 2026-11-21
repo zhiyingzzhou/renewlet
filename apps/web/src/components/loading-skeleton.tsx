@@ -112,13 +112,13 @@ function StatCardSkeleton({
       data-testid={testId}
       className={cn("rounded-xl border border-border bg-card", compact ? "p-4 lg:p-6" : "p-6", className)}
     >
-      <div className={cn("flex items-start justify-between", compact && "gap-3 lg:gap-4")}>
-        <div className={cn("grid min-w-0", compact ? "gap-1.5 lg:gap-2" : "gap-2")}>
-          <SkeletonBox className={cn("w-20", compact ? "h-3.5 lg:h-4" : "h-4")} />
-          <SkeletonBox className={cn("w-24", compact ? "h-7 lg:h-8" : "h-8")} />
-          <SkeletonBox className={cn("h-3", compact ? "w-24 lg:w-28" : "w-28")} />
+      <div className={cn("grid min-w-0 gap-2", compact && "gap-1.5 lg:gap-2")}>
+        <div className="flex items-center justify-between gap-3">
+          <SkeletonBox className={cn("w-20 max-w-full", compact ? "h-3.5 lg:h-4" : "h-4")} />
+          <SkeletonBox className={cn("shrink-0 rounded-lg", compact ? "h-10 w-10 lg:h-12 lg:w-12" : "h-12 w-12")} />
         </div>
-        <SkeletonBox className={cn("shrink-0 rounded-lg", compact ? "h-10 w-10 lg:h-12 lg:w-12" : "h-12 w-12")} />
+        <SkeletonBox className={cn("w-24 max-w-full", compact ? "h-7 lg:h-8" : "h-8")} />
+        <SkeletonBox className={cn("h-3 max-w-full", compact ? "w-24 lg:w-28" : "w-28")} />
       </div>
     </div>
   );

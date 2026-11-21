@@ -246,33 +246,6 @@ func handleSubscriptionCreate(app core.App, e *core.RequestEvent) error {
 	return apiSuccessJSON(e, http.StatusCreated, subscriptionResponse{Subscription: subscriptionAPIFromRecord(record)})
 }
 
-func handleSubscriptionUpdate(app core.App, e *core.RequestEvent) error {
-	locale := requestLocale(e.Request)
-	body, err := decodeStrictJSON[subscriptionWriteRequest](e.Request, locale)
-	if err != nil {
-		return e.BadRequestError(validationErrorMessage(locale, "common.invalidRequestBody", err), err)
-	}
-	if !body.HasChanges() {
-		return e.BadRequestError(serverText(locale, "common.invalidRequestParameters"), nil)
-	}
-	record, err := findOwnedSubscription(app, e)
-	if err != nil {
-		return e.NotFoundError(serverText(locale, "subscription.notFound"), err)
-	}
-	withoutVisibility := body
-	withoutVisibility.PublicHidden = optionalJSONField[bool]{}
-	if body.PublicHidden.Set && !withoutVisibility.HasChanges() {
-		return handleSinglePublicVisibilityUpdate(app, e, record, body.PublicHidden)
-	}
-	if err := applySubscriptionWriteRequest(record, body, false); err != nil {
-		return e.BadRequestError(validationErrorMessage(locale, "common.invalidRequestBody", err), err)
-	}
-	if err := app.Save(record); err != nil {
-		return e.BadRequestError(validationErrorMessage(locale, "common.invalidRequestBody", err), err)
-	}
-	return apiSuccessJSON(e, http.StatusOK, subscriptionResponse{Subscription: subscriptionAPIFromRecord(record)})
-}
-
 func handleSubscriptionDelete(app core.App, e *core.RequestEvent) error {
 	record, err := findOwnedSubscription(app, e)
 	if err != nil {

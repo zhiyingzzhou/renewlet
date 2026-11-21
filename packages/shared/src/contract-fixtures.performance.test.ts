@@ -1,4 +1,4 @@
-import { SUBSCRIPTION_STATUSES } from "./runtime";
+import { ordinaryRemindersAllowed, SUBSCRIPTION_STATUSES } from "./runtime";
 import { buildSubscriptionPerformanceScenario, subscriptionPerformanceFixture } from "./contract-fixtures";
 import { describe, expect, it } from "vitest";
 
@@ -22,8 +22,8 @@ describe.each(subscriptionPerformanceFixture.scenarios)("subscription performanc
     expect(statusCounts).toEqual(expected.statusCounts);
     expect(tagRows).toBe(expected.tagRows);
     expect(final.filter((record) => record.autoRenew)).toHaveLength(expected.autoRenew);
-    // repeatReminder 是调度候选资格；已取消订阅即使保留开关也不能进入 repeat schedule。
-    expect(final.filter((record) => record.repeatReminderEnabled && record.status !== "cancelled"))
+    // repeatReminder 是调度候选资格；暂停和已取消订阅即使保留开关也不能进入 repeat schedule。
+    expect(final.filter((record) => record.repeatReminderEnabled && ordinaryRemindersAllowed(record.status)))
       .toHaveLength(expected.repeatReminder);
     expect(combinedFilterIndices).toEqual(expected.combinedFilterIndices);
   });

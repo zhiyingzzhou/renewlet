@@ -46,20 +46,21 @@ function applyMigration(database: DatabaseSync, name: string): void {
 function deploymentFixture(database: DatabaseSync) {
   const events: string[] = [];
   let active = "old-worker";
+  let maintenance: Parameters<DeploymentOperations["deployMaintenance"]>[0] | undefined;
   const operations: DeploymentOperations = {
     async prepare() {},
     async ensureQueues() {},
-    async readActiveDeployment() { return { versionId: active }; },
+    async readActiveDeployment() { return { versionId: active, ...(maintenance && { maintenance }) }; },
     async readAppliedExclusiveMigrations() { return appliedMigrations(database); },
     async readPendingDerivedBackfill() {
       const table = database.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'subscription_derived_backfills'").get();
       if (!table) return true;
-      return !database.prepare("SELECT name FROM subscription_derived_backfills WHERE name = 'subscription-derived-state-v4'").get();
+      return !database.prepare("SELECT name FROM subscription_derived_backfills WHERE name = 'subscription-derived-state-v5'").get();
     },
     async captureBookmark() { events.push("checkpoint"); return "bookmark"; },
     recordCheckpoint() {},
     recordRecoveryHint() { events.push("recovery-hint"); },
-    async deployMaintenance() { events.push("maintenance"); active = `maintenance-${events.length}`; return { versionId: active }; },
+    async deployMaintenance(context) { maintenance = context; events.push("maintenance"); active = `maintenance-${events.length}`; return { versionId: active }; },
     async waitForBackgroundDrain() { events.push("drain"); },
     async applyMigrations() {
       events.push("migrate");
@@ -68,11 +69,11 @@ function deploymentFixture(database: DatabaseSync) {
         if (!applied.has(name)) applyMigration(database, name);
       }
       database.prepare(`INSERT INTO subscription_derived_backfills (name, completed_at)
-        VALUES ('subscription-derived-state-v4', '2026-08-25T00:00:00.000Z')
+        VALUES ('subscription-derived-state-v5', '2026-08-25T00:00:00.000Z')
         ON CONFLICT(name) DO UPDATE SET completed_at = excluded.completed_at`).run();
     },
     async verifyDatabase(expectedNames) { events.push("verify"); verifyDatabase(database, expectedNames); },
-    async deployNormal() { events.push("normal"); active = "new-worker"; return { versionId: active }; },
+    async deployNormal() { maintenance = undefined; events.push("normal"); active = "new-worker"; return { versionId: active }; },
     async restoreWorker() { events.push("restore-worker"); },
     async restoreDatabase() { events.push("restore-db"); },
   };
@@ -126,7 +127,7 @@ for (const alreadyAppliedRussianMigration of [false, true]) {
     const { operations, events } = deploymentFixture(database);
 
     await runCloudflareDeployment(operations, names);
-    assert.deepEqual(events, ["checkpoint", "maintenance", "drain", "migrate", "verify", "normal", "verify"]);
+    assert.deepEqual(events, ["maintenance", "drain", "checkpoint", "maintenance", "migrate", "verify", "normal", "verify"]);
     assert.equal(database.prepare("SELECT settings_json FROM settings WHERE user_id = 'ru'").get()?.["settings_json"], original);
     events.length = 0;
     await runCloudflareDeployment(operations, names);
@@ -169,9 +170,7 @@ for (const failure of ["after-0043", "0044-marker", "normal-deploy"] as const) {
     events.length = 0;
 
     await runCloudflareDeployment(operations, names);
-    assert.deepEqual(events, failure === "normal-deploy"
-      ? ["checkpoint", "migrate", "verify", "normal", "verify"]
-      : ["checkpoint", "maintenance", "drain", "migrate", "verify", "normal", "verify"]);
+    assert.deepEqual(events, ["maintenance", "drain", "migrate", "verify", "normal", "verify"]);
     assert.deepEqual([...appliedMigrations(database)].sort(), migrationNames);
     assert.equal(database.prepare("SELECT settings_json FROM settings WHERE user_id = 'ru'").get()?.["settings_json"], original);
     verifyDatabase(database, names);

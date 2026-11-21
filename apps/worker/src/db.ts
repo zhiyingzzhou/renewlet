@@ -481,9 +481,9 @@ export async function listNotificationScheduleCandidateSubscriptions(
   // 三类日常候选分支各自走日期索引；UNION 后再由 collector 做 date-only 精确判断。
   const selects = [
     `SELECT ${SUBSCRIPTION_COLUMNS} FROM subscriptions
-      WHERE user_id = ? AND status != 'cancelled' AND reminder_days != ? AND next_billing_date >= ? AND next_billing_date <= ?`,
+      WHERE user_id = ? AND status NOT IN ('paused', 'cancelled') AND reminder_days != ? AND next_billing_date >= ? AND next_billing_date <= ?`,
     `SELECT ${SUBSCRIPTION_COLUMNS} FROM subscriptions
-      WHERE user_id = ? AND status != 'cancelled' AND reminder_days != ? AND trial_end_date >= ? AND trial_end_date <= ?`,
+      WHERE user_id = ? AND status NOT IN ('paused', 'cancelled') AND reminder_days != ? AND trial_end_date >= ? AND trial_end_date <= ?`,
   ];
   const params: unknown[] = [
     userId, DISABLED_REMINDER_DAYS, options.scheduledLocalDate, maxDate,
@@ -491,7 +491,7 @@ export async function listNotificationScheduleCandidateSubscriptions(
   ];
   if (options.includeExpired && options.showExpired) {
     selects.push(`SELECT ${SUBSCRIPTION_COLUMNS} FROM subscriptions
-      WHERE user_id = ? AND status != 'cancelled' AND reminder_days != ? AND next_billing_date < ?`);
+      WHERE user_id = ? AND status NOT IN ('paused', 'cancelled') AND reminder_days != ? AND next_billing_date < ?`);
     params.push(userId, DISABLED_REMINDER_DAYS, options.scheduledLocalDate);
   }
   selects.push(`SELECT ${SUBSCRIPTION_COLUMNS} FROM subscriptions
@@ -510,11 +510,11 @@ export async function listRepeatReminderCandidateSubscriptions(env: Env, userId:
   const maxDate = addDateOnlyDays(localDate, MAX_REMINDER_DAYS);
   const result = await env.DB.prepare(`
     SELECT ${SUBSCRIPTION_COLUMNS} FROM subscriptions
-      WHERE user_id = ? AND status != 'cancelled' AND repeat_reminder_enabled = 1 AND reminder_days != ?
+      WHERE user_id = ? AND status NOT IN ('paused', 'cancelled') AND repeat_reminder_enabled = 1 AND reminder_days != ?
         AND next_billing_date >= ? AND next_billing_date <= ?
     UNION
     SELECT ${SUBSCRIPTION_COLUMNS} FROM subscriptions
-      WHERE user_id = ? AND status != 'cancelled' AND repeat_reminder_enabled = 1 AND reminder_days != ?
+      WHERE user_id = ? AND status NOT IN ('paused', 'cancelled') AND repeat_reminder_enabled = 1 AND reminder_days != ?
         AND status = 'trial' AND trial_end_date >= ? AND trial_end_date <= ?
     ORDER BY created_at DESC, id DESC
   `).bind(

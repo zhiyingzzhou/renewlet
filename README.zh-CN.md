@@ -33,6 +33,7 @@ Renewlet 是一个会在续费前提醒你的自托管订阅账本。把订阅�
 ## 功能
 
 - 记录订阅：价格、扣费周期、续费日、付款方式和备注都放在一处。
+- 在订阅的「更多操作」里暂停订阅。恢复时选择活跃或试用并核对日期。暂停期间仍可收到家庭共享收款提醒。
 - 查看支出：按月或按年汇总费用，跟踪预算并换算不同币种。
 - 续费提醒：按你的时区提前发送，渠道包括 Telegram、Notifyx、Webhook、企业微信、钉钉、邮件、Bark、Server酱、Discord 和 PushPlus。
 - 录入和迁移：从截图、备忘录或表格生成可编辑草稿，确认后再导入；也可以导入导出 Renewlet 数据或迁入 Wallos 文件。
@@ -85,8 +86,11 @@ RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.37"
 升级前先备份数据和配置：
 
 ```bash
-tar -czf renewlet-backup-$(date +%F).tgz .env docker-compose.yml data
+docker compose stop web &&
+(umask 077 && tar -czf "renewlet-backup-$(date +%Y%m%d-%H%M%S).tgz" .env docker-compose.yml data)
 ```
+
+请妥善保管备份，它包含数据库、本地文件和原始 `PB_ENCRYPTION_KEY`。备份失败时，先用 `docker compose start web` 恢复原服务。回退数据迁移时，请停服并一起恢复同一备份的数据、配置和对应镜像。应用内的程序更新只管理二进制文件。
 
 更新 Docker 镜像：
 
@@ -97,7 +101,7 @@ docker compose up -d
 docker compose logs -f
 ```
 
-也可以点击页面顶部的版本号，在“系统更新”中完成更新。
+如果选择应用内更新，备份后先执行 `docker compose start web` 启动原服务，再点击页面顶部的版本号，打开“系统更新”。
 
 ## 常用命令
 

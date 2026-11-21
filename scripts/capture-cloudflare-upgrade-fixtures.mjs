@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputDir = join(repoRoot, "scripts/fixtures/cloudflare-upgrades");
@@ -67,7 +67,7 @@ function dumpDatabase(database, source) {
   return lines.join("\n");
 }
 
-function capture(source) {
+async function capture(source, releasePath) {
   const resolved = git("rev-parse", `${source.version}^{commit}`).trim();
   if (resolved !== source.commit) throw new Error(`${source.version} moved from pinned commit ${source.commit} to ${resolved}`);
   const packageJson = JSON.parse(git("show", `${source.commit}:package.json`));
@@ -110,7 +110,7 @@ function capture(source) {
     );
   database.prepare(`INSERT INTO settings (user_id, settings_json, created_at, updated_at)
     VALUES ('usr_fixture', ?, ?, ?)`).run(
-      JSON.stringify({ locale: source.locale, monthlyBudget: "2333" }),
+      JSON.stringify(releasePath ? { localePreference: "en-US", timezone: "UTC" } : { locale: source.locale, monthlyBudget: "2333" }),
       "2026-08-25T00:00:00.000Z",
       "2026-08-25T00:00:00.000Z",
     );
@@ -136,6 +136,24 @@ function capture(source) {
       "2026-08-25T00:00:00.000Z",
       "2026-08-25T00:00:00.000Z",
     );
+  if (releasePath) {
+    // 旧排程、计数和 marker 必须由发行版代码生成；用当前回填器播种会掩盖跨版本错误。
+    const commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: releasePath, encoding: "utf8" }).trim();
+    if (commit !== source.commit || execFileSync("git", ["status", "--short", "--untracked-files=no"], { cwd: releasePath, encoding: "utf8" }).trim()) {
+      throw new Error("Release fixture requires a clean checkout of its pinned commit");
+    }
+    const columns = database.prepare("PRAGMA table_info(subscriptions)").all().map((row) => quoteIdentifier(row.name));
+    const values = columns.map((column) => column === '"id"' ? "'sub_paused'" : column === '"status"' ? "'paused'" : column);
+    database.exec(`INSERT INTO subscriptions (${columns}) SELECT ${values} FROM subscriptions WHERE id = 'sub_fixture'`);
+    const { runBackfill } = await import(pathToFileURL(join(releasePath, "scripts/backfill-cloudflare-subscription-derived-state.ts")).href);
+    await runBackfill({
+      query: async (sql, params, parse) => database.prepare(sql).all(...params).map(parse),
+      batch: async (statements) => {
+        for (const { sql, params } of statements) database.prepare(sql).run(...params ?? []);
+        return statements.map(() => ({ success: true, results: [] }));
+      },
+    }, () => new Date("2026-08-25T12:00:00Z"));
+  }
   const fixture = dumpDatabase(database, source);
   database.close();
   const filename = `${source.version}.sql`;
@@ -152,10 +170,20 @@ function capture(source) {
 }
 
 mkdirSync(outputDir, { recursive: true });
-const manifest = {
-  kind: "renewlet-cloudflare-upgrade-fixtures",
-  schemaVersion: 1,
-  capturedAt: "2026-08-25T00:00:00.000Z",
-  fixtures: sources.map(capture),
-};
-writeFileSync(join(outputDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+const [v28Checkout, v37Checkout] = process.argv.slice(2);
+if (v28Checkout || v37Checkout) {
+  if (!v28Checkout || !v37Checkout) throw new Error("Provide both v0.3.28 and v0.3.37 checkout paths");
+  const fixtures = [
+    await capture({ version: "v0.3.28", commit: "2b3e89dbf7168b5266370c3095676f32f12cbeea" }, resolve(v28Checkout)),
+    await capture({ version: "v0.3.37", commit: "2aa8c8e1134d2d9670e888e03e9222c2ce00fbed" }, resolve(v37Checkout)),
+  ];
+  writeFileSync(join(outputDir, "pause-upgrade.json"), `${JSON.stringify(fixtures, null, 2)}\n`);
+} else {
+  const manifest = {
+    kind: "renewlet-cloudflare-upgrade-fixtures",
+    schemaVersion: 1,
+    capturedAt: "2026-08-25T00:00:00.000Z",
+    fixtures: await Promise.all(sources.map((source) => capture(source))),
+  };
+  writeFileSync(join(outputDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+}
