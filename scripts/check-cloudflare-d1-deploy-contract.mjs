@@ -5,7 +5,7 @@ function requireSnippet(content, snippet, context) {
   if (!content.includes(snippet)) throw new Error(`${context} must keep D1 deployment snippet: ${snippet}`);
 }
 
-/** workflow 和文档只暴露统一编排入口；排他 migration 与 v4 派生回填的停写顺序由状态机行为测试证明。 */
+/** workflow 和文档只暴露统一编排入口；排他 migration 与 v5 派生回填的停写顺序由状态机行为测试证明。 */
 export function checkCloudflareD1DeployContract(repoRoot) {
   const selfHostedPath = ".github/workflows/cloudflare-worker.yml";
   const releasePath = ".github/workflows/release-publish.yml";
@@ -39,7 +39,8 @@ export function checkCloudflareD1DeployContract(repoRoot) {
     "15 * 60 * 1000",
     "retryAll({ delaySeconds: 900 })",
     "recordRecoveryHint",
-    "restoreQueueConsumers(options.configPath)",
+    "reconcileQueueConsumers(options.configPath, true)",
+    "reconcileQueueConsumers(options.configPath, false)",
     "SELECT name, sql FROM sqlite_master",
     "assertD1TriggerDefinitions",
     "readPendingDerivedBackfill",

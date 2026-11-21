@@ -1,5 +1,6 @@
 // Worker 手动续订测试保护 owner 过滤和状态推进，避免 Cloudflare API 与 Go/PocketBase route 分叉。
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { subscriptionRepeatReminderContribution } from "./subscription-scheduler-state";
 import { readSuccessData } from "./api-test-helpers";
 import { renewSubscription } from "./subscriptions";
 import type { Env, SubscriptionRow } from "./types";
@@ -42,7 +43,7 @@ function envFixture(row: SubscriptionRow | null) {
             if (sql.includes("SUM(CASE WHEN auto_renew")) {
               return {
                 auto_renew_count: row?.auto_renew === 1 ? 1 : 0,
-                repeat_reminder_count: row?.repeat_reminder_enabled === 1 && row?.status !== "cancelled" ? 1 : 0,
+                repeat_reminder_count: subscriptionRepeatReminderContribution(row),
               };
             }
             if (sql.includes("SELECT settings_json FROM settings")) {

@@ -23,6 +23,8 @@ import {
 import { SUBSCRIPTION_DERIVED_BACKFILL_NAME } from "./cloudflare-derived-backfill-state";
 import { readActiveWorkerDeployment, type ActiveDeployment } from "./cloudflare-worker-deployment";
 
+import { assertWorkerCrons, maintenanceCheckpoint, workerControlRequest, type MaintenanceCheckpoint } from "./cloudflare-maintenance";
+
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const drainWindowMs = 15 * 60 * 1000;
 
@@ -48,7 +50,7 @@ export interface DeploymentOperations {
   readAppliedExclusiveMigrations(names: readonly string[]): Promise<Set<string>>;
   readPendingDerivedBackfill(): Promise<boolean>;
   captureBookmark(): Promise<string>;
-  deployMaintenance(): Promise<ActiveDeployment>;
+  deployMaintenance(context: MaintenanceCheckpoint): Promise<ActiveDeployment>;
   waitForBackgroundDrain(): Promise<void>;
   applyMigrations(): Promise<void>;
   verifyDatabase(names: readonly string[]): Promise<void>;
@@ -92,38 +94,47 @@ async function containAfterDatabaseWrite(
 ): Promise<never> {
   operations.recordRecoveryHint(bookmark, previous.versionId);
   try {
-    await operations.deployMaintenance();
+    await operations.deployMaintenance({ workerVersion: previous.versionId, bookmark });
   } catch (maintenanceError) {
     throw combineFailure(failure, maintenanceError, "Re-deploying maintenance mode");
   }
   throw failure;
 }
 
-/** 排他 migration 或 v4 派生回填都必须在旧后台完全排空后首次写 D1；写入后任何失败都保持 fail-closed。 */
+/** 排他 migration 或 v5 派生回填都必须在旧后台完全排空后首次写 D1；写入后任何失败都保持 fail-closed。 */
 export async function runCloudflareDeployment(operations: DeploymentOperations, names: readonly string[]): Promise<void> {
   await operations.prepare();
   await operations.ensureQueues();
 
-  const previous = await operations.readActiveDeployment();
+  const active = await operations.readActiveDeployment();
+  const previous = active && { versionId: active.maintenance?.workerVersion ?? active.versionId };
   const applied = await operations.readAppliedExclusiveMigrations(names);
-  const pending = names.filter((name) => !applied.has(name));
-  // v4 marker 是 cancelled 派生语义的发布边界；即使没有新的排他 SQL migration，回填期间也必须停写。
-  const derivedBackfillPending = pending.length === 0 && await operations.readPendingDerivedBackfill();
-  const bookmark = await operations.captureBookmark();
-  operations.recordCheckpoint(bookmark, previous?.versionId);
-
+  const exclusive = names.some((name) => !applied.has(name)) || await operations.readPendingDerivedBackfill();
+  let bookmark: string;
   let maintenanceVersion: string | undefined;
-  if ((pending.length > 0 || derivedBackfillPending) && previous !== undefined) {
+  if (previous && (exclusive || active?.maintenance)) {
+    // 首次发布只在排空后冻结恢复点；重跑时已封存的 bookmark 可能早于部分提交，必须原样沿用。
+    const checkpoint = active?.maintenance ?? { workerVersion: previous.versionId };
     try {
-      maintenanceVersion = (await operations.deployMaintenance()).versionId;
-      if (maintenanceVersion === previous.versionId) {
-        throw new Error("Maintenance deployment did not replace the previous Worker version");
-      }
+      const maintenance = await operations.deployMaintenance(checkpoint);
+      if (maintenance.versionId === previous.versionId) throw new Error("Maintenance deployment did not replace the previous Worker version");
+      maintenanceVersion = maintenance.versionId;
       await operations.waitForBackgroundDrain();
+      bookmark = checkpoint.bookmark ?? await operations.captureBookmark();
+      if (!checkpoint.bookmark) {
+        maintenanceVersion = (await operations.deployMaintenance({ ...checkpoint, bookmark })).versionId;
+      }
     } catch (error) {
-      await restoreBeforeDatabaseWrite(operations, previous, error);
+      if (checkpoint.bookmark) {
+        operations.recordRecoveryHint(checkpoint.bookmark, previous.versionId);
+        throw error;
+      }
+      return await restoreBeforeDatabaseWrite(operations, previous, error);
     }
+  } else {
+    bookmark = await operations.captureBookmark();
   }
+  operations.recordCheckpoint(bookmark, previous?.versionId);
 
   // migration runner 的 Feed prepare 是本轮首次 D1 写入；调用一旦开始就不能假设失败前没有部分提交。
   try {
@@ -144,14 +155,14 @@ export async function runCloudflareDeployment(operations: DeploymentOperations, 
 export async function runCloudflareRecovery(operations: DeploymentOperations, options: RecoveryOptions): Promise<void> {
   await operations.prepare();
   await operations.ensureQueues();
-  await operations.deployMaintenance();
+  await operations.deployMaintenance({ workerVersion: options.workerVersion, bookmark: options.bookmark });
   await operations.waitForBackgroundDrain();
   await operations.restoreDatabase(options.bookmark);
   try {
     await operations.restoreWorker(options.workerVersion);
   } catch (error) {
     try {
-      await operations.deployMaintenance();
+      await operations.deployMaintenance({ workerVersion: options.workerVersion, bookmark: options.bookmark });
     } catch (maintenanceError) {
       throw combineFailure(error, maintenanceError, "Re-deploying maintenance mode after recovery");
     }
@@ -330,15 +341,34 @@ function workerConsumerExists(payload: unknown, workerName: string): boolean {
     && (consumer["script_name"] === workerName || consumer["script"] === workerName || consumer["service"] === workerName));
 }
 
-async function restoreQueueConsumers(configPath: string): Promise<void> {
+async function reconcileQueueConsumers(configPath: string, enabled: boolean): Promise<void> {
   const config = readWranglerConfig(configPath);
   const workerName = requiredString(config, "name", "Wrangler config");
-  for (const consumer of configuredQueueConsumers(config)) {
+  const consumers = configuredQueueConsumers(config);
+  const queues = new Map(consumers.map(consumer => [requiredString(consumer, "queue", "Queue consumer"), consumer]));
+  // DLQ 可能残留旧版本的消费者；仅解绑这个 Worker，在恢复时只启用正常配置明确列出的队列。
+  for (const consumer of consumers) {
+    const dlq = consumer["dead_letter_queue"];
+    if (typeof dlq === "string" && !queues.has(dlq)) queues.set(dlq, { queue: dlq });
+  }
+  for (const consumer of queues.values()) {
     const queue = requiredString(consumer, "queue", "Queue consumer");
-    const listed = await requirePnpm([
-      "exec", "wrangler", "queues", "consumer", "worker", "list", queue, "--json", "--config", configPath,
-    ]);
-    if (workerConsumerExists(parseJson(listed.stdout, "Wrangler Queue consumer list"), workerName)) continue;
+    const exists = async () => {
+      const listed = await requirePnpm(["exec", "wrangler", "queues", "consumer", "worker", "list", queue, "--json", "--config", configPath]);
+      const consumers = parseJson(listed.stdout, "Wrangler Queue consumer list");
+      if (!Array.isArray(consumers) || consumers.some((entry) => !isJsonObject(entry)
+        || entry["type"] !== "worker" || [entry["script_name"], entry["script"], entry["service"]].every((name) => typeof name !== "string"))) {
+        throw new Error("Invalid Worker Queue consumer list");
+      }
+      return workerConsumerExists(consumers, workerName);
+    };
+    const shouldConsume = enabled && consumers.includes(consumer);
+    if (await exists() === shouldConsume) continue;
+    if (!shouldConsume) {
+      await requirePnpm(["exec", "wrangler", "queues", "consumer", "worker", "remove", queue, workerName, "--config", configPath]);
+      if (await exists()) throw new Error(`Queue consumer still attached: ${queue}`);
+      continue;
+    }
     const args = ["exec", "wrangler", "queues", "consumer", "worker", "add", queue, workerName, "--config", configPath];
     appendNumberFlag(args, "--batch-size", optionalNumber(consumer, "max_batch_size"));
     appendNumberFlag(args, "--batch-timeout", optionalNumber(consumer, "max_batch_timeout"));
@@ -348,6 +378,7 @@ async function restoreQueueConsumers(configPath: string): Promise<void> {
     const deadLetterQueue = consumer["dead_letter_queue"];
     if (typeof deadLetterQueue === "string" && deadLetterQueue.length > 0) args.push("--dead-letter-queue", deadLetterQueue);
     await requirePnpm(args);
+    if (!await exists()) throw new Error(`Queue consumer not restored: ${queue}`);
   }
 }
 
@@ -365,13 +396,22 @@ function createOperations(options: DeployOptions): DeploymentOperations {
   const environment: NodeJS.ProcessEnv = { ...process.env, CI_WRANGLER_CONFIG: options.configPath };
   const d1 = createD1OperationsClient({ target: "remote", configPath: options.configPath });
 
+  const config = readWranglerConfig(options.configPath);
+  const access = { accountId: environment["CLOUDFLARE_ACCOUNT_ID"]?.trim() ?? "",
+    apiToken: environment["CLOUDFLARE_API_TOKEN"]?.trim() ?? "", workerName: requiredString(config, "name", "Wrangler config") };
+  const control = (path: string, init?: RequestInit) => workerControlRequest(access.accountId, access.apiToken, access.workerName, path, init);
   const readActiveDeployment = async (): Promise<ActiveDeployment | undefined> => {
-    const config = readWranglerConfig(options.configPath);
-    return readActiveWorkerDeployment({
-      accountId: environment["CLOUDFLARE_ACCOUNT_ID"]?.trim() ?? "",
-      apiToken: environment["CLOUDFLARE_API_TOKEN"]?.trim() ?? "",
-      workerName: requiredString(config, "name", "Wrangler config"),
-    });
+    const active = await readActiveWorkerDeployment(access);
+    if (!active) return undefined;
+    const maintenance = maintenanceCheckpoint(await control(`versions/${active.versionId}`));
+    return maintenance ? { ...active, maintenance } : active;
+  };
+  const restoreTriggers = async () => {
+    await reconcileQueueConsumers(options.configPath, true);
+    const triggers = config["triggers"];
+    const crons = isJsonObject(triggers) ? triggers["crons"] : [];
+    if (!Array.isArray(crons) || crons.some((cron) => typeof cron !== "string")) throw new Error("Invalid configured Cron triggers");
+    assertWorkerCrons(await control("schedules"), crons as string[]);
   };
 
   const readAppliedExclusiveMigrations = async (names: readonly string[]): Promise<Set<string>> => {
@@ -407,9 +447,10 @@ function createOperations(options: DeployOptions): DeploymentOperations {
   };
 
   const deploy = async (configPath: string, message: string): Promise<ActiveDeployment> => {
-    await requirePnpm(["exec", "wrangler", "deploy", "--message", message, "--config", configPath]);
+    const result = await requirePnpm(["exec", "wrangler", "deploy", "--message", message, "--config", configPath]);
+    const published = /^Current Version ID:\s*([a-zA-Z0-9-]+)\s*$/m.exec(result.stdout)?.[1];
     const active = await readActiveDeployment();
-    if (active === undefined) throw new Error("Worker deploy completed without an active deployment");
+    if (!published || active?.versionId !== published) throw new Error("Published Worker version does not match the active deployment");
     return active;
   };
 
@@ -428,8 +469,19 @@ function createOperations(options: DeployOptions): DeploymentOperations {
     async captureBookmark() {
       return await captureBookmark(options.configPath);
     },
-    async deployMaintenance() {
-      return await deploy(options.maintenanceConfigPath, "Renewlet exclusive migration maintenance mode");
+    async deployMaintenance(context) {
+      const maintenance = createMaintenanceWranglerConfig(config);
+      maintenance["vars"] = { ...(isJsonObject(maintenance["vars"]) ? maintenance["vars"] : {}),
+        RENEWLET_RECOVERY_WORKER: context.workerVersion, ...(context.bookmark ? { RENEWLET_RECOVERY_BOOKMARK: context.bookmark } : {}) };
+      writeWranglerConfig(options.maintenanceConfigPath, maintenance);
+      const active = await deploy(options.maintenanceConfigPath, "Renewlet exclusive migration maintenance mode");
+      if (active.maintenance?.workerVersion !== context.workerVersion || active.maintenance.bookmark !== context.bookmark) {
+        throw new Error("Active Worker does not carry the expected maintenance checkpoint");
+      }
+      await control("schedules", { method: "PUT", body: "[]" });
+      assertWorkerCrons(await control("schedules"), []);
+      await reconcileQueueConsumers(options.configPath, false);
+      return active;
     },
     async waitForBackgroundDrain() {
       console.log("Waiting 15 minutes for in-flight Cron and Queue invocations to drain.");
@@ -460,14 +512,17 @@ function createOperations(options: DeployOptions): DeploymentOperations {
       }
     },
     async deployNormal() {
-      return await deploy(options.configPath, "Renewlet normal service");
+      const active = await deploy(options.configPath, "Renewlet normal service");
+      if (active.maintenance) throw new Error("Final Worker still serves maintenance mode");
+      await restoreTriggers();
+      return active;
     },
     async restoreWorker(versionId) {
       await requirePnpm([
         "exec", "wrangler", "rollback", versionId, "--yes", "--message", "Restore Renewlet before exclusive D1 migration", "--config", options.configPath,
       ]);
       await requirePnpm(["exec", "wrangler", "triggers", "deploy", "--config", options.configPath]);
-      await restoreQueueConsumers(options.configPath);
+      await restoreTriggers();
       const active = await readActiveDeployment();
       if (active?.versionId !== versionId) throw new Error("Previous Worker version was not restored");
     },

@@ -19,7 +19,7 @@ import type {
   CustomCycleUnit,
   SubscriptionStatus,
 } from "@/types/subscription";
-import { effectiveReminderDays, isDisabledReminderDays } from "@renewlet/shared/runtime";
+import { effectiveReminderDays, isDisabledReminderDays, ordinaryRemindersAllowed } from "@renewlet/shared/runtime";
 import { daysBetweenDateOnly, isValidDateOnly, todayDateOnlyInTimeZone, type DateOnly } from "@/lib/time/date-only";
 import { isValidTimeZone } from "@/lib/time/time-zone";
 import { DEFAULT_LOCALE, localeForPreference, type Locale } from "@/i18n/locales";
@@ -258,7 +258,7 @@ export function collectNotificationItemsForLocalDate(
       oneTimeTermUnit: sub.oneTimeTermUnit,
     });
 
-    if (!isDisabledReminderDays(sub.reminderDays) && reminderDays !== undefined) {
+    if (ordinaryRemindersAllowed(sub.status) && !isDisabledReminderDays(sub.reminderDays) && reminderDays !== undefined) {
       if (buyout) {
         // one-time 买断没有权益到期边界；购买日不能被本地预览解释成续费或过期。
       } else if (daysUntilNext < 0) {

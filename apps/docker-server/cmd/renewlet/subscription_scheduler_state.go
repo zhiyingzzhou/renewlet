@@ -89,7 +89,7 @@ func readSubscriptionSchedulerAggregateInput(app core.App, userID string) (subsc
 	var counts subscriptionSchedulerAggregateInput
 	err := app.DB().NewQuery(`SELECT
 		COALESCE(SUM(CASE WHEN autoRenew = 1 THEN 1 ELSE 0 END), 0) AS auto_renew_count,
-		COALESCE(SUM(CASE WHEN repeatReminderEnabled = 1 AND status != 'cancelled' THEN 1 ELSE 0 END), 0) AS repeat_reminder_count
+		COALESCE(SUM(CASE WHEN repeatReminderEnabled = 1 AND status NOT IN ('paused', 'cancelled') THEN 1 ELSE 0 END), 0) AS repeat_reminder_count
 		FROM subscriptions WHERE user = {:user}`).Bind(dbx.Params{"user": userID}).One(&counts)
 	return counts, err
 }
@@ -238,7 +238,7 @@ func rebuildSubscriptionRepeatScheduleForUser(app core.App, userID string, setti
 		return err
 	}
 	for offset := 0; ; offset += notificationSubscriptionPageSize {
-		records, err := app.FindRecordsByFilter("subscriptions", "user = {:user} && status != 'cancelled' && repeatReminderEnabled = true", "id", notificationSubscriptionPageSize, offset, dbx.Params{"user": userID})
+		records, err := app.FindRecordsByFilter("subscriptions", "user = {:user} && status != 'paused' && status != 'cancelled' && repeatReminderEnabled = true", "id", notificationSubscriptionPageSize, offset, dbx.Params{"user": userID})
 		if err != nil {
 			return err
 		}

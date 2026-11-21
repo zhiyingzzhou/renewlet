@@ -327,7 +327,7 @@ func rebuildSubscriptionDerivedStateForUser(app core.App, userID string, now tim
 			if record.GetBool("autoRenew") {
 				stats.AutoRenewCount++
 			}
-			if record.GetBool("repeatReminderEnabled") && record.GetString("status") != "cancelled" {
+			if record.GetBool("repeatReminderEnabled") && subscriptionderived.OrdinaryRemindersAllowed(record.GetString("status")) {
 				stats.RepeatReminderCount++
 			}
 			if err := upsertSubscriptionListProjection(app, record); err != nil {

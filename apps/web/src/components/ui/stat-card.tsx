@@ -40,38 +40,36 @@ export function StatCard({
         className,
       )}
     >
-      <div className={cn("flex items-start justify-between", compact && "gap-3 lg:gap-4")}>
-        <div className={cn("grid min-w-0", compact ? "gap-1.5 lg:gap-2" : "gap-2")}>
-          <p className={cn("font-medium text-muted-foreground", compact ? "truncate text-xs lg:text-sm" : "text-sm")}>
+      <div className={cn("grid min-w-0 gap-2", compact && "gap-1.5 lg:gap-2")}>
+        <div className="flex items-center justify-between gap-3">
+          <p className={cn("min-w-0 wrap-anywhere font-medium text-muted-foreground", compact ? "text-xs lg:text-sm" : "text-sm")}>
             {title}
           </p>
-          <p
+          <div
+            aria-hidden="true"
             className={cn(
-              "font-bold tracking-tight",
-              compact ? "truncate text-2xl lg:text-3xl" : "text-3xl",
-              variant === 'primary' && "text-foreground",
-              variant === 'warning' && "text-warning",
+              "flex shrink-0 items-center justify-center rounded-lg",
+              compact ? "h-10 w-10 [&_svg]:h-5 [&_svg]:w-5 lg:h-12 lg:w-12 lg:[&_svg]:h-6 lg:[&_svg]:w-6" : "h-12 w-12",
+              variant === 'default' && "bg-secondary text-muted-foreground",
+              variant === 'primary' && "bg-secondary text-primary",
+              variant === 'warning' && "bg-warning/10 text-warning",
             )}
           >
-            {value}
+            {icon}
+          </div>
+        </div>
+        <p className={cn(
+          "min-w-0 wrap-anywhere font-bold tracking-tight",
+          compact ? "text-2xl lg:text-3xl" : "text-3xl",
+          variant === "warning" && "text-warning",
+        )}>
+          {value}
+        </p>
+        {subtitle && (
+          <p className={cn("min-w-0 wrap-anywhere text-muted-foreground", compact ? "text-[11px] leading-4 lg:text-xs" : "text-xs")}>
+            {subtitle}
           </p>
-          {subtitle && (
-            <p className={cn("text-muted-foreground", compact ? "truncate text-[11px] leading-4 lg:text-xs" : "text-xs")}>
-              {subtitle}
-            </p>
-          )}
-        </div>
-        <div
-          className={cn(
-            "flex shrink-0 items-center justify-center rounded-lg",
-            compact ? "h-10 w-10 [&_svg]:h-5 [&_svg]:w-5 lg:h-12 lg:w-12 lg:[&_svg]:h-6 lg:[&_svg]:w-6" : "h-12 w-12",
-            variant === 'default' && "bg-secondary text-muted-foreground",
-            variant === 'primary' && "bg-secondary text-primary",
-            variant === 'warning' && "bg-warning/10 text-warning",
-          )}
-        >
-          {icon}
-        </div>
+        )}
       </div>
     </div>
   );

@@ -49,7 +49,7 @@
         "statusCounts": { "trial": 3, "active": 2, "expired": 1, "paused": 1, "cancelled": 3 },
         "tagRows": 20,
         "autoRenew": 6,
-        "repeatReminder": 2,
+        "repeatReminder": 1,
         "combinedFilterIndices": [1]
       },
       "operationBudget": {
@@ -64,7 +64,7 @@
         "statusCounts": { "trial": 21, "active": 20, "expired": 19, "paused": 19, "cancelled": 21 },
         "tagRows": 200,
         "autoRenew": 51,
-        "repeatReminder": 21,
+        "repeatReminder": 16,
         "combinedFilterIndices": [1]
       },
       "operationBudget": {
@@ -79,7 +79,7 @@
         "statusCounts": { "trial": 201, "active": 200, "expired": 199, "paused": 199, "cancelled": 201 },
         "tagRows": 2000,
         "autoRenew": 501,
-        "repeatReminder": 201,
+        "repeatReminder": 151,
         "combinedFilterIndices": [1]
       },
       "operationBudget": {
@@ -94,7 +94,7 @@
         "statusCounts": { "trial": 1001, "active": 1000, "expired": 999, "paused": 999, "cancelled": 1001 },
         "tagRows": 10000,
         "autoRenew": 2501,
-        "repeatReminder": 1001,
+        "repeatReminder": 751,
         "combinedFilterIndices": [1]
       },
       "operationBudget": {

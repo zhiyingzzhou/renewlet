@@ -78,6 +78,7 @@ func runSchemaDataMigrations(app core.App) error {
 				VerifyGuard:  verifyNotificationMessageGuards,
 			},
 		},
+		{Name: "subscription_paused_reminders_v1", Run: migratePausedReminders},
 	}
 	for _, migration := range migrations {
 		var err error

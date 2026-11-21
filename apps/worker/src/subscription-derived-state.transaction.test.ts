@@ -135,7 +135,7 @@ describe("Worker subscription derived-state transactions", () => {
     }
   });
 
-  it("removes and restores cancelled repeat schedule contributions on status changes", async () => {
+  it.each(["paused", "cancelled"] as const)("removes and restores the repeat contribution for %s", async (status) => {
     const { db, env } = openDerivedStateDatabase();
     try {
       const settings = createDefaultAppSettings();
@@ -157,22 +157,22 @@ describe("Worker subscription derived-state transactions", () => {
       };
 
       assertRepeatContribution(1, 1);
-      const cancelled = { ...active, status: "cancelled", updated_at: "2026-08-17T00:01:00.000Z" } satisfies SubscriptionRow;
+      const inactive = { ...active, status, updated_at: "2026-08-17T00:01:00.000Z" } satisfies SubscriptionRow;
       await env.DB.batch(mutationBatch(
         env,
         env.DB.prepare("UPDATE subscriptions SET status = ?, updated_at = ? WHERE user_id = ? AND id = ?")
-          .bind(cancelled.status, cancelled.updated_at, USER_ID, cancelled.id),
-        { before: active, after: cancelled, kind: "update" },
+          .bind(inactive.status, inactive.updated_at, USER_ID, inactive.id),
+        { before: active, after: inactive, kind: "update" },
         settings,
       ));
       assertRepeatContribution(0, 0);
 
-      const restored = { ...cancelled, status: "active", updated_at: "2026-08-17T00:02:00.000Z" } satisfies SubscriptionRow;
+      const restored = { ...inactive, status: "active", updated_at: "2026-08-17T00:02:00.000Z" } satisfies SubscriptionRow;
       await env.DB.batch(mutationBatch(
         env,
         env.DB.prepare("UPDATE subscriptions SET status = ?, updated_at = ? WHERE user_id = ? AND id = ?")
           .bind(restored.status, restored.updated_at, USER_ID, restored.id),
-        { before: cancelled, after: restored, kind: "update" },
+        { before: inactive, after: restored, kind: "update" },
         settings,
       ));
       assertRepeatContribution(1, 1);

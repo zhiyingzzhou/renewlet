@@ -51,7 +51,7 @@ func handleSubscriptionRenew(app core.App, e *core.RequestEvent) error {
 		if err != nil {
 			return err
 		}
-		if record.GetString("nextBillingDate") != body.ExpectedNextBillingDate || record.GetDateTime("updated").Time().UTC().Truncate(time.Millisecond).Format(time.RFC3339Nano) != body.ExpectedUpdatedAt {
+		if record.GetString("nextBillingDate") != body.ExpectedNextBillingDate || subscriptionRecordVersion(record) != body.ExpectedUpdatedAt {
 			return errSubscriptionRenewConflict
 		}
 		input := subscriptionRenewalInputFromRecord(record)
@@ -119,6 +119,11 @@ func handleSubscriptionRenew(app core.App, e *core.RequestEvent) error {
 	return apiSuccessJSON(e, http.StatusOK, subscriptionResponse{Subscription: response})
 }
 
+// DTO、续订和编辑必须使用同一毫秒精度，保存响应的版本才能直接用于下一次条件写入。
+func subscriptionRecordVersion(record *core.Record) string {
+	return record.GetDateTime("updated").Time().UTC().Truncate(time.Millisecond).Format(time.RFC3339Nano)
+}
+
 func subscriptionAPIFromRecord(record *core.Record) subscriptionDetailResponse {
 	out := subscriptionDetailResponse{
 		subscriptionCollectionItemResponse: subscriptionCollectionAPIFromRecord(record),
@@ -135,7 +140,7 @@ func subscriptionAPIFromRecord(record *core.Record) subscriptionDetailResponse {
 	}
 	// DTO 与 PocketBase 的毫秒持久化精度一致，避免保存响应与随后读取形成两个版本。
 	if !record.GetDateTime("updated").IsZero() {
-		out.UpdatedAt = record.GetDateTime("updated").Time().UTC().Truncate(time.Millisecond).Format(time.RFC3339Nano)
+		out.UpdatedAt = subscriptionRecordVersion(record)
 	}
 	return out
 }

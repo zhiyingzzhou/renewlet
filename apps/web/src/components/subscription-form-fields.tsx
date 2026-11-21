@@ -1,4 +1,5 @@
 import { memo, useCallback } from "react";
+import { DateOnlyPickerField } from "@/components/date-only-picker-field";
 import { FormField, FormFieldRow } from "@/components/ui/form-field";
 import { FieldError } from "@/components/ui/field-error";
 import { Input } from "@/components/ui/input";
@@ -68,6 +69,7 @@ function disableCollectionReminder(costSharing: CostSharing | undefined): CostSh
 
 export const SubscriptionFormFields = memo(function SubscriptionFormFields({
   idPrefix,
+  resume = false,
   config,
   formData,
   setFormData,
@@ -277,21 +279,24 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
         <FormField
           id={id("status")}
           label={t("subscription.field.status")}
+          error={errors.status}
         >
-          {({ id: fieldId }) => (
-            <Select value={formData.status} onValueChange={(value) => update("status", value as SubscriptionStatus)}>
+          {({ id: fieldId, invalid, describedBy }) => (
+            <Select value={resume && formData.status === "paused" ? "" : formData.status} onValueChange={(value) => update("status", value as SubscriptionStatus)}>
               <SelectTrigger
                 id={fieldId}
                 className={cn(
                   "border-border bg-secondary",
                   pendingStatusConfirmation && "border-amber-500/70 focus:ring-amber-500/40",
                 )}
-                tooltipContent={statusLabel ? label(statusLabel) : formData.status}
+                aria-invalid={invalid}
+                aria-describedby={describedBy}
+                tooltipContent={resume && formData.status === "paused" ? undefined : statusLabel ? label(statusLabel) : formData.status}
               >
-                <SelectValue />
+                <SelectValue placeholder={t("subscription.chooseStatus")} />
               </SelectTrigger>
               <SelectContent>
-                {config.statuses.map((status) => (
+                {config.statuses.filter((option) => !resume || option.value === "active" || option.value === "trial").map((status) => (
                   <SelectItem key={status.id} value={status.value}>
                     {label(status.labels)}
                   </SelectItem>
@@ -537,6 +542,12 @@ export const SubscriptionFormFields = memo(function SubscriptionFormFields({
         </div>
       ) : null}
 
+      {formData.editSource?.status === "paused" && formData.status === "trial" && (
+        <FormField id={id("trialEndDate")} label={t("subscription.detail.trialEndDate")} error={errors.trialEndDate}>
+          {(field) => <DateOnlyPickerField id={field.id} invalid={field.invalid} describedBy={field.describedBy} value={formData.trialEndDate} onChange={(date) => update("trialEndDate", date)}
+            clearable clearLabel={t("subscription.clearTrialEndDate")} placeholder={t("subscription.placeholder.date")} />}
+        </FormField>
+      )}
       <SubscriptionFormDateFields id={id} formData={formData} update={update} errors={errors} />
 
       {isOneTimeBuyout ? (

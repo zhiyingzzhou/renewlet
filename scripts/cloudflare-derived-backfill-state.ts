@@ -1,11 +1,11 @@
-/** migration 与 v4 marker 共同决定升级状态；旧 v2/v3 marker 都不能授权跳过 cancelled 派生语义重建。 */
-export const SUBSCRIPTION_DERIVED_BACKFILL_NAME = "subscription-derived-state-v4";
+/** migration 与 v5 marker 共同决定升级状态；旧 v2/v3 marker 都不能授权跳过 cancelled 派生语义重建。 */
+export const SUBSCRIPTION_DERIVED_BACKFILL_NAME = "subscription-derived-state-v5";
 
 export type DerivedBackfillState =
   | "legacy"
   | "v2-needs-repair-migration"
-  | "v4-pending-backfill"
-  | "v4-complete"
+  | "v5-pending-backfill"
+  | "v5-complete"
   | "invalid-mixed";
 
 /** migration 记录、完整列签名和 completion marker 共同组成可部署状态，不能只信任其中一个信号。 */
@@ -113,7 +113,7 @@ export function classifyDerivedSchema(shape: DerivedSchemaShape): DerivedBackfil
     && shape.foreignKeysValid
     && shape.constraintsValid;
   if (shape.v2MigrationApplied && shape.v3MigrationApplied && completeCollectionShape && completeV2Shape) {
-    return shape.markerPresent ? "v4-complete" : "v4-pending-backfill";
+    return shape.markerPresent ? "v5-complete" : "v5-pending-backfill";
   }
   if (shape.v2MigrationApplied && !shape.v3MigrationApplied && completeCollectionShape && completeV2Shape && !shape.markerPresent) {
     return "v2-needs-repair-migration";
@@ -148,13 +148,13 @@ export async function executeDerivedBackfillState(
     case "legacy":
       throw new Error("Cloudflare subscription derived-state schema is legacy; apply migrations 0036 and 0039 before backfill");
     case "v2-needs-repair-migration":
-      throw new Error("Cloudflare subscription derived-state schema is v2; apply migration 0039 before v4 backfill");
+      throw new Error("Cloudflare subscription derived-state schema is v2; apply migration 0039 before v5 backfill");
     case "invalid-mixed":
       throw new Error("Cloudflare subscription derived-state schema is invalid or mixed; refusing automatic schema repair");
-    case "v4-complete":
+    case "v5-complete":
       await actions.verify();
       return;
-    case "v4-pending-backfill":
+    case "v5-pending-backfill":
       // pending 可能来自进程中断或 REST 响应丢失；只重放幂等派生写入，marker 永远排在完整校验之后。
       await actions.rebuild();
       await actions.verify();

@@ -1419,6 +1419,11 @@ msgid "statistics.monthlySavingsDescription"
 msgstr "Monthly equivalent of paused, cancelled, and expired subscriptions. It excludes active and trial subscriptions and is not the remaining budget."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:749
+msgid "subscription.pauseSuccess"
+msgstr "Paused {name}"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:453
 msgid "import.conflictTitle"
 msgstr "Existing same-source subscriptions"
@@ -1614,6 +1619,21 @@ msgid "subscriptions.bulkVisibilityConfirmShowTitle"
 msgstr "Restore selected subscriptions to the public page"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:751
+msgid "subscription.resumeTitle"
+msgstr "Resume subscription"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:752
+msgid "subscription.resumeMenu"
+msgstr "Resume subscription…"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:755
+msgid "subscription.resumeDateError"
+msgstr "To resume, set the applicable billing and trial end dates to today or later."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:123
 msgid "subscription.costSharing.memberDefault"
 msgstr "Member {index}"
@@ -1762,6 +1782,11 @@ msgstr "Continuous sync"
 #: src/i18n/descriptors/subscription.ts:430
 msgid "import.wallosGuideValueLowConfidence"
 msgstr "Match by details"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:747
+msgid "dashboard.builtinRates"
+msgstr "Converted at built-in reference rates"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:217
@@ -2072,6 +2097,11 @@ msgstr "The old URL will stop working immediately, and this subscription will no
 #: src/i18n/descriptors/subscription.ts:42
 msgid "subscription.addToCalendarRegenerateDescription"
 msgstr "The old URL will stop working immediately. Calendar apps that already use this subscription need to be re-added."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:750
+msgid "subscription.pauseTitle"
+msgstr "Pause subscription"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:160
@@ -2619,6 +2649,11 @@ msgid "subscriptions.clearFilters"
 msgstr "Clear filters"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:756
+msgid "subscription.clearTrialEndDate"
+msgstr "Clear trial end date"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:567
 msgid "aiRecognition.imageDropDescription"
 msgstr "Click, drag, or paste PNG, JPG, or WebP images here, up to {count} files."
@@ -3084,6 +3119,11 @@ msgid "subscription.formIncomplete"
 msgstr "Subscription details are incomplete. Please check and try again."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:748
+msgid "subscription.reviewAgain"
+msgstr "This subscription has changed. Reopen it to review the details."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:275
 msgid "subscriptions.title"
 msgstr "Subscriptions"
@@ -3272,6 +3312,11 @@ msgstr "Please select an expiry date."
 #: src/i18n/descriptors/subscription.ts:226
 msgid "subscription.renew.validation.currencyRequired"
 msgstr "Choose an enabled currency"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:753
+msgid "subscription.resumeHelp"
+msgstr "Choose a status and review the billing date and any trial end date."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:227
@@ -3502,6 +3547,11 @@ msgstr "Choose file"
 #: src/i18n/descriptors/subscription.ts:155
 msgid "subscription.placeholder.date"
 msgstr "Select date"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:754
+msgid "subscription.chooseStatus"
+msgstr "Choose a status"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:208

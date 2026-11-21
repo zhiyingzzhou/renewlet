@@ -139,6 +139,7 @@ export default defineConfig({
       testMatch: previousDist ? ["**/version-upgrade.spec.ts"] : performanceMode ? ["**/performance.spec.ts", ...(profilingMode ? [] : ["**/performance-vitals.spec.ts"])] : [
         "**/calendar-feed-management.spec.ts",
         "**/subscriptions.spec.ts",
+        "**/subscription-pause.spec.ts",
         "**/subscription-renewal.spec.ts",
         "**/subscription-renewal-members.spec.ts",
         "**/settings.spec.ts",

@@ -2,7 +2,7 @@
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
-import { effectiveReminderDays } from "@renewlet/shared/runtime";
+import { effectiveReminderDays, ordinaryRemindersAllowed } from "@renewlet/shared/runtime";
 import { settingsFromRowJson, toApiSubscription } from "../apps/worker/src/db";
 import {
   normalizeSubscriptionTags,
@@ -14,7 +14,6 @@ import {
   dateOnlyInZone,
   getNextRepeatScheduleOccurrence,
   getRepeatScheduleDecision,
-  isCancelledSubscriptionStatus,
   localTimeInZone,
   repeatReminderOccurrenceMatches,
   repeatReminderSnapshot,
@@ -36,6 +35,7 @@ import {
   SUBSCRIPTION_DERIVED_BACKFILL_NAME,
   executeDerivedBackfillState,
 } from "./cloudflare-derived-backfill-state";
+import { repairPausedRepeatSchedules } from "./cloudflare-paused-reminder-backfill";
 import { probeDerivedBackfillState } from "./cloudflare-derived-schema";
 
 // 0039 先恢复 SQL 可表达的集合基线；本脚本复用 Worker 的 Unicode 投影与日期/时区规则收敛完整派生状态。
@@ -142,7 +142,7 @@ function parseArgs(argv: string[]): Options {
 }
 
 function nextRepeatDue(row: SubscriptionBackfillRow, now: Date): string | null {
-  if (row.repeat_reminder_enabled !== 1 || isCancelledSubscriptionStatus(row.status)) return null;
+  if (row.repeat_reminder_enabled !== 1 || !ordinaryRemindersAllowed(row.status)) return null;
   const settings = settingsFromRowJson(row.settings_json);
   // 调度不依赖标签；旧事实里的空白/重复标签只影响可重建投影，不能阻断 repeat schedule 恢复。
   const subscription = toApiSubscription({
@@ -206,7 +206,7 @@ function storedRepeatScheduleMatches(row: SubscriptionScheduleVerificationRow, s
     ...row,
     tags_json: JSON.stringify(normalizeSubscriptionTags(row).map((tag) => tag.value)),
   });
-  if (!subscription.repeatReminderEnabled || isCancelledSubscriptionStatus(subscription.status)) return false;
+  if (!subscription.repeatReminderEnabled || !ordinaryRemindersAllowed(subscription.status)) return false;
   const reminderDays = effectiveReminderDays(subscription.reminderDays, settings.notificationReminderDays);
   if (reminderDays === undefined) return false;
   const occurrence = {
@@ -229,7 +229,7 @@ function storedRepeatScheduleMatches(row: SubscriptionScheduleVerificationRow, s
 }
 
 async function assertStoredSchedulesValid(client: D1Client, now: Date): Promise<void> {
-  // v4 完成后调度器可能已推进 schedule，也可能为失败重试保留逾期 occurrence；不能再拿新的 now 强求精确相等。
+  // v5 完成后调度器可能已推进 schedule，也可能为失败重试保留逾期 occurrence；不能再拿新的 now 强求精确相等。
   // 此处只验证存量时间仍是当前订阅与设置允许的 occurrence，并阻止仍有后续提醒的订阅缺失派生行。
   let cursorUserId = "";
   let cursorSubscriptionId = "";
@@ -329,7 +329,7 @@ async function assertDerivedInvariants(client: D1Client, expectedScheduleCount?:
     OR scheduler.auto_renew_count != (
       SELECT COUNT(*) FROM subscriptions WHERE user_id = scheduler.user_id AND auto_renew = 1
     ) OR scheduler.repeat_reminder_count != (
-      SELECT COUNT(*) FROM subscriptions WHERE user_id = scheduler.user_id AND repeat_reminder_enabled = 1 AND status != 'cancelled'
+      SELECT COUNT(*) FROM subscriptions WHERE user_id = scheduler.user_id AND repeat_reminder_enabled = 1 AND status NOT IN ('paused', 'cancelled')
     ) OR COALESCE(scheduler.next_repeat_notification_due_at_utc, '') != COALESCE((
       SELECT next_due_at_utc FROM subscription_repeat_schedule
       WHERE user_id = scheduler.user_id ORDER BY next_due_at_utc, subscription_id LIMIT 1
@@ -379,7 +379,7 @@ async function upsertSchedulerRows(client: D1Client, now: Date): Promise<void> {
         settings.settings_json,
         COALESCE(scheduler.last_auto_renew_local_date, '') AS last_auto_renew_local_date,
         (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND auto_renew = 1) AS auto_renew_count,
-        (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND repeat_reminder_enabled = 1 AND status != 'cancelled') AS repeat_reminder_count,
+        (SELECT COUNT(*) FROM subscriptions WHERE user_id = users.id AND repeat_reminder_enabled = 1 AND status NOT IN ('paused', 'cancelled')) AS repeat_reminder_count,
         (SELECT next_due_at_utc FROM subscription_repeat_schedule
          WHERE user_id = users.id ORDER BY next_due_at_utc, subscription_id LIMIT 1) AS next_repeat_notification_due_at_utc
       FROM users
@@ -584,8 +584,8 @@ async function rebuildDerivedState(client: D1Client, now: Date): Promise<Derived
 }
 
 /**
- * 将 canonical derived schema 收敛到 subscriptions 事实状态，并在全部不变量通过后最后写 v4 marker。
- * v3 marker 只代表旧通知语义，不能跳过本次 cancelled 派生重建；所有重建写入均可在 D1 已提交但响应丢失后整轮重放。
+ * 将 canonical derived schema 收敛到 subscriptions 事实状态，并在全部不变量通过后最后写 v5 marker。
+ * v4 只需移除停用订阅的 repeat 排程，v3 及更早版本必须从事实重建；所有重建写入均可在 D1 已提交但响应丢失后整轮重放。
  */
 export async function runBackfill(
   client: D1Client,
@@ -594,16 +594,24 @@ export async function runBackfill(
   const state = await probeDerivedBackfillState(client);
   console.log(`Cloudflare subscription derived-state schema state: ${state}`);
   let rebuilt: DerivedRebuildResult | undefined;
+  let repairTime: Date | undefined;
 
   await executeDerivedBackfillState(state, {
     rebuild: async (): Promise<void> => {
       // 整轮固定同一 now，保证写入与复算校验跨分页时不会因分钟窗口滚动产生假不一致。
-      rebuilt = await rebuildDerivedState(client, now());
+      const v4 = await client.query("SELECT name FROM subscription_derived_backfills WHERE name = ? LIMIT 1",
+        ["subscription-derived-state-v4"], migrationRowSchema.parse);
+      if (v4.length) {
+        repairTime = now();
+        await repairPausedRepeatSchedules(client, pageSize);
+      } else {
+        rebuilt = await rebuildDerivedState(client, now());
+      }
     },
     verify: async (): Promise<void> => {
       const verifiedProjections = await assertSubscriptionCollectionProjectionRows(client, pageSize);
-      if (state === "v4-complete") {
-        const verificationNow = now();
+      if (state === "v5-complete" || repairTime) {
+        const verificationNow = repairTime ?? now();
         await assertStoredSchedulesValid(client, verificationNow);
         await assertStoredSubscriptionSchedulerRowsValid(client, verificationNow, pageSize, notificationWindowMinutes);
         await assertDerivedInvariants(client);
@@ -624,19 +632,23 @@ export async function runBackfill(
       await assertForeignKeys(client);
     },
     markComplete: async (): Promise<void> => {
-      const current = rebuilt;
-      if (current === undefined) throw new Error("Derived-state completion marker started before rebuild");
+      const completedAt = repairTime ?? rebuilt?.now;
+      if (!completedAt) throw new Error("Derived-state completion marker started before repair");
       // completion marker 是最后一次独立提交；响应丢失后的重跑会先校验 marker 和全部派生不变量。
       await client.batch([{
         sql: `INSERT INTO subscription_derived_backfills (name, completed_at) VALUES (?, ?)
               ON CONFLICT(name) DO UPDATE SET completed_at = excluded.completed_at`,
-        params: [backfillName, current.now.toISOString()],
+        params: [backfillName, completedAt.toISOString()],
       }]);
     },
   });
 
-  if (state === "v4-complete") {
+  if (state === "v5-complete") {
     console.log("Cloudflare subscription derived-state backfill already complete; invariants passed.");
+    return;
+  }
+  if (repairTime) {
+    console.log("Cloudflare paused repeat schedules repaired; invariants passed.");
     return;
   }
   const completed = rebuilt;

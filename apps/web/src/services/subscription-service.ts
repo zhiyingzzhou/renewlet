@@ -8,6 +8,7 @@ import type {
   SubscriptionCollectionItem,
   SubscriptionDraft,
   SubscriptionFormSubmission,
+  SubscriptionEditSubmission,
 } from "@/types/subscription";
 import {
   apiSubscriptionCollectionItemSchema,
@@ -77,7 +78,8 @@ export interface SubscriptionIndex {
 }
 
 export type SubscriptionFacets = SubscriptionFacetsResponse;
-export type SubscriptionFieldPatch = Partial<Pick<SubscriptionCollectionItem, "pinned" | "publicHidden">>;
+export type SubscriptionFieldPatch = Partial<Pick<SubscriptionCollectionItem, "pinned" | "publicHidden">>
+  | { status: "paused"; expectedUpdatedAt: string };
 
 function normalizeSubscriptionPageLimit(value: number): number {
   if (!Number.isFinite(value)) return SUBSCRIPTION_PAGE_SIZE;
@@ -246,7 +248,29 @@ export function toSubscriptionUpdatePayload(changes: SubscriptionFormSubmission)
   return toSubscriptionFormPayload(changes);
 }
 
+function toVersionedEditPayload(changes: SubscriptionEditSubmission) {
+  const { source } = changes;
+  if (!source.updatedAt) throw new Error(translate(getApiLocale(), "subscription.reviewAgain"));
+  const payload = toSubscriptionUpdatePayload(changes);
+  const version = { status: changes.status, expectedUpdatedAt: source.updatedAt };
+  if (source.status !== "paused" || (changes.status !== "active" && changes.status !== "trial")) {
+    return { ...payload, ...version };
+  }
+  // 同一条旧记录在表单中可能规范化金额或禁用的分摊配置，基线也要经过相同的表单转换。
+  const before = toSubscriptionFormPayload(changes.baseline ?? source);
+  const changed = Object.fromEntries(Object.entries(payload).filter(([key, value]) =>
+    JSON.stringify(value) !== JSON.stringify(before[key as keyof typeof before])));
+  // 恢复只提交已核对的变化；金额/币种、周期与期限等成组字段须同时满足两端的 PATCH 契约。
+  if ("balance" in changed || "balanceCurrency" in changed) Object.assign(changed, { balance: payload.balance, balanceCurrency: payload.balanceCurrency });
+  if ("billingCycle" in changed || "oneTimeTermCount" in changed || "oneTimeTermUnit" in changed || "customDays" in changed || "customCycleUnit" in changed) {
+    Object.assign(changed, { billingCycle: payload.billingCycle, customDays: payload.customDays, customCycleUnit: payload.customCycleUnit,
+      oneTimeTermCount: payload.oneTimeTermCount, oneTimeTermUnit: payload.oneTimeTermUnit });
+  }
+  return { ...changed, ...version, ...(changes.trialEndDate !== undefined ? { trialEndDate: changes.trialEndDate } : {}) };
+}
+
 function toSubscriptionFieldPatchPayload(patch: SubscriptionFieldPatch) {
+  if ("status" in patch) return { status: patch.status, expectedUpdatedAt: patch.expectedUpdatedAt };
   const payload: Record<string, boolean> = {};
   if (patch.pinned !== undefined) payload["pinned"] = patch.pinned;
   if (patch.publicHidden !== undefined) payload["publicHidden"] = patch.publicHidden;
@@ -335,10 +359,10 @@ export const subscriptionService = {
     return fromParsedApiSubscription(data.subscription);
   },
 
-  async update(id: string, changes: SubscriptionFormSubmission): Promise<Subscription> {
+  async update(id: string, changes: SubscriptionEditSubmission): Promise<Subscription> {
     const data = await apiFetch(`/api/app/subscriptions/${id}`, subscriptionResponseSchema, {
       method: "PATCH",
-      body: JSON.stringify(toSubscriptionUpdatePayload(changes)),
+      body: JSON.stringify(toVersionedEditPayload(changes)),
     });
     return fromParsedApiSubscription(data.subscription);
   },

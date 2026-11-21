@@ -34,6 +34,8 @@ type SubscriptionFormSubmissionBase = Omit<
 >;
 
 export type SubscriptionFormErrorField =
+  | "status"
+  | "trialEndDate"
   | "name"
   | "price"
   | "currency"

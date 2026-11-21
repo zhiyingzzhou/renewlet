@@ -8,6 +8,7 @@ import type { SubscriptionFormErrorField, SubscriptionFormErrors } from "@/lib/s
 export interface SubscriptionFormFieldsProps {
   /** 同一页面可能同时渲染新增/编辑弹窗，id 前缀用于保持 label 与错误提示的 a11y 关联唯一。 */
   idPrefix: string;
+  resume?: boolean;
   config: CustomConfig;
   formData: SubscriptionFormState;
   setFormData: Dispatch<SetStateAction<SubscriptionFormState>>;
@@ -47,6 +48,8 @@ export const errorFieldByFormKey: Partial<Record<keyof SubscriptionFormState, Su
   oneTimeMode: "oneTimeTerm",
   oneTimeTermCount: "oneTimeTerm",
   oneTimeTermUnit: "oneTimeTerm",
+  status: "status",
+  trialEndDate: "trialEndDate",
   startDate: "dates",
   nextBillingDate: "dates",
   reminderType: "reminderDays",
@@ -61,6 +64,7 @@ const structuralErrorFieldsByFormKey: Partial<Record<keyof SubscriptionFormState
   // 这些字段会重塑日期、普通提醒和家庭收款提醒含义；旧提交错误必须失效，下一次提交再按当前形态重新生成。
   billingCycle: ["billingCycle", "dates", "customDays", "oneTimeTerm", "reminderDays", "costSharing"],
   oneTimeMode: ["dates", "oneTimeTerm", "reminderDays", "costSharing"],
+  status: ["dates", "trialEndDate"],
   autoCalculate: ["dates"],
   balanceEnabled: ["balance", "balanceCurrency"],
 };

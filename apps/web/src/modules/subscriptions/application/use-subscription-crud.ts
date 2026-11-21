@@ -1,4 +1,11 @@
 import { useCallback, useMemo, useRef, useState } from "react";
+import { toast } from "@/components/ui/sonner";
+import { isSameProductSession, readProductSessionSnapshot } from "@/services/product-session";
+import { invalidateSubscriptionCollections, subscriptionQueryKeys } from "@/hooks/subscription-query-cache";
+import { invalidateNotificationOverview } from "@/hooks/notification-query-cache";
+import { getApiLocale } from "@/i18n/api-locale";
+import { translate } from "@/i18n/messages";
+import { getDisplayErrorMessage } from "@/lib/display-error";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   prefetchSubscriptionDetail,
@@ -20,6 +27,7 @@ import { buildClonedSubscriptionDraft } from "@/modules/subscriptions/domain/sub
 import type {
   SubscriptionCollectionItem,
   SubscriptionFormSubmission,
+  SubscriptionEditSubmission,
 } from "@/types/subscription";
 import type { SubscriptionRenewBody } from "@renewlet/shared/schemas/subscriptions";
 
@@ -28,7 +36,7 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
   const queryClient = useQueryClient();
   const { mutateAsync: createSubscription } = useCreateSubscription();
   const { mutateAsync: updateSubscription } = useUpdateSubscription();
-  const { mutate: patchSubscription } = usePatchSubscription();
+  const { mutate: patchSubscription, mutateAsync: patchSubscriptionAsync } = usePatchSubscription();
   const {
     mutateAsync: renewSubscription,
     error: renewError,
@@ -36,6 +44,9 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
     reset: resetRenewMutation,
   } = useRenewSubscription();
   const { mutate: deleteSubscription } = useDeleteSubscription();
+  const pauseLocks = useRef(new Set<string>());
+  const editRestoreFocusRef = useRef<HTMLElement | null>(null);
+  const [resumeEdit, setResumeEdit] = useState(false);
   const [editingTarget, setEditingTarget] = useState<SubscriptionDialogTarget | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [cloningTarget, setCloningTarget] = useState<SubscriptionDialogTarget | null>(null);
@@ -119,11 +130,41 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
     setRenewDialogOpen(true);
   }, [cancelRenewCleanup, resetRenewMutation, subscriptions]);
 
-  const handleEditSubscription = useCallback((id: string) => {
+  const handleEditSubscription = useCallback((id: string, intent?: "resume", trigger?: HTMLElement | null) => {
+    editRestoreFocusRef.current = trigger ?? null;
+    setResumeEdit(intent === "resume");
     cancelEditCleanup();
     setEditingTarget(createSubscriptionDialogTarget(subscriptions, id));
     setEditDialogOpen(true);
   }, [cancelEditCleanup, subscriptions]);
+
+  const handlePauseSubscription = useCallback(async (id: string, displayedStatus: "active" | "trial", trigger: HTMLElement | null) => {
+    if (pauseLocks.current.has(id)) return;
+    pauseLocks.current.add(id);
+    const locale = getApiLocale();
+    const session = readProductSessionSnapshot();
+    try {
+      const current = await queryClient.fetchQuery({ ...subscriptionDetailQueryOptions(id), staleTime: 0 });
+      if (!isSameProductSession(session, readProductSessionSnapshot())) return;
+      if (!current.updatedAt || current.status !== displayedStatus) throw new Error(translate(locale, "subscription.reviewAgain"));
+      await patchSubscriptionAsync({ id, patch: { status: "paused", expectedUpdatedAt: current.updatedAt } });
+      if (!isSameProductSession(session, readProductSessionSnapshot())) return;
+      toast.success(translate(locale, "subscription.pauseSuccess", { name: current.name }));
+      requestAnimationFrame(() => {
+        if (trigger && !trigger.isConnected && document.activeElement === document.body) {
+          (document.querySelector<HTMLElement>("[data-subscription-actions]") ?? document.querySelector<HTMLElement>("[data-subscription-list-heading]"))?.focus();
+        }
+      });
+    } catch (error) {
+      if (!isSameProductSession(session, readProductSessionSnapshot())) return;
+      void queryClient.invalidateQueries({ queryKey: subscriptionQueryKeys.detail(id) });
+      void invalidateSubscriptionCollections(queryClient);
+      void invalidateNotificationOverview(queryClient);
+      toast.error(getDisplayErrorMessage(error, translate(locale, "subscription.reviewAgain")));
+    } finally {
+      pauseLocks.current.delete(id);
+    }
+  }, [patchSubscriptionAsync, queryClient]);
 
   const handleCloneSubscription = useCallback((id: string) => {
     cancelCloneCleanup();
@@ -131,7 +172,7 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
     setCloneDialogOpen(true);
   }, [cancelCloneCleanup, subscriptions]);
 
-  const handleSaveSubscription = useCallback(async (changes: SubscriptionFormSubmission) => {
+  const handleSaveSubscription = useCallback(async (changes: SubscriptionEditSubmission) => {
     if (!editingSubscriptionId) return;
     await updateSubscription({ id: editingSubscriptionId, changes });
   }, [editingSubscriptionId, updateSubscription]);
@@ -199,6 +240,9 @@ export function useSubscriptionCrud(subscriptions: readonly SubscriptionCollecti
   }, [cancelRenewCleanup, scheduleRenewCleanup]);
 
   return {
+    handlePauseSubscription,
+    editRestoreFocusRef,
+    resumeEdit,
     editingSubscription: editDialogSession.subscription,
     editingCollectionItem: editDialogSession.collectionItem,
     editDialogOpen,

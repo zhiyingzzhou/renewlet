@@ -88,10 +88,10 @@ describe("Cloudflare cost sharing collection notifications", () => {
     ]);
   });
 
-  it("keeps collection reminders for cancelled subscriptions while suppressing ordinary items", () => {
+  it.each(["paused", "cancelled"] as const)("keeps collection reminders for %s subscriptions while suppressing ordinary items", (status) => {
     const items = collectNotificationItemsForLocalDate("2026-01-07", settings(), [
       subscription({
-        status: "cancelled",
+        status,
         reminderDays: 3,
         nextBillingDate: "2026-01-10",
         costSharing: {
@@ -200,7 +200,7 @@ describe("Cloudflare cost sharing collection notifications", () => {
 
     const query = queries[0];
     expect(query?.sql).toContain("UNION");
-    expect(query?.sql).toContain("status != 'cancelled'");
+    expect(query?.sql).toContain("status NOT IN ('paused', 'cancelled')");
     expect(query?.sql).toContain("cost_sharing_collection_reminder_enabled = 1");
     expect(query?.sql).toContain("cost_sharing_next_collection_reminder_date <= ?");
     expect(query?.sql).not.toMatch(/json_extract|json_valid|\$\.collectionReminder/);
