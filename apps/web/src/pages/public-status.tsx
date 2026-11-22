@@ -30,7 +30,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StatCard } from "@/components/ui/stat-card";
 import { TruncatedTooltipText } from "@/components/ui/truncated-tooltip-text";
 import { ApiError } from "@/lib/api-client";
-import { colorWithAlpha } from "@/lib/color";
+import { categoryBadgeStyle } from "@/lib/color";
 import { formatCompactCurrencyAmount } from "@/lib/currency";
 import { useTheme } from "@/lib/theme-provider";
 import { daysBetweenDateOnly } from "@/lib/time/date-only";
@@ -446,11 +446,6 @@ function PublicSubscriptionCard({ subscription, asOf }: { subscription: PublicSt
   const dailyCost = publicSubscriptionDailyCost(subscription, asOf);
   // billingCycle 在 showPrices=false 时必须隐藏；nextBillingDate=null 是公开 allowlist 保留的买断日期语义。
   const isProjectedBuyout = subscription.nextBillingDate === null;
-  const categoryStyle = {
-    backgroundColor: colorWithAlpha(categoryColor, 0.1) ?? undefined,
-    borderColor: colorWithAlpha(categoryColor, 0.2) ?? undefined,
-    color: categoryColor,
-  };
 
   // 公开 API 只有 allowlist 字段；这里复用视觉原语而不是伪造完整 Subscription，避免私有字段被带入公开组件。
   return (
@@ -471,7 +466,7 @@ function PublicSubscriptionCard({ subscription, asOf }: { subscription: PublicSt
                 text={subscription.name}
                 className="min-w-0 font-semibold text-foreground"
               />
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-card-caption">
                 {t("publicStatus.updatedAt", { time: formatDateTime(subscription.updatedAt) })}
               </p>
             </div>
@@ -481,7 +476,7 @@ function PublicSubscriptionCard({ subscription, asOf }: { subscription: PublicSt
                   {formatCurrency(subscription.price, subscription.currency)}
                 </p>
                 {billingCycleLabel ? (
-                  <p className="text-xs text-muted-foreground">{billingCycleLabel}</p>
+                  <p className="text-xs text-card-caption">{billingCycleLabel}</p>
                 ) : null}
               </div>
             ) : null}
@@ -490,7 +485,7 @@ function PublicSubscriptionCard({ subscription, asOf }: { subscription: PublicSt
               <Badge
                 variant="outline"
                 className="max-w-full shrink-0 overflow-hidden whitespace-nowrap text-xs"
-                style={categoryStyle}
+                style={categoryBadgeStyle(categoryColor)}
               >
                 <TruncatedTooltipText text={subscription.category.label} className="block max-w-full" />
               </Badge>
@@ -500,7 +495,7 @@ function PublicSubscriptionCard({ subscription, asOf }: { subscription: PublicSt
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
             {dailyCost !== null && subscription.currency ? (
-              <div className="flex items-center gap-1.5 tabular-nums text-muted-foreground">
+              <div className="flex items-center gap-1.5 tabular-nums text-card-caption">
                 <Gauge className="h-3.5 w-3.5" />
                 <span className="text-xs">
                   {t(dailyCost.basis === "ownership-to-date"
@@ -512,7 +507,7 @@ function PublicSubscriptionCard({ subscription, asOf }: { subscription: PublicSt
               </div>
             ) : null}
             {subscription.startDate ? (
-              <div className="flex items-center gap-1.5 text-muted-foreground">
+              <div className="flex items-center gap-1.5 text-card-caption">
                 <Clock3 className="h-3.5 w-3.5" />
                 <span className="text-xs">
                   {t(isProjectedBuyout ? "publicStatus.purchaseDate" : "publicStatus.startDate", {
@@ -521,7 +516,7 @@ function PublicSubscriptionCard({ subscription, asOf }: { subscription: PublicSt
                 </span>
               </div>
             ) : null}
-            {subscription.nextBillingDate ? <div className="flex items-center gap-1.5 text-muted-foreground">
+            {subscription.nextBillingDate ? <div className="flex items-center gap-1.5 text-card-caption">
               <CalendarClock className="h-3.5 w-3.5" />
               <span className="text-xs">
                 {t("publicStatus.nextBillingDate", { date: formatDateOnly(subscription.nextBillingDate) })}
