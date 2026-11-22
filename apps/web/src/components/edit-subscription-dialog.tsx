@@ -9,7 +9,7 @@ import { SubscriptionDialog } from "@/components/subscription-dialog";
 import type {
   Subscription,
   SubscriptionCollectionItem,
-  SubscriptionFormSubmission,
+  SubscriptionEditSubmission,
 } from "@/types/subscription";
 
 interface EditSubscriptionDialogProps {
@@ -20,9 +20,11 @@ interface EditSubscriptionDialogProps {
   open: boolean;
   /** 弹窗开关回调（由上层控制）。 */
   onOpenChange: (open: boolean) => void;
-  onSave: (submission: SubscriptionFormSubmission) => void | Promise<void>;
+  onSave: (submission: SubscriptionEditSubmission) => void | Promise<void>;
   /** 当前用户已有标签建议。 */
   availableTags?: readonly string[] | undefined;
+  restoreFocusRef?: { current: HTMLElement | null } | undefined;
+  resume?: boolean | undefined;
   loading?: boolean | undefined;
 }
 
@@ -35,10 +37,14 @@ export function EditSubscriptionDialog({
   onSave,
   availableTags,
   loading,
+  restoreFocusRef,
+  resume,
 }: EditSubscriptionDialogProps) {
   return (
     <SubscriptionDialog
       mode="edit"
+      restoreFocusRef={restoreFocusRef}
+      resume={resume}
       open={open}
       onOpenChange={onOpenChange}
       subscription={subscription}

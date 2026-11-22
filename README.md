@@ -33,6 +33,7 @@ Sign in with `demo@renewlet.local` / `renewlet-demo`. Data resets regularly; do 
 ## Features
 
 - Keep prices, billing cycles, renewal dates, payment methods, and notes in one place.
+- Pause a subscription from its More menu. To resume, choose Active or Trial and review the dates. Family collection reminders continue while paused.
 - Review monthly or yearly spending, track a budget, and convert between currencies.
 - Send reminders in your timezone through Telegram, Notifyx, Webhook, WeCom, DingTalk, email, Bark, ServerChan, Discord, or PushPlus.
 - Turn screenshots, notes, or tables into editable drafts, then review them before import. You can also import or export Renewlet data, or migrate from Wallos.
@@ -61,7 +62,7 @@ Create the first administrator. The deploy script creates `docker-compose.yml`, 
 For production, pin a stable image tag:
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.37"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
 docker compose pull
 docker compose up -d
 ```
@@ -69,7 +70,7 @@ docker compose up -d
 If Docker Hub is unavailable, use GHCR:
 
 ```env
-RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.37"
+RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.38"
 ```
 
 ## Cloudflare Workers
@@ -85,19 +86,22 @@ For upgrades, update the existing repository as described in the guide instead o
 Back up your data and configuration first:
 
 ```bash
-tar -czf renewlet-backup-$(date +%F).tgz .env docker-compose.yml data
+docker compose stop web &&
+(umask 077 && tar -czf "renewlet-backup-$(date +%Y%m%d-%H%M%S).tgz" .env docker-compose.yml data)
 ```
+
+Keep this archive private. It contains the database, local files and the original `PB_ENCRYPTION_KEY`. If the backup fails, restart the existing service with `docker compose start web` before retrying. To roll back a migration, stop the service and restore the matching data, configuration and image together. The in-app binary update alone cannot restore database state.
 
 Update the Docker image:
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.37"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
 docker compose pull
 docker compose up -d
 docker compose logs -f
 ```
 
-You can also update in the app by clicking the version number at the top of Renewlet and opening System Update.
+To update in the app after the backup, start the existing service with `docker compose start web`, then click the version number at the top of Renewlet and open System Update.
 
 ## Common Commands
 

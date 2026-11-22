@@ -1419,6 +1419,11 @@ msgid "statistics.monthlySavingsDescription"
 msgstr "Месячный эквивалент приостановленных, отменённых и истёкших подписок. Активные подписки и пробные периоды не учитываются; это не остаток бюджета."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:749
+msgid "subscription.pauseSuccess"
+msgstr "Подписка «{name}» приостановлена"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:453
 msgid "import.conflictTitle"
 msgstr "Подписки из того же источника уже есть"
@@ -1614,6 +1619,21 @@ msgid "subscriptions.bulkVisibilityConfirmShowTitle"
 msgstr "Вернуть выбранные подписки на публичную страницу"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:751
+msgid "subscription.resumeTitle"
+msgstr "Возобновить подписку"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:752
+msgid "subscription.resumeMenu"
+msgstr "Возобновить подписку…"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:755
+msgid "subscription.resumeDateError"
+msgstr "Для возобновления укажите применимые даты платежа и окончания пробного периода не ранее сегодняшнего дня."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:123
 msgid "subscription.costSharing.memberDefault"
 msgstr "Участник {index}"
@@ -1762,6 +1782,11 @@ msgstr "Постоянная синхронизация"
 #: src/i18n/descriptors/subscription.ts:430
 msgid "import.wallosGuideValueLowConfidence"
 msgstr "Сопоставление по данным"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:747
+msgid "dashboard.builtinRates"
+msgstr "По встроенным справочным курсам"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:217
@@ -2072,6 +2097,11 @@ msgstr "Старый URL сразу перестанет работать, и э
 #: src/i18n/descriptors/subscription.ts:42
 msgid "subscription.addToCalendarRegenerateDescription"
 msgstr "Старый URL сразу перестанет работать. В календарях, где он уже используется, его нужно будет добавить заново."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:750
+msgid "subscription.pauseTitle"
+msgstr "Приостановить подписку"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:160
@@ -2619,6 +2649,11 @@ msgid "subscriptions.clearFilters"
 msgstr "Сбросить фильтры"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:756
+msgid "subscription.clearTrialEndDate"
+msgstr "Очистить дату окончания пробного периода"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:567
 msgid "aiRecognition.imageDropDescription"
 msgstr "Нажмите, перетащите или вставьте сюда изображения PNG, JPG или WebP — не более {count, plural, one {# файла} few {# файлов} many {# файлов} other {# файла}}."
@@ -3084,6 +3119,11 @@ msgid "subscription.formIncomplete"
 msgstr "Данные подписки заполнены не полностью. Проверьте их и попробуйте снова."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:748
+msgid "subscription.reviewAgain"
+msgstr "Данные подписки изменились. Откройте её ещё раз и проверьте сведения."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:275
 msgid "subscriptions.title"
 msgstr "Подписки"
@@ -3272,6 +3312,11 @@ msgstr "Выберите дату окончания."
 #: src/i18n/descriptors/subscription.ts:226
 msgid "subscription.renew.validation.currencyRequired"
 msgstr "Выберите включённую валюту"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:753
+msgid "subscription.resumeHelp"
+msgstr "Выберите статус и проверьте дату платежа и дату окончания пробного периода, если она указана."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:227
@@ -3502,6 +3547,11 @@ msgstr "Выбрать файл"
 #: src/i18n/descriptors/subscription.ts:155
 msgid "subscription.placeholder.date"
 msgstr "Выберите дату"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:754
+msgid "subscription.chooseStatus"
+msgstr "Выберите статус"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:208

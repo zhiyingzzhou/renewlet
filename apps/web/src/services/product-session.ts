@@ -120,6 +120,10 @@ export function readProductSessionSnapshot(): ProductSessionSnapshot | null {
   };
 }
 
+export function isSameProductSession(snapshot: ProductSessionSnapshot | null, current: ProductSessionSnapshot | null): boolean {
+  return current?.userId === snapshot?.userId && current?.expiresAt === snapshot?.expiresAt;
+}
+
 export function clearProductSessionForSnapshot(snapshot: ProductSessionSnapshot | null): void {
   if (!snapshot) return;
   const current = readProductSessionSnapshot();

@@ -4,7 +4,7 @@
  *
  * 触发时机：本地 Worker 启动、`pnpm deploy`、自管 Cloudflare workflow 和稳定版生产部署。
  * 前置依赖：显式选择 local/remote；remote 需要 Wrangler 登录或 Cloudflare API token/account。
- * 状态流：迁移守卫 -> Feed 持久保护 -> migration -> Feed 恢复 -> v4 派生回填 -> 外键校验。
+ * 状态流：迁移守卫 -> Feed 持久保护 -> migration -> Feed 恢复 -> v5 派生回填 -> 外键校验。
  * 任一步失败都必须阻断 Worker 更新；各持久阶段可由下一次部署从数据库状态安全重放。
  */
 import { spawn } from "node:child_process";

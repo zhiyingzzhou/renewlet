@@ -23,6 +23,7 @@ export function useSubscriptionFormAutoDates(
   setFormData: Dispatch<SetStateAction<SubscriptionFormState>>,
   billingReferenceDate: DateOnly,
   onAutoDatePatch?: (patch: SubscriptionFormAutoDatePatch) => void,
+  enabled = true,
 ): void {
   const {
     autoCalculate,
@@ -38,6 +39,7 @@ export function useSubscriptionFormAutoDates(
 
   useEffect(() => {
     // 这个 effect 只根据账单字段生成最小 patch；避免 setFormData 回写同值导致表单状态链反复触发。
+    if (!enabled) return;
     const patch = getSubscriptionFormAutoDatePatch({
       autoCalculate,
       billingCycle,
@@ -59,6 +61,7 @@ export function useSubscriptionFormAutoDates(
     customCycleUnit,
     customDays,
     nextBillingDate,
+    enabled,
     onAutoDatePatch,
     oneTimeMode,
     oneTimeTermCount,

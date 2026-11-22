@@ -243,7 +243,7 @@ describe("SubscriptionCalendar dialogs", () => {
   });
 
   it("opens add-to-calendar actions from the detail dialog", async () => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-05-14T12:00:00Z"));
 
     renderCalendar([subscription({ name: "Fastmail", website: "https://fastmail.example" })]);
@@ -258,7 +258,7 @@ describe("SubscriptionCalendar dialogs", () => {
     expect(screen.queryByRole("link", { name: "打开系统日历" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "下载 ICS 文件" })).toHaveClass("border");
     expect(screen.getByText("在线日历服务")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "用 Google Calendar 打开" })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: "用 Google Calendar 打开" })).toHaveAttribute(
       "href",
       expect.stringContaining("calendar.google.com"),
     );

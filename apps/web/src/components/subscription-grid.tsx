@@ -20,7 +20,8 @@ type SubscriptionGridProps = {
   priceReferenceCurrency: string | null;
   categoryByValue: SubscriptionCardLookup;
   paymentMethodByValue: SubscriptionCardLookup;
-  onEdit: (id: string) => void;
+  onEdit: (id: string, intent?: "resume", trigger?: HTMLElement | null) => void;
+  onPause?: (id: string, status: "active" | "trial", trigger: HTMLElement | null) => Promise<void>;
   onDelete: (id: string) => void;
   onClone: (id: string) => void;
   onTogglePinned: (id: string) => void;
@@ -64,6 +65,7 @@ export function SubscriptionGrid({
   categoryByValue,
   paymentMethodByValue,
   onEdit,
+  onPause,
   onDelete,
   onClone,
   onTogglePinned,
@@ -102,6 +104,7 @@ export function SubscriptionGrid({
           categoryByValue={categoryByValue}
           paymentMethodByValue={paymentMethodByValue}
           onEdit={onEdit}
+          onPause={onPause}
           onDelete={onDelete}
           onClone={onClone}
           onTogglePinned={onTogglePinned}
@@ -125,6 +128,7 @@ export function SubscriptionGrid({
     onClone,
     onDelete,
     onEdit,
+    onPause,
     onPrefetchDetails,
     onRenew,
     onSelect,

@@ -83,7 +83,13 @@ export async function updateSubscription(request: Request, env: Env, id: string)
   const auth = await requireAuth(request, env);
   const existing = await getSubscription(env, auth.user.id, id);
   if (!existing) throw new HttpError(404, serverText(locale, "subscription.notFound"));
-  const patch = await readJson(request, subscriptionUpdateBodySchema, locale);
+  const { expectedUpdatedAt, ...patch } = await readJson(request, subscriptionUpdateBodySchema, locale);
+  if (patch.status !== undefined && !expectedUpdatedAt) {
+    throw new HttpError(400, serverText(locale, "subscription.editVersionRequired"), "SUBSCRIPTION_VERSION_REQUIRED");
+  }
+  if (expectedUpdatedAt && patch.status === undefined) throw new HttpError(400, serverText(locale, "common.invalidRequestParameters"));
+  const conflict = () => new HttpError(409, serverText(locale, "subscription.editConflict"), "SUBSCRIPTION_EDIT_CONFLICT");
+  if (expectedUpdatedAt && existing.updated_at !== expectedUpdatedAt) throw conflict();
   if (Object.keys(patch).length === 1 && patch.publicHidden !== undefined) {
     await writePublicVisibility(env, auth.user.id, existing.public_hidden === boolToInt(patch.publicHidden) ? [] : [existing], patch.publicHidden, locale);
     const current = await getSubscription(env, auth.user.id, id);
@@ -93,10 +99,40 @@ export async function updateSubscription(request: Request, env: Env, id: string)
   // 同一毫秒内的价格修改也必须让旧续订确认失效。
   const timestamp = new Date(Math.max(Date.now(), Date.parse(existing.updated_at) + 1)).toISOString();
   const settings = await getSettings(env, auth.user.id);
-  // Worker 没有 PocketBase hook 可二次归一；切换计费类型时先清理互斥字段，再合并 patch 走同一套 create schema。
-  const mergedBody = parseSubscriptionBodyForStorage(mergeSubscriptionPatchForStorage(toBody(existing), stripUndefined(patch)), locale);
-  const merged = toSubscriptionRow(existing.id, auth.user.id, mergedBody, existing.created_at, timestamp, { settings });
-  const factStatement = env.DB.prepare(`
+  // 只切换状态时保留原事实和待收款日期；按今天重新推算镜像会跳过尚未处理的家庭收款。
+  const onlyStatus = Object.keys(patch).length === 1 ? patch.status : undefined;
+  const merged = onlyStatus
+    ? { ...existing, status: onlyStatus, updated_at: timestamp }
+    : toSubscriptionRow(existing.id, auth.user.id, parseSubscriptionBodyForStorage(
+      mergeSubscriptionPatchForStorage(toBody(existing), stripUndefined(patch)), locale,
+    ), existing.created_at, timestamp, { settings });
+  if (existing.status === "paused" && (merged.status === "active" || merged.status === "trial")) {
+    const today = dateOnlyInZone(new Date(), settings.timezone);
+    const buyout = merged.billing_cycle === "one-time" && !merged.one_time_term_count;
+    if ((!buyout && merged.next_billing_date < today) || (merged.status === "trial" && merged.trial_end_date && merged.trial_end_date < today)) {
+      throw new HttpError(400, serverText(locale, "subscription.resumeDates"), "SUBSCRIPTION_RESUME_DATES");
+    }
+  }
+  const factStatement = onlyStatus
+    ? env.DB.prepare("UPDATE subscriptions SET status = ?, updated_at = ? WHERE user_id = ? AND id = ?")
+      .bind(onlyStatus, timestamp, auth.user.id, id)
+    : prepareSubscriptionFieldUpdate(env, merged);
+  const derived = subscriptionDerivedMutationPlan(env, { before: existing, after: merged, kind: "update" }, settings);
+  try {
+    await env.DB.batch([...derived.beforeFact, factStatement, ...derived.afterFact]);
+  } catch (error) {
+    if (!expectedUpdatedAt) throw error;
+    // 仅在写入失败后区分并发编辑和存储故障，版本检查与派生计数由同一 batch 的快照 guard 保护。
+    const current = await getSubscription(env, auth.user.id, id).catch(() => { throw error; });
+    if (!current) throw new HttpError(404, serverText(locale, "subscription.notFound"));
+    if (current.updated_at !== expectedUpdatedAt) throw conflict();
+    throw error;
+  }
+  return successJson(subscriptionPayloadSchema.parse({ subscription: toApiSubscription(merged) }));
+}
+
+function prepareSubscriptionFieldUpdate(env: Env, merged: SubscriptionRow): D1PreparedStatement {
+  return env.DB.prepare(`
     UPDATE subscriptions SET
       name = ?, logo = ?, price = ?, currency = ?, billing_cycle = ?, custom_days = ?, custom_cycle_unit = ?,
       one_time_term_count = ?, one_time_term_unit = ?, category = ?, status = ?,
@@ -136,15 +172,12 @@ export async function updateSubscription(request: Request, env: Env, id: string)
     merged.cost_sharing_collection_reminder_enabled,
     merged.cost_sharing_next_collection_reminder_date,
     merged.extra_json,
-    timestamp,
+    merged.updated_at,
     merged.balance,
     merged.balance_currency,
-    auth.user.id,
-    id,
+    merged.user_id,
+    merged.id,
   );
-  const derived = subscriptionDerivedMutationPlan(env, { before: existing, after: merged, kind: "update" }, settings);
-  await env.DB.batch([...derived.beforeFact, factStatement, ...derived.afterFact]);
-  return successJson(subscriptionPayloadSchema.parse({ subscription: toApiSubscription(merged) }));
 }
 
 export async function deleteSubscription(request: Request, env: Env, id: string): Promise<Response> {

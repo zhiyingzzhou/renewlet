@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { buildRenewalCalendarEvent, type RenewalCalendarEvent } from "@renewlet/shared/calendar-events";
-import { google, office365, outlook, yahoo, type CalendarEvent } from "calendar-link";
+import type { CalendarEvent } from "calendar-link";
+import { createLazyDialogResource, useLazyDialogSession } from "@/hooks/use-lazy-dialog-session";
 import {
   CalendarDays,
   CalendarPlus,
@@ -61,6 +62,10 @@ import {
   type Subscription,
   type SubscriptionCollectionItem,
 } from "@/types/subscription";
+
+const providerResource = createLazyDialogResource(() =>
+  import("calendar-link").then(({ google, outlook, office365, yahoo }) => ({ google, outlook, office365, yahoo })),
+);
 
 interface AddToCalendarDialogProps {
   open: boolean;
@@ -181,6 +186,8 @@ function SubscriptionCalendarDialogContent({
   const { t, locale, label, formatCurrency, formatDateOnly } = useI18n();
   const { config } = useCustomConfigState();
   const { data: settings } = useSettings();
+  const [providerSession, setProviderSession] = useState(providerResource);
+  const { value: providers, error: providerError } = useLazyDialogSession(open, providerSession);
   const subscriptionId = subscription?.id ?? "";
   const feedTarget = useMemo<CalendarFeedTarget>(
     () => ({ scope: "subscription", subscriptionId }),
@@ -272,26 +279,28 @@ function SubscriptionCalendarDialogContent({
   ]);
 
   const links = useMemo<CalendarProviderLink[]>(() => {
-    if (!calendarEvent) return [];
+    if (!calendarEvent || !providers) return [];
     return [
-      { href: google(calendarEvent), label: t("subscription.addToCalendarGoogle") },
-      { href: outlook(calendarEvent), label: t("subscription.addToCalendarOutlook") },
-      { href: office365(calendarEvent), label: t("subscription.addToCalendarOffice365") },
-      { href: yahoo(calendarEvent), label: t("subscription.addToCalendarYahoo") },
+      { href: providers.google(calendarEvent), label: t("subscription.addToCalendarGoogle") },
+      { href: providers.outlook(calendarEvent), label: t("subscription.addToCalendarOutlook") },
+      { href: providers.office365(calendarEvent), label: t("subscription.addToCalendarOffice365") },
+      { href: providers.yahoo(calendarEvent), label: t("subscription.addToCalendarYahoo") },
     ];
   }, [
     calendarEvent,
+    providers,
     t,
   ]);
 
   const androidSystemCalendarHref = useMemo(() => {
-    if (!subscription || !renewalEvent) return undefined;
+    // Android 的备用地址来自 Google Calendar；链接模块就绪后才暴露可跳转的 intent，ICS 与订阅源独立可用。
+    if (!subscription || !renewalEvent || !links[0]) return undefined;
     return buildAndroidCalendarIntentUrl({
       title: subscription.name,
       description: renewalEvent.description,
       startDate: subscription.nextBillingDate,
       endDate: addDateOnly(subscription.nextBillingDate, { days: 1 }),
-      fallbackUrl: links[0]?.href,
+      fallbackUrl: links[0].href,
     });
   }, [links, renewalEvent, subscription]);
 
@@ -584,7 +593,11 @@ function SubscriptionCalendarDialogContent({
           {t("subscription.addToCalendarOnlineServices")}
         </p>
       ),
-      providers: (
+      providers: providerError ? (
+        <Button type="button" variant="ghost" onClick={() => setProviderSession({ ...providerResource })}>
+          {t("system.retry")}
+        </Button>
+      ) : !providers ? createSubscriptionCalendarLoadingSlots(loadingLabel).providers : (
         <>
           {links.map((link) => (
             <a

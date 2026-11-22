@@ -132,7 +132,7 @@ async function applyImportRequest(request: Request, env: Env, metrics: { bodyByt
     statements.push(...await buildSubscriptionSchedulerRefreshStatements(env, auth.user.id, {
       resetAutoRenewCheck: false,
       settings: finalSettingsForMirrors,
-      repeatCandidates: rows.filter((row) => row.repeat_reminder_enabled === 1 && row.status !== "cancelled").map(toApiSubscription),
+      repeatCandidates: rows.filter((row) => subscriptionRepeatReminderContribution(row) > 0).map(toApiSubscription),
       aggregateCounts: {
         autoRenewCount: rows.filter((row) => row.auto_renew === 1).length,
         repeatReminderCount: rows.reduce((count, row) => count + subscriptionRepeatReminderContribution(row), 0),

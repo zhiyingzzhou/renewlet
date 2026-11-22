@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zhiyingzzhou/renewlet/apps/docker-server/internal/subscriptionderived"
+
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
@@ -45,11 +47,11 @@ func listNotificationScheduleCandidateSubscriptions(app core.App, userID string,
 		"maxDate":   addDateOnly(schedule.ScheduledLocalDate, maxReminderDays),
 	}
 	branches := []string{
-		"user = {:user} && status != 'cancelled' && reminderDays != {:disabled} && nextBillingDate >= {:localDate} && nextBillingDate <= {:maxDate}",
-		"user = {:user} && status != 'cancelled' && reminderDays != {:disabled} && trialEndDate >= {:localDate} && trialEndDate <= {:maxDate}",
+		"user = {:user} && status != 'paused' && status != 'cancelled' && reminderDays != {:disabled} && nextBillingDate >= {:localDate} && nextBillingDate <= {:maxDate}",
+		"user = {:user} && status != 'paused' && status != 'cancelled' && reminderDays != {:disabled} && trialEndDate >= {:localDate} && trialEndDate <= {:maxDate}",
 	}
 	if includeExpired && settings.ShowExpired {
-		branches = append(branches, "user = {:user} && status != 'cancelled' && reminderDays != {:disabled} && nextBillingDate < {:localDate}")
+		branches = append(branches, "user = {:user} && status != 'paused' && status != 'cancelled' && reminderDays != {:disabled} && nextBillingDate < {:localDate}")
 	}
 	branches = append(branches, "user = {:user} && costSharingCollectionReminderEnabled = true && costSharingNextCollectionReminderDate != '' && costSharingNextCollectionReminderDate <= {:localDate}")
 	// 每个分支都对应独立索引候选；cron 热路径不解析 costSharing JSON，精确日期和成员周期由 collector 统一过滤。
@@ -83,7 +85,7 @@ func listRepeatReminderCandidateSubscriptions(app core.App, userID string, setti
 		"localDate": localDate,
 		"maxDate":   addDateOnly(localDate, maxReminderDays),
 	}
-	filter := "user = {:user} && status != 'cancelled' && reminderDays != {:disabled} && repeatReminderEnabled = true && " +
+	filter := "user = {:user} && status != 'paused' && status != 'cancelled' && reminderDays != {:disabled} && repeatReminderEnabled = true && " +
 		"((nextBillingDate >= {:localDate} && nextBillingDate <= {:maxDate}) || (status = 'trial' && trialEndDate >= {:localDate} && trialEndDate <= {:maxDate}))"
 	// 非日常窗口每分钟只允许读取 repeat 候选；否则 D1 rows read 和 PocketBase I/O 会随订阅总量线性放大。
 	return listNotificationSubscriptionsByFilter(app, filter, params)
@@ -136,9 +138,9 @@ func isDisabledReminderDays(value int) bool {
 	return value == disabledReminderDays
 }
 
-// cancelled 只停用普通续费、固定期限到期、过期与 repeat 提醒；家庭共享收款提醒不调用此资格判断，保持独立责任流。
+// 暂停和取消只停用普通续费、固定期限到期、过期与 repeat 提醒；家庭共享收款提醒不调用此资格判断，保持独立责任流。
 func isSubscriptionReminderEligible(sub notificationSubscription) bool {
-	return sub.Status != "cancelled"
+	return subscriptionderived.OrdinaryRemindersAllowed(sub.Status)
 }
 
 func effectiveReminderDays(sub notificationSubscription, settings appSettings) (int, bool) {

@@ -243,13 +243,15 @@ https://<WORKER_NAME>.<workers-dev-subdomain>.workers.dev/setup
 pnpm exec wrangler d1 export DB --remote --config wrangler.generated.jsonc --output renewlet-before-upgrade.sql
 ```
 
-普通升级保持在线。检测到尚未应用的 `_exclusive_` 排他 migration，或 `subscription-derived-state-v4` marker 仍待回填时，部署编排器会先用同一份 Worker bundle 部署维护配置，解绑 Cron 和 Queue consumer，并等待 Cloudflare 后台 invocation 的 15 分钟最长执行时间。API、ICS 和 webhook 返回带 `Retry-After: 900`、`Cache-Control: no-store` 的 `503`，Static Assets 仍继续提供 SPA。
+普通升级保持在线。检测到尚未应用的 `_exclusive_` 排他 migration，或 `subscription-derived-state-v5` marker 仍待回填时，部署编排器会先用同一份 Worker bundle 部署维护配置，解绑 Cron 和 Queue consumer，并等待 Cloudflare 后台 invocation 的 15 分钟最长执行时间。API、ICS 和 webhook 返回带 `Retry-After: 900`、`Cache-Control: no-store` 的 `503`，Static Assets 仍继续提供 SPA。
 
 ```bash
 pnpm deploy -- --config wrangler.generated.jsonc --maintenance-config wrangler.maintenance.generated.jsonc
 ```
 
 排空后，编排器会保护日历 Feed、执行 migration、重建派生状态、检查外键以及 settings 数据/trigger 完整定义，再部署正常配置并校验 active Worker version。首次 D1 写入前失败会自动恢复旧 Worker、Cron 和 Queue consumer；首次写入后失败则保持或重新部署维护模式。修复原因后重跑同一条 deploy 命令即可；已写入的 migration marker 会被复核，不会重复执行已完成 migration。
+
+维护部署显式解绑本 Worker 在配置队列及死信队列上的消费者，并回读 Cron 和消费者状态。排空后，维护版本保存原正常 Worker 的版本号和此时的 D1 bookmark，重试沿用这组恢复信息。已有 v4 完成标记的数据库只清理停用订阅的重复提醒，保留其他订阅原排程；更早版本从订阅事实重建。两条路径均在校验通过后登记 v5。
 
 如果决定回退数据契约，必须先审查 checkpoint 之后的所有写入。恢复会原地覆盖数据，只能使用下面的统一命令：它先部署维护配置并排空后台任务，D1 restore 成功后才回滚 Worker 和恢复触发器。排他 migration 后禁止单独执行 Worker rollback。
 

@@ -15,6 +15,7 @@ import type {
   RepeatReminderInterval,
   RepeatReminderWindow,
   SubscriptionStatus,
+  Subscription,
 } from "@/types/subscription";
 import type { DateOnly } from "@/lib/time/date-only";
 
@@ -52,6 +53,8 @@ export type SubscriptionFormState = {
   oneTimeTermUnit: CustomCycleUnit;
   category: Category;
   status: SubscriptionStatus;
+  editSource?: Subscription;
+  trialEndDate?: DateOnly | undefined;
   publicHidden: boolean;
   paymentMethod: PaymentMethod | "";
   /** date-only 在表单内保持字符串，只有日历控件边界才临时转 Date。 */

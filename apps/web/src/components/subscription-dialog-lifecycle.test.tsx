@@ -356,3 +356,31 @@ it("keeps a disabled balance currency visible and independent when saving", asyn
     mocks.config.currencies = enabledCurrencies;
   }
 });
+
+it("keeps the frozen version and stored billing date until the user reviews a paused subscription", async () => {
+  const user = userEvent.setup();
+  const onSubmit = vi.fn();
+  const subscription = makeSubscription({ status: "paused", nextBillingDate: assertDateOnly("2099-02-14"),
+    autoCalculateNextBillingDate: true, updatedAt: "2026-08-01T12:34:56Z" });
+  const view = (source: Subscription) => (
+    <TooltipProvider delayDuration={0}>
+      <SubscriptionDialog mode="edit" resume open loadingPreview={null} subscription={source} onOpenChange={vi.fn()} onSubmit={onSubmit} />
+    </TooltipProvider>
+  );
+  const { rerender } = render(view(subscription));
+  const status = screen.getByRole("combobox", { name: "状态" });
+  const submit = screen.getByRole("button", { name: "恢复订阅" });
+  expect(status).toHaveFocus();
+  await user.click(submit);
+  expect(status).toHaveAttribute("aria-invalid", "true");
+  expect(status).toHaveFocus();
+  expect(onSubmit).not.toHaveBeenCalled();
+  rerender(view({ ...subscription, updatedAt: "2026-08-02T12:34:56Z", name: "Newer name" }));
+  await user.click(status);
+  await user.click(await screen.findByRole("option", { name: "活跃" }));
+  await user.click(submit);
+  expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({
+    name: subscription.name, status: "active", nextBillingDate: "2099-02-14",
+    source: subscription,
+  }));
+});

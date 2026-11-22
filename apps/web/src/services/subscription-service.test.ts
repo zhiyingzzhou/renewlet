@@ -279,7 +279,7 @@ describe("subscription service API calls", () => {
     const changes = formSubmission();
 
     await subscriptionService.create({ ...changes, pinned: subscription.pinned, extra: subscription.extra });
-    await subscriptionService.update(subscription.id, changes);
+    await subscriptionService.update(subscription.id, { ...changes, source: { ...subscription, updatedAt: "2026-08-01T12:34:56Z" } });
 
     expect(mocks.apiFetch.mock.calls[0]?.[0]).toBe("/api/app/subscriptions");
     expect(mocks.apiFetch.mock.calls[0]?.[2]).toMatchObject({ method: "POST" });

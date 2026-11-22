@@ -72,6 +72,12 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
 
       <DialogContent
         closeLabel={t("common.close")}
+        onCloseAutoFocus={props.mode === "edit" && props.resume ? (event) => {
+          event.preventDefault();
+          const trigger = props.restoreFocusRef?.current;
+          const fallback = document.querySelector<HTMLElement>("[data-subscription-actions]") ?? document.querySelector<HTMLElement>("[data-subscription-list-heading]");
+          (trigger?.isConnected ? trigger : fallback)?.focus();
+        } : undefined}
         closeDisabled={submitting}
         dismissMode="explicit"
         layout="frame"
@@ -84,14 +90,14 @@ export function SubscriptionDialog(props: SubscriptionDialogProps) {
               ? isCloneCreateMode
                 ? t("subscription.cloneDialogTitle")
                 : t("subscription.dialogCreateTitle")
-              : t("subscription.dialogEditTitle")}
+              : props.resume ? t("subscription.resumeTitle") : t("subscription.dialogEditTitle")}
           </DialogTitle>
-          <DialogDescription className="sr-only">
+          <DialogDescription className={props.mode === "edit" && props.resume ? "text-sm text-muted-foreground" : "sr-only"}>
             {props.mode === "create" && clonePreview
               ? t("subscription.cloneDialogDescription", { name: clonePreview.name })
               : props.mode === "create"
                 ? t("subscription.dialogCreateDescription")
-                : t("subscription.dialogEditDescription")}
+                : props.resume ? t("subscription.resumeHelp") : t("subscription.dialogEditDescription")}
           </DialogDescription>
         </DialogHeader>
 

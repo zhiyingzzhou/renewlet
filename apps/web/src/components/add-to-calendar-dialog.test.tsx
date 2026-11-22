@@ -330,7 +330,7 @@ describe("AddToCalendarDialog", () => {
     expect(screen.queryByRole("button", { name: "在系统日历中订阅" })).not.toBeInTheDocument();
     expect(screen.queryByText("正在生成订阅链接...")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "下载 ICS 文件" })).toBeEnabled();
-    expect(screen.getByRole("link", { name: "用 Google Calendar 打开" })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: "用 Google Calendar 打开" })).toBeInTheDocument();
 
     feedStatus.resolve({ enabled: false });
 
@@ -373,7 +373,7 @@ describe("AddToCalendarDialog", () => {
     expect(screen.getByRole("heading", { name: "持续同步" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "单次添加" })).toBeInTheDocument();
     expect(screen.getByText("下载 ICS 和在线日历服务是独立的一次性添加，无需生成订阅链接。")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "用 Google Calendar 打开" })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: "用 Google Calendar 打开" })).toHaveAttribute(
       "href",
       expect.stringContaining("calendar.google.com"),
     );
@@ -405,7 +405,7 @@ describe("AddToCalendarDialog", () => {
     expect(generateButton).toBeEnabled();
     expect(screen.queryByLabelText("本次订阅 URL")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "下载 ICS 文件" })).toBeEnabled();
-    expect(screen.getByRole("link", { name: "用 Google Calendar 打开" })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: "用 Google Calendar 打开" })).toBeInTheDocument();
   });
 
   it("uses an existing feed without generating another token", async () => {
@@ -540,7 +540,7 @@ describe("AddToCalendarDialog", () => {
     const generateButton = await screen.findByRole("button", { name: "生成订阅链接" });
     await waitFor(() => expect(generateButton).toHaveFocus());
     expect(screen.getByRole("button", { name: "下载 ICS 文件" })).toBeEnabled();
-    expect(screen.getByRole("link", { name: "用 Google Calendar 打开" })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: "用 Google Calendar 打开" })).toBeInTheDocument();
   });
 
   it("returns focus to the existing revoke trigger after cancellation", async () => {
@@ -560,14 +560,14 @@ describe("AddToCalendarDialog", () => {
     expect(trigger).toHaveFocus();
   });
 
-  it("uses an Android insert intent for the one-off calendar event", () => {
+  it("uses an Android insert intent for the one-off calendar event", async () => {
     const restoreUserAgent = mockUserAgent(
       "Mozilla/5.0 (Linux; Android 15; Pixel 8) AppleWebKit/537.36 Chrome/126.0.0.0 Mobile Safari/537.36",
     );
     try {
       renderDialog();
 
-      const link = screen.getByRole("link", { name: "添加单次事件到 Android 日历" });
+      const link = await screen.findByRole("link", { name: "添加单次事件到 Android 日历" });
       expect(link).toHaveAttribute("href", expect.stringContaining("intent://renewlet/calendar-event#Intent;"));
       expect(link).toHaveAttribute("href", expect.stringContaining("action=android.intent.action.INSERT"));
       expect(link).toHaveAttribute("href", expect.stringContaining("type=vnd.android.cursor.dir/event"));

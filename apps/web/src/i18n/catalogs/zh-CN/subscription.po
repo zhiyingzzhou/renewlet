@@ -1419,6 +1419,11 @@ msgid "statistics.monthlySavingsDescription"
 msgstr "已暂停、已取消和已过期订阅按月折算后的金额，不包含活跃或试用订阅，也不是预算剩余。"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:749
+msgid "subscription.pauseSuccess"
+msgstr "已暂停「{name}」"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:453
 msgid "import.conflictTitle"
 msgstr "已有同源订阅"
@@ -1614,6 +1619,21 @@ msgid "subscriptions.bulkVisibilityConfirmShowTitle"
 msgstr "恢复所选订阅的公开展示"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:751
+msgid "subscription.resumeTitle"
+msgstr "恢复订阅"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:752
+msgid "subscription.resumeMenu"
+msgstr "恢复订阅…"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:755
+msgid "subscription.resumeDateError"
+msgstr "恢复订阅时，请将适用的账单日期和试用结束日期设为今天或以后。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:123
 msgid "subscription.costSharing.memberDefault"
 msgstr "成员 {index}"
@@ -1762,6 +1782,11 @@ msgstr "持续同步"
 #: src/i18n/descriptors/subscription.ts:430
 msgid "import.wallosGuideValueLowConfidence"
 msgstr "按内容匹配"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:747
+msgid "dashboard.builtinRates"
+msgstr "按内置参考汇率换算"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:217
@@ -2072,6 +2097,11 @@ msgstr "旧 URL 会立即失效，已经添加到日历 App 的这个订阅将�
 #: src/i18n/descriptors/subscription.ts:42
 msgid "subscription.addToCalendarRegenerateDescription"
 msgstr "旧 URL 会立即失效，已经添加到日历 App 的这个订阅需要重新添加。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:750
+msgid "subscription.pauseTitle"
+msgstr "暂停订阅"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:160
@@ -2619,6 +2649,11 @@ msgid "subscriptions.clearFilters"
 msgstr "清除筛选"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:756
+msgid "subscription.clearTrialEndDate"
+msgstr "清除试用结束日期"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:567
 msgid "aiRecognition.imageDropDescription"
 msgstr "点击、拖拽或粘贴添加 PNG、JPG、WebP 图片，最多 {count} 张。"
@@ -3084,6 +3119,11 @@ msgid "subscription.formIncomplete"
 msgstr "订阅信息不完整，请检查后重试"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:748
+msgid "subscription.reviewAgain"
+msgstr "订阅信息已变化，请重新打开并核对。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:275
 msgid "subscriptions.title"
 msgstr "订阅列表"
@@ -3272,6 +3312,11 @@ msgstr "请选择到期日期"
 #: src/i18n/descriptors/subscription.ts:226
 msgid "subscription.renew.validation.currencyRequired"
 msgstr "请选择可用货币"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:753
+msgid "subscription.resumeHelp"
+msgstr "请选择恢复后的状态，并确认账单日期和试用结束日期。"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:227
@@ -3502,6 +3547,11 @@ msgstr "选择文件"
 #: src/i18n/descriptors/subscription.ts:155
 msgid "subscription.placeholder.date"
 msgstr "选择日期"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:754
+msgid "subscription.chooseStatus"
+msgstr "选择状态"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:208

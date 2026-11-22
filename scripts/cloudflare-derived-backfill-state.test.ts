@@ -47,7 +47,7 @@ function v3Shape(markerPresent: boolean): DerivedSchemaShape {
   };
 }
 
-test("classifies legacy, v2 repair, v4 pending, v4 complete, and mixed schemas", () => {
+test("classifies legacy, v2 repair, v5 pending, v5 complete, and mixed schemas", () => {
   assert.equal(classifyDerivedSchema({
     v2MigrationApplied: false,
     v3MigrationApplied: false,
@@ -67,8 +67,8 @@ test("classifies legacy, v2 repair, v4 pending, v4 complete, and mixed schemas",
     markerPresent: false,
   }), "legacy");
   assert.equal(classifyDerivedSchema({ ...v3Shape(false), v3MigrationApplied: false }), "v2-needs-repair-migration");
-  assert.equal(classifyDerivedSchema(v3Shape(false)), "v4-pending-backfill");
-  assert.equal(classifyDerivedSchema(v3Shape(true)), "v4-complete");
+  assert.equal(classifyDerivedSchema(v3Shape(false)), "v5-pending-backfill");
+  assert.equal(classifyDerivedSchema(v3Shape(true)), "v5-complete");
   assert.equal(classifyDerivedSchema({
     ...v3Shape(false),
     v2MigrationApplied: false,
@@ -95,8 +95,8 @@ test("classifies legacy, v2 repair, v4 pending, v4 complete, and mixed schemas",
   }), "invalid-mixed");
 });
 
-test("an old marker never skips the v4 rebuild", () => {
-  assert.equal(classifyDerivedSchema(v3Shape(false)), "v4-pending-backfill");
+test("an old marker never skips the v5 rebuild", () => {
+  assert.equal(classifyDerivedSchema(v3Shape(false)), "v5-pending-backfill");
 });
 
 test("pending state marks complete only after rebuild and verification", async () => {
@@ -106,7 +106,7 @@ test("pending state marks complete only after rebuild and verification", async (
     verify: async (): Promise<void> => { calls.push("verify"); },
     markComplete: async (): Promise<void> => { calls.push("mark"); },
   };
-  await executeDerivedBackfillState("v4-pending-backfill", actions);
+  await executeDerivedBackfillState("v5-pending-backfill", actions);
   assert.deepEqual(calls, ["rebuild", "verify", "mark"]);
 });
 
@@ -123,9 +123,9 @@ test("failed pending runs remain unmarked and can be replayed", async () => {
     markComplete: async (): Promise<void> => { calls.push("mark"); },
   };
 
-  await assert.rejects(executeDerivedBackfillState("v4-pending-backfill", actions), /injected invariant failure/);
+  await assert.rejects(executeDerivedBackfillState("v5-pending-backfill", actions), /injected invariant failure/);
   assert.deepEqual(calls, ["rebuild", "verify"]);
-  await executeDerivedBackfillState("v4-pending-backfill", actions);
+  await executeDerivedBackfillState("v5-pending-backfill", actions);
   assert.deepEqual(calls, ["rebuild", "verify", "rebuild", "verify", "mark"]);
 });
 
@@ -140,7 +140,7 @@ test("a write failure during rebuild never reaches verification or the marker", 
     markComplete: async (): Promise<void> => { calls.push("mark"); },
   };
 
-  await assert.rejects(executeDerivedBackfillState("v4-pending-backfill", actions), /injected batch write failure/);
+  await assert.rejects(executeDerivedBackfillState("v5-pending-backfill", actions), /injected batch write failure/);
   assert.deepEqual(calls, ["rebuild"]);
 });
 
@@ -151,7 +151,7 @@ test("complete state verifies without rebuilding or rewriting the marker", async
     verify: async (): Promise<void> => { calls.push("verify"); },
     markComplete: async (): Promise<void> => { calls.push("mark"); },
   };
-  await executeDerivedBackfillState("v4-complete", actions);
+  await executeDerivedBackfillState("v5-complete", actions);
   assert.deepEqual(calls, ["verify"]);
 });
 
@@ -167,7 +167,7 @@ test("a completed marker never authorizes rebuilding failed invariants", async (
   };
 
   await assert.rejects(
-    executeDerivedBackfillState("v4-complete", actions),
+    executeDerivedBackfillState("v5-complete", actions),
     /injected completed-state invariant failure/,
   );
   assert.deepEqual(calls, ["verify"]);

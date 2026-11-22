@@ -60,3 +60,12 @@ export function colorWithAlpha(color: string, alpha: number): string | null {
 
   return null;
 }
+
+/** 分类色来自用户配置，保留色相作为底色，并让小字随主题前景保持可读。 */
+export function categoryBadgeStyle(color: string) {
+  return {
+    backgroundColor: colorWithAlpha(color, 0.1) ?? undefined,
+    borderColor: colorWithAlpha(color, 0.2) ?? undefined,
+    color: `color-mix(in srgb, ${color} 32%, hsl(var(--foreground)))`,
+  };
+}

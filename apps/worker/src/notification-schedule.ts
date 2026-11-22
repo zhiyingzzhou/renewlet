@@ -3,6 +3,7 @@ import {
   REPEAT_REMINDER_INTERVALS,
   REPEAT_REMINDER_WINDOWS,
   effectiveReminderDays,
+  ordinaryRemindersAllowed,
   isDisabledReminderDays,
   isValidDateOnly,
   type RepeatReminderInterval,
@@ -34,13 +35,8 @@ export interface RepeatReminderSnapshot {
   window: RepeatReminderWindow;
 }
 
-// cancelled 只停用普通续费、固定期限到期、过期与 repeat 提醒；家庭共享收款提醒不调用此资格判断，保持独立责任流。
-export function isCancelledSubscriptionStatus(status: string): boolean {
-  return status === "cancelled";
-}
-
 export function isSubscriptionReminderEligible(sub: Pick<ApiSubscription, "status">): boolean {
-  return !isCancelledSubscriptionStatus(sub.status);
+  return ordinaryRemindersAllowed(sub.status);
 }
 
 const DEFAULT_REPEAT_REMINDER_INTERVAL: RepeatReminderInterval = "1h";

@@ -187,6 +187,11 @@ describe("use-subscriptions mutations", () => {
         return { subscription: apiSubscriptionFromDraft(id, subscriptionDraft()) };
       }
       const payload: unknown = JSON.parse(String(init.body));
+      if (init.method === "PATCH") {
+        const { expectedUpdatedAt, ...changes } = subscriptionUpdateBodySchema.parse(payload);
+        expect(expectedUpdatedAt).toBeTruthy();
+        return { subscription: apiSubscriptionFromPayload(id, changes) };
+      }
       return { subscription: apiSubscriptionFromPayload(id, payload) };
     });
   });
@@ -244,7 +249,7 @@ describe("use-subscriptions mutations", () => {
     const subscription = subscriptionFromDraft("sub-1", draft);
 
     await act(async () => {
-      await result.current.mutateAsync({ id: subscription.id, changes: formSubmission(draft) });
+      await result.current.mutateAsync({ id: subscription.id, changes: { ...formSubmission(draft), source: { ...subscription, updatedAt: "2026-08-01T12:34:56Z" } } });
     });
 
     expect(mocks.apiFetch.mock.calls[0]?.[0]).toBe("/api/app/subscriptions/sub-1");
@@ -355,7 +360,7 @@ describe("use-subscriptions mutations", () => {
     await act(async () => {
       await result.current.mutateAsync({
         id: updatedSubscription.id,
-        changes: formSubmission(updatedDraft),
+        changes: { ...formSubmission(updatedDraft), source: { ...updatedSubscription, updatedAt: "2026-08-01T12:34:56Z" } },
       });
     });
 

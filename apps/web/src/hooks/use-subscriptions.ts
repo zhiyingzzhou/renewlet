@@ -1,5 +1,5 @@
 import { ApiError } from "@/lib/api-client";
-import { readProductSessionSnapshot } from "@/services/product-session";
+import { isSameProductSession, readProductSessionSnapshot } from "@/services/product-session";
 import { useMemo } from "react";
 import {
   infiniteQueryOptions,
@@ -18,7 +18,7 @@ import {
   type SubscriptionListFilters,
 } from "@/services/subscription-service";
 import type { DateOnly } from "@/lib/time/date-only";
-import type { Subscription, SubscriptionDraft, SubscriptionFormSubmission } from "@/types/subscription";
+import type { Subscription, SubscriptionDraft, SubscriptionEditSubmission } from "@/types/subscription";
 import type { SubscriptionRenewBody } from "@renewlet/shared/schemas/subscriptions";
 import {
   invalidateSubscriptionCollections,
@@ -38,7 +38,7 @@ interface UseInfiniteSubscriptionsOptions {
 
 export interface UpdateSubscriptionCommand {
   id: string;
-  changes: SubscriptionFormSubmission;
+  changes: SubscriptionEditSubmission;
 }
 
 export function subscriptionsInfiniteQueryOptions(filters?: SubscriptionListFilters) {
@@ -159,6 +159,12 @@ function writeNotificationAffectingSubscriptionMutationResult(queryClient: Query
   void invalidateNotificationOverview(queryClient);
 }
 
+async function writeStatusChange(queryClient: QueryClient, subscription: Subscription) {
+  queryClient.setQueryData(subscriptionQueryKeys.detail(subscription.id), subscription);
+  // 状态筛选可能移除触发按钮；先等列表刷新，再由菜单或弹窗选择仍在页面上的焦点目标。
+  await Promise.all([invalidateSubscriptionCollections(queryClient), invalidateNotificationOverview(queryClient)]);
+}
+
 export function useCreateSubscription() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -167,12 +173,30 @@ export function useCreateSubscription() {
   });
 }
 
+async function writeInCurrentSession(write: () => Promise<Subscription>) {
+  const session = readProductSessionSnapshot();
+  const result = await write();
+  // 退出/换号清缓存后，旧写请求不能把上一账号的详情重新放入共享 QueryClient。
+  if (!isSameProductSession(session, readProductSessionSnapshot())) throw new ApiError("Session changed", 0, undefined, "aborted");
+  return result;
+}
+
 export function useUpdateSubscription() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, changes }: UpdateSubscriptionCommand) =>
-      subscriptionService.update(id, changes),
-    onSuccess: (subscription) => writeNotificationAffectingSubscriptionMutationResult(queryClient, subscription),
+      writeInCurrentSession(() => subscriptionService.update(id, changes)),
+    retry: false,
+    onError: (error, { id }) => {
+      if (error instanceof ApiError && (error.status === 409 || error.status === 0 || error.code === "invalid_response")) {
+        void queryClient.invalidateQueries({ queryKey: subscriptionQueryKeys.detail(id) });
+        void invalidateSubscriptionCollections(queryClient);
+        void invalidateNotificationOverview(queryClient);
+      }
+    },
+    onSuccess: (subscription, { changes }) => changes.source.status === subscription.status
+      ? writeNotificationAffectingSubscriptionMutationResult(queryClient, subscription)
+      : writeStatusChange(queryClient, subscription),
   });
 }
 
@@ -180,9 +204,15 @@ export function usePatchSubscription() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, patch }: { id: string; patch: SubscriptionFieldPatch }) =>
-      subscriptionService.patch(id, patch),
-    // pinned/publicHidden 只改变列表展示集合，不改变通知资格，避免无关的 Upcoming 请求。
-    onSuccess: (subscription) => writeSubscriptionMutationResult(queryClient, subscription),
+      writeInCurrentSession(() => subscriptionService.patch(id, patch)),
+    retry: false,
+    onSuccess: async (subscription, { patch }) => {
+      if ("status" in patch) {
+        await writeStatusChange(queryClient, subscription);
+      } else {
+        writeSubscriptionMutationResult(queryClient, subscription);
+      }
+    },
   });
 }
 
@@ -190,14 +220,8 @@ export function useRenewSubscription() {
   const queryClient = useQueryClient();
   return useMutation({
     retry: false,
-    mutationFn: async ({ id, payload }: { id: string; payload: SubscriptionRenewBody }) => {
-      const session = readProductSessionSnapshot();
-      const result = await subscriptionService.renew(id, payload);
-      // 退出/换号清缓存后，旧写请求不能把上一账号的详情重新放入共享 QueryClient。
-      const current = readProductSessionSnapshot();
-      if (session?.userId !== current?.userId || session?.expiresAt !== current?.expiresAt) throw new ApiError("Session changed", 0, undefined, "aborted");
-      return result;
-    },
+    mutationFn: ({ id, payload }: { id: string; payload: SubscriptionRenewBody }) =>
+      writeInCurrentSession(() => subscriptionService.renew(id, payload)),
     onSuccess: (subscription) => writeNotificationAffectingSubscriptionMutationResult(queryClient, subscription),
   });
 }

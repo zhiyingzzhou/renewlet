@@ -243,11 +243,13 @@ Before a schema upgrade, create a portable SQL export. `pnpm deploy` captures th
 pnpm exec wrangler d1 export DB --remote --config wrangler.generated.jsonc --output renewlet-before-upgrade.sql
 ```
 
-Normal upgrades stay online. When an unapplied `_exclusive_` migration exists, or the `subscription-derived-state-v4` marker is still pending, the deployment orchestrator first deploys the same Worker bundle in maintenance mode, removes Cron and the Queue consumer, and waits Cloudflare's 15-minute maximum background invocation duration. API, ICS, and webhook requests return `503` with `Retry-After: 900` and `Cache-Control: no-store`; Static Assets continue serving the SPA.
+Normal upgrades stay online. When an unapplied `_exclusive_` migration exists, or the `subscription-derived-state-v5` marker is still pending, the deployment orchestrator first deploys the same Worker bundle in maintenance mode, removes Cron and the Queue consumer, and waits Cloudflare's 15-minute maximum background invocation duration. API, ICS, and webhook requests return `503` with `Retry-After: 900` and `Cache-Control: no-store`; Static Assets continue serving the SPA.
 
 ```bash
 pnpm deploy -- --config wrangler.generated.jsonc --maintenance-config wrangler.maintenance.generated.jsonc
 ```
+
+Maintenance explicitly detaches this Worker from its configured queues and dead-letter queues and reads back Cron and consumer state before draining. After the drain, the active maintenance version stores the original normal Worker version and the D1 bookmark. A retry reuses this pair. Databases with a verified v4 marker retain existing eligible reminder occurrences. Older databases rebuild from subscription records. Both paths verify the derived state before recording v5.
 
 The orchestrator then protects calendar Feeds, applies migrations, rebuilds derived state, checks foreign keys plus the complete settings data/trigger definitions, deploys the normal configuration, and verifies the active Worker version. If a failure happens before the first D1 write, it restores the previous Worker, Cron, and Queue consumer automatically. After the first D1 write, any failure keeps or redeploys maintenance mode. Rerun the same deploy command after fixing the cause; a completed migration marker is verified and not executed again.
 

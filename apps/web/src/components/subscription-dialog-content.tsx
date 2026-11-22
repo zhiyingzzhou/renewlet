@@ -20,7 +20,7 @@ import {
 } from "@/lib/subscription-form";
 import { useCustomConfigState } from "@/contexts/CustomConfigContext";
 import { useExchangeRates } from "@/hooks/use-exchange-rates";
-import { useSubscriptionDialogSession } from "@/hooks/use-subscription-dialog-session";
+import { subscriptionToFormState, useSubscriptionDialogSession } from "@/hooks/use-subscription-dialog-session";
 import { useSubscriptionFormAutoDates } from "@/hooks/use-subscription-form-auto-dates";
 import { useManagedCurrencyOptions } from "@/hooks/use-managed-currency-options";
 import { useDeferredDialogInitialFocus } from "@/hooks/use-deferred-dialog-initial-focus";
@@ -76,6 +76,7 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
   const formRef = useRef<HTMLFormElement>(null);
   const submittingRef = useRef(false);
   const [submitting, setSubmitting] = useState(false);
+  const [reviewNotice, setReviewNotice] = useState<string | null>(null);
   const [focusValidation, setFocusValidation] = useState(0);
   useLayoutEffect(() => {
     if (focusValidation === 0) return;
@@ -125,9 +126,10 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
     defaultCreateCurrency,
     enabledCurrencyValues,
   });
+  const resume = props.mode === "edit" && props.resume === true;
   const resolveInitialFocus = useCallback(
-    () => formRef.current?.querySelector<HTMLElement>('input:not([type="hidden"]):not([disabled])') ?? null,
-    [],
+    () => formRef.current?.querySelector<HTMLElement>(resume ? '#edit-status' : 'input:not([type="hidden"]):not([disabled])') ?? null,
+    [resume],
   );
   useDeferredDialogInitialFocus(props.open, props.loading !== true, "subscription-form", resolveInitialFocus);
   const idPrefix = props.mode === "edit" ? "edit-" : "";
@@ -168,7 +170,16 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
     });
   }, [collectionReminderAllowed, collectionReminderEnabled, setFormData]);
 
-  useSubscriptionFormAutoDates(formData, setFormData, billingReferenceDate);
+  const [billingEdited, setBillingEdited] = useState(false);
+  const pausedSource = formData.editSource?.status === "paused";
+  const handleUserFieldChange = useCallback((key: keyof SubscriptionFormState) => {
+    if (pausedSource && ["autoCalculate", "startDate", "billingCycle", "customDays", "customCycleUnit", "oneTimeMode", "oneTimeTermCount", "oneTimeTermUnit"].includes(key)) {
+      setBillingEdited(true);
+    }
+    handleFieldChange(key);
+  }, [handleFieldChange, pausedSource]);
+  // 已暂停记录可能保留旧账期；只有用户修改账期输入，才允许自动计算覆盖保存的日期。
+  useSubscriptionFormAutoDates(formData, setFormData, billingReferenceDate, undefined, !pausedSource || billingEdited);
 
   const getSubmissionFormData = useCallback(() => {
     const pendingTags = Array.from(
@@ -190,7 +201,7 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (logoUploadStatus === "uploading" || submittingRef.current || props.loading) return;
+    if (logoUploadStatus === "uploading" || submittingRef.current || props.loading || reviewNotice) return;
 
     const submissionFormData = getSubmissionFormData();
     if (submissionFormData !== formData) {
@@ -199,6 +210,14 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
     }
 
     const nextErrors = validateForm(submissionFormData);
+    const resuming = submissionFormData.editSource?.status === "paused"
+      && (submissionFormData.status === "active" || submissionFormData.status === "trial");
+    if (resume && !resuming) nextErrors.status = t("subscription.chooseStatus");
+    if (resuming) {
+      const buyout = submissionFormData.billingCycle === "one-time" && submissionFormData.oneTimeMode === "buyout";
+      if (!buyout && submissionFormData.nextBillingDate && submissionFormData.nextBillingDate < billingReferenceDate) nextErrors.dates = t("subscription.resumeDateError");
+      if (submissionFormData.status === "trial" && submissionFormData.trialEndDate && submissionFormData.trialEndDate < billingReferenceDate) nextErrors.trialEndDate = t("subscription.resumeDateError");
+    }
     if (Object.keys(nextErrors).length > 0) {
       setFormErrors(nextErrors);
       setSubmitError(null);
@@ -220,13 +239,30 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
     setSubmitting(true);
     props.onSubmittingChange(true);
     try {
-      await props.onSubmit(submission);
+      if (props.mode === "edit") {
+        const source = formData.editSource;
+        if (!source || source.id !== props.subscription?.id || (resume && source.status !== "paused")) {
+          throw new Error(t("subscription.reviewAgain"));
+        }
+        const trialEnd = formData.trialEndDate;
+        const baseline = resuming ? toSubscriptionFormSubmission(subscriptionToFormState(source)) : null;
+        await props.onSubmit({ ...submission, source, ...(baseline ? { baseline } : {}), ...(resuming && submission.status === "trial" && trialEnd !== source.trialEndDate
+          ? { trialEndDate: trialEnd ?? null } : {}) });
+      } else {
+        await props.onSubmit(submission);
+      }
       props.onSubmittingChange(false);
       props.onRequestClose();
     } catch (error) {
       // 网络中断或响应校验失败不证明服务端未提交；保留草稿并提示先核对，不能自动重试写入。
       const uncertainOutcome = error instanceof ApiError && (error.status === 0 || error.code === "invalid_response");
-      setSubmitError(!uncertainOutcome && error instanceof Error && error.message ? error.message : t("subscription.saveError"));
+      const message = !uncertainOutcome && error instanceof Error && error.message ? error.message : t("subscription.saveError");
+      if (props.mode === "edit" && error instanceof ApiError && (uncertainOutcome || error.status === 404 || error.status === 409 || error.code === "SUBSCRIPTION_VERSION_REQUIRED")) {
+        // 冲突或响应丢失后只允许重新打开详情；按原草稿再次提交不能确认上一笔写入的结果。
+        setReviewNotice(message);
+      } else {
+        setSubmitError(message);
+      }
     } finally {
       submittingRef.current = false;
       setSubmitting(false);
@@ -234,7 +270,8 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
     }
   };
 
-  const submitDisabled = submitting || logoUploadStatus === "uploading";
+  const busy = submitting || logoUploadStatus === "uploading";
+  const submitDisabled = busy || Boolean(reviewNotice);
   const loadingPreview = props.mode === "create"
     ? props.initialSubscription ?? props.loadingPreview ?? formData
     : props.loadingPreview;
@@ -254,6 +291,7 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
       data-testid={props.loading ? "subscription-form-data-loading" : undefined}
       fields={loadingSlots?.fields ?? (
         <SubscriptionFormFields
+          resume={resume}
           idPrefix={idPrefix}
           config={config}
           formData={formData}
@@ -263,7 +301,7 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
           hasStoredBalance={hasStoredBalance}
           availableTags={props.availableTags}
           onLogoUploadStatusChange={setLogoUploadStatus}
-          onFieldChange={handleFieldChange}
+          onFieldChange={handleUserFieldChange}
           errors={formErrors}
           onClearFieldError={clearFieldError}
           notificationReminderDays={notificationReminderDays}
@@ -273,9 +311,9 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
       )}
       actions={loadingSlots?.actions ?? (
         <>
-          {submitError ? (
+          {reviewNotice || submitError ? (
             <p role="alert" className="w-full min-w-0 wrap-break-word text-center text-sm text-destructive sm:mr-auto sm:w-auto sm:text-left">
-              {submitError}
+              {reviewNotice ?? submitError}
             </p>
           ) : null}
           <Button
@@ -292,12 +330,12 @@ export function SubscriptionDialogContent(props: SubscriptionDialogContentProps)
             disabled={submitDisabled}
             className="w-full bg-primary text-primary-foreground hover:bg-primary-glow sm:w-auto"
           >
-            {submitDisabled ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {props.mode === "create"
               ? isCloneCreateMode
                 ? t("subscription.cloneSubmit")
                 : t("subscription.dialogCreateSubmit")
-              : t("subscription.dialogEditSubmit")}
+              : resume ? t("subscription.resumeTitle") : t("subscription.dialogEditSubmit")}
           </Button>
         </>
       )}

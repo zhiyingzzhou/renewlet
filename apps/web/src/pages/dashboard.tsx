@@ -58,7 +58,7 @@ export default function Index() {
   const { config } = useCustomConfigState();
   const { t, locale, formatCurrency } = useI18n();
   const exchangeRateProvider = settings?.exchangeRateProvider;
-  const { convert, loading: ratesLoading, sourceDate: ratesSourceDate } = useReportExchangeRates(exchangeRateProvider);
+  const { convert, loading: ratesLoading, sourceDate: ratesSourceDate, reportBasisStatus, activeProvider } = useReportExchangeRates(exchangeRateProvider);
   const currencyRatesReady = Boolean(ratesSourceDate) && !ratesLoading;
   const defaultCurrency = settings?.defaultCurrency ?? "CNY";
   const priceReferenceCurrency = settings ? resolveSubscriptionPriceReferenceCurrency(settings) : null;
@@ -89,6 +89,9 @@ export default function Index() {
     editingSubscription,
     editingCollectionItem,
     editDialogOpen,
+    resumeEdit,
+    editRestoreFocusRef,
+    handlePauseSubscription,
     editDetailPending,
     handleAddSubscription,
     handleDeleteSubscription,
@@ -142,7 +145,10 @@ export default function Index() {
             value={formatCurrency(totalMonthly, defaultCurrency)}
             subtitle={t("dashboard.monthlySpendSubtitle", {
               amount: formatCompactCurrencyAmount(totalDaily, defaultCurrency, locale),
-              rates: ratesLoading ? t("dashboard.ratesLoading") : t("dashboard.realTimeRates", { currency: defaultCurrency }),
+              rates: reportBasisStatus.locked ? t("publicStatus.moneySubtitleLocked", { month: reportBasisStatus.month })
+                : ratesLoading ? t("dashboard.ratesLoading")
+                : activeProvider === "builtin" ? t("dashboard.builtinRates")
+                : t("dashboard.realTimeRates", { currency: defaultCurrency }),
             })}
             icon={<CreditCard className="h-6 w-6" />}
             variant="primary"
@@ -185,7 +191,7 @@ export default function Index() {
           {/* 订阅列表 */}
           <div className="lg:col-span-2">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground">{t("dashboard.recentSubscriptions")}</h2>
+              <h2 tabIndex={-1} data-subscription-list-heading="" className="text-lg font-semibold text-foreground">{t("dashboard.recentSubscriptions")}</h2>
               <Link href="/subscriptions">
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                   {t("dashboard.viewAll", { count: subscriptions.length })}
@@ -221,6 +227,7 @@ export default function Index() {
                       categoryByValue={categoryByValue}
                       paymentMethodByValue={paymentMethodByValue}
                       onEdit={handleEditSubscription}
+                      onPause={handlePauseSubscription}
                       onDelete={handleDeleteSubscription}
                       onTogglePublicHidden={handleTogglePublicHiddenSubscription}
                       onViewDetails={handleViewDetails}
@@ -277,6 +284,8 @@ export default function Index() {
         subscription={editingSubscription}
         loadingPreview={editingCollectionItem}
         open={editDialogOpen}
+        restoreFocusRef={editRestoreFocusRef}
+        resume={resumeEdit}
         onOpenChange={handleEditDialogOpenChange}
         onSave={handleSaveSubscription}
         availableTags={availableTags}
