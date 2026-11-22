@@ -109,11 +109,13 @@
       drop-shadow(0 0 1px hsl(0 0% 100% / 0.34));
   }
 
-  /* 字母 fallback 颜色由业务计算写入变量，CSS 只负责给它一点抗背景能力。 */
+  /* 图片解码前缩写居中覆盖同一图槽。两种主题的图槽都是浅底，缩写墨色以固定深色为基准。 */
   .subscription-logo-fallback {
-    position: relative;
-    z-index: 1;
-    color: var(--subscription-logo-fallback);
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: color-mix(in srgb, var(--subscription-logo-fallback) 32%, hsl(220 25% 12%));
   }
 
   /* theme-gradient 给局部容器复刻 body 背景；设置页/面板脱离 body 时仍能保持同一主题气质。 */

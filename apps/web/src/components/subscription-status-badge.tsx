@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 import { STATUS_LABELS, type SubscriptionStatus } from "@/types/subscription";
 
 const subscriptionStatusBadgeClassNames = {
-  trial: "border-warning/20 bg-warning/10 text-warning",
-  active: "border-success/20 bg-success/10 text-success",
-  expired: "border-muted bg-muted text-muted-foreground",
-  paused: "border-muted bg-muted text-muted-foreground",
-  cancelled: "border-muted bg-muted text-muted-foreground",
+  trial: "border-warning/20 bg-warning/10 text-warning-ink",
+  active: "border-success/20 bg-success/10 text-success-ink",
+  expired: "border-border bg-muted text-secondary-foreground",
+  paused: "border-border bg-muted text-secondary-foreground",
+  cancelled: "border-border bg-muted text-secondary-foreground",
 } satisfies Record<SubscriptionStatus, string>;
 
 interface SubscriptionStatusBadgeProps {

@@ -267,6 +267,16 @@ describe("SubscriptionCard", () => {
     expect(screen.queryByRole("menuitem", { name: "置顶" })).not.toBeInTheDocument();
   });
 
+  it("shows initials until a real logo finishes loading", () => {
+    renderSubscriptionCard({ logo: "https://example.com/logo.svg", name: "优酷" });
+    const tile = screen.getByAltText("优酷").parentElement;
+    if (!tile) throw new Error("Missing subscription logo tile");
+    expect(within(tile).getByText("优酷")).toBeVisible();
+    fireEvent.load(within(tile).getByAltText("优酷"));
+    expect(within(tile).queryByText("优酷")).not.toBeInTheDocument();
+    expect(within(tile).getByAltText("优酷")).not.toHaveClass("opacity-0");
+  });
+
   it("falls back to initials when the subscription logo fails to load", () => {
     renderSubscriptionCard({ logo: "https://example.com/broken.svg", name: "OpenAI" });
 
@@ -337,7 +347,7 @@ describe("SubscriptionCard", () => {
     expect(within(priceBlock).getByText("≈ ¥70 CNY")).toHaveClass(
       "text-xs",
       "tabular-nums",
-      "text-muted-foreground",
+      "text-card-caption",
     );
   });
 
@@ -624,12 +634,29 @@ describe("SubscriptionCard", () => {
     const expiredDateText = screen.getByText("已过期 3 天");
     const card = statusBadge?.closest(".group");
 
-    expect(statusBadge).toHaveClass("bg-muted", "text-muted-foreground", "border-muted");
-    expect(expiredDateText.closest("div")).toHaveClass("text-muted-foreground");
-    expect(card).toHaveClass("border-muted", "bg-muted/20");
+    expect(statusBadge).toHaveClass("bg-muted", "text-secondary-foreground", "border-border");
+    expect(expiredDateText.closest("div")).toHaveClass("text-card-caption");
+    expect(card).toHaveClass("border-border", "bg-card", "hover:bg-card-hover");
     expect(card).not.toHaveClass("border-destructive/40");
     expectMetaFlowItemsInOrder("开始: 2026/5/15", "到期: 2026/5/15", "已过期 3 天");
   });
+
+  it.each(["active", "trial", "expired", "paused", "cancelled"] as const)(
+    "keeps the selected surface and hover feedback for %s subscriptions even near a billing date",
+    (status) => {
+      renderSubscriptionCard({
+        status,
+        nextBillingDate: assertDateOnly("2026-05-20"),
+        trialEndDate: status === "trial" ? assertDateOnly("2026-05-19") : undefined,
+      }, {}, { selectionMode: true, selected: true });
+
+      const card = screen.getByTestId("subscription-card");
+      expect(card).toHaveAttribute("aria-checked", "true");
+      expect(card).toHaveClass("border-primary", "bg-card-selected", "hover:bg-card-selected");
+      expect(card).not.toHaveClass("border-warning/40");
+      expect(within(card).getByRole("button", { name: "更多操作" })).toBeEnabled();
+    },
+  );
 
   it("does not render relative renewal days for overdue paused subscriptions", () => {
     renderSubscriptionCard({ status: "paused", nextBillingDate: assertDateOnly("2026-05-12") });
@@ -645,7 +672,7 @@ describe("SubscriptionCard", () => {
     renderSubscriptionCard({ status: "paused", nextBillingDate: assertDateOnly("2026-05-20") });
 
     const card = screen.getByTestId("subscription-card");
-    expect(card).toHaveClass("border-muted", "bg-muted/20");
+    expect(card).toHaveClass("border-border", "bg-card", "hover:bg-card-hover");
     expect(card).not.toHaveClass("border-warning/40");
     expect(screen.queryByText("2 天后续费")).not.toBeInTheDocument();
   });
