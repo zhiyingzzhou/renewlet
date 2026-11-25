@@ -25,6 +25,7 @@
     "ai": "7.0.55",
     "fast-xml-parser": "5.10.1",
     "hono": "4.13.13",
+    "oauth4webapi": "^3.8.9",
     "otpauth": "^9.5.1",
     "webdav": "5.11.0",
     "zod": "^4.6.7"

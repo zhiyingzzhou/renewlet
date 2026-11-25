@@ -152,6 +152,7 @@ export function SettingsScreen() {
 
               <AccountSettingsSection
                 id="settings-account"
+                oidcEnabled={controller.oidcEnabled === true}
                 className={SETTINGS_SECTION_SCROLL_CLASS}
                 accountEmail={accountEmail}
                 canManageUsers={canManageUsers}
@@ -174,6 +175,7 @@ export function SettingsScreen() {
 
               <AccessSecuritySection
                 id="settings-access-security"
+                oidcEnabled={controller.oidcEnabled}
                 className={SETTINGS_SECTION_SCROLL_CLASS}
                 controller={authSecurity}
               />

@@ -74,9 +74,29 @@ msgid "settings.turnstileSaving"
 msgstr "Сохранение..."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:55
+msgid "settings.oidcEnable"
+msgstr "Сохранить и включить"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:60
+msgid "settings.oidcDisable"
+msgstr "Отключить единый вход"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:12
 msgid "settings.turnstileSiteKeyHelp"
 msgstr "Передаётся странице входа для отображения виджета Turnstile."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:59
+msgid "settings.oidcBind"
+msgstr "Привязать у провайдера"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:38
+msgid "settings.oidcTitle"
+msgstr "Единый вход"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:16
@@ -99,9 +119,34 @@ msgid "settings.turnstileEnableHelp"
 msgstr "Для работы проверки необходимо заполнить и Site key, и Secret key."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:45
+msgid "settings.oidcCallback"
+msgstr "URI перенаправления"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:52
+msgid "settings.oidcCopy"
+msgstr "Копировать"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:46
+msgid "settings.oidcCallbackHelp"
+msgstr "Укажите у провайдера этот точный URI перенаправления."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:24
 msgid "settings.turnstileTestDialogDescription"
 msgstr "Пройдите проверку ниже. Затем Renewlet проверит, работают ли текущие Site key и Secret key."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:48
+msgid "settings.oidcClient"
+msgstr "ID клиента"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:49
+msgid "settings.oidcSecret"
+msgstr "Секрет клиента"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:18
@@ -109,9 +154,34 @@ msgid "settings.turnstileSecretConfigured"
 msgstr "Ключ настроен"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:40
+msgid "settings.oidcAccountHelp"
+msgstr "Привяжите внешнюю учётную запись для входа с других устройств."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:15
 msgid "settings.turnstileSecretConfiguredPlaceholder"
 msgstr "Сохранён; оставьте пустым, чтобы не менять"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:51
+msgid "settings.oidcCopied"
+msgstr "Скопировано"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:54
+msgid "settings.oidcLinked"
+msgstr "Привязанный провайдер"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:50
+msgid "settings.oidcSavedSecret"
+msgstr "Настроен. Оставьте поле пустым, чтобы сохранить."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:47
+msgid "settings.oidcIssuer"
+msgstr "URL издателя (Issuer URL)"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:28
@@ -144,6 +214,16 @@ msgid "settings.turnstileTesting"
 msgstr "Проверка..."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:57
+msgid "settings.oidcTest"
+msgstr "Проверить вход"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:43
+msgid "settings.oidcTestPassed"
+msgstr "Проверка входа пройдена. Подтвердите настройки для этого сайта."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:30
 msgid "settings.turnstileClearing"
 msgstr "Очистка..."
@@ -159,9 +239,29 @@ msgid "settings.turnstileSecretKeepHelp"
 msgstr "Оставьте пустым, чтобы сохранить текущий ключ, или введите новое значение для замены."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:56
+msgid "settings.oidcConfirm"
+msgstr "Подтвердить привязку"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:37
+msgid "settings.oidcAccessHelp"
+msgstr "Управляйте способами входа и защитой сайта от ботов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:42
+msgid "settings.oidcManage"
+msgstr "Управлять привязкой"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:8
 msgid "settings.turnstileEnable"
 msgstr "Требовать проверку на человека при входе по email и паролю"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:58
+msgid "settings.oidcUnlink"
+msgstr "Отвязать"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:4
@@ -174,6 +274,26 @@ msgid "settings.accessSecurity"
 msgstr "Безопасность доступа"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:44
+msgid "settings.oidcConfirmHelp"
+msgstr "Проверьте провайдера и идентификатор перед привязкой."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:53
+msgid "settings.oidcCopyFailed"
+msgstr "Выделите адрес и скопируйте вручную."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:14
 msgid "settings.turnstileSecretPlaceholder"
 msgstr "Введите Secret key Cloudflare Turnstile"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:39
+msgid "settings.oidcSiteHelp"
+msgstr "Подключите провайдера OpenID Connect для входа существующих пользователей."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:41
+msgid "settings.oidcConfigure"
+msgstr "Настроить единый вход"

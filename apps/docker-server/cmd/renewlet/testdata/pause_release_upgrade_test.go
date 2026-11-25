@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/pocketbase/pocketbase"
@@ -37,6 +39,15 @@ func TestReleasedPauseDatabaseUpgrade(t *testing.T) {
 	seed := os.Getenv("RENEWLET_TEST_PAUSE_PHASE") == "seed"
 	if seed {
 		user, _ := createRouteTestUser(t, app, "release-upgrade")
+		createTestTOTPCredential(t, app, user.Id)
+		createTestPasskeyCredential(t, app, user.Id)
+		token, _, _, err := createAppSession(app, user.Id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err = os.WriteFile(filepath.Join(dir, "upgrade-test-session"), []byte(token), 0600); err != nil {
+			t.Fatal(err)
+		}
 		for _, record := range records {
 			createRouteTestSubscription(t, app, user.Id, map[string]interface{}{
 				"id": record.id, "name": record.status, "status": record.status, "category": record.category, "pinned": record.pinned,
@@ -48,6 +59,41 @@ func TestReleasedPauseDatabaseUpgrade(t *testing.T) {
 	user, err := app.FindAuthRecordByEmail("users", "admin-release-upgrade@example.com")
 	if err != nil {
 		t.Fatal(err)
+	}
+	if !user.ValidatePassword("password123") || user.GetString("role") != "user" {
+		t.Fatal("existing account changed")
+	}
+	seedRecord, err := app.FindFirstRecordByData("mfa_totp_credentials", "user", user.Id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secret, err := decryptMFASecret(app, seedRecord.GetString("secretCiphertext"))
+	if err != nil || secret != testTOTPSecret {
+		t.Fatal("existing MFA credential did not decrypt")
+	}
+	passkey, err := app.FindFirstRecordByData("passkey_credentials", "user", user.Id)
+	if err != nil || passkey.GetString("credentialId") != "test-passkey-"+user.Id || passkey.GetString("publicKey") != "AA" {
+		t.Fatal("existing passkey changed")
+	}
+	saved, err := os.ReadFile(filepath.Join(dir, "upgrade-test-session"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	owner, _, err := appAuthRecordByToken(app, string(saved))
+	if err != nil || owner == nil || owner.Id != user.Id {
+		t.Fatal("existing cookie session changed")
+	}
+	if !seed {
+		status := serveTestRequest(t, app, "GET", "/api/app/auth/options", "", "")
+		if status.Code != 200 || !strings.Contains(status.Body.String(), `"oidc":false`) {
+			t.Fatal("upgraded site should start with OIDC disabled")
+		}
+		for _, name := range []string{"oidc_links", "oidc_flows"} {
+			rows, err := app.FindAllRecords(name)
+			if err != nil || len(rows) != 0 {
+				t.Fatalf("unexpected %s after upgrade", name)
+			}
+		}
 	}
 	for _, want := range records {
 		query := subscriptionListQuery{Categories: []string{want.category}}

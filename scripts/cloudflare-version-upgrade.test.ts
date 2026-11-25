@@ -427,6 +427,8 @@ function assertCurrentLocaleContract(db: DatabaseSync): void {
 }
 
 function assertUpgradeMarkersComplete(db: DatabaseSync): void {
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM oidc_links").get()?.["n"], 0);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM auth_security_settings WHERE oidc_enabled <> 0").get()?.["n"], 0);
   assert.deepEqual(
     db.prepare("SELECT name FROM d1_migrations ORDER BY name").all().map((row) => String(row["name"])),
     migrationNames(),
@@ -539,7 +541,7 @@ test("0047 adds nullable balance without touching facts, rolls back failure, and
     assert.equal(client.db.prepare("SELECT name FROM d1_migrations WHERE name = ?").get(name), undefined);
     assert.ok(!client.db.prepare("PRAGMA table_info(subscriptions)").all().some((row) => row["name"] === "balance"));
     client.db.exec("ALTER TABLE subscriptions DROP COLUMN balance_currency");
-    assert.equal(applyPendingMigrations(client.db), 1);
+    assert.equal(applyPendingMigrations(client.db), migrationNames().filter(migration => migration >= name).length);
     assert.equal(applyPendingMigrations(client.db), 0);
     assert.deepEqual(historicalFactRows(client.db), facts);
     assert.ok(client.db.prepare("SELECT balance, balance_currency FROM subscriptions").all().every((row) => row["balance"] === null && row["balance_currency"] === null));
@@ -590,3 +592,21 @@ for (const [version, marker, hash] of [
     assert.deepEqual(plainRows(all("SELECT repeat_reminder_count FROM subscription_scheduler_state")), [{ repeat_reminder_count: 1 }]);
   });
 }
+
+test("v0.3.38 auth data survives the OIDC migration and a second startup", () => {
+  // v0.3.37 与 v0.3.38 发行版的 migrations tree 同为 0d7e5ebd9b3de52892738a969554c64573672128，复用已固定摘要的旧库。
+  const client = openFixture("v0.3.37.sql");
+  const db = client.db;
+  try {
+    db.prepare("INSERT INTO sessions(id,token_hash,csrf_token_hash,user_id,expires_at,created_at,last_seen_at) VALUES(?,?,?,?,'2099-01-01',?,?)").run("oidc-upgrade", "t".repeat(43), "c".repeat(43), userId, timestamp, timestamp);
+    db.prepare("INSERT INTO mfa_totp_credentials(user_id,secret_ciphertext,created_at,updated_at) VALUES(?,?,?,?)").run(userId,"old-ciphertext",timestamp,timestamp);
+    db.prepare("INSERT INTO passkey_credentials(id,user_id,name,credential_id,public_key,credential_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)").run("key",userId,"device","credential","public","{}",timestamp,timestamp);
+    const facts = () => ["users","subscriptions","sessions","mfa_totp_credentials","passkey_credentials"].map(table => db.prepare("SELECT * FROM "+table+" ORDER BY 1").all());
+    const before = facts();
+    assert.equal(applyPendingMigrations(db), migrationNames().filter(name => name >= "0048_").length);
+    assert.deepEqual(facts(),before);
+    assert.equal(applyPendingMigrations(db),0);
+    assert.deepEqual(facts(),before);
+    assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(),[]);
+  } finally { db.close(); }
+});

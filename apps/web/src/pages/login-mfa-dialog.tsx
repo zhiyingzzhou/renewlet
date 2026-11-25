@@ -77,12 +77,12 @@ export function LoginMfaDialog({
           </DialogHeader>
 
           <form onSubmit={onSubmit} className="grid gap-4" noValidate>
-            <div className="rounded-md border border-border bg-secondary/40 px-3 py-2 text-sm text-muted-foreground">
+            {state.email && <div className="rounded-md border border-border bg-secondary/40 px-3 py-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
                 <span className="min-w-0 truncate">{state.email}</span>
               </div>
-            </div>
+            </div>}
 
             {hasCodeMfaMethod ? (
               <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2">

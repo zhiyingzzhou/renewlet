@@ -25,7 +25,7 @@ import { useCustomConfigActions, useCustomConfigState } from "@/contexts/CustomC
 import { useReportExchangeRates } from "@/hooks/use-report-exchange-rates";
 import { useSettingsEnvelope, useUpdateSettings } from "@/hooks/use-settings";
 import { useSubscriptionFacets } from "@/hooks/use-subscriptions";
-import { usePasswordResetAvailability } from "@/hooks/use-password-reset-availability";
+
 import { useAppStatus } from "@/hooks/use-app-status";
 import { toast } from "@/components/ui/sonner";
 import { getDisplayErrorMessage } from "@/lib/display-error";
@@ -123,7 +123,7 @@ export function useSettingsFormController(): SettingsFormController {
   const sensitiveAccountActionsDisabled = !appStatusReady || appStatusDemoMode;
   const sensitiveAccountActionsDemoDisabled = appStatusDemoMode;
   const password = usePasswordChange();
-  const passwordResetEnabled = usePasswordResetAvailability();
+  const passwordResetEnabled = appStatus.data?.passwordReset === true;
   const {
     drafts: secretDrafts,
     cleared: clearedSecrets,
@@ -591,6 +591,7 @@ export function useSettingsFormController(): SettingsFormController {
     telegramBotCommands,
     authSecurity,
     password,
+    oidcEnabled: appStatus.data?.oidc,
     passwordResetEnabled,
     externalIntegrationsDisabled,
     sensitiveAccountActionsDisabled,

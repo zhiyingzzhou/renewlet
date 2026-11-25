@@ -124,6 +124,9 @@ func ensureCollectionsSchema(app core.App) error {
 	if err := ensureAuthSecuritySettingsCollection(app); err != nil {
 		return err
 	}
+	if err := ensureOIDCCollections(app, users); err != nil {
+		return err
+	}
 	return ensureMediaIconIndexesCollection(app)
 }
 
@@ -488,6 +491,7 @@ func ensureAuthSecuritySettingsCollection(app core.App) error {
 		fields := []core.Field{
 			&core.TextField{Name: "key", Required: true, Max: 32, Pattern: `^global$`},
 			&core.BoolField{Name: "turnstileEnabled"},
+			&core.BoolField{Name: "oidcEnabled"}, &core.TextField{Name: "oidcConfig", Max: 32768}, &core.TextField{Name: "oidcRevision", Max: 128},
 			&core.TextField{Name: "turnstileSiteKey", Max: 256},
 			&core.TextField{Name: "turnstileSecret", Max: 4096},
 		}

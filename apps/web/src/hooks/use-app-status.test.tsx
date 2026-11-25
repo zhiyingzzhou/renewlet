@@ -43,7 +43,7 @@ describe("useAppStatus", () => {
       turnstile: { enabled: true, siteKey: "site-key" },
     });
     expect(apiFetchMock).toHaveBeenCalledTimes(1);
-    expect(apiFetchMock).toHaveBeenCalledWith("/api/app/status", expect.anything(), expect.objectContaining({
+    expect(apiFetchMock).toHaveBeenCalledWith("/api/app/auth/options", expect.anything(), expect.objectContaining({
       authMode: "none",
       cache: "no-store",
       timeoutMs: 10_000,

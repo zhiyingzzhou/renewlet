@@ -5,6 +5,7 @@
  * - 邮箱 + 密码登录
  * - 自愿启用后的身份验证器二阶段登录（TOTP / 恢复码）
  * - 独立 Passkey / 通行密钥登录
+ * - 站点启用并绑定后的 OIDC 单点登录
  *
  * 跳转逻辑：
  * - 通过查询参数 `next` 传入登录后要跳转的站内路径（例如：/settings）
@@ -26,10 +27,10 @@ import { TurnstileWidget } from '@/components/turnstile-widget';
 import { toast } from '@/components/ui/sonner';
 import { authClient } from '@/lib/auth-client';
 import { getAuthDisplayMessage } from '@/lib/display-error';
-import { sanitizeNextPath } from '@/lib/redirect';
+import { sanitizeNextPath, takeOidcReturn } from '@/lib/redirect';
 import { reportClientError } from "@/lib/report-client-error";
 import { useTheme } from "@/lib/theme-provider";
-import { usePasswordResetAvailability } from '@/hooks/use-password-reset-availability';
+
 import { useAppStatus } from '@/hooks/use-app-status';
 import { useRouteReady } from '@/components/route-progress';
 import { useI18n } from '@/i18n/I18nProvider';
@@ -89,18 +90,22 @@ const Login = () => {
   const [mfaMethod, setMfaMethod] = useState<AuthenticatorMfaMethod>("totp");
   const [mfaCode, setMfaCode] = useState("");
   const [mfaErrors, setMfaErrors] = useState<LoginMfaErrors>({});
-  const passwordResetEnabled = usePasswordResetAvailability();
+  const oidcButton = useRef<HTMLButtonElement>(null);
+  const oidcMfa = useRef(false);
+  const focusOidcOnReturn = useRef(false);
+  const [oidcBusy, setOidcBusy] = useState(false);
   const setupStatus = useAppStatus();
   useRouteReady(setupStatus.isLoading);
   const { t } = useI18n();
   const { resolvedTheme } = useTheme();
   const appStatusData = setupStatus.status === "ready" ? setupStatus.data : null;
   const showSetupPrompt = appStatusData?.setupRequired === true && appStatusData?.setupEnabled === true;
-  // /api/app/status 是登录页唯一的 Turnstile siteKey 来源；配置不完整时后端会收敛成 enabled=false。
+  // 各登录方式共享一次匿名能力读取；配置不完整时后端不会公开 Turnstile site key。
   const turnstileRequired = appStatusData?.turnstile.enabled === true && appStatusData.turnstile.siteKey.trim().length > 0;
   const turnstileSiteKey = appStatusData?.turnstile.siteKey ?? "";
   const passwordLoginReady = setupStatus.status === "ready";
-  const isBusy = isLoading || isPasskeyLoading;
+  const isBusy = isLoading || isPasskeyLoading || oidcBusy;
+  const passwordResetEnabled = appStatusData?.passwordReset === true;
 
   const invalidatePasskeyFlows = useCallback(() => {
     passkeyFlowRef.current += 1;
@@ -122,7 +127,7 @@ const Login = () => {
 
   useEffect(() => {
     mountedRef.current = true;
-    suppressConditionalPasskeyRef.current = false;
+    suppressConditionalPasskeyRef.current = oidcMfa.current || focusOidcOnReturn.current;
     return () => {
       mountedRef.current = false;
       cancelPasskeyCeremony();
@@ -179,7 +184,7 @@ const Login = () => {
     suppressConditionalPasskeyRef.current = true;
     cancelPasskeyCeremony();
     invalidateMfaVerifyFlows();
-    if (rememberEmail) {
+    if (rememberEmail && loginEmail) {
       rememberLoginEmail(loginEmail);
     } else {
       forgetRememberedLoginEmail();
@@ -272,6 +277,65 @@ const Login = () => {
     };
   }, [mfaState]);
 
+  const enterMfa = useCallback((data: LoginMfaState) => {
+    cancelPasskeyCeremony();
+    invalidateMfaVerifyFlows();
+    resetTurnstile();
+    setMfaState(data);
+    setMfaMethod(data.methods.includes("totp") ? "totp" : "recovery_code");
+    setMfaCode("");
+    setPassword("");
+  }, [cancelPasskeyCeremony, invalidateMfaVerifyFlows, resetTurnstile]);
+
+  const startOidc = async () => {
+    suppressConditionalPasskeyRef.current = true;
+    cancelPasskeyCeremony();
+    setOidcBusy(true);
+    try {
+      const { oidcService } = await import("@/services/oidc-service");
+      await oidcService.login(getNextPath());
+    } catch {
+      setOidcBusy(false);
+      toast.error(t("auth.oidcFailed"));
+    }
+  };
+
+  useEffect(() => {
+    // 先清理回跳标记，StrictMode 或重新渲染不能再次消费同一凭据。
+    const returned = takeOidcReturn();
+    if (!returned) return;
+    suppressConditionalPasskeyRef.current = true;
+    cancelPasskeyCeremony();
+    if (returned !== "login") {
+      if (returned !== "cancelled") toast.error(t("auth.oidcFailed"));
+      focusOidcOnReturn.current = true;
+      return;
+    }
+    oidcMfa.current = true;
+    setOidcBusy(true);
+    async function complete() {
+      const { oidcService, oidcErrorKey } = await import("@/services/oidc-service");
+      try {
+        const result = await oidcService.finish(() => mountedRef.current);
+        if (!mountedRef.current) return;
+        if (result.type === "mfa_required") enterMfa({ ...result, email: "" });
+        else finishSuccessfulSession(result.user.email);
+      } catch (error) {
+        if (mountedRef.current) toast.error(t(oidcErrorKey(error)));
+      }
+    }
+    void complete().catch(() => toast.error(t("auth.oidcFailed"))).finally(() => {
+      if (mountedRef.current) setOidcBusy(false);
+    });
+  }, [cancelPasskeyCeremony, enterMfa, finishSuccessfulSession, t]);
+
+  useEffect(() => {
+    if (focusOidcOnReturn.current && oidcButton.current) {
+      oidcButton.current.focus();
+      focusOidcOnReturn.current = false;
+    }
+  }, [appStatusData?.oidc]);
+
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // 密码登录依赖 status 提供的 Turnstile 能力；状态未知时等待用户重试，Passkey 仍走独立协议。
@@ -302,20 +366,9 @@ const Login = () => {
         });
         return;
       }
+      oidcMfa.current = false;
       if (data?.type === "mfa_required") {
-        const preferredMfaMethod: AuthenticatorMfaMethod = data.methods.includes("totp")
-          ? "totp"
-          : data.methods.includes("recovery_code")
-            ? "recovery_code"
-            : data.methods[0] ?? "totp";
-        // MFA ticket 只代表“密码已通过，等待身份验证器/恢复码”；Passkey 有独立 challenge，不写入这里。
-        cancelPasskeyCeremony();
-        invalidateMfaVerifyFlows();
-        resetTurnstile();
-        setMfaState({ ...data, email: trimmedEmail });
-        setMfaMethod(preferredMfaMethod);
-        setMfaCode("");
-        setPassword("");
+        enterMfa({ ...data, email: trimmedEmail });
         return;
       }
       finishSuccessfulSession(trimmedEmail);
@@ -354,7 +407,7 @@ const Login = () => {
       const body = mfaMethod === "recovery_code"
         ? { method: "recovery_code" as const, ticketId: mfaState.ticketId, code: trimmedCode }
         : { method: "totp" as const, ticketId: mfaState.ticketId, code: trimmedCode };
-      const { error } = await authClient.verifyMfa(body, {
+      const { data, error } = await authClient.verifyMfa(body, {
         shouldPersistSession: () => isCurrentFlow(),
       });
       if (!isCurrentFlow()) return;
@@ -365,7 +418,7 @@ const Login = () => {
         });
         return;
       }
-      finishSuccessfulSession(mfaState.email);
+      finishSuccessfulSession(data?.user?.email || mfaState.email);
     } catch (err: unknown) {
       if (!isCurrentFlow()) return;
       reportClientError(err, { source: "login-mfa", method: mfaMethod });
@@ -378,11 +431,12 @@ const Login = () => {
   };
 
   const focusPasswordInput = useCallback(() => {
-    passwordInputRef.current?.focus();
+    if (oidcMfa.current) oidcButton.current?.focus();
+    else passwordInputRef.current?.focus();
   }, []);
 
   const closeMfaDialog = useCallback(() => {
-    // MFA ticket 是密码已通过后的短生命周期内存凭据；关闭弹窗即废弃，不能让旧 verify 回写 session。
+    // 第一阶段验证后签发的短期 ticket 仅保存在内存；关闭弹窗即废弃，防止旧 verify 回写 session。
     invalidateMfaVerifyFlows();
     setMfaState(null);
     setMfaCode("");
@@ -592,6 +646,12 @@ const Login = () => {
                   <KeyRound className="h-4 w-4" />
                   {isPasskeyLoading ? t("auth.passkeyLoggingIn") : t("auth.passkeyLogin")}
                 </Button>
+                {appStatusData?.oidc && (
+                  <Button ref={oidcButton} type="button" variant="outline" className="mt-2 w-full"
+                    disabled={isBusy} aria-busy={oidcBusy} onClick={() => void startOidc()}>
+                    {t("auth.oidcLogin")}
+                  </Button>
+                )}
               </div>
             </form>
             {showSetupPrompt ? (

@@ -1,3 +1,4 @@
+import { savePrimaryCredential, type LinkedIdentity } from "./primary-login-write";
 import * as OTPAuth from "otpauth";
 import {
   generateAuthenticationOptions,
@@ -124,19 +125,22 @@ async function listPasskeysForUserUnsafe(env: Env, userId: string) {
   };
 }
 
-export async function createMfaAuthTicket(env: Env, userId: string, methods: AuthenticatorMfaMethod[]) {
-  return await withAccountSecuritySchema(env, async () => await createMfaAuthTicketUnsafe(env, userId, methods));
+export async function createMfaAuthTicket(env: Env, userId: string, methods: AuthenticatorMfaMethod[], identity?: LinkedIdentity) {
+  return await withAccountSecuritySchema(env, async () => await createMfaAuthTicketUnsafe(env, userId, methods, identity));
 }
 
-async function createMfaAuthTicketUnsafe(env: Env, userId: string, methods: AuthenticatorMfaMethod[]) {
+async function createMfaAuthTicketUnsafe(env: Env, userId: string, methods: AuthenticatorMfaMethod[], identity?: LinkedIdentity) {
   const ticket = randomToken();
   const timestamp = nowIso();
   const expiresAt = new Date(Date.now() + MFA_TICKET_TTL_MS).toISOString();
   // ticket 表示“密码已通过、第二因素未完成”，只保存安装级账号安全 HMAC，不能让它获得 session 权限。
-  await env.DB.prepare(`
-    INSERT INTO mfa_auth_tickets (id, user_id, ticket_hash, expires_at, attempts, methods_json, payload_ciphertext, created_at, updated_at)
-    VALUES (?, ?, ?, ?, 0, ?, NULL, ?, ?)
-  `).bind(newId("mfat"), userId, await mfaTicketHash(env, ticket), expiresAt, JSON.stringify(methods), timestamp, timestamp).run();
+  await savePrimaryCredential(
+    env,
+    `INSERT INTO mfa_auth_tickets (id, user_id, ticket_hash, expires_at, attempts, methods_json, payload_ciphertext, created_at, updated_at)
+     SELECT ?, ?, ?, ?, 0, ?, NULL, ?, ?`,
+    [newId("mfat"), userId, await mfaTicketHash(env, ticket), expiresAt, JSON.stringify(methods), timestamp, timestamp],
+    identity, "mfa_ticket",
+  );
   return { ticketId: ticket, expiresAt, methods };
 }
 
@@ -574,7 +578,7 @@ async function registerFailedMfaAttempt(env: Env, ticket: MfaAuthTicketRow): Pro
   await env.DB.prepare("UPDATE mfa_auth_tickets SET attempts = ?, updated_at = ? WHERE id = ?").bind(attempts, nowIso(), ticket.id).run();
 }
 
-async function prepareAccountSecuritySessionRenewal(env: Env, user: UserRow): Promise<AccountSecuritySessionRenewal> {
+export async function prepareAccountSecuritySessionRenewal(env: Env, user: UserRow, linkedSessionId?: string): Promise<AccountSecuritySessionRenewal> {
   const token = randomToken();
   const csrfToken = randomToken();
   const timestamp = nowIso();
@@ -582,11 +586,16 @@ async function prepareAccountSecuritySessionRenewal(env: Env, user: UserRow): Pr
   const sessionId = newId("ses");
   const session = issuedSessionResponse(token, csrfToken, user, expiresAt);
   // D1 batch 会按事务执行：先插入新 session，再用 id<>new 删除旧 cookie session，避免成功响应拿到已失效 token。
+  // OIDC 解绑在签发新会话时重查原会话和绑定；缺失时 user_id 非空约束将整批回滚。
+  const sessionOwner = linkedSessionId
+    ? "(SELECT s.user_id FROM sessions s JOIN oidc_links l ON l.user_id=s.user_id WHERE s.id=? AND s.user_id=? AND s.expires_at>?)"
+    : "?";
+  const ownerValues = linkedSessionId ? [linkedSessionId, user.id, timestamp] : [user.id];
   const statements = [
     env.DB.prepare(`
       INSERT INTO sessions (id, token_hash, csrf_token_hash, user_id, expires_at, created_at, last_seen_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).bind(sessionId, await sha256(token), await sha256(csrfToken), user.id, expiresAt, timestamp, timestamp),
+      VALUES (?, ?, ?, ${sessionOwner}, ?, ?, ?)
+    `).bind(sessionId, await sha256(token), await sha256(csrfToken), ...ownerValues, expiresAt, timestamp, timestamp),
     env.DB.prepare("DELETE FROM sessions WHERE user_id = ? AND id <> ?").bind(user.id, sessionId),
     env.DB.prepare("DELETE FROM mfa_auth_tickets WHERE user_id = ?").bind(user.id),
   ];

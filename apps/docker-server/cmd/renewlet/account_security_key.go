@@ -28,6 +28,7 @@ var (
 )
 
 type accountSecurityKeyRing struct {
+	oidc             []byte
 	totpSeed         []byte
 	recoveryCode     []byte
 	mfaTicket        []byte
@@ -148,7 +149,12 @@ func deriveAccountSecurityKeyRing(master []byte) (*accountSecurityKeyRing, error
 	if err != nil {
 		return nil, err
 	}
+	oidcKey, err := deriveAccountSecurityKey(prk, "oidc-aes-gcm")
+	if err != nil {
+		return nil, err
+	}
 	return &accountSecurityKeyRing{
+		oidc:             oidcKey,
 		totpSeed:         totpSeed,
 		recoveryCode:     recoveryCode,
 		mfaTicket:        mfaTicket,

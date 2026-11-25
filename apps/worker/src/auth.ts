@@ -1,3 +1,4 @@
+import { savePrimaryCredential, type LinkedIdentity } from "./primary-login-write";
 import { changePasswordBodySchema } from "@renewlet/shared/schemas/account";
 import {
   loginBodySchema,
@@ -168,6 +169,12 @@ export async function login(request: Request, env: Env): Promise<Response> {
   if (!user || !(await verifyPassword(body.password, user.password_hash))) {
     throw new HttpError(400, serverText(locale, "auth.invalidEmailOrPassword"));
   }
+  return finishPrimaryLogin(request, env, user);
+}
+
+// 已验证的外部身份仍须完成本地账号状态和 MFA 检查。
+export async function finishPrimaryLogin(request: Request, env: Env, user: UserRow, identity?: LinkedIdentity): Promise<Response> {
+  const locale = requestLocale(request);
   if (user.banned === 1) {
     throw new HttpError(403, serverText(locale, "auth.accountDisabled"));
   }
@@ -175,7 +182,7 @@ export async function login(request: Request, env: Env): Promise<Response> {
   const mfaMethods = await authenticatorMfaMethodsForUser(env, user.id);
   if (mfaMethods.length > 0) {
     // MFA 用户密码正确后只签短期 ticket，不签产品 session；第二因素完成前前端仍是未登录态。
-    const ticket = await createMfaAuthTicket(env, user.id, mfaMethods);
+    const ticket = await createMfaAuthTicket(env, user.id, mfaMethods, identity);
     return successJson(loginPayloadSchema.parse({
       type: "mfa_required",
       ticketId: ticket.ticketId,
@@ -183,7 +190,7 @@ export async function login(request: Request, env: Env): Promise<Response> {
       methods: ticket.methods,
     }));
   }
-  return sessionSuccessResponse(request, await createIssuedSession(env, user));
+  return sessionSuccessResponse(request, await createIssuedSession(env, user, identity));
 }
 
 /**
@@ -561,16 +568,19 @@ export async function requireAdmin(request: Request, env: Env): Promise<AuthCont
   return auth;
 }
 
-async function createIssuedSession(env: Env, user: UserRow): Promise<IssuedSessionResponse> {
+async function createIssuedSession(env: Env, user: UserRow, identity?: LinkedIdentity): Promise<IssuedSessionResponse> {
   const token = randomToken();
   const csrfToken = randomToken();
   const timestamp = nowIso();
   const expiresAt = new Date(Date.now() + sessionTtlDays(env) * 24 * 60 * 60 * 1000).toISOString();
   // session token 与 CSRF token 分开保存 hash：前者只在 HttpOnly cookie，后者只证明同站脚本上下文。
-  await env.DB.prepare(`
-    INSERT INTO sessions (id, token_hash, csrf_token_hash, user_id, expires_at, created_at, last_seen_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).bind(newId("ses"), await sha256(token), await sha256(csrfToken), user.id, expiresAt, timestamp, timestamp).run();
+  await savePrimaryCredential(
+    env,
+    `INSERT INTO sessions (id, token_hash, csrf_token_hash, user_id, expires_at, created_at, last_seen_at)
+     SELECT ?, ?, ?, ?, ?, ?, ?`,
+    [newId("ses"), await sha256(token), await sha256(csrfToken), user.id, expiresAt, timestamp, timestamp],
+    identity, "session",
+  );
   return {
     response: toSessionResponse(user, expiresAt),
     sessionToken: token,
@@ -579,7 +589,7 @@ async function createIssuedSession(env: Env, user: UserRow): Promise<IssuedSessi
   };
 }
 
-function sessionSuccessResponse(request: Request, issued: IssuedSessionResponse): Response {
+export function sessionSuccessResponse(request: Request, issued: IssuedSessionResponse): Response {
   return setSessionCookies(successJson(sessionPayloadSchema.parse(issued.response)), request, issued.sessionToken, issued.csrfToken, issued.expiresAt);
 }
 
@@ -618,7 +628,7 @@ async function touchSessionLastSeenIfStale(env: Env, sessionId: string, lastSeen
   await env.DB.prepare("UPDATE sessions SET last_seen_at = ? WHERE id = ?").bind(new Date(now).toISOString(), sessionId).run();
 }
 
-function setupEnabled(env: Env): boolean {
+export function setupEnabled(env: Env): boolean {
   return env.SETUP_ENABLED !== "false";
 }
 

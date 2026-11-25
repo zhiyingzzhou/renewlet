@@ -1,3 +1,4 @@
+import * as oidc from "./oidc";
 import { bulkUpdatePublicVisibility } from "./subscription-public-visibility";
 import { healthPayloadSchema } from "@renewlet/shared/schemas/app";
 import { Hono, type Context } from "hono";
@@ -170,6 +171,15 @@ defineRoute(app, "/api/app/setup", {
 });
 
 const authRoutes = newAppRouter();
+defineRoute(authRoutes, "/options", { GET: (context) => oidc.loginOptions(context.env) });
+defineRoute(authRoutes, "/oidc/start", { POST: (context) => oidc.start(context.req.raw, context.env, "login") });
+defineRoute(authRoutes, "/oidc/callback", { GET: (context) => oidc.callback(context.req.raw, context.env) });
+defineRoute(authRoutes, "/oidc/finish", { POST: (context) => oidc.finish(context.req.raw, context.env, "login") });
+defineRoute(authRoutes, "/oidc/link", { GET: (context) => oidc.linkStatus(context.req.raw, context.env) });
+defineRoute(authRoutes, "/oidc/link/start", { POST: (context) => oidc.start(context.req.raw, context.env, "link") });
+defineRoute(authRoutes, "/oidc/link/confirm", { POST: (context) => oidc.finish(context.req.raw, context.env, "link") });
+defineRoute(authRoutes, "/oidc/unlink", { POST: (context) => oidc.unlink(context.req.raw, context.env) });
+defineRoute(authRoutes, "/oidc/review", { GET: (context) => oidc.review(context.req.raw, context.env) });
 defineRoute(authRoutes, "/login", { POST: (context) => login(context.req.raw, context.env) });
 defineRoute(authRoutes, "/session", { GET: (context) => session(context.req.raw, context.env) });
 defineRoute(authRoutes, "/logout", { POST: (context) => logout(context.req.raw, context.env) });
@@ -188,6 +198,10 @@ defineRoute(authRoutes, "/mfa/disable", { POST: (context) => mfaDisable(context.
 app.route("/api/app/auth", authRoutes);
 
 const adminRoutes = newAppRouter();
+defineRoute(adminRoutes, "/auth-security/oidc", { GET: (context) => oidc.siteSettings(context.req.raw, context.env) });
+defineRoute(adminRoutes, "/auth-security/oidc/test", { POST: (context) => oidc.start(context.req.raw, context.env, "test") });
+defineRoute(adminRoutes, "/auth-security/oidc/enable", { POST: (context) => oidc.finish(context.req.raw, context.env, "test") });
+defineRoute(adminRoutes, "/auth-security/oidc/disable", { POST: (context) => oidc.disableSite(context.req.raw, context.env) });
 defineRoute(adminRoutes, "/users", {
   GET: (context) => adminListUsers(context.req.raw, context.env),
   POST: (context) => adminCreateUser(context.req.raw, context.env),

@@ -108,7 +108,7 @@ describe("useSettingsFormController", () => {
   });
 
   it("does not prefill or mutate external integration settings in demo mode", async () => {
-    mocks.appStatus = { status: "ready", data: { setupRequired: false, setupEnabled: false, demoMode: true, turnstile: { enabled: false, siteKey: "" } }, error: null, isLoading: false, isRefreshing: false, isReady: true, retry: vi.fn() };
+    mocks.appStatus = { status: "ready", data: { setupRequired: false, setupEnabled: false, demoMode: true, passwordReset: false, oidc: false, turnstile: { enabled: false, siteKey: "" } }, error: null, isLoading: false, isRefreshing: false, isReady: true, retry: vi.fn() };
     mocks.remoteSettings = {
       ...BASE_SETTINGS,
       enabledChannels: [],

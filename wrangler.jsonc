@@ -12,6 +12,8 @@
     "@aws-sdk/xml-builder": "@aws-sdk/xml-builder/dist-cjs/index.js"
   },
   "observability": {
+    // OIDC 回调的 code/state 仅供换码；平台 invocation log 和 trace 不保留查询字符串。
+    "redact_query_string": true,
     // Worker 日志/trace 是线上排障入口；业务错误仍由结构化 API error body 返回给当前操作者。
     "enabled": true,
     "logs": {
