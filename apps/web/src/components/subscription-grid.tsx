@@ -2,17 +2,21 @@ import { useCallback, useMemo } from "react";
 import { SubscriptionCard, type SubscriptionCardLookup } from "@/components/subscription-card";
 import { VirtualizedList } from "@/components/ui/virtualized-list";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useI18n } from "@/i18n/I18nProvider";
 import { cn } from "@/lib/utils";
+import { buildSubscriptionGridRows } from "@/modules/subscriptions/domain/subscription-grid-rows";
 import type { SubscriptionCollectionItem } from "@/types/subscription";
 import type { DateOnly } from "@/lib/time/date-only";
 
 const SUBSCRIPTION_GRID_ROW_GAP = 16;
 const SUBSCRIPTION_GRID_ROW_ESTIMATE = 220;
 const SUBSCRIPTION_LIST_ROW_ESTIMATE = 174;
+const CATEGORY_HEADING_ESTIMATE = 28;
 
 type SubscriptionGridProps = {
   subscriptions: SubscriptionCollectionItem[];
   viewMode: "grid" | "list";
+  groupByCategory: boolean;
   today: DateOnly | string;
   inheritedReminderDays: number;
   currencyConvert: (amount: number | string, fromCurrency: string, toCurrency: string) => number;
@@ -46,17 +50,10 @@ function getSubscriptionColumnCount(viewMode: "grid" | "list", isTwoColumnGrid: 
   return 1;
 }
 
-function chunkSubscriptions(subscriptions: SubscriptionCollectionItem[], columnCount: number) {
-  const rows: SubscriptionCollectionItem[][] = [];
-  for (let index = 0; index < subscriptions.length; index += columnCount) {
-    rows.push(subscriptions.slice(index, index + columnCount));
-  }
-  return rows;
-}
-
 export function SubscriptionGrid({
   subscriptions,
   viewMode,
+  groupByCategory,
   today,
   inheritedReminderDays,
   currencyConvert,
@@ -78,20 +75,36 @@ export function SubscriptionGrid({
   onAddToCalendar,
   onPrefetchDetails,
 }: SubscriptionGridProps) {
+  const { label, t } = useI18n();
   const isTwoColumnGrid = useMediaQuery("(min-width: 640px)");
   const isThreeColumnGrid = useMediaQuery("(min-width: 1024px)");
   const columnCount = getSubscriptionColumnCount(viewMode, isTwoColumnGrid, isThreeColumnGrid);
-  const rows = useMemo(() => chunkSubscriptions(subscriptions, columnCount), [columnCount, subscriptions]);
-  const estimatedRowSize = viewMode === "grid" ? SUBSCRIPTION_GRID_ROW_ESTIMATE : SUBSCRIPTION_LIST_ROW_ESTIMATE;
+  const rows = useMemo(() => buildSubscriptionGridRows(
+    subscriptions, columnCount, groupByCategory ? categoryByValue.keys() : undefined,
+  ), [subscriptions, columnCount, groupByCategory, categoryByValue]);
+  const cardRowSize = viewMode === "grid" ? SUBSCRIPTION_GRID_ROW_ESTIMATE : SUBSCRIPTION_LIST_ROW_ESTIMATE;
+  const estimatedRowSize = useCallback(
+    (index: number) => rows[index]?.kind === "heading" ? CATEGORY_HEADING_ESTIMATE : cardRowSize,
+    [rows, cardRowSize],
+  );
   const getRowKey = useCallback(
-    (rowIndex: number) => rows[rowIndex]?.map((subscription) => subscription.id).join("|") ?? rowIndex,
-    [rows],
+    (rowIndex: number) => `${viewMode}:${columnCount}:${rows[rowIndex]?.key ?? rowIndex}`,
+    [rows, viewMode, columnCount],
   );
   const renderRow = useCallback((rowIndex: number) => {
     const row = rows[rowIndex];
     if (!row) return null;
+    if (row.kind === "heading") {
+      const category = categoryByValue.get(row.category);
+      return (
+        <h2 className={cn("col-span-full flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1 text-sm font-semibold text-foreground", rowIndex > 0 && "pt-2")}>
+          <span className="min-w-0 wrap-anywhere">{category ? label(category.labels) : row.category}</span>{" "}
+          <span className="shrink-0 text-xs font-normal text-muted-foreground">{t("subscriptions.display.groupCount", { count: row.count })}</span>
+        </h2>
+      );
+    }
 
-    return row.map((subscription) => (
+    return row.items.map((subscription) => (
       <div key={subscription.id} className="h-full">
         <SubscriptionCard
           subscription={subscription}
@@ -124,6 +137,7 @@ export function SubscriptionGrid({
     currencyConvert,
     currencyRatesReady,
     inheritedReminderDays,
+    label,
     onAddToCalendar,
     onClone,
     onDelete,
@@ -140,6 +154,7 @@ export function SubscriptionGrid({
     rows,
     selectedIds,
     selectionMode,
+    t,
     today,
     viewMode,
   ]);
@@ -152,6 +167,7 @@ export function SubscriptionGrid({
       gap={SUBSCRIPTION_GRID_ROW_GAP}
       getItemKey={getRowKey}
       getScrollElement={getRootScrollElement}
+      retainKeyboardFocus={groupByCategory}
       itemClassName={cn(
         "grid items-stretch gap-4",
         viewMode === "grid" ? "sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1",

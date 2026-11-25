@@ -534,7 +534,10 @@ func encryptMFASecret(app core.App, plaintext string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	block, err := aes.NewCipher(ring.totpSeed)
+	return sealSecurityText(ring.totpSeed, plaintext)
+}
+func sealSecurityText(key []byte, plaintext string) (string, error) {
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return "", err
 	}
@@ -555,6 +558,9 @@ func decryptMFASecret(app core.App, value string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	return openSecurityText(ring.totpSeed, value)
+}
+func openSecurityText(key []byte, value string) (string, error) {
 	parts := strings.Split(value, ".")
 	if len(parts) != 3 || parts[0] != "v1" {
 		return "", errors.New("invalid MFA ciphertext")
@@ -567,13 +573,16 @@ func decryptMFASecret(app core.App, value string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	block, err := aes.NewCipher(ring.totpSeed)
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return "", err
 	}
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
 		return "", err
+	}
+	if len(nonce) != gcm.NonceSize() {
+		return "", errors.New("invalid nonce")
 	}
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {

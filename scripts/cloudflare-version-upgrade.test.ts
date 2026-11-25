@@ -6,7 +6,7 @@ import { DatabaseSync, type SQLInputValue } from "node:sqlite";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { runBackfill } from "./backfill-cloudflare-subscription-derived-state";
-import { subscriptionCollectionPageQueryPlan } from "../apps/worker/src/subscription-list-filters";
+import { boundedSubscriptionCollectionQueryPlan, subscriptionCollectionPageQueryPlan } from "../apps/worker/src/subscription-list-filters";
 import { LOCALE_PREFERENCES } from "@renewlet/shared/i18n-config";
 import {
   assertD1TriggerDefinitions,
@@ -195,6 +195,8 @@ function seedHistoricalPaymentTypes(db: DatabaseSync): void {
     {
       id: historicalBuyoutId,
       name: "Historical Lifetime License",
+      category: "legacy-tools",
+      pinned: 1,
       price: 199,
       billingCycle: "one-time",
       termCount: null,
@@ -206,6 +208,8 @@ function seedHistoricalPaymentTypes(db: DatabaseSync): void {
     {
       id: historicalFixedTermId,
       name: "Historical Fixed Service",
+      category: "software",
+      pinned: 0,
       price: 180,
       billingCycle: "one-time",
       termCount: 6,
@@ -217,6 +221,8 @@ function seedHistoricalPaymentTypes(db: DatabaseSync): void {
     {
       id: historicalManualId,
       name: "Historical Manual Plan",
+      category: "legacy-tools",
+      pinned: 0,
       price: 30,
       billingCycle: "monthly",
       termCount: null,
@@ -239,9 +245,9 @@ function seedHistoricalPaymentTypes(db: DatabaseSync): void {
     null,
     row.termCount,
     row.termUnit,
-    "software",
+    row.category,
     "active",
-    0,
+    row.pinned,
     0,
     null,
     row.startDate,
@@ -269,6 +275,23 @@ function historicalFactRows(db: DatabaseSync): Array<Record<string, unknown>> {
     FROM subscriptions
     WHERE id IN (?, ?, ?)
     ORDER BY id`).all(...historicalPaymentTypeIds));
+}
+
+function savedCategoryFacts(db: DatabaseSync) {
+  return plainRows(db.prepare(
+    "SELECT id, category, pinned FROM subscriptions WHERE user_id = ? ORDER BY id",
+  ).all(userId));
+}
+
+function assertCategoryIndex(db: DatabaseSync, saved: ReturnType<typeof savedCategoryFacts>) {
+  assert.ok(saved.length > 0);
+  // 分类筛选在投影上执行，响应字段来自事实表。按升级前的分类逐个回读，才能发现投影串组或漏项。
+  for (const category of new Set(saved.map((row) => String(row["category"])))) {
+    const expected = saved.filter((row) => row["category"] === category);
+    const plan = boundedSubscriptionCollectionQueryPlan(userId, { category: [category] }, "2026-08-25", saved.length + 1);
+    const rows = db.prepare(`SELECT id, category, pinned FROM (${plan.sql}) ORDER BY id`).all(...plan.params as SQLInputValue[]);
+    assert.deepEqual(plainRows(rows), expected);
+  }
 }
 
 function derivedStateSnapshot(db: DatabaseSync): Record<string, Array<Record<string, unknown>>> {
@@ -404,6 +427,8 @@ function assertCurrentLocaleContract(db: DatabaseSync): void {
 }
 
 function assertUpgradeMarkersComplete(db: DatabaseSync): void {
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM oidc_links").get()?.["n"], 0);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM auth_security_settings WHERE oidc_enabled <> 0").get()?.["n"], 0);
   assert.deepEqual(
     db.prepare("SELECT name FROM d1_migrations ORDER BY name").all().map((row) => String(row["name"])),
     migrationNames(),
@@ -461,6 +486,7 @@ for (const fixture of pinnedFixtures) {
     try {
       seedHistoricalPaymentTypes(client.db);
       const factsBeforeUpgrade = historicalFactRows(client.db);
+      const savedCategories = savedCategoryFacts(client.db);
       if (fixture.seedUntrustedV2) seedUntrustedV2State(client.db);
       const expectedFeedAction = fixture.expectsFeedBackup
         ? { action: "backed-up", feeds: 2 }
@@ -476,11 +502,13 @@ for (const fixture of pinnedFixtures) {
       );
       await runBackfill(client, backfillNow);
       const firstDerivedState = derivedStateSnapshot(client.db);
+      assertCategoryIndex(client.db, savedCategories);
       await runBackfill(client, backfillNow);
 
       assert.equal(applyPendingMigrations(client.db), 0);
       assert.deepEqual(derivedStateSnapshot(client.db), firstDerivedState);
       assert.deepEqual(historicalFactRows(client.db), factsBeforeUpgrade);
+      assertCategoryIndex(client.db, savedCategories);
       assert.deepEqual(plainRows(client.db.prepare("SELECT id, token FROM calendar_feeds ORDER BY id").all()), [
         { id: "feed_all_fixture", token: "a".repeat(43) },
         { id: "feed_sub_fixture", token: "s".repeat(43) },
@@ -513,7 +541,7 @@ test("0047 adds nullable balance without touching facts, rolls back failure, and
     assert.equal(client.db.prepare("SELECT name FROM d1_migrations WHERE name = ?").get(name), undefined);
     assert.ok(!client.db.prepare("PRAGMA table_info(subscriptions)").all().some((row) => row["name"] === "balance"));
     client.db.exec("ALTER TABLE subscriptions DROP COLUMN balance_currency");
-    assert.equal(applyPendingMigrations(client.db), 1);
+    assert.equal(applyPendingMigrations(client.db), migrationNames().filter(migration => migration >= name).length);
     assert.equal(applyPendingMigrations(client.db), 0);
     assert.deepEqual(historicalFactRows(client.db), facts);
     assert.ok(client.db.prepare("SELECT balance, balance_currency FROM subscriptions").all().every((row) => row["balance"] === null && row["balance_currency"] === null));
@@ -537,6 +565,7 @@ for (const [version, marker, hash] of [
     assert.ok(client.db.prepare("SELECT name FROM subscription_derived_backfills WHERE name = ?").get(`subscription-derived-state-${marker}`));
     const schedules = "SELECT * FROM subscription_repeat_schedule ORDER BY subscription_id";
     assert.equal(all(schedules).length, 2);
+    const savedCategories = savedCategoryFacts(client.db);
     applyPendingMigrations(client.db);
     const facts = all("SELECT * FROM subscriptions ORDER BY id");
     const active = all(schedules).find(row => row["subscription_id"] === "sub_fixture");
@@ -558,7 +587,26 @@ for (const [version, marker, hash] of [
     client.batch = async () => { throw new Error("completed upgrade attempted a write"); };
     await runBackfill(client, backfillNow);
     assert.deepEqual(all("SELECT * FROM subscriptions ORDER BY id"), facts);
+    assertCategoryIndex(client.db, savedCategories);
     assert.deepEqual(all(schedules), [active]);
     assert.deepEqual(plainRows(all("SELECT repeat_reminder_count FROM subscription_scheduler_state")), [{ repeat_reminder_count: 1 }]);
   });
 }
+
+test("v0.3.38 auth data survives the OIDC migration and a second startup", () => {
+  // v0.3.37 与 v0.3.38 发行版的 migrations tree 同为 0d7e5ebd9b3de52892738a969554c64573672128，复用已固定摘要的旧库。
+  const client = openFixture("v0.3.37.sql");
+  const db = client.db;
+  try {
+    db.prepare("INSERT INTO sessions(id,token_hash,csrf_token_hash,user_id,expires_at,created_at,last_seen_at) VALUES(?,?,?,?,'2099-01-01',?,?)").run("oidc-upgrade", "t".repeat(43), "c".repeat(43), userId, timestamp, timestamp);
+    db.prepare("INSERT INTO mfa_totp_credentials(user_id,secret_ciphertext,created_at,updated_at) VALUES(?,?,?,?)").run(userId,"old-ciphertext",timestamp,timestamp);
+    db.prepare("INSERT INTO passkey_credentials(id,user_id,name,credential_id,public_key,credential_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)").run("key",userId,"device","credential","public","{}",timestamp,timestamp);
+    const facts = () => ["users","subscriptions","sessions","mfa_totp_credentials","passkey_credentials"].map(table => db.prepare("SELECT * FROM "+table+" ORDER BY 1").all());
+    const before = facts();
+    assert.equal(applyPendingMigrations(db), migrationNames().filter(name => name >= "0048_").length);
+    assert.deepEqual(facts(),before);
+    assert.equal(applyPendingMigrations(db),0);
+    assert.deepEqual(facts(),before);
+    assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(),[]);
+  } finally { db.close(); }
+});

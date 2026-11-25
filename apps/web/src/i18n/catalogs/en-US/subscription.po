@@ -59,6 +59,11 @@ msgid "statistics.trendDetailsCount"
 msgstr "Subscriptions: {count}"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:760
+msgid "subscriptions.display.groupCount"
+msgstr "{count, plural, one {# subscription} other {# subscriptions}}"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:136
 msgid "subscription.costSharing.memberCount"
 msgstr "{count} members"
@@ -907,6 +912,16 @@ msgstr "Categories({count})"
 #: src/i18n/descriptors/subscription.ts:684
 msgid "statistics.categoryView"
 msgstr "Category view"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:758
+msgid "subscriptions.display.switchToList"
+msgstr "Switch to list view"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:757
+msgid "subscriptions.display.switchToGrid"
+msgstr "Switch to grid view"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:205
@@ -1789,6 +1804,11 @@ msgid "dashboard.builtinRates"
 msgstr "Converted at built-in reference rates"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:759
+msgid "subscriptions.display.groupByCategory"
+msgstr "Group by category"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:217
 msgid "subscription.renew.modeContinueShort"
 msgstr "Advance from the original cycle anchor."
@@ -2002,6 +2022,11 @@ msgstr "Collection reminder: off"
 #: src/i18n/descriptors/subscription.ts:88
 msgid "subscription.validation.costSharingCollectionReminderInvalid"
 msgstr "Collection reminder days must inherit the default or be an integer from 0 to 3650"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:761
+msgid "subscriptions.category.countScope"
+msgstr "Numbers show the total subscriptions in each category"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:169

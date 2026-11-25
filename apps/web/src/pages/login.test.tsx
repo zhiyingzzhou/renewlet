@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router";
+import type { MfaRequiredResponse } from "@renewlet/shared/schemas/auth";
 import Login from "./login";
 
 const mocks = vi.hoisted(() => ({
@@ -11,7 +12,8 @@ const mocks = vi.hoisted(() => ({
   verifyMfa: vi.fn(),
   cancelPasskeyCeremony: vi.fn(),
   reportClientError: vi.fn(),
-  usePasswordResetAvailability: vi.fn(),
+  oidcStart: vi.fn(),
+  oidcFinish: vi.fn(),
   useAppStatus: vi.fn(),
   setTheme: vi.fn(),
   resolvedTheme: "dark" as const,
@@ -28,8 +30,9 @@ vi.mock("@/lib/auth-client", () => ({
   },
 }));
 
-vi.mock("@/hooks/use-password-reset-availability", () => ({
-  usePasswordResetAvailability: mocks.usePasswordResetAvailability,
+vi.mock("@/services/oidc-service", () => ({
+  oidcService: { login: mocks.oidcStart, finish: mocks.oidcFinish },
+  oidcErrorKey: () => "auth.oidcFailed",
 }));
 
 vi.mock("@/lib/report-client-error", () => ({
@@ -47,6 +50,15 @@ vi.mock("@/lib/theme-provider", () => ({
     setTheme: mocks.setTheme,
   }),
 }));
+
+const oidcStatus = {
+  status: "ready",
+  data: {
+    setupRequired: false, setupEnabled: true, demoMode: false, passwordReset: false, oidc: true,
+    turnstile: { enabled: false, siteKey: "" },
+  },
+  isLoading: false,
+} as const;
 
 const rememberedLoginEmailStorageKey = "renewlet_login_email";
 
@@ -73,6 +85,16 @@ function createDeferred<T>() {
     reject = fail;
   });
   return { promise, resolve, reject };
+}
+
+function mockPasswordMfa(methods: MfaRequiredResponse["methods"]) {
+  const challenge: MfaRequiredResponse = {
+    type: "mfa_required",
+    ticketId: "ticket-1",
+    expiresAt: "2026-07-01T00:00:00.000Z",
+    methods,
+  };
+  mocks.signInEmail.mockResolvedValueOnce({ data: challenge, error: null });
 }
 
 function getVerifyMfaCall(index = 0): [unknown, unknown] {
@@ -123,7 +145,9 @@ describe("Login page", () => {
     mocks.setTheme.mockReset();
     mocks.resolvedTheme = "dark";
     localStorage.clear();
-    mocks.usePasswordResetAvailability.mockReturnValue(false);
+    mocks.oidcStart.mockReset();
+    mocks.oidcFinish.mockReset();
+    window.history.replaceState(null, "", "/login");
     mocks.useAppStatus.mockReturnValue({
       status: "ready",
       data: {
@@ -138,6 +162,37 @@ describe("Login page", () => {
       isReady: true,
       retry: vi.fn(),
     });
+  });
+
+  it("starts single sign-on from the configured site with a sanitized return path", async () => {
+    mocks.useAppStatus.mockReturnValue(oidcStatus);
+    window.history.replaceState(null, "", "/login?next=%2Fcalendar");
+    renderLogin();
+    await userEvent.click(screen.getByRole("button", { name: "Use single sign-on" }));
+    expect(mocks.cancelPasskeyCeremony).toHaveBeenCalled();
+    expect(mocks.oidcStart).toHaveBeenCalledWith("/calendar");
+  });
+
+  it("restores focus after cancellation when login options arrive late", async () => {
+    mocks.useAppStatus.mockReturnValue({ status: "loading", isLoading: true, data: null });
+    window.history.replaceState(null,"","/login?oidc=cancelled");
+    const view=renderLogin();
+    mocks.useAppStatus.mockReturnValue(oidcStatus);
+    view.rerender(<MemoryRouter><Login /></MemoryRouter>);
+    await waitFor(()=>expect(screen.getByRole("button",{name:"Use single sign-on"})).toHaveFocus());
+    expect(mocks.oidcFinish).not.toHaveBeenCalled();
+  });
+
+  it("consumes the OIDC return once and opens the local MFA dialog", async () => {
+    mocks.useAppStatus.mockReturnValue(oidcStatus);
+    mocks.oidcFinish.mockResolvedValue({ type: "mfa_required", ticketId:"ticket-oidc", expiresAt:"2099-01-01T00:00:00Z", methods:["totp"] });
+    window.history.replaceState(null, "", "/login?oidc=login&next=%2Fcalendar");
+    renderLogin();
+    const dialog=await screen.findByRole("dialog", { name:"Complete sign-in verification" });
+    expect(mocks.oidcFinish).toHaveBeenCalledTimes(1);
+    expect(window.location.search).toBe("?next=%2Fcalendar");
+    await userEvent.click(within(dialog).getByRole("button", { name:"Close" }));
+    await waitFor(()=>expect(screen.getByRole("button", { name:"Use single sign-on" })).toHaveFocus());
   });
 
   it("hides the first deployment setup prompt after setup is complete", () => {
@@ -394,15 +449,7 @@ describe("Login page", () => {
 
   it("opens the MFA dialog without replacing the password form after password verification", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp", "recovery_code"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp", "recovery_code"]);
     const { container } = renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -419,15 +466,7 @@ describe("Login page", () => {
 
   it("focuses the MFA code field when the dialog opens", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp", "recovery_code"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp", "recovery_code"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -456,15 +495,7 @@ describe("Login page", () => {
 
   it("closes the MFA dialog and returns focus to the password field", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     const { container } = renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -483,15 +514,7 @@ describe("Login page", () => {
 
   it("requires the explicit close button for the MFA dialog", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -516,15 +539,7 @@ describe("Login page", () => {
 
   it("verifies TOTP with the in-memory ticket and remembers the email only after MFA succeeds", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -549,15 +564,7 @@ describe("Login page", () => {
 
   it("verifies recovery codes from the MFA dialog", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp", "recovery_code"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp", "recovery_code"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -623,15 +630,7 @@ describe("Login page", () => {
 
   it("keeps passkey sign-in independent from MFA verification after password verification", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -649,15 +648,7 @@ describe("Login page", () => {
 
   it("keeps the MFA dialog state when passkey sign-in is cancelled from MFA verification", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     mocks.signInPasskey.mockResolvedValueOnce({ data: null, error: null, cancelled: true });
     renderLogin();
 
@@ -683,15 +674,7 @@ describe("Login page", () => {
     const user = userEvent.setup();
     const verification = createDeferred<Awaited<ReturnType<typeof mocks.verifyMfa>>>();
     mocks.verifyMfa.mockReturnValueOnce(verification.promise);
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");

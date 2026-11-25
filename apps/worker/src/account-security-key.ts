@@ -7,6 +7,7 @@ const ACCOUNT_SECURITY_KEY_BYTES = 32;
 const ACCOUNT_SECURITY_KEY_SALT = "renewlet:account-security:v1";
 
 export interface AccountSecurityKeyRing {
+  oidc: () => Promise<CryptoKey>;
   totpSeed: CryptoKey;
   recoveryCode: CryptoKey;
   mfaTicket: CryptoKey;
@@ -41,7 +42,10 @@ async function loadAccountSecurityKeyRing(env: Env): Promise<AccountSecurityKeyR
     deriveKeyBytes(hkdfKey, "mfa-ticket-hmac"),
     deriveKeyBytes(hkdfKey, "passkey-challenge-hmac"),
   ]);
+  // 单点登录密钥只在触发 OIDC 时派生，减少普通认证冷启动开销。
+  let oidc: Promise<CryptoKey> | undefined;
   return {
+    oidc: () => oidc ??= deriveKeyBytes(hkdfKey, "oidc-aes-gcm").then(importAesGcmKey),
     totpSeed: await importAesGcmKey(totpSeedBytes),
     recoveryCode: await importHmacKey(recoveryCodeBytes),
     mfaTicket: await importHmacKey(mfaTicketBytes),

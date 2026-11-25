@@ -34,6 +34,11 @@ msgid "auth.turnstileFailed"
 msgstr "Проверка на человека не пройдена. Попробуйте снова."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:94
+msgid "auth.oidcLogin"
+msgstr "Войти через SSO"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:21
 msgid "auth.mfaSubtitle"
 msgstr "Введите код из приложения-аутентификатора или код восстановления."
@@ -174,6 +179,11 @@ msgid "setup.validation.passwordLength"
 msgstr "Пароль должен содержать не менее 8 символов."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:96
+msgid "auth.oidcPasswordError"
+msgstr "Неверный текущий пароль."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:66
 msgid "passwordReset.smtpUnavailable1"
 msgstr "Сброс пароля по почте не включён в этом развёртывании."
@@ -194,6 +204,11 @@ msgid "passwordReset.forgotTitle"
 msgstr "Восстановление пароля"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:98
+msgid "auth.oidcExpired"
+msgstr "Запрос устарел. Начните заново."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:78
 msgid "passwordReset.newPassword"
 msgstr "Новый пароль"
@@ -202,6 +217,11 @@ msgstr "Новый пароль"
 #: src/i18n/descriptors/auth.ts:81
 msgid "passwordReset.passwordLength"
 msgstr "Новый пароль должен содержать не менее 8 символов."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:101
+msgid "auth.oidcFailed"
+msgstr "Не удалось завершить вход через SSO. Проверьте настройки провайдера и доступность по HTTPS."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:47
@@ -279,6 +299,11 @@ msgid "passwordReset.newTitle"
 msgstr "Новый пароль"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:95
+msgid "auth.oidcUnlinked"
+msgstr "Войдите привычным способом и привяжите эту учётную запись в настройках аккаунта."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:93
 msgid "auth.loginRequired"
 msgstr "Сначала войдите в аккаунт"
@@ -292,6 +317,11 @@ msgstr "Введите новый пароль ещё раз"
 #: src/i18n/descriptors/auth.ts:16
 msgid "auth.turnstileRequired"
 msgstr "Пройдите проверку на человека"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:100
+msgid "auth.oidcInvalid"
+msgstr "Проверьте URL издателя, ID клиента и секрет. При смене издателя или клиента введите секрет заново."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:51
@@ -364,6 +394,11 @@ msgid "passwordReset.emailRequired"
 msgstr "Введите адрес электронной почты"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:99
+msgid "auth.oidcOrigin"
+msgstr "Откройте сайт по зарегистрированному HTTPS-адресу."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:76
 msgid "passwordReset.tokenMissing2"
 msgstr "Запросите сброс пароля ещё раз или убедитесь, что ссылка из письма не обрезана."
@@ -387,6 +422,11 @@ msgstr "Легко управляйте всеми подписками"
 #: src/i18n/descriptors/auth.ts:70
 msgid "passwordReset.emailHelp"
 msgstr "Введите почту, указанную при входе, и мы отправим одноразовую ссылку для сброса."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:97
+msgid "auth.oidcConflict"
+msgstr "Эта учётная запись уже связана. Проверьте существующую привязку."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:40

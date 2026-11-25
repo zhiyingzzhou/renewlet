@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
-import { appStatusResponseSchema } from "@/lib/api/schemas/app";
-import type { AppStatusResponse } from "@renewlet/shared/schemas/app";
+import { loginOptionsSchema, type LoginOptions } from "@renewlet/shared/schemas/app";
 
 export const appStatusQueryKey = ["app-status"] as const;
 
 export type AppStatusState = {
   status: "loading" | "ready" | "error";
-  data: AppStatusResponse | null;
+  data: LoginOptions | null;
   error: unknown;
   isLoading: boolean;
   isRefreshing: boolean;
@@ -24,7 +23,7 @@ export type AppStatusState = {
 export function useAppStatus(): AppStatusState {
   const query = useQuery({
     queryKey: appStatusQueryKey,
-    queryFn: ({ signal }) => apiFetch("/api/app/status", appStatusResponseSchema, {
+    queryFn: ({ signal }) => apiFetch("/api/app/auth/options", loginOptionsSchema, {
       authMode: "none",
       cache: "no-store",
       timeoutMs: 10_000,

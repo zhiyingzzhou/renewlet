@@ -99,7 +99,7 @@ const mocks = vi.hoisted(() => ({
   openWindow: vi.fn(),
   isCloudflareRuntime: false,
   accountIdentity: { email: "alice@example.com" as string | null, role: "admin", banned: false },
-  appStatus: { status: "ready", data: { setupRequired: false, setupEnabled: true, demoMode: false, turnstile: { enabled: false, siteKey: "" } }, error: null, isLoading: false, isRefreshing: false, isReady: true, retry: vi.fn() } as AppStatusState,
+  appStatus: { status: "ready", data: { setupRequired: false, setupEnabled: true, demoMode: false, passwordReset: false, oidc: false, turnstile: { enabled: false, siteKey: "" } }, error: null, isLoading: false, isRefreshing: false, isReady: true, retry: vi.fn() } as AppStatusState,
 }));
 
 function settingsMutationResult(command: SettingsMutationCommand) {
@@ -423,7 +423,7 @@ export function setupSettingsFormControllerTestEnvironment() {
     mocks.customConfig = DEFAULT_CUSTOM_CONFIG;
     mocks.isCloudflareRuntime = false;
     mocks.accountIdentity = { email: "alice@example.com", role: "admin", banned: false };
-    mocks.appStatus = { status: "ready", data: { setupRequired: false, setupEnabled: true, demoMode: false, turnstile: { enabled: false, siteKey: "" } }, error: null, isLoading: false, isRefreshing: false, isReady: true, retry: vi.fn() };
+    mocks.appStatus = { status: "ready", data: { setupRequired: false, setupEnabled: true, demoMode: false, passwordReset: false, oidc: false, turnstile: { enabled: false, siteKey: "" } }, error: null, isLoading: false, isRefreshing: false, isReady: true, retry: vi.fn() };
     mocks.authSecuritySettings = { data: { turnstile: { enabled: false, siteKey: "", secretConfigured: false } }, isLoading: false };
     mocks.updateSettingsMutateAsync.mockImplementation(async (command: SettingsMutationCommand) => settingsMutationResult(command));
     mocks.updateAuthSecurityMutateAsync.mockImplementation(async (body: { turnstile: { enabled: boolean; siteKey: string; secret?: string } }) => ({

@@ -34,6 +34,11 @@ msgid "auth.turnstileFailed"
 msgstr "人机验证失败，请重试。"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:94
+msgid "auth.oidcLogin"
+msgstr "使用单点登录"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:21
 msgid "auth.mfaSubtitle"
 msgstr "使用身份验证器验证码或恢复码继续登录。"
@@ -174,6 +179,11 @@ msgid "setup.validation.passwordLength"
 msgstr "密码至少需要 8 位"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:96
+msgid "auth.oidcPasswordError"
+msgstr "当前密码不正确。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:66
 msgid "passwordReset.smtpUnavailable1"
 msgstr "当前部署未启用邮件找回密码。"
@@ -194,6 +204,11 @@ msgid "passwordReset.forgotTitle"
 msgstr "找回密码"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:98
+msgid "auth.oidcExpired"
+msgstr "操作已失效，请重新开始。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:78
 msgid "passwordReset.newPassword"
 msgstr "新密码"
@@ -202,6 +217,11 @@ msgstr "新密码"
 #: src/i18n/descriptors/auth.ts:81
 msgid "passwordReset.passwordLength"
 msgstr "新密码至少需要 8 位"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:101
+msgid "auth.oidcFailed"
+msgstr "无法完成单点登录。请检查提供方配置及公网 HTTPS 连接后重试。"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:47
@@ -279,6 +299,11 @@ msgid "passwordReset.newTitle"
 msgstr "设置新密码"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:95
+msgid "auth.oidcUnlinked"
+msgstr "请先用原有方式登录，再到「设置 → 账号」绑定这个身份。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:93
 msgid "auth.loginRequired"
 msgstr "请先登录"
@@ -292,6 +317,11 @@ msgstr "请再次输入新密码"
 #: src/i18n/descriptors/auth.ts:16
 msgid "auth.turnstileRequired"
 msgstr "请完成人机验证"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:100
+msgid "auth.oidcInvalid"
+msgstr "请检查 Issuer URL、Client ID 和 Client Secret。更换提供方或客户端时需重新输入密钥。"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:51
@@ -364,6 +394,11 @@ msgid "passwordReset.emailRequired"
 msgstr "请输入邮箱"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:99
+msgid "auth.oidcOrigin"
+msgstr "请通过已登记的 HTTPS 站点地址操作。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:76
 msgid "passwordReset.tokenMissing2"
 msgstr "请重新申请找回密码，或确认邮件链接没有被截断。"
@@ -387,6 +422,11 @@ msgstr "轻松管理你的所有订阅"
 #: src/i18n/descriptors/auth.ts:70
 msgid "passwordReset.emailHelp"
 msgstr "输入登录邮箱，我们会发送一次性重置链接。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:97
+msgid "auth.oidcConflict"
+msgstr "这个身份或本站账号已有绑定，请先检查原绑定。"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:40

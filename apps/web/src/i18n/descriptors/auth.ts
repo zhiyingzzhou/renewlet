@@ -91,4 +91,12 @@ export const messages = [
   msg({ id: "passwordReset.resetFailedDescription", message: "请重新申请重置链接。" }),
   msg({ id: "passwordReset.saveNew", message: "保存新密码" }),
   msg({ id: "auth.loginRequired", message: "请先登录" }),
+  msg({ id: "auth.oidcLogin", message: "使用单点登录" }),
+  msg({ id: "auth.oidcUnlinked", message: "请先用原有方式登录，再到「设置 → 账号」绑定这个身份。" }),
+  msg({ id: "auth.oidcPasswordError", message: "当前密码不正确。" }),
+  msg({ id: "auth.oidcConflict", message: "这个身份或本站账号已有绑定，请先检查原绑定。" }),
+  msg({ id: "auth.oidcExpired", message: "操作已失效，请重新开始。" }),
+  msg({ id: "auth.oidcOrigin", message: "请通过已登记的 HTTPS 站点地址操作。" }),
+  msg({ id: "auth.oidcInvalid", message: "请检查 Issuer URL、Client ID 和 Client Secret。更换提供方或客户端时需重新输入密钥。" }),
+  msg({ id: "auth.oidcFailed", message: "无法完成单点登录。请检查提供方配置及公网 HTTPS 连接后重试。" }),
 ] as const;

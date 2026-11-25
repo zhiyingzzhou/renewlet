@@ -62,7 +62,7 @@ Create the first administrator. The deploy script creates `docker-compose.yml`, 
 For production, pin a stable image tag:
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.39"#' .env
 docker compose pull
 docker compose up -d
 ```
@@ -70,7 +70,7 @@ docker compose up -d
 If Docker Hub is unavailable, use GHCR:
 
 ```env
-RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.38"
+RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.39"
 ```
 
 ## Cloudflare Workers
@@ -95,7 +95,7 @@ Keep this archive private. It contains the database, local files and the origina
 Update the Docker image:
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.39"#' .env
 docker compose pull
 docker compose up -d
 docker compose logs -f
@@ -150,6 +150,21 @@ docker compose up -d --force-recreate
 To add a third-party service such as [Microsoft Clarity](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-setup), copy the provider's `<head>` code into `RENEWLET_CUSTOM_HEAD_HTML` unchanged. Wrap multiline values in single quotes when using a Docker `.env` file.
 
 Only add code you trust; it can access data on Renewlet pages. Restart the Docker container after a change, or rebuild and redeploy Cloudflare.
+
+## Single sign-on with OpenID Connect
+
+Docker and Cloudflare deployments can each connect one OIDC provider from Settings. Single sign-on is off by default. Password and passkey sign-in remain available.
+
+1. As an administrator, open Renewlet at its usual HTTPS address. Go to **Settings → Access security → Configure single sign-on** and copy the callback URL.
+2. Register a confidential web client with the provider and enter the exact callback URL. The provider must support OIDC Discovery, the authorization code flow, PKCE S256 and the `openid` scope. Configure it to issue signed, unencrypted RS256 ID tokens. Its public HTTPS endpoints must be reachable from the browser and the Renewlet server.
+3. Enter the discovery document’s exact **issuer** value, client ID and client secret. Choose **Test sign-in**, authenticate at the provider, then choose **Save and enable** on return. Cancelling or failing the test keeps the previous configuration active. Register and test the callback again when changing the public domain or client.
+4. Each user first signs in to their existing Renewlet account. Under **Settings → Account → Manage identity link**, enter the current password, authenticate at the provider and confirm the identity on return. The user can then choose single sign-on on the login page. Accounts with local MFA still require the second step. Linking or unlinking signs out other devices.
+
+For authentik, use its default per-application issuer, such as `https://id.example.com/application/o/renewlet/`, including the trailing slash. Select an RSA signing key and leave the encryption key empty. Other providers that meet the same protocol requirements use the same setup. [authentik provider settings](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/)
+
+For a Google web client, enter `https://accounts.google.com` and verify it with **Test sign-in**. For GitHub accounts, configure a GitHub login source in authentik and keep Renewlet connected to the same issuer. [Google OIDC documentation](https://developers.google.com/identity/openid-connect/openid-connect) · [GitHub as an authentik source](https://docs.goauthentik.io/users-sources/sources/social-logins/github/)
+
+Renewlet identifies a linked account by issuer and subject. Site administrators manage user creation and roles in Renewlet. Disabling single sign-on stops new external sign-ins and retains the links. After a provider change, users can sign in locally, unlink their former identity and link the new one. Configure reverse proxies to supply the trusted public scheme and host and to omit query strings from callback access logs.
 
 ## Screenshots
 

@@ -9,16 +9,22 @@ const textDecoder = new TextDecoder();
 export { base64Url };
 
 export async function encryptMfaSecret(env: Env, plaintext: string): Promise<string> {
-  const key = await aesGcmKey(env);
+  return sealSecurityText(await aesGcmKey(env), plaintext);
+}
+
+export async function sealSecurityText(key: CryptoKey, plaintext: string): Promise<string> {
   const nonce = crypto.getRandomValues(new Uint8Array(12));
   const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: nonce }, key, mfaTextEncoder.encode(plaintext)));
   return `v1.${base64Url(nonce)}.${base64Url(ciphertext)}`;
 }
 
 export async function decryptMfaSecret(env: Env, value: string): Promise<string> {
+  return openSecurityText(await aesGcmKey(env), value);
+}
+
+export async function openSecurityText(key: CryptoKey, value: string): Promise<string> {
   const [version, nonceText, ciphertextText] = value.split(".");
   if (version !== "v1" || !nonceText || !ciphertextText) throw new Error("invalid MFA ciphertext");
-  const key = await aesGcmKey(env);
   const plaintext = await crypto.subtle.decrypt(
     { name: "AES-GCM", iv: fromBase64Url(nonceText) },
     key,

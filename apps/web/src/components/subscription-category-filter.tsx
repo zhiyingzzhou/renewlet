@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { Check, Filter, Search } from "lucide-react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { Filter, Search } from "lucide-react";
 
 import { SubscriptionFilterPopoverFrame } from "@/components/subscription-filter-popover-frame";
 import { subscriptionFilterLayout } from "@/components/subscription-filter-layout";
@@ -8,31 +8,21 @@ import { Input } from "@/components/ui/input";
 import { MobileBottomDrawerContent, MobileDrawerRoot, MobileDrawerTrigger } from "@/components/ui/mobile-drawer";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import { useI18n } from "@/i18n/I18nProvider";
-import { colorWithAlpha } from "@/lib/color";
+import { DialogModulePending } from "@/components/ui/dialog-module-pending";
 import { cn } from "@/lib/utils";
 import type { ConfigItem } from "@/types/config";
 import type { Category } from "@/types/subscription";
 
+const SubscriptionCategoryChoices = lazy(() => import("@/components/subscription-category-choices"));
+
 interface SubscriptionCategoryFilterProps {
   categories: ConfigItem[];
+  categoryCounts: Readonly<Record<string, number>> | undefined;
   selectedCategories: Category[];
   onToggleCategory: (category: Category) => void;
   onClearCategories: () => void;
   onApply: (categories: Category[]) => void;
   mode: "popover" | "drawer";
-  className?: string;
-}
-
-interface CategoryFilterOption {
-  value: Category;
-  label: string;
-  color?: string | undefined;
-}
-
-interface CategoryCheckboxChipProps {
-  option: CategoryFilterOption;
-  selected: boolean;
-  onToggle: () => void;
   className?: string;
 }
 
@@ -42,45 +32,9 @@ function toggleCategoryValue(categories: Category[], category: Category) {
     : [...categories, category];
 }
 
-function selectedCategoryStyle(color?: string): CSSProperties | undefined {
-  if (!color) return undefined;
-  // 分类色来自用户配置，只参与轻量强调；透明度固定，避免自定义高饱和色压过状态语义色。
-  return {
-    backgroundColor: colorWithAlpha(color, 0.12) ?? undefined,
-    borderColor: colorWithAlpha(color, 0.35) ?? undefined,
-    color,
-  };
-}
-
-function CategoryCheckboxChip({ option, selected, onToggle, className }: CategoryCheckboxChipProps) {
-  const selectedStyle = selected ? selectedCategoryStyle(option.color) : undefined;
-
-  return (
-    <label
-      className={cn(
-        "inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold transition-colors",
-        "focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background",
-        selected
-          ? "border-primary bg-primary/10 text-primary"
-          : "border-border text-foreground hover:border-primary/50 hover:bg-secondary/70",
-        className,
-      )}
-      style={selectedStyle}
-    >
-      <input
-        type="checkbox"
-        checked={selected}
-        onChange={onToggle}
-        className="sr-only"
-      />
-      <span className="max-w-40 truncate">{option.label}</span>
-      {selected ? <Check className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> : null}
-    </label>
-  );
-}
-
 export function SubscriptionCategoryFilter({
   categories,
+  categoryCounts,
   selectedCategories,
   onToggleCategory,
   onClearCategories,
@@ -106,48 +60,36 @@ export function SubscriptionCategoryFilter({
     }
   }, [mode, open, selectedCategories]);
 
-  const options = useMemo<CategoryFilterOption[]>(() => (
-    categories.map((category) => ({
-      value: category.value as Category,
-      label: label(category.labels),
-      color: category.color,
-    }))
-  ), [categories, label]);
-  const selectedOptionLabels = useMemo(() => {
-    const optionByValue = new Map(options.map((option) => [option.value, option.label]));
-    return selectedCategories.map((category) => optionByValue.get(category) ?? category);
-  }, [options, selectedCategories]);
-  const triggerLabel =
-    selectedCategories.length === 0
-      ? t("subscriptions.category.open")
-      : selectedCategories.length === 1
-        ? selectedOptionLabels[0] ?? selectedCategories[0] ?? t("subscriptions.category.open")
-        : t("subscriptions.category.selectedCount", { count: selectedCategories.length });
-  const activeCategories = mode === "drawer" ? draftCategories : selectedCategories;
-  const visibleOptions = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    // 搜索只按本地化标签匹配，category value 是持久化 key，不应该暴露给普通筛选用户。
-    if (!query) return options;
-    return options.filter((option) => option.label.toLowerCase().includes(query));
-  }, [options, searchQuery]);
+  const singleCategory = selectedCategories.length === 1 ? selectedCategories[0] : undefined;
+  const selectedConfig = singleCategory ? categories.find((category) => category.value === singleCategory) : undefined;
+  const triggerLabel = singleCategory
+    ? (selectedConfig ? label(selectedConfig.labels) : singleCategory)
+    : selectedCategories.length ? t("subscriptions.category.selectedCount", { count: selectedCategories.length }) : t("subscriptions.category.open");
   const canClearCategories = selectedCategories.length > 0 || draftCategories.length > 0;
 
+  const searchInput = (
+    <>
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        placeholder={t("subscriptions.category.searchPlaceholder")}
+        className={cn("border-border bg-secondary pl-10", mode === "drawer" ? "h-11" : "h-10")}
+      />
+    </>
+  );
   const optionGrid = (
-    <div aria-label={t("subscriptions.category.drawerTitle")} className="flex flex-wrap gap-2">
-      {visibleOptions.map((option) => (
-        <CategoryCheckboxChip
-          key={option.value}
-          option={option}
-          selected={activeCategories.includes(option.value)}
-          onToggle={
-            mode === "drawer"
-              ? () => setDraftCategories((current) => toggleCategoryValue(current, option.value))
-              : () => onToggleCategory(option.value)
-          }
-          {...(mode === "drawer" ? { className: "min-h-11" } : {})}
-        />
-      ))}
-    </div>
+    <Suspense fallback={<DialogModulePending label={t("common.loading")} />}>
+      <SubscriptionCategoryChoices
+        categories={categories}
+        categoryCounts={categoryCounts}
+        selectedCategories={selectedCategories}
+        activeCategories={mode === "drawer" ? draftCategories : selectedCategories}
+        searchQuery={searchQuery}
+        mode={mode}
+        onToggleCategory={mode === "drawer" ? (value) => setDraftCategories((current) => toggleCategoryValue(current, value)) : onToggleCategory}
+      />
+    </Suspense>
   );
 
   if (mode === "drawer") {
@@ -171,23 +113,11 @@ export function SubscriptionCategoryFilter({
             bodyClassName={null}
           >
             <div className="px-5 pb-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder={t("subscriptions.category.searchPlaceholder")}
-                  className="h-11 border-border bg-secondary pl-10"
-                />
-              </div>
+              <div className="relative">{searchInput}</div>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-4">
-              {visibleOptions.length > 0 ? optionGrid : (
-                <div className="flex min-h-32 items-center justify-center rounded-lg border border-dashed border-border bg-secondary/40 px-4 text-center text-sm text-muted-foreground">
-                  {t("subscriptions.category.emptyMatch")}
-                </div>
-              )}
+              {optionGrid}
             </div>
 
             <div className="flex gap-3 border-t border-border bg-card px-5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
@@ -240,17 +170,7 @@ export function SubscriptionCategoryFilter({
         contentTestId="desktop-category-filter-popover"
         scrollTestId="desktop-category-filter-scroll"
         footerTestId="desktop-category-filter-footer"
-        searchInput={(
-          <>
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder={t("subscriptions.category.searchPlaceholder")}
-              className="h-10 border-border bg-secondary pl-10"
-            />
-          </>
-        )}
+        searchInput={searchInput}
         footer={
           selectedCategories.length > 0 ? (
             <Button
@@ -264,11 +184,7 @@ export function SubscriptionCategoryFilter({
           ) : undefined
         }
       >
-        {visibleOptions.length > 0 ? optionGrid : (
-          <div className="flex min-h-32 items-center justify-center rounded-lg border border-dashed border-border bg-secondary/40 px-4 text-center text-sm text-muted-foreground">
-            {t("subscriptions.category.emptyMatch")}
-          </div>
-        )}
+        {optionGrid}
       </SubscriptionFilterPopoverFrame>
     </Popover>
   );

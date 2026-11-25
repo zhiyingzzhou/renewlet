@@ -62,7 +62,7 @@ http://localhost:3000/setup
 正式使用时建议固定版本：
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.39"#' .env
 docker compose pull
 docker compose up -d
 ```
@@ -70,7 +70,7 @@ docker compose up -d
 如果 Docker Hub 拉取不可用，改用 GHCR：
 
 ```env
-RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.38"
+RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.39"
 ```
 
 ## Cloudflare Workers
@@ -95,7 +95,7 @@ docker compose stop web &&
 更新 Docker 镜像：
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.39"#' .env
 docker compose pull
 docker compose up -d
 docker compose logs -f
@@ -150,6 +150,21 @@ docker compose up -d --force-recreate
 需要接入 [Microsoft Clarity](https://learn.microsoft.com/zh-cn/clarity/setup-and-installation/clarity-setup) 等第三方服务时，把服务商提供的 `<head>` 代码原样填入 `RENEWLET_CUSTOM_HEAD_HTML`。Docker `.env` 中的多行代码用单引号包裹。
 
 只添加你信任的代码，它可以访问 Renewlet 页面中的数据。修改后，Docker 部署需重启容器，Cloudflare 部署需重新构建并部署。
+
+## 单点登录（OpenID Connect）
+
+Docker 和 Cloudflare 部署均可在设置页接入一个 OIDC 身份提供方。默认关闭，已有用户可继续用密码或通行密钥登录。
+
+1. 管理员通过平时访问 Renewlet 的 HTTPS 域名打开 **设置 → 访问安全 → 配置单点登录**，复制回调地址。
+2. 在提供方创建机密 Web 客户端，将回调地址原样登记为精确匹配。客户端需支持 OIDC Discovery、授权码流程、PKCE S256 和 `openid` 范围，并签发 RS256 签名的非加密 ID Token。浏览器和 Renewlet 后端都需要能访问提供方的公网 HTTPS 端点。
+3. 在 Renewlet 填入 Discovery 文档的 **issuer** 原值、客户端 ID 和密钥。选择 **测试登录**，在提供方完成认证，返回后选择 **保存并启用**。取消或测试失败时，原配置继续生效。更换域名或客户端时，重新登记回调并测试。
+4. 每位用户先用已有 Renewlet 账号登录，在 **设置 → 账号 → 管理绑定** 输入当前密码，前往提供方认证，返回核对身份并确认。此后可在登录页选择单点登录。已开启身份验证器的账号仍需完成本地第二步验证。绑定和解绑后，其他设备需要重新登录。
+
+authentik 可使用默认的每应用 issuer，例如 `https://id.example.com/application/o/renewlet/`，保留末尾斜杠。选择 RSA 签名密钥，清空加密密钥。其他符合上述协议要求的提供方也可使用同一个入口。[authentik 提供方配置](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/)
+
+Google 的 Web 客户端可填写 `https://accounts.google.com` 并通过测试登录确认。若希望用 GitHub 账号登录，可在 authentik 中添加 GitHub 登录源，Renewlet 仍连接同一个 issuer。[Google OIDC 文档](https://developers.google.com/identity/openid-connect/openid-connect) · [authentik 的 GitHub 登录源](https://docs.goauthentik.io/users-sources/sources/social-logins/github/)
+
+绑定按提供方和用户标识识别，Renewlet 的用户创建和角色分配仍由本站管理员管理。停用单点登录会关闭新的外部登录并保留绑定。若更换提供方，用户可用本地方式登录，解绑后重新绑定。反向代理应传递可信的公网协议和主机名，并在回调路径的访问日志中省略查询参数。
 
 ## 截图
 
