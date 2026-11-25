@@ -36,15 +36,15 @@ import {
 import { SubscriptionsPageSkeleton } from '@/components/loading-skeleton';
 import { useRouteReady } from '@/components/route-progress';
 import { SubscriptionCategoryFilter } from '@/components/subscription-category-filter';
-import { SubscriptionFilterFeedback } from '@/components/subscription-filter-feedback';
 import { QueryErrorState } from '@/components/query-error-state';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { SubscriptionListHeader } from '@/components/subscription-list-header';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Subscription, SubscriptionCollectionItem, SubscriptionStatus } from '@/types/subscription';
 import { BILLING_CYCLES, CYCLE_LABELS, DEFAULT_NOTIFICATION_REMINDER_DAYS, DEFAULT_SETTINGS } from '@/types/subscription';
-import { Search, Plus, Grid, List as ListIcon, Download, Upload, Sparkles, Eye, X } from 'lucide-react';
+import { Search, Plus, Download, Upload, Sparkles, Eye, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -82,6 +82,7 @@ import {
   SubscriptionAdvancedFilter,
 } from '@/components/subscription-advanced-filter';
 
+const SubscriptionFilterFeedback = lazy(() => import("@/components/subscription-filter-feedback").then((module) => ({ default: module.SubscriptionFilterFeedback })));
 const SubscriptionBulkVisibilityToolbar = lazy(() => import('@/components/subscription-bulk-visibility-toolbar').then((module) => ({ default: module.SubscriptionBulkVisibilityToolbar })));
 
 /** 空订阅数组：用于在数据未加载完成时提供稳定引用，避免 useMemo 依赖抖动。 */
@@ -151,6 +152,7 @@ const Subscriptions = () => {
   const { convert, loading: ratesLoading, sourceDate: ratesSourceDate } = useExchangeRates(exchangeRateProvider);
   const currencyRatesReady = Boolean(ratesSourceDate) && !ratesLoading;
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [groupByCategory, setGroupByCategory] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [aiRecognitionDialogOpen, setAIRecognitionDialogOpen] = useState(false);
   const [publicVisibilitySelectionMode, setPublicVisibilitySelectionMode] = useState(false);
@@ -187,7 +189,7 @@ const Subscriptions = () => {
     selectSubscriptionsForExport,
     subscriptionListFilters,
     hasActiveFilters,
-    needsCollectionIndex,
+    needsCollectionIndex: filtersOrSortNeedIndex,
     toggleCategory,
     clearSelectedCategories,
     toggleTag,
@@ -199,6 +201,8 @@ const Subscriptions = () => {
     today,
     availableTags: facetsQuery.data?.tags ?? [],
   });
+  // 分组计数依赖完整匹配集合；展示偏好只启用同一索引，不进入筛选参数或缓存键。
+  const needsCollectionIndex = groupByCategory || filtersOrSortNeedIndex;
   const indexQuery = useSubscriptionIndex(subscriptionListFilters, needsCollectionIndex);
   const indexedSubscriptions = indexQuery.data?.subscriptions ?? EMPTY_SUBSCRIPTIONS;
   const displaySourceSubscriptions = needsCollectionIndex ? indexedSubscriptions : subscriptions;
@@ -211,7 +215,8 @@ const Subscriptions = () => {
     [displaySourceSubscriptions, sortSubscriptionsForDisplay],
   );
   const isDisplayPending = needsCollectionIndex && indexQuery.isPending;
-  useRouteReady(subscriptionsQuery.isPending || isDisplayPending);
+  const isPagePending = !needsCollectionIndex && subscriptionsQuery.isPending;
+  useRouteReady(isPagePending || isDisplayPending);
   const displayError = needsCollectionIndex ? indexQuery.error : subscriptionsQuery.error;
   const retryDisplayQuery = needsCollectionIndex ? indexQuery.refetch : subscriptionsQuery.refetch;
   const displayedTotal = needsCollectionIndex ? (indexQuery.data?.total ?? 0) : subscriptionsQuery.total;
@@ -304,6 +309,85 @@ const Subscriptions = () => {
   const handleEditFromDetail = useCallback((subscription: Subscription) => {
     handleEditSubscription(subscription.id);
   }, [handleEditSubscription]);
+  const searchField = (
+    <div className={isMobileTagFilter ? "relative w-full" : subscriptionFilterLayout.desktopSearch}>
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        name="subscription-search"
+        type="search"
+        enterKeyHint="search"
+        placeholder={t("subscriptions.searchPlaceholder")}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className={cn("border-border bg-secondary pl-10", isMobileTagFilter && "h-11")}
+      />
+    </div>
+  );
+  const advancedFilter = (
+    <SubscriptionAdvancedFilter
+      filters={advancedFilters}
+      onChange={setAdvancedFilters}
+      billingCycleOptions={billingCycleOptions}
+      paymentMethodOptions={paymentMethodFilterOptions}
+      currencyOptions={currencyFilterOptions}
+      mode={isMobileTagFilter ? "mobileWorkspace" : "desktopSidePanel"}
+      {...(isMobileTagFilter ? { className: "flex-1" } : {})}
+    />
+  );
+  const categoryFilter = (
+    <SubscriptionCategoryFilter
+      categories={config.categories}
+      categoryCounts={facetsQuery.data?.categoryCounts}
+      selectedCategories={selectedCategories}
+      onToggleCategory={toggleCategory}
+      onClearCategories={clearSelectedCategories}
+      onApply={setSelectedCategories}
+      mode={isMobileTagFilter ? "drawer" : "popover"}
+    />
+  );
+  const statusSelect = (
+    <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as SubscriptionStatus | 'all')}>
+      <SelectTrigger className={isMobileTagFilter ? "h-11 min-w-0 border-border bg-secondary" : subscriptionFilterLayout.desktopStatusTrigger} tooltipContent={statusFilterLabel}>
+        <SelectValue placeholder={t("subscription.field.status")} />
+      </SelectTrigger>
+      <SelectContent mobileTitle={t("subscription.field.status")}>
+        <SelectItem value="all">{t("subscriptions.allStatuses")}</SelectItem>
+        {config.statuses.map((status) => (
+          <SelectItem key={status.id} value={status.value}>
+            {label(status.labels)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+  const paymentTypeSelect = (
+    <Select value={paymentTypeFilter} onValueChange={(v) => setPaymentTypeFilter(v as SubscriptionPaymentTypeFilter)}>
+      <SelectTrigger className={isMobileTagFilter ? "h-11 min-w-0 border-border bg-secondary" : subscriptionFilterLayout.desktopPaymentTypeTrigger} tooltipContent={paymentTypeFilterLabel}>
+        <SelectValue placeholder={t("subscriptions.paymentTypeFilter.label")} />
+      </SelectTrigger>
+      <SelectContent mobileTitle={t("subscriptions.paymentTypeFilter.label")}>
+        {Object.entries(PAYMENT_TYPE_FILTER_LABEL_KEYS).map(([value, key]) => (
+          <SelectItem key={value} value={value}>{t(key)}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+  const sortSelect = (
+    <Select value={sortOption} onValueChange={(v) => setSortOption(v as SubscriptionSortOption)}>
+      <SelectTrigger
+        aria-label={t("subscriptions.sort.label")}
+        className={isMobileTagFilter ? "h-11 border-border bg-secondary" : subscriptionFilterLayout.desktopSortTrigger}
+        tooltipContent={sortOptionLabel}
+      >
+        <SelectValue placeholder={t("subscriptions.sort.label")} />
+      </SelectTrigger>
+      <SelectContent mobileTitle={t("subscriptions.sort.label")}>
+        {Object.entries(SORT_OPTION_LABEL_KEYS).map(([value, key]) => (
+          <SelectItem key={value} value={value}>{t(key)}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
   const aiRecognitionAction = (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -327,7 +411,7 @@ const Subscriptions = () => {
     </Tooltip>
   );
   // 首次加载订阅列表时展示骨架屏（筛选条 + 卡片网格占位）。
-  if (subscriptionsQuery.isPending) {
+  if (isPagePending) {
     return (
       <div className="app-page bg-background">
         <Header onAddSubscription={handleAddSubscription} availableTags={allTags} subscriptionActions={aiRecognitionAction} />
@@ -344,166 +428,89 @@ const Subscriptions = () => {
         "app-main mx-auto max-w-7xl",
         hasPublicVisibilitySelection && "pb-[calc(9rem+env(safe-area-inset-bottom))] sm:pb-[calc(6rem+env(safe-area-inset-bottom))]",
       )}>
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 tabIndex={-1} data-subscription-list-heading="" className="text-2xl font-bold text-foreground">{t("subscriptions.title")}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t("subscriptions.count", { count: displayedTotal })}
-              {unfilteredTotal !== undefined && ` ${t("subscriptions.filteredCount", { count: unfilteredTotal })}`}
-              {publicVisibilitySelectionMode ? ` · ${t("subscriptions.publicVisibilityManagementDescription")}` : null}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {(publicVisibilitySelectionMode || publicStatusPageEnabled) ? (
-              <Button
-                type="button"
-                variant={publicVisibilitySelectionMode ? "secondary" : "outline"}
-                size="sm"
-                onClick={() => {
-                  if (publicVisibilitySelectionMode) {
-                    exitPublicVisibilityManagement();
-                  } else {
-                    setPublicVisibilitySelectionMode(true);
-                    setSelectedPublicVisibilityIds(new Set());
-                  }
-                }}
-                className="gap-2 border-border"
-                aria-label={publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}
-                aria-pressed={publicVisibilitySelectionMode}
-                disabled={bulkVisibilityPending}
-              >
-                {publicVisibilitySelectionMode ? <X className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                <span className="hidden sm:inline">{publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}</span>
-              </Button>
-            ) : null}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="border-border"
-                  aria-label={t("subscriptions.exportMenu")}
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={exportToJSON} disabled={exporting}>
-                  {t("subscriptions.exportJson")}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={exportToJSONWithSecrets} disabled={exporting}>
-                  {t("subscriptions.exportJsonWithSecrets")}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={exportToCSV} disabled={exporting}>
-                  {t("subscriptions.exportCsv")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+        <SubscriptionListHeader
+          displayedTotal={isDisplayPending || displayError ? undefined : displayedTotal}
+          unfilteredTotal={unfilteredTotal}
+          pending={isDisplayPending}
+          publicVisibilitySelectionMode={publicVisibilitySelectionMode}
+          groupByCategory={groupByCategory}
+          onGroupByCategoryChange={setGroupByCategory}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+        >
+          {(publicVisibilitySelectionMode || publicStatusPageEnabled) ? (
             <Button
               type="button"
-              variant="outline"
-              onClick={() => setImportDialogOpen(true)}
-              onFocus={preloadImportDataDialog}
-              onPointerEnter={preloadImportDataDialog}
-              onTouchStart={preloadImportDataDialog}
+              variant={publicVisibilitySelectionMode ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => {
+                if (publicVisibilitySelectionMode) {
+                  exitPublicVisibilityManagement();
+                } else {
+                  setPublicVisibilitySelectionMode(true);
+                  setSelectedPublicVisibilityIds(new Set());
+                }
+              }}
               className="gap-2 border-border"
-              aria-label={t("subscriptions.importData")}
+              aria-label={publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}
+              aria-pressed={publicVisibilitySelectionMode}
+              disabled={bulkVisibilityPending}
             >
-              <Upload className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("subscriptions.importData")}</span>
+              {publicVisibilitySelectionMode ? <X className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              <span className="hidden sm:inline">{publicVisibilitySelectionMode ? t("subscriptions.publicVisibilityExit") : t("subscriptions.bulkPublicVisibility")}</span>
             </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              className="border-border"
-            >
-              {viewMode === 'grid' ? <ListIcon className="h-4 w-4" /> : <Grid className="h-4 w-4" />}
-            </Button>
-          </div>
-        </div>
+          ) : null}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-border"
+                aria-label={t("subscriptions.exportMenu")}
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={exportToJSON} disabled={exporting}>
+                {t("subscriptions.exportJson")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportToJSONWithSecrets} disabled={exporting}>
+                {t("subscriptions.exportJsonWithSecrets")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportToCSV} disabled={exporting}>
+                {t("subscriptions.exportCsv")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setImportDialogOpen(true)}
+            onFocus={preloadImportDataDialog}
+            onPointerEnter={preloadImportDataDialog}
+            onTouchStart={preloadImportDataDialog}
+            className="gap-2 border-border"
+            aria-label={t("subscriptions.importData")}
+          >
+            <Upload className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("subscriptions.importData")}</span>
+          </Button>
+        </SubscriptionListHeader>
         <div className={cn("mb-6 rounded-xl border border-border bg-card p-5", isMobileTagFilter ? "grid gap-3" : "grid gap-4")}>
           {isMobileTagFilter ? (
             <>
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  name="subscription-search"
-                  type="search"
-                  enterKeyHint="search"
-                  placeholder={t("subscriptions.searchPlaceholder")}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-11 border-border bg-secondary pl-10"
-                />
-              </div>
+              {searchField}
               <div className="grid grid-cols-2 gap-3">
-                <SubscriptionCategoryFilter
-                  categories={config.categories}
-                  selectedCategories={selectedCategories}
-                  onToggleCategory={toggleCategory}
-                  onClearCategories={clearSelectedCategories}
-                  onApply={setSelectedCategories}
-                  mode="drawer"
-                />
-                <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as SubscriptionStatus | 'all')}>
-                  <SelectTrigger className="h-11 min-w-0 border-border bg-secondary" tooltipContent={statusFilterLabel}>
-                    <SelectValue placeholder={t("subscription.field.status")} />
-                  </SelectTrigger>
-                  <SelectContent mobileTitle={t("subscription.field.status")}>
-                    <SelectItem value="all">{t("subscriptions.allStatuses")}</SelectItem>
-                    {config.statuses.map((status) => (
-                      <SelectItem key={status.id} value={status.value}>
-                        {label(status.labels)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {categoryFilter}
+                {statusSelect}
               </div>
               <div className="grid grid-cols-2 gap-3" data-testid="mobile-payment-type-sort-row">
-                <Select value={paymentTypeFilter} onValueChange={(v) => setPaymentTypeFilter(v as SubscriptionPaymentTypeFilter)}>
-                  <SelectTrigger className="h-11 min-w-0 border-border bg-secondary" tooltipContent={paymentTypeFilterLabel}>
-                    <SelectValue placeholder={t("subscriptions.paymentTypeFilter.label")} />
-                  </SelectTrigger>
-                  <SelectContent mobileTitle={t("subscriptions.paymentTypeFilter.label")}>
-                    <SelectItem value="all">{t("subscriptions.paymentTypeFilter.all")}</SelectItem>
-                    <SelectItem value="auto">{t("subscriptions.paymentTypeFilter.auto")}</SelectItem>
-                    <SelectItem value="manual">{t("subscriptions.paymentTypeFilter.manual")}</SelectItem>
-                    <SelectItem value="one-time-buyout">{t("subscriptions.paymentTypeFilter.buyout")}</SelectItem>
-                    <SelectItem value="one-time-fixed-term">{t("subscriptions.paymentTypeFilter.fixedTerm")}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={sortOption} onValueChange={(v) => setSortOption(v as SubscriptionSortOption)}>
-                  <SelectTrigger
-                    aria-label={t("subscriptions.sort.label")}
-                    className="h-11 border-border bg-secondary"
-                    tooltipContent={sortOptionLabel}
-                  >
-                    <SelectValue placeholder={t("subscriptions.sort.label")} />
-                  </SelectTrigger>
-                  <SelectContent mobileTitle={t("subscriptions.sort.label")}>
-                    <SelectItem value="default">{t("subscriptions.sort.default")}</SelectItem>
-                    <SelectItem value="renewal_asc">{t("subscriptions.sort.renewalAsc")}</SelectItem>
-                    <SelectItem value="renewal_desc">{t("subscriptions.sort.renewalDesc")}</SelectItem>
-                    <SelectItem value="monthly_cost_desc">{t("subscriptions.sort.monthlyCostDesc")}</SelectItem>
-                    <SelectItem value="monthly_cost_asc">{t("subscriptions.sort.monthlyCostAsc")}</SelectItem>
-                    <SelectItem value="price_desc">{t("subscriptions.sort.priceDesc")}</SelectItem>
-                    <SelectItem value="price_asc">{t("subscriptions.sort.priceAsc")}</SelectItem>
-                    <SelectItem value="name_asc">{t("subscriptions.sort.nameAsc")}</SelectItem>
-                    <SelectItem value="name_desc">{t("subscriptions.sort.nameDesc")}</SelectItem>
-                  </SelectContent>
-                </Select>
+                {paymentTypeSelect}
+                {sortSelect}
               </div>
               <div className="flex min-w-0 items-center gap-3" data-testid="mobile-advanced-tag-row">
-                <SubscriptionAdvancedFilter
-                  filters={advancedFilters}
-                  onChange={setAdvancedFilters}
-                  billingCycleOptions={billingCycleOptions}
-                  paymentMethodOptions={paymentMethodFilterOptions}
-                  currencyOptions={currencyFilterOptions}
-                  mode="mobileWorkspace"
-                  className="flex-1"
-                />
+                {advancedFilter}
                 {allTags.length > 0 && (
                   <SubscriptionTagFilterDrawer
                     tags={allTags}
@@ -512,97 +519,17 @@ const Subscriptions = () => {
                   />
                 )}
               </div>
-              <SubscriptionFilterFeedback
-                selectedTags={selectedTags}
-                onRemoveTag={removeSelectedTag}
-                filters={advancedFilters}
-                onChangeAdvancedFilters={setAdvancedFilters}
-                billingCycleOptions={billingCycleOptions}
-                paymentMethodOptions={paymentMethodFilterOptions}
-                currencyOptions={currencyFilterOptions}
-                hasActiveFilters={hasActiveFilters}
-                onClearFilters={clearFilters}
-                tagTestId="mobile-selected-tags"
-                advancedTestId="mobile-selected-advanced-filters"
-                testId="mobile-filter-feedback"
-              />
+
             </>
           ) : (
             <>
               <div className={subscriptionFilterLayout.desktopRow} data-testid="desktop-filter-toolbar">
-                <div className={subscriptionFilterLayout.desktopSearch}>
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    name="subscription-search"
-                    type="search"
-                    enterKeyHint="search"
-                    placeholder={t("subscriptions.searchPlaceholder")}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border-border bg-secondary pl-10"
-                  />
-                </div>
-                <SubscriptionCategoryFilter
-                  categories={config.categories}
-                  selectedCategories={selectedCategories}
-                  onToggleCategory={toggleCategory}
-                  onClearCategories={clearSelectedCategories}
-                  onApply={setSelectedCategories}
-                  mode="popover"
-                />
-                <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as SubscriptionStatus | 'all')}>
-                  <SelectTrigger className={subscriptionFilterLayout.desktopStatusTrigger} tooltipContent={statusFilterLabel}>
-                    <SelectValue placeholder={t("subscription.field.status")} />
-                  </SelectTrigger>
-                  <SelectContent mobileTitle={t("subscription.field.status")}>
-                    <SelectItem value="all">{t("subscriptions.allStatuses")}</SelectItem>
-                    {config.statuses.map((status) => (
-                      <SelectItem key={status.id} value={status.value}>
-                        {label(status.labels)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={paymentTypeFilter} onValueChange={(v) => setPaymentTypeFilter(v as SubscriptionPaymentTypeFilter)}>
-                  <SelectTrigger className={subscriptionFilterLayout.desktopPaymentTypeTrigger} tooltipContent={paymentTypeFilterLabel}>
-                    <SelectValue placeholder={t("subscriptions.paymentTypeFilter.label")} />
-                  </SelectTrigger>
-                  <SelectContent mobileTitle={t("subscriptions.paymentTypeFilter.label")}>
-                    <SelectItem value="all">{t("subscriptions.paymentTypeFilter.all")}</SelectItem>
-                    <SelectItem value="auto">{t("subscriptions.paymentTypeFilter.auto")}</SelectItem>
-                    <SelectItem value="manual">{t("subscriptions.paymentTypeFilter.manual")}</SelectItem>
-                    <SelectItem value="one-time-buyout">{t("subscriptions.paymentTypeFilter.buyout")}</SelectItem>
-                    <SelectItem value="one-time-fixed-term">{t("subscriptions.paymentTypeFilter.fixedTerm")}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={sortOption} onValueChange={(v) => setSortOption(v as SubscriptionSortOption)}>
-                  <SelectTrigger
-                    aria-label={t("subscriptions.sort.label")}
-                    className={subscriptionFilterLayout.desktopSortTrigger}
-                    tooltipContent={sortOptionLabel}
-                  >
-                    <SelectValue placeholder={t("subscriptions.sort.label")} />
-                  </SelectTrigger>
-                  <SelectContent mobileTitle={t("subscriptions.sort.label")}>
-                    <SelectItem value="default">{t("subscriptions.sort.default")}</SelectItem>
-                    <SelectItem value="renewal_asc">{t("subscriptions.sort.renewalAsc")}</SelectItem>
-                    <SelectItem value="renewal_desc">{t("subscriptions.sort.renewalDesc")}</SelectItem>
-                    <SelectItem value="monthly_cost_desc">{t("subscriptions.sort.monthlyCostDesc")}</SelectItem>
-                    <SelectItem value="monthly_cost_asc">{t("subscriptions.sort.monthlyCostAsc")}</SelectItem>
-                    <SelectItem value="price_desc">{t("subscriptions.sort.priceDesc")}</SelectItem>
-                    <SelectItem value="price_asc">{t("subscriptions.sort.priceAsc")}</SelectItem>
-                    <SelectItem value="name_asc">{t("subscriptions.sort.nameAsc")}</SelectItem>
-                    <SelectItem value="name_desc">{t("subscriptions.sort.nameDesc")}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <SubscriptionAdvancedFilter
-                  filters={advancedFilters}
-                  onChange={setAdvancedFilters}
-                  billingCycleOptions={billingCycleOptions}
-                  paymentMethodOptions={paymentMethodFilterOptions}
-                  currencyOptions={currencyFilterOptions}
-                  mode="desktopSidePanel"
-                />
+                {searchField}
+                {categoryFilter}
+                {statusSelect}
+                {paymentTypeSelect}
+                {sortSelect}
+                {advancedFilter}
                 {allTags.length > 0 && (
                   <SubscriptionTagFilterPopover
                     tags={allTags}
@@ -612,6 +539,11 @@ const Subscriptions = () => {
                   />
                 )}
               </div>
+
+            </>
+          )}
+          {hasActiveFilters && (
+            <Suspense fallback={null}>
               <SubscriptionFilterFeedback
                 selectedTags={selectedTags}
                 onRemoveTag={removeSelectedTag}
@@ -620,13 +552,12 @@ const Subscriptions = () => {
                 billingCycleOptions={billingCycleOptions}
                 paymentMethodOptions={paymentMethodFilterOptions}
                 currencyOptions={currencyFilterOptions}
-                hasActiveFilters={hasActiveFilters}
                 onClearFilters={clearFilters}
-                tagTestId="desktop-selected-tags"
-                advancedTestId="desktop-selected-advanced-filters"
-                testId="desktop-filter-feedback"
+                tagTestId={`${isMobileTagFilter ? "mobile" : "desktop"}-selected-tags`}
+                advancedTestId={`${isMobileTagFilter ? "mobile" : "desktop"}-selected-advanced-filters`}
+                testId={`${isMobileTagFilter ? "mobile" : "desktop"}-filter-feedback`}
               />
-            </>
+            </Suspense>
           )}
         </div>
         {publicVisibilitySelectionMode ? <Suspense fallback={null}><SubscriptionBulkVisibilityToolbar
@@ -641,7 +572,7 @@ const Subscriptions = () => {
         {displayError ? (
           <QueryErrorState error={displayError} onRetry={retryDisplayQuery} />
         ) : isDisplayPending ? (
-          <div className="flex items-center justify-center rounded-xl border border-dashed border-border bg-card/50 py-16 text-sm text-muted-foreground">
+          <div role="status" className="flex items-center justify-center rounded-xl border border-dashed border-border bg-card/50 py-16 text-sm text-muted-foreground">
             {t("common.loading")}
           </div>
         ) : filteredSubscriptions.length === 0 ? (
@@ -677,6 +608,7 @@ const Subscriptions = () => {
             <SubscriptionGrid
               subscriptions={filteredSubscriptions}
               viewMode={viewMode}
+              groupByCategory={groupByCategory}
               today={today}
               inheritedReminderDays={inheritedReminderDays}
               currencyConvert={convert}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Filter, Search, X } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 
 import { SubscriptionFilterPopoverFrame } from "@/components/subscription-filter-popover-frame";
 import { Button } from "@/components/ui/button";
@@ -32,13 +32,6 @@ interface SubscriptionTagFilterPopoverProps {
   className?: string;
 }
 
-interface SelectedTagScrollerProps {
-  selectedTags: readonly string[];
-  onRemoveTag: (tag: string) => void;
-  className?: string;
-  testId?: string;
-}
-
 function toggleTag(tags: readonly string[], tag: string) {
   return tags.includes(tag) ? tags.filter((item) => item !== tag) : [...tags, tag];
 }
@@ -60,55 +53,6 @@ export function TagFilterChip({ tag, selected, onToggle, className }: TagFilterC
     >
       <span className="max-w-40 truncate">{tag}</span>
     </button>
-  );
-}
-
-function SelectedTagPill({ tag, onRemove }: { tag: string; onRemove: () => void }) {
-  const { t } = useI18n();
-
-  return (
-    <span className="inline-flex h-9 shrink-0 items-center rounded-full border border-primary bg-primary/10 pl-3 pr-1 text-xs font-semibold text-primary">
-      <span className="max-w-32 truncate">{tag}</span>
-      <button
-        type="button"
-        aria-label={t("subscription.tags.remove", { tag })}
-        className="ml-1 inline-flex h-7 w-7 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        onClick={onRemove}
-      >
-        <X className="h-3.5 w-3.5" />
-      </button>
-    </span>
-  );
-}
-
-/** SelectedTagScroller 在窄屏保持横向滚动，避免多标签把筛选栏挤出首屏。 */
-export function SelectedTagScroller({
-  selectedTags,
-  onRemoveTag,
-  className,
-  testId = "mobile-selected-tags",
-}: SelectedTagScrollerProps) {
-  const { t } = useI18n();
-
-  if (selectedTags.length === 0) {
-    return null;
-  }
-
-  return (
-    <div
-      data-testid={testId}
-      className={cn(
-        "min-w-0 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden",
-        className,
-      )}
-      aria-label={t("subscriptions.tags.selectedCount", { count: selectedTags.length })}
-    >
-      <div className="flex w-max gap-2 pr-1">
-        {selectedTags.map((tag) => (
-          <SelectedTagPill key={tag} tag={tag} onRemove={() => onRemoveTag(tag)} />
-        ))}
-      </div>
-    </div>
   );
 }
 

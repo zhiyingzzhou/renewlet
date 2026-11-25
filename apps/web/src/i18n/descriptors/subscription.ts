@@ -754,4 +754,9 @@ export const messages = [
   msg({ id: "subscription.chooseStatus", message: "选择状态" }),
   msg({ id: "subscription.resumeDateError", message: "恢复订阅时，请将适用的账单日期和试用结束日期设为今天或以后。" }),
   msg({ id: "subscription.clearTrialEndDate", message: "清除试用结束日期" }),
+  msg({ id: "subscriptions.display.switchToGrid", message: "切换到网格视图" }),
+  msg({ id: "subscriptions.display.switchToList", message: "切换到列表视图" }),
+  msg({ id: "subscriptions.display.groupByCategory", message: "按分类分组" }),
+  msg({ id: "subscriptions.display.groupCount", message: "{count} 个订阅" }),
+  msg({ id: "subscriptions.category.countScope", message: "数字为各分类的订阅总数" }),
 ] as const;

@@ -59,6 +59,11 @@ msgid "statistics.trendDetailsCount"
 msgstr "Подписок: {count}"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:760
+msgid "subscriptions.display.groupCount"
+msgstr "{count, plural, one {# подписка} few {# подписки} many {# подписок} other {# подписки}}"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:136
 msgid "subscription.costSharing.memberCount"
 msgstr "{count, plural, one {# участник} few {# участника} many {# участников} other {# участника}}"
@@ -907,6 +912,16 @@ msgstr "Категории ({count})"
 #: src/i18n/descriptors/subscription.ts:684
 msgid "statistics.categoryView"
 msgstr "По категориям"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:758
+msgid "subscriptions.display.switchToList"
+msgstr "Переключить на список"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:757
+msgid "subscriptions.display.switchToGrid"
+msgstr "Переключить на сетку"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:205
@@ -1789,6 +1804,11 @@ msgid "dashboard.builtinRates"
 msgstr "По встроенным справочным курсам"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:759
+msgid "subscriptions.display.groupByCategory"
+msgstr "Группировать по категории"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:217
 msgid "subscription.renew.modeContinueShort"
 msgstr "Сдвиг от исходной точки отсчёта периода."
@@ -2002,6 +2022,11 @@ msgstr "Напоминание о сборе: выключено"
 #: src/i18n/descriptors/subscription.ts:88
 msgid "subscription.validation.costSharingCollectionReminderInvalid"
 msgstr "Дни напоминания о сборе должны наследовать значение по умолчанию или быть целым числом от 0 до 3650"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:761
+msgid "subscriptions.category.countScope"
+msgstr "Числа показывают общее количество подписок в каждой категории"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:169

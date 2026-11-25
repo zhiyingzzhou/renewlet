@@ -59,6 +59,11 @@ msgid "statistics.trendDetailsCount"
 msgstr "{count} 个订阅"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:760
+msgid "subscriptions.display.groupCount"
+msgstr "{count} 个订阅"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:136
 msgid "subscription.costSharing.memberCount"
 msgstr "{count} 位成员"
@@ -907,6 +912,16 @@ msgstr "分类({count})"
 #: src/i18n/descriptors/subscription.ts:684
 msgid "statistics.categoryView"
 msgstr "分类视图"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:758
+msgid "subscriptions.display.switchToList"
+msgstr "切换到列表视图"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:757
+msgid "subscriptions.display.switchToGrid"
+msgstr "切换到网格视图"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:205
@@ -1789,6 +1804,11 @@ msgid "dashboard.builtinRates"
 msgstr "按内置参考汇率换算"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:759
+msgid "subscriptions.display.groupByCategory"
+msgstr "按分类分组"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:217
 msgid "subscription.renew.modeContinueShort"
 msgstr "按原周期锚点推进日期。"
@@ -2002,6 +2022,11 @@ msgstr "收款提醒：关闭"
 #: src/i18n/descriptors/subscription.ts:88
 msgid "subscription.validation.costSharingCollectionReminderInvalid"
 msgstr "收款提醒天数必须是继承默认值或 0 到 3650 之间的整数"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/subscription.ts:761
+msgid "subscriptions.category.countScope"
+msgstr "数字为各分类的订阅总数"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/subscription.ts:169

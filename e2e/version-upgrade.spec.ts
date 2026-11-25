@@ -1,17 +1,22 @@
 import { resolve, sep } from "node:path";
 import { execFileSync } from "node:child_process";
-import type { Request } from "@playwright/test";
+import type { Page, Request, TestInfo } from "@playwright/test";
+import { subscriptionsIndexResponseSchema } from "@renewlet/shared/schemas/subscriptions";
 import { test, expect } from "./support/test";
 import { buildArtifactHash } from "../scripts/browser-performance";
+import { deleteProductSubscriptionsByName, productApiFetch } from "./support/product-api";
+import { createSubscription, subscriptionCard, uniqueE2EName } from "./support/subscriptions";
 
-test("an open previous release preserves its draft, loaded routes and preferences until explicit refresh", async ({ page, baseURL }, testInfo) => {
+async function servePreviousBuild(page: Page, baseURL: string | undefined, testInfo: TestInfo) {
   const input = process.env["RENEWLET_E2E_PREVIOUS_DIST"];
   if (!input || !baseURL) throw new Error("Upgrade journey requires an explicit historical production dist and isolated baseURL");
   const previousDist = resolve(input);
   const previousRoot = resolve(previousDist, "../../..");
   const revision = execFileSync("git", ["rev-parse", "HEAD"], { cwd: previousRoot, encoding: "utf8" }).trim();
-  await testInfo.attach("upgrade-builds", { body: JSON.stringify({ revision,
-    previousArtifactHash: buildArtifactHash(previousDist), candidateArtifactHash: buildArtifactHash(resolve("apps/web/dist")) }), contentType: "application/json" });
+  const previousArtifactHash = buildArtifactHash(previousDist);
+  const candidateArtifactHash = buildArtifactHash(resolve("apps/web/dist"));
+  expect(previousArtifactHash, "Upgrade requires two distinct frontend builds").not.toBe(candidateArtifactHash);
+  await testInfo.attach("upgrade-builds", { body: JSON.stringify({ revision, previousArtifactHash, candidateArtifactHash }), contentType: "application/json" });
   let previousDeployment = true;
   // 真实旧产物模拟发布前页面；只替换静态文件，认证和读写仍穿过本轮隔离的真实产品 API。
   await page.route("**/*", async (route) => {
@@ -24,7 +29,11 @@ test("an open previous release preserves its draft, loaded routes and preference
     // 缺失旧 chunk 必须真实失败，不能偷偷回退到候选文件来假装旧页面兼容。
     await route.fulfill({ path: file });
   });
+  return () => { previousDeployment = false; };
+}
 
+test("an open previous release preserves its draft, loaded routes and preferences until explicit refresh", async ({ page, baseURL }, testInfo) => {
+  const deployCandidate = await servePreviousBuild(page, baseURL, testInfo);
   await page.goto("/settings");
   await expect(page.getByRole("heading", { name: "系统配置", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "切换主题", exact: true }).click();
@@ -47,7 +56,7 @@ test("an open previous release preserves its draft, loaded routes and preference
   };
   page.on("request", recordNavigation);
   try {
-    previousDeployment = false;
+    deployCandidate();
     await expect(dialog.getByLabel("服务名称", { exact: true })).toHaveValue("Unsaved upgrade draft");
     await dialog.getByLabel("服务名称", { exact: true }).fill("Still editing after deployment");
     await dialog.getByRole("button", { name: "取消", exact: true }).click();
@@ -61,5 +70,45 @@ test("an open previous release preserves its draft, loaded routes and preference
     expect(navigations).toHaveLength(1);
   } finally {
     page.off("request", recordNavigation);
+  }
+});
+
+test("subscriptions saved by the previous frontend keep their category and identity in grouped view", async ({ page, baseURL }, testInfo) => {
+  const deployCandidate = await servePreviousBuild(page, baseURL, testInfo);
+  const prefix = uniqueE2EName(testInfo, "Category upgrade");
+  const names = [`${prefix} A`, `${prefix} B`] as const;
+  const readSubscriptions = async () => {
+    const result = await productApiFetch(page, `/api/app/subscriptions/index?q=${encodeURIComponent(prefix)}`);
+    expect(result.ok, result.body).toBe(true);
+    return subscriptionsIndexResponseSchema.parse(result.json).data.subscriptions;
+  };
+  await page.goto("/subscriptions");
+  try {
+    for (const name of names) await createSubscription(page, { name, price: "12" });
+    const firstCard = subscriptionCard(page, names[0]);
+    await firstCard.getByRole("button", { name: "更多操作" }).click();
+    await page.getByRole("menuitem", { name: "置顶", exact: true }).click();
+    await expect(firstCard.getByTestId("subscription-pinned-title-icon")).toBeVisible();
+    const saved = await readSubscriptions();
+    expect(saved.map(({ name, category, pinned }) => [name, category, pinned])).toEqual([
+      [names[0], "productivity", true], [names[1], "productivity", false],
+    ]);
+
+    deployCandidate();
+    await page.reload();
+    const groupByCategory = page.getByRole("switch", { name: "按分类分组" });
+    await page.getByRole("searchbox").fill(prefix);
+    await expect(page.getByRole("button", { name: "切换到列表视图" })).toBeVisible();
+    await expect(groupByCategory).not.toBeChecked();
+    await groupByCategory.click();
+    await expect(page.getByRole("heading", { level: 2, name: "生产力 2 个订阅", exact: true })).toBeVisible();
+    await expect(page.getByTestId("subscription-card").getByRole("heading", { level: 3 })).toHaveText([...names]);
+    await expect(firstCard.getByTestId("subscription-pinned-title-icon")).toBeVisible();
+    expect(await readSubscriptions()).toEqual(saved);
+
+    await page.reload();
+    await expect(groupByCategory).not.toBeChecked();
+  } finally {
+    await deleteProductSubscriptionsByName(page, names);
   }
 });
