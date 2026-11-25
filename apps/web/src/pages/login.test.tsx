@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router";
+import type { MfaRequiredResponse } from "@renewlet/shared/schemas/auth";
 import Login from "./login";
 
 const mocks = vi.hoisted(() => ({
@@ -84,6 +85,16 @@ function createDeferred<T>() {
     reject = fail;
   });
   return { promise, resolve, reject };
+}
+
+function mockPasswordMfa(methods: MfaRequiredResponse["methods"]) {
+  const challenge: MfaRequiredResponse = {
+    type: "mfa_required",
+    ticketId: "ticket-1",
+    expiresAt: "2026-07-01T00:00:00.000Z",
+    methods,
+  };
+  mocks.signInEmail.mockResolvedValueOnce({ data: challenge, error: null });
 }
 
 function getVerifyMfaCall(index = 0): [unknown, unknown] {
@@ -438,15 +449,7 @@ describe("Login page", () => {
 
   it("opens the MFA dialog without replacing the password form after password verification", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp", "recovery_code"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp", "recovery_code"]);
     const { container } = renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -463,15 +466,7 @@ describe("Login page", () => {
 
   it("focuses the MFA code field when the dialog opens", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp", "recovery_code"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp", "recovery_code"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -500,15 +495,7 @@ describe("Login page", () => {
 
   it("closes the MFA dialog and returns focus to the password field", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     const { container } = renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -527,15 +514,7 @@ describe("Login page", () => {
 
   it("requires the explicit close button for the MFA dialog", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -560,15 +539,7 @@ describe("Login page", () => {
 
   it("verifies TOTP with the in-memory ticket and remembers the email only after MFA succeeds", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -593,15 +564,7 @@ describe("Login page", () => {
 
   it("verifies recovery codes from the MFA dialog", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp", "recovery_code"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp", "recovery_code"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -667,15 +630,7 @@ describe("Login page", () => {
 
   it("keeps passkey sign-in independent from MFA verification after password verification", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
@@ -693,15 +648,7 @@ describe("Login page", () => {
 
   it("keeps the MFA dialog state when passkey sign-in is cancelled from MFA verification", async () => {
     const user = userEvent.setup();
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     mocks.signInPasskey.mockResolvedValueOnce({ data: null, error: null, cancelled: true });
     renderLogin();
 
@@ -727,15 +674,7 @@ describe("Login page", () => {
     const user = userEvent.setup();
     const verification = createDeferred<Awaited<ReturnType<typeof mocks.verifyMfa>>>();
     mocks.verifyMfa.mockReturnValueOnce(verification.promise);
-    mocks.signInEmail.mockResolvedValueOnce({
-      data: {
-        type: "mfa_required",
-        ticketId: "ticket-1",
-        expiresAt: "2026-07-01T00:00:00.000Z",
-        methods: ["totp"],
-      },
-      error: null,
-    });
+    mockPasswordMfa(["totp"]);
     renderLogin();
 
     await user.type(screen.getByLabelText("Email"), "alice@example.com");
