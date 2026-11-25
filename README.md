@@ -62,7 +62,7 @@ Create the first administrator. The deploy script creates `docker-compose.yml`, 
 For production, pin a stable image tag:
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.39"#' .env
 docker compose pull
 docker compose up -d
 ```
@@ -70,7 +70,7 @@ docker compose up -d
 If Docker Hub is unavailable, use GHCR:
 
 ```env
-RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.38"
+RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.39"
 ```
 
 ## Cloudflare Workers
@@ -95,7 +95,7 @@ Keep this archive private. It contains the database, local files and the origina
 Update the Docker image:
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.39"#' .env
 docker compose pull
 docker compose up -d
 docker compose logs -f

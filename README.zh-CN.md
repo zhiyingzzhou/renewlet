@@ -62,7 +62,7 @@ http://localhost:3000/setup
 正式使用时建议固定版本：
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.39"#' .env
 docker compose pull
 docker compose up -d
 ```
@@ -70,7 +70,7 @@ docker compose up -d
 如果 Docker Hub 拉取不可用，改用 GHCR：
 
 ```env
-RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.38"
+RENEWLET_IMAGE="ghcr.io/zhiyingzzhou/renewlet:0.3.39"
 ```
 
 ## Cloudflare Workers
@@ -95,7 +95,7 @@ docker compose stop web &&
 更新 Docker 镜像：
 
 ```bash
-sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.38"#' .env
+sed -i.bak 's#RENEWLET_IMAGE=.*#RENEWLET_IMAGE="zhiyingzzhou/renewlet:0.3.39"#' .env
 docker compose pull
 docker compose up -d
 docker compose logs -f
