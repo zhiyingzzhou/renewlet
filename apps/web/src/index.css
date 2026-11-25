@@ -42,6 +42,12 @@
   --color-popover-foreground: hsl(var(--popover-foreground));
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
+  /* 浅色提示底与实色按钮所需的文字对比不同，提示文字从当前主题前景与语义色派生。 */
+  --color-warning-ink: color-mix(in srgb, hsl(var(--warning)) 36%, hsl(var(--foreground)));
+  --color-success-ink: color-mix(in srgb, hsl(var(--success)) 36%, hsl(var(--foreground)));
+  --color-card-caption: color-mix(in srgb, hsl(var(--muted-foreground)) 86%, hsl(var(--card-foreground)));
+  --color-card-selected: color-mix(in srgb, hsl(var(--primary)) 7%, hsl(var(--card)));
+  --color-card-focus: color-mix(in srgb, hsl(var(--ring)) 48%, hsl(var(--foreground)));
   --color-card-hover: hsl(var(--card-hover));
   --color-brand-mark: hsl(var(--brand-mark));
   --color-brand-mark-foreground: hsl(var(--brand-mark-foreground));
@@ -75,7 +81,6 @@
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-fade-in: fade-in 0.4s ease-out;
   --animate-slide-in: slide-in 0.3s ease-out;
-  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
 
   @keyframes accordion-down {
     from {
@@ -114,16 +119,6 @@
     to {
       opacity: 1;
       transform: translateX(0);
-    }
-  }
-
-  @keyframes pulse-glow {
-    0%,
-    100% {
-      box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
-    }
-    50% {
-      box-shadow: 0 0 24px 4px hsl(var(--primary) / 0.3);
     }
   }
 }
