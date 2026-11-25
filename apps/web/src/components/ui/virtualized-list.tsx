@@ -26,7 +26,7 @@ type VirtualizedListProps = {
   /** 总项数来自调用方筛选后的稳定列表；虚拟器不感知业务分页。 */
   count: number;
   /** 估算高度是滚动体验边界，必须覆盖动态内容的常见最大值，避免滚动条跳动。 */
-  estimatedItemSize: number;
+  estimatedItemSize: number | ((index: number) => number);
   /** key 必须来自业务稳定 id，不能用可变展示文案。 */
   getItemKey: (index: number) => VirtualItemKey;
   /** Renewlet 的滚动根通常是 #root 或 Dialog body，显式传入可避免 window 滚动假设。 */
@@ -100,7 +100,9 @@ export function VirtualizedList({
     return [...new Set(indexes)].sort((a, b) => a - b);
   }, [focusedIndex, retainKeyboardFocus]);
   const initialRect = useMemo(() => getInitialRect(), []);
-  const estimateSize = useCallback(() => estimatedItemSize, [estimatedItemSize]);
+  const estimateSize = useCallback((index: number) => (
+    typeof estimatedItemSize === "number" ? estimatedItemSize : estimatedItemSize(index)
+  ), [estimatedItemSize]);
   const measureElementWithFallback = useCallback(
     (
       element: HTMLDivElement,
@@ -111,9 +113,9 @@ export function VirtualizedList({
       if (measuredSize > 0) return measuredSize;
 
       // 浏览器首帧或隐藏布局可能暂时返回 0；估算高度用于维持滚动范围，真实尺寸随后由 ResizeObserver 校正。
-      return estimatedItemSize;
+      return estimateSize(instance.indexFromElement(element));
     },
-    [estimatedItemSize],
+    [estimateSize],
   );
   const observeRectWithFallback = useCallback(
     (

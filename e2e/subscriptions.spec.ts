@@ -307,6 +307,42 @@ test("desktop 1000-row search uses one index request and keeps the virtual list 
   expect(indexRequests).toHaveLength(1);
 });
 
+test("category grouping shares one index across layouts and can scroll to the last of 1000 subscriptions", async ({ page }) => {
+  const base = subscriptionCollectionContractFixtures.collectionItems[0];
+  if (!base) throw new Error("Missing subscription collection fixture");
+  const subscriptions = Array.from({ length: 1000 }, (_, index) => ({
+    ...base, id: `grouped-${index}`, name: `Grouped service ${index}`,
+    category: index % 2 === 0 ? "e2e-category-a" : "e2e-category-b",
+  }));
+  const requests: string[] = [];
+  await page.route("**/api/app/subscriptions/index**", async (route) => {
+    requests.push(route.request().url());
+    await route.fulfill({ json: { ok: true, data: { subscriptions, total: subscriptions.length } } });
+  });
+  await page.route("**/api/app/subscriptions/grouped-*", (route) => {
+    const id = new URL(route.request().url()).pathname.split("/").pop();
+    const item = subscriptions.find((subscription) => subscription.id === id);
+    if (!item) throw new Error("Missing grouped subscription detail fixture");
+    return route.fulfill({ json: { ok: true, data: { subscription: { ...subscriptionCollectionContractFixtures.completeSubscription, ...item } } } });
+  });
+  await page.goto("/subscriptions");
+  const group = page.getByRole("switch", { name: "按分类分组" });
+  await expect(group).not.toBeChecked();
+  expect(requests).toHaveLength(0);
+  await group.press("Space");
+  await expect(page.getByRole("heading", { level: 2, name: "e2e-category-a 500 个订阅" })).toBeVisible();
+  await expect(group).toBeFocused();
+  await page.getByRole("button", { name: "切换到列表视图" }).click();
+  const list = page.getByTestId("virtualized-subscription-list");
+  await expect(list.getByRole("heading", { name: "Grouped service 0", exact: true })).toBeVisible();
+  expect(await list.getByRole("heading", { level: 3 }).count()).toBeLessThan(50);
+  await expect(async () => {
+    await page.locator("#root").evaluate((root) => root.scrollTo({ top: root.scrollHeight }));
+    await expect(list.getByRole("heading", { name: "Grouped service 999", exact: true })).toBeInViewport({ timeout: 500 });
+  }).toPass({ timeout: 10000 });
+  expect(requests.map((url) => new URL(url).search)).toEqual([""]);
+});
+
 test("desktop import Logo editor gives search candidates a real scroll viewport", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await installLogoCandidateRoute(page);
@@ -435,15 +471,18 @@ test("bulk public visibility preserves card details and applies one command to t
       await expect(summary).toBeVisible();
       await expect(summary.getByRole("checkbox", { name: "全选所有匹配订阅" })).not.toBeChecked();
       await expect(summary.getByRole("button", { name: "清空选择" })).toBeDisabled();
-      await cards.first().getByRole("checkbox").check();
+      const selectedCard = subscriptionCard(page, names[0]!);
+      await selectedCard.getByRole("checkbox").check();
       await expect(summary.getByRole("checkbox")).toHaveAttribute("aria-checked", "mixed");
       const toolbar = page.getByRole("toolbar", { name: "批量管理公开可见性", exact: true });
       await expect(toolbar).toBeVisible();
       await expect(summary).not.toContainText("已选择");
       await expect(page.getByText("已选择 1 条", { exact: true })).toHaveCount(1);
+      await page.getByRole("switch", { name: "按分类分组" }).click();
+      await expect(selectedCard.getByRole("checkbox")).toBeChecked();
+      await expect(toolbar).toContainText("已选择 1 条");
       // 管理模式下卡片主体只表达选择，详情从卡片菜单进入，避免一次点击产生两个意图。
-      const detailCard = subscriptionCard(page, names[0]!);
-      await detailCard.getByRole("button", { name: "更多操作", exact: true }).click();
+      await selectedCard.getByRole("button", { name: "更多操作", exact: true }).click();
       await page.getByRole("menuitem", { name: "查看详情", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: names[0]! });
       await expect(dialog).toBeVisible();

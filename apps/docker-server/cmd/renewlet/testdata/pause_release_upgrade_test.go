@@ -27,14 +27,37 @@ func TestReleasedPauseDatabaseUpgrade(t *testing.T) {
 		t.Fatal(err)
 	}
 	registerRecordHooks(app)
+	records := []struct {
+		id, status, category string
+		pinned               bool
+	}{
+		{"releasedactive1", "active", "productivity", true},
+		{"releasedpaused1", "paused", "legacy-tools", false},
+	}
 	seed := os.Getenv("RENEWLET_TEST_PAUSE_PHASE") == "seed"
 	if seed {
 		user, _ := createRouteTestUser(t, app, "release-upgrade")
-		for _, status := range []string{"active", "paused"} {
+		for _, record := range records {
 			createRouteTestSubscription(t, app, user.Id, map[string]interface{}{
-				"name": status, "status": status, "startDate": "2026-01-01", "nextBillingDate": "2099-01-01", "autoCalculateNextBillingDate": false,
+				"id": record.id, "name": record.status, "status": record.status, "category": record.category, "pinned": record.pinned,
+				"startDate": "2026-01-01", "nextBillingDate": "2099-01-01", "autoCalculateNextBillingDate": false,
 				"autoRenew": false, "repeatReminderEnabled": true, "reminderDays": 3,
 			})
+		}
+	}
+	user, err := app.FindAuthRecordByEmail("users", "admin-release-upgrade@example.com")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range records {
+		query := subscriptionListQuery{Categories: []string{want.category}}
+		page, exceeded, err := boundedSubscriptionRecordsForQuery(app, user.Id, query, "2026-01-01", subscriptionCollectionLimit)
+		if err != nil || exceeded || page.Total != 1 || len(page.Rows) != 1 {
+			t.Fatalf("category %q: total=%d rows=%d exceeded=%v error=%v", want.category, page.Total, len(page.Rows), exceeded, err)
+		}
+		got := subscriptionCollectionAPIFromRecord(page.Rows[0])
+		if got.ID != want.id || got.Category != want.category || got.Pinned != want.pinned {
+			t.Fatalf("category %q: id=%q category=%q pinned=%v", want.category, got.ID, got.Category, got.Pinned)
 		}
 	}
 	var subscriptions, schedules, retained int

@@ -196,7 +196,6 @@ vi.mock("@/components/subscription-category-filter", () => ({
 }));
 
 vi.mock("@/components/subscription-tag-filter-drawer", () => ({
-  SelectedTagScroller: () => null,
   SubscriptionTagFilterDrawer: () => null,
   SubscriptionTagFilterPopover: () => null,
 }));
