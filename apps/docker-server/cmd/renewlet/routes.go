@@ -283,6 +283,7 @@ func registerRoutes(app core.App, router *router.Router[*core.RequestEvent]) []a
 	})
 
 	auth := api.Group("/api/app").Bind(appAuthMiddleware(app))
+	registerOIDCRoutes(app, api, admin, auth)
 	auth.GET("/system/version", func(e *core.RequestEvent) error { return handleSystemVersion(e) })
 	auth.PUT("/account/password", func(e *core.RequestEvent) error {
 		locale := requestLocale(e.Request)

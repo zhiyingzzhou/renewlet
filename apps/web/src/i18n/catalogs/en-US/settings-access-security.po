@@ -74,9 +74,29 @@ msgid "settings.turnstileSaving"
 msgstr "Saving..."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:55
+msgid "settings.oidcEnable"
+msgstr "Save and enable"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:60
+msgid "settings.oidcDisable"
+msgstr "Disable single sign-on"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:12
 msgid "settings.turnstileSiteKeyHelp"
 msgstr "Shown to the login page so it can render the Turnstile widget."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:59
+msgid "settings.oidcBind"
+msgstr "Link with provider"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:38
+msgid "settings.oidcTitle"
+msgstr "Single sign-on"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:16
@@ -99,9 +119,34 @@ msgid "settings.turnstileEnableHelp"
 msgstr "When enabled, both Site key and Secret key must be filled in, otherwise human verification will not take effect."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:45
+msgid "settings.oidcCallback"
+msgstr "Redirect URI"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:52
+msgid "settings.oidcCopy"
+msgstr "Copy"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:46
+msgid "settings.oidcCallbackHelp"
+msgstr "Register this exact redirect URI with your provider."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:24
 msgid "settings.turnstileTestDialogDescription"
 msgstr "Complete the verification below. Renewlet will then check whether the current Site key and Secret key work."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:48
+msgid "settings.oidcClient"
+msgstr "Client ID"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:49
+msgid "settings.oidcSecret"
+msgstr "Client secret"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:18
@@ -109,9 +154,34 @@ msgid "settings.turnstileSecretConfigured"
 msgstr "Key configured"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:40
+msgid "settings.oidcAccountHelp"
+msgstr "Link your external identity to sign in to this account on other devices."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:15
 msgid "settings.turnstileSecretConfiguredPlaceholder"
 msgstr "Saved; leave blank to keep it unchanged"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:51
+msgid "settings.oidcCopied"
+msgstr "Copied"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:54
+msgid "settings.oidcLinked"
+msgstr "Linked provider"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:50
+msgid "settings.oidcSavedSecret"
+msgstr "Configured. Leave blank to keep it."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:47
+msgid "settings.oidcIssuer"
+msgstr "Issuer URL"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:28
@@ -144,6 +214,16 @@ msgid "settings.turnstileTesting"
 msgstr "Testing..."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:57
+msgid "settings.oidcTest"
+msgstr "Test sign-in"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:43
+msgid "settings.oidcTestPassed"
+msgstr "Test sign-in succeeded. Confirm to use these settings for this site."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:30
 msgid "settings.turnstileClearing"
 msgstr "Clearing..."
@@ -159,9 +239,29 @@ msgid "settings.turnstileSecretKeepHelp"
 msgstr "Leave blank to keep the current key; enter a new value to replace it."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:56
+msgid "settings.oidcConfirm"
+msgstr "Confirm link"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:37
+msgid "settings.oidcAccessHelp"
+msgstr "Manage sign-in methods and bot protection for this site."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:42
+msgid "settings.oidcManage"
+msgstr "Manage identity link"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:8
 msgid "settings.turnstileEnable"
 msgstr "Require human verification for email/password login"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:58
+msgid "settings.oidcUnlink"
+msgstr "Unlink identity"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:4
@@ -174,6 +274,26 @@ msgid "settings.accessSecurity"
 msgstr "Access security"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:44
+msgid "settings.oidcConfirmHelp"
+msgstr "Check the provider and external identity before confirming the link."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:53
+msgid "settings.oidcCopyFailed"
+msgstr "Select the address and copy it manually."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:14
 msgid "settings.turnstileSecretPlaceholder"
 msgstr "Enter the Cloudflare Turnstile Secret key"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:39
+msgid "settings.oidcSiteHelp"
+msgstr "Connect an OpenID Connect provider so existing users can link their accounts."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:41
+msgid "settings.oidcConfigure"
+msgstr "Configure single sign-on"

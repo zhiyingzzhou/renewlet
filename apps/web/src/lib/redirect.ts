@@ -29,3 +29,13 @@ export function sanitizeNextPath(value: string | null | undefined, fallback = "/
     return fallback;
   }
 }
+
+export function takeOidcReturn() {
+  const url = new URL(window.location.href);
+  const state = url.searchParams.get("oidc");
+  if (state) {
+    url.searchParams.delete("oidc");
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  }
+  return state;
+}

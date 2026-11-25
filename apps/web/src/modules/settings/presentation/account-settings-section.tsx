@@ -16,6 +16,7 @@ import { ExternalLink } from 'lucide-react';
 import { passkeyService } from "@/services/passkey-service";
 import { PasswordChangeDialog } from './password-change-dialog';
 import { AccountMfaSection } from './account-mfa-section';
+import { OidcCard } from "./oidc-card";
 import { AccountPasskeysSection } from './account-passkeys-section';
 import { DeferredAccountSecurityDialogs } from "./account-security-dialogs-loader";
 import { PASSKEYS_QUERY_KEY } from "./account-security-query-keys";
@@ -42,6 +43,7 @@ export interface AccountSettingsSectionProps {
   setConfirmPassword: (value: string) => void;
   isUpdatingPassword: boolean;
   updatePassword: () => void | Promise<void>;
+  oidcEnabled?: boolean;
   passwordDisabled?: boolean;
   accountSecurityDemoDisabled?: boolean;
 }
@@ -64,6 +66,7 @@ export function AccountSettingsSection({
   setConfirmPassword,
   isUpdatingPassword,
   updatePassword,
+  oidcEnabled = false,
   passwordDisabled = false,
   accountSecurityDemoDisabled = false,
 }: AccountSettingsSectionProps) {
@@ -188,6 +191,7 @@ export function AccountSettingsSection({
             state={passkeys}
             onManagePasskeys={() => openAccountSecurityDialog({ type: "passkeys_manager" })}
           />
+          {oidcEnabled && <OidcCard disabled={passwordDisabled} />}
         </div>
       </section>
 

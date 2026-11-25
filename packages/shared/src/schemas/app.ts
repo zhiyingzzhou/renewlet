@@ -28,6 +28,10 @@ export const appStatusPayloadSchema = z.object({
 }).strict();
 export const appStatusResponseSchema = apiSuccessResponseSchema(appStatusPayloadSchema);
 
+export const loginOptionsPayloadSchema = appStatusPayloadSchema.extend({ passwordReset: z.boolean(), oidc: z.boolean() });
+export const loginOptionsSchema = apiSuccessResponseSchema(loginOptionsPayloadSchema);
+export type LoginOptions = z.infer<typeof loginOptionsPayloadSchema>;
+
 export const setupStatusPayloadSchema = appStatusPayloadSchema.pick({
   setupRequired: true,
   setupEnabled: true,

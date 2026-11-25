@@ -69,6 +69,7 @@ export interface SettingsFormController {
   telegramBotCommands: SettingsTelegramBotCommandsController;
   authSecurity: SettingsAuthSecurityController;
   password: PasswordChangeController;
+  oidcEnabled?: boolean | undefined;
   passwordResetEnabled: boolean;
   externalIntegrationsDisabled: boolean;
   sensitiveAccountActionsDisabled: boolean;

@@ -9,6 +9,7 @@ const testFile = join(root, "apps/docker-server/cmd/renewlet/testdata/pause_rele
 const releases = [
   ["v0.3.28", "2b3e89dbf7168b5266370c3095676f32f12cbeea"],
   ["v0.3.37", "2aa8c8e1134d2d9670e888e03e9222c2ce00fbed"],
+  ["v0.3.38", "91e81f7b435132d2be2d380f4ab81068753f92ba"],
 ];
 for (const [tag, commit] of releases) {
   const scratch = realpathSync(mkdtempSync(join(tmpdir(), "renewlet-pause-upgrade-")));

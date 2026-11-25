@@ -328,7 +328,7 @@ describe("Cloudflare auth settings initialization", () => {
       expiresAt: "2026-06-03T00:05:00.000Z",
       methods: ["totp"],
     });
-    expect(mocks.createMfaAuthTicket).toHaveBeenCalledWith(expect.anything(), "usr_mfa", ["totp"]);
+    expect(mocks.createMfaAuthTicket).toHaveBeenCalledWith(expect.anything(), "usr_mfa", ["totp"], undefined);
     expect(run).not.toHaveBeenCalled();
   });
 });

@@ -74,9 +74,29 @@ msgid "settings.turnstileSaving"
 msgstr "保存中..."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:55
+msgid "settings.oidcEnable"
+msgstr "保存并启用"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:60
+msgid "settings.oidcDisable"
+msgstr "停用单点登录"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:12
 msgid "settings.turnstileSiteKeyHelp"
 msgstr "公开给登录页渲染 Turnstile widget。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:59
+msgid "settings.oidcBind"
+msgstr "前往提供方绑定"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:38
+msgid "settings.oidcTitle"
+msgstr "单点登录"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:16
@@ -99,9 +119,34 @@ msgid "settings.turnstileEnableHelp"
 msgstr "启用后必须同时填写 Site key 和 Secret key，否则人机验证不会生效。"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:45
+msgid "settings.oidcCallback"
+msgstr "回调地址"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:52
+msgid "settings.oidcCopy"
+msgstr "复制"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:46
+msgid "settings.oidcCallbackHelp"
+msgstr "复制到提供方的重定向地址中，完整地址须一致。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:24
 msgid "settings.turnstileTestDialogDescription"
 msgstr "完成下方验证后，Renewlet 会检查当前 Site key 和 Secret key 是否可用。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:48
+msgid "settings.oidcClient"
+msgstr "客户端 ID（Client ID）"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:49
+msgid "settings.oidcSecret"
+msgstr "客户端密钥（Client Secret）"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:18
@@ -109,9 +154,34 @@ msgid "settings.turnstileSecretConfigured"
 msgstr "密钥已配置"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:40
+msgid "settings.oidcAccountHelp"
+msgstr "将外部身份绑定到当前账号，在其他设备上使用单点登录。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:15
 msgid "settings.turnstileSecretConfiguredPlaceholder"
 msgstr "已保存，留空则保持不变"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:51
+msgid "settings.oidcCopied"
+msgstr "已复制"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:54
+msgid "settings.oidcLinked"
+msgstr "已绑定提供方"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:50
+msgid "settings.oidcSavedSecret"
+msgstr "已配置，留空沿用原密钥"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:47
+msgid "settings.oidcIssuer"
+msgstr "提供方地址（Issuer URL）"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:28
@@ -144,6 +214,16 @@ msgid "settings.turnstileTesting"
 msgstr "测试中..."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:57
+msgid "settings.oidcTest"
+msgstr "测试登录"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:43
+msgid "settings.oidcTestPassed"
+msgstr "测试登录成功。确认后，这组配置将用于本站登录。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:30
 msgid "settings.turnstileClearing"
 msgstr "清除中..."
@@ -159,9 +239,29 @@ msgid "settings.turnstileSecretKeepHelp"
 msgstr "留空保持当前密钥；填写新值会替换旧密钥。"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:56
+msgid "settings.oidcConfirm"
+msgstr "确认绑定"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:37
+msgid "settings.oidcAccessHelp"
+msgstr "管理本站登录方式和人机验证。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:42
+msgid "settings.oidcManage"
+msgstr "管理绑定"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:8
 msgid "settings.turnstileEnable"
 msgstr "要求邮箱密码登录通过人机验证"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:58
+msgid "settings.oidcUnlink"
+msgstr "解除绑定"
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:4
@@ -174,6 +274,26 @@ msgid "settings.accessSecurity"
 msgstr "访问安全"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:44
+msgid "settings.oidcConfirmHelp"
+msgstr "请核对提供方和外部身份标识，再确认绑定。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:53
+msgid "settings.oidcCopyFailed"
+msgstr "请选中地址并手动复制。"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/settings-access-security.ts:14
 msgid "settings.turnstileSecretPlaceholder"
 msgstr "输入 Cloudflare Turnstile Secret key"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:39
+msgid "settings.oidcSiteHelp"
+msgstr "连接一个 OpenID Connect 提供方，供已有账号绑定登录。"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/settings-access-security.ts:41
+msgid "settings.oidcConfigure"
+msgstr "配置单点登录"

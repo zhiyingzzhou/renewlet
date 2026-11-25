@@ -11,7 +11,8 @@ const mocks = vi.hoisted(() => ({
   verifyMfa: vi.fn(),
   cancelPasskeyCeremony: vi.fn(),
   reportClientError: vi.fn(),
-  usePasswordResetAvailability: vi.fn(),
+  oidcStart: vi.fn(),
+  oidcFinish: vi.fn(),
   useAppStatus: vi.fn(),
   setTheme: vi.fn(),
   resolvedTheme: "dark" as const,
@@ -28,8 +29,9 @@ vi.mock("@/lib/auth-client", () => ({
   },
 }));
 
-vi.mock("@/hooks/use-password-reset-availability", () => ({
-  usePasswordResetAvailability: mocks.usePasswordResetAvailability,
+vi.mock("@/services/oidc-service", () => ({
+  oidcService: { login: mocks.oidcStart, finish: mocks.oidcFinish },
+  oidcErrorKey: () => "auth.oidcFailed",
 }));
 
 vi.mock("@/lib/report-client-error", () => ({
@@ -47,6 +49,15 @@ vi.mock("@/lib/theme-provider", () => ({
     setTheme: mocks.setTheme,
   }),
 }));
+
+const oidcStatus = {
+  status: "ready",
+  data: {
+    setupRequired: false, setupEnabled: true, demoMode: false, passwordReset: false, oidc: true,
+    turnstile: { enabled: false, siteKey: "" },
+  },
+  isLoading: false,
+} as const;
 
 const rememberedLoginEmailStorageKey = "renewlet_login_email";
 
@@ -123,7 +134,9 @@ describe("Login page", () => {
     mocks.setTheme.mockReset();
     mocks.resolvedTheme = "dark";
     localStorage.clear();
-    mocks.usePasswordResetAvailability.mockReturnValue(false);
+    mocks.oidcStart.mockReset();
+    mocks.oidcFinish.mockReset();
+    window.history.replaceState(null, "", "/login");
     mocks.useAppStatus.mockReturnValue({
       status: "ready",
       data: {
@@ -138,6 +151,37 @@ describe("Login page", () => {
       isReady: true,
       retry: vi.fn(),
     });
+  });
+
+  it("starts single sign-on from the configured site with a sanitized return path", async () => {
+    mocks.useAppStatus.mockReturnValue(oidcStatus);
+    window.history.replaceState(null, "", "/login?next=%2Fcalendar");
+    renderLogin();
+    await userEvent.click(screen.getByRole("button", { name: "Use single sign-on" }));
+    expect(mocks.cancelPasskeyCeremony).toHaveBeenCalled();
+    expect(mocks.oidcStart).toHaveBeenCalledWith("/calendar");
+  });
+
+  it("restores focus after cancellation when login options arrive late", async () => {
+    mocks.useAppStatus.mockReturnValue({ status: "loading", isLoading: true, data: null });
+    window.history.replaceState(null,"","/login?oidc=cancelled");
+    const view=renderLogin();
+    mocks.useAppStatus.mockReturnValue(oidcStatus);
+    view.rerender(<MemoryRouter><Login /></MemoryRouter>);
+    await waitFor(()=>expect(screen.getByRole("button",{name:"Use single sign-on"})).toHaveFocus());
+    expect(mocks.oidcFinish).not.toHaveBeenCalled();
+  });
+
+  it("consumes the OIDC return once and opens the local MFA dialog", async () => {
+    mocks.useAppStatus.mockReturnValue(oidcStatus);
+    mocks.oidcFinish.mockResolvedValue({ type: "mfa_required", ticketId:"ticket-oidc", expiresAt:"2099-01-01T00:00:00Z", methods:["totp"] });
+    window.history.replaceState(null, "", "/login?oidc=login&next=%2Fcalendar");
+    renderLogin();
+    const dialog=await screen.findByRole("dialog", { name:"Complete sign-in verification" });
+    expect(mocks.oidcFinish).toHaveBeenCalledTimes(1);
+    expect(window.location.search).toBe("?next=%2Fcalendar");
+    await userEvent.click(within(dialog).getByRole("button", { name:"Close" }));
+    await waitFor(()=>expect(screen.getByRole("button", { name:"Use single sign-on" })).toHaveFocus());
   });
 
   it("hides the first deployment setup prompt after setup is complete", () => {

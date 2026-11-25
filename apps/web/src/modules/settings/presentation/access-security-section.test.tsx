@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { SettingsAuthSecurityController } from "../application/use-auth-security-settings-controller";
@@ -37,6 +37,7 @@ const translations: Record<string, string> = {
   "settings.turnstileSiteKey": "Site key",
   "settings.turnstileSiteKeyHelp": "公开给登录页渲染 Turnstile widget。",
   "settings.turnstileSiteKeyPlaceholder": "0x4AAAA...",
+  "settings.oidcTitle": "单点登录",
   "settings.turnstileTitle": "Cloudflare Turnstile",
 };
 
@@ -149,9 +150,9 @@ describe("AccessSecuritySection", () => {
       }),
     }));
 
-    expect(screen.getByText("状态未知")).toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "Cloudflare Turnstile" })).getByText("状态未知")).toBeInTheDocument();
     expect(screen.getByText("加载失败")).toBeInTheDocument();
-    expect(screen.queryByText("未启用")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "Cloudflare Turnstile" })).queryByText("未启用")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Site key")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Secret key")).not.toBeInTheDocument();
 
@@ -166,7 +167,8 @@ describe("AccessSecuritySection", () => {
     }));
 
     expect(screen.getByRole("heading", { name: "访问安全" })).toBeInTheDocument();
-    expect(screen.getAllByRole("heading")).toHaveLength(1);
+    expect(screen.getByRole("heading", { level: 3, name: "Cloudflare Turnstile" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "单点登录" })).toBeInTheDocument();
     expect(screen.getByText("已启用")).toBeInTheDocument();
     expect(screen.getByText("密钥已配置")).toBeInTheDocument();
     expect(screen.getByText("启用后，Renewlet 会在邮箱密码登录前校验 Turnstile，用于降低爆破和撞库风险；通行密钥、身份验证器二阶段和首次设置不受影响。")).toBeInTheDocument();

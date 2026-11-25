@@ -9,6 +9,7 @@
     "./schemas/account": "./src/schemas/account.ts",
     "./schemas/admin": "./src/schemas/admin.ts",
     "./schemas/app": "./src/schemas/app.ts",
+    "./schemas/oidc": "./src/schemas/oidc.ts",
     "./schemas/auth": "./src/schemas/auth.ts",
     "./schemas/ai-recognition": "./src/schemas/ai-recognition.ts",
     "./schemas/calendar-feed": "./src/schemas/calendar-feed.ts",

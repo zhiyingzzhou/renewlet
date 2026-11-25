@@ -34,6 +34,11 @@ msgid "auth.turnstileFailed"
 msgstr "Human verification failed. Please try again."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:94
+msgid "auth.oidcLogin"
+msgstr "Use single sign-on"
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:21
 msgid "auth.mfaSubtitle"
 msgstr "Use an authenticator code or recovery code to continue."
@@ -174,6 +179,11 @@ msgid "setup.validation.passwordLength"
 msgstr "Password must be at least 8 characters."
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:96
+msgid "auth.oidcPasswordError"
+msgstr "The current password is incorrect."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:66
 msgid "passwordReset.smtpUnavailable1"
 msgstr "Email password reset is not enabled for this deployment."
@@ -194,6 +204,11 @@ msgid "passwordReset.forgotTitle"
 msgstr "Forgot password"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:98
+msgid "auth.oidcExpired"
+msgstr "This request has expired. Please start again."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:78
 msgid "passwordReset.newPassword"
 msgstr "New password"
@@ -202,6 +217,11 @@ msgstr "New password"
 #: src/i18n/descriptors/auth.ts:81
 msgid "passwordReset.passwordLength"
 msgstr "New password must be at least 8 characters."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:101
+msgid "auth.oidcFailed"
+msgstr "Single sign-on could not be completed. Check the provider settings and public HTTPS connection and try again."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:47
@@ -279,6 +299,11 @@ msgid "passwordReset.newTitle"
 msgstr "Set new password"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:95
+msgid "auth.oidcUnlinked"
+msgstr "Sign in using your usual method, then link this identity in Settings → Account."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:93
 msgid "auth.loginRequired"
 msgstr "Please sign in first"
@@ -292,6 +317,11 @@ msgstr "Enter the new password again"
 #: src/i18n/descriptors/auth.ts:16
 msgid "auth.turnstileRequired"
 msgstr "Please complete human verification"
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:100
+msgid "auth.oidcInvalid"
+msgstr "Check the issuer URL, client ID and secret. Enter the secret again when changing the issuer or client."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:51
@@ -364,6 +394,11 @@ msgid "passwordReset.emailRequired"
 msgstr "Enter your email address"
 
 #. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:99
+msgid "auth.oidcOrigin"
+msgstr "Use the registered HTTPS site address."
+
+#. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:76
 msgid "passwordReset.tokenMissing2"
 msgstr "Request a new password reset, or make sure the email link was not truncated."
@@ -387,6 +422,11 @@ msgstr "Manage all your subscriptions with ease"
 #: src/i18n/descriptors/auth.ts:70
 msgid "passwordReset.emailHelp"
 msgstr "Enter your login email and we will send a one-time reset link."
+
+#. js-lingui-explicit-id
+#: src/i18n/descriptors/auth.ts:97
+msgid "auth.oidcConflict"
+msgstr "This identity or account is already linked. Check the existing link first."
 
 #. js-lingui-explicit-id
 #: src/i18n/descriptors/auth.ts:40

@@ -78,35 +78,54 @@ func handleAuthLogin(app core.App, e *core.RequestEvent) error {
 	if err != nil || !user.ValidatePassword(body.Password) {
 		return e.BadRequestError(serverText(locale, "auth.invalidEmailOrPassword"), err)
 	}
+	result, err := preparePrimaryLogin(app, e, user)
+	if err != nil {
+		return err
+	}
+	return result.send(e)
+}
+
+type primaryLoginResult struct {
+	session   sessionResponse
+	challenge *mfaRequiredResponse
+}
+
+func (result primaryLoginResult) send(e *core.RequestEvent) error {
+	if result.challenge != nil {
+		return apiSuccessJSON(e, 200, result.challenge)
+	}
+	return sendAppSessionResponse(e, result.session)
+}
+
+func sendAppSessionResponse(e *core.RequestEvent, s sessionResponse) error {
+	setAppSessionCookies(e, s.token, s.csrfToken, s.Session.ExpiresAt)
+	return apiSuccessJSON(e, 200, s)
+}
+
+// 密码与外部身份共用同一个账号状态检查；OIDC 在绑定仍有效的事务内决定签会话还是 MFA 票据。
+func preparePrimaryLogin(app core.App, e *core.RequestEvent, user *core.Record) (primaryLoginResult, error) {
+	var result primaryLoginResult
+	locale := requestLocale(e.Request)
 	if user.GetBool("banned") {
-		return e.ForbiddenError(localizedDisabledBanReason(locale), nil)
+		return result, e.ForbiddenError(localizedDisabledBanReason(locale), nil)
 	}
 	if _, _, err := ensureSettingsRecord(app, user.Id); err != nil {
-		return e.InternalServerError(serverText(locale, "common.internalError"), err)
+		return result, err
 	}
 	methods, err := authenticatorMfaMethodsForUser(app, user.Id)
 	if err != nil {
-		return e.InternalServerError(serverText(locale, "common.internalError"), err)
+		return result, err
 	}
 	if len(methods) > 0 {
-		// MFA 用户密码正确后只签短期 ticket；未完成第二因素前不能创建产品 session 或 PB JWT。
-		ticket, expiresAt, err := createMfaAuthTicket(app, user.Id, methods)
+		ticket, expires, err := createMfaAuthTicket(app, user.Id, methods)
 		if err != nil {
-			return e.InternalServerError(serverText(locale, "common.internalError"), err)
+			return result, err
 		}
-		return apiSuccessJSON(e, 200, mfaRequiredResponse{
-			Type:      "mfa_required",
-			TicketID:  ticket,
-			ExpiresAt: expiresAt,
-			Methods:   methods,
-		})
+		result.challenge = &mfaRequiredResponse{Type: "mfa_required", TicketID: ticket, ExpiresAt: expires, Methods: methods}
+	} else {
+		result.session, err = createAppSessionResponse(app, user)
 	}
-	response, err := createAppSessionResponse(app, user)
-	if err != nil {
-		return e.InternalServerError(serverText(locale, "common.internalError"), err)
-	}
-	setAppSessionCookies(e, response.token, response.csrfToken, response.Session.ExpiresAt)
-	return apiSuccessJSON(e, 200, response)
+	return result, err
 }
 
 func handleAuthSession(app core.App, e *core.RequestEvent) error {

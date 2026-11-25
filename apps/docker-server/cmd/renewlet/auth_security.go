@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 )
 
@@ -187,11 +186,15 @@ func publicTurnstileConfig(app core.App) (turnstilePublicConfig, error) {
 	if err != nil {
 		return turnstilePublicConfig{}, err
 	}
+	return settings.publicTurnstile(), nil
+}
+
+func (settings authSecurityStoredSettings) publicTurnstile() turnstilePublicConfig {
 	if !settings.turnstileComplete() {
-		return turnstilePublicConfig{Enabled: false, SiteKey: ""}, nil
+		return turnstilePublicConfig{}
 	}
 	// 认证前 status 只能公开浏览器渲染 widget 所需的 siteKey；secretConfigured 也只属于管理员配置面。
-	return turnstilePublicConfig{Enabled: true, SiteKey: settings.TurnstileSiteKey}, nil
+	return turnstilePublicConfig{Enabled: true, SiteKey: settings.TurnstileSiteKey}
 }
 
 func requireTurnstileForPasswordLogin(app core.App, request *http.Request, token string) error {
@@ -240,35 +243,44 @@ func authSecurityResponseFromStored(settings authSecurityStoredSettings) authSec
 	}
 }
 
-func readAuthSecuritySettings(app core.App) (authSecurityStoredSettings, error) {
-	record, err := app.FindFirstRecordByFilter(authSecurityCollectionName, "key = {:key}", dbx.Params{"key": authSecurityRecordKey})
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return authSecurityStoredSettings{}, nil
-		}
-		return authSecurityStoredSettings{}, err
+func authSecurityRecord(app core.App) (*core.Record, error) {
+	row, err := app.FindFirstRecordByData(authSecurityCollectionName, "key", authSecurityRecordKey)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
 	}
-	return authSecuritySettingsFromRecord(record), nil
+	return row, err
+}
+func readAuthSecuritySettings(app core.App) (authSecurityStoredSettings, error) {
+	record, err := authSecurityRecord(app)
+	return authSecuritySettingsFromRecord(record), err
+}
+
+func authSecurityRecordForWrite(app core.App) (*core.Record, error) {
+	record, err := authSecurityRecord(app)
+	if err != nil || record != nil {
+		return record, err
+	}
+	collection, err := app.FindCollectionByNameOrId(authSecurityCollectionName)
+	if err != nil {
+		return nil, err
+	}
+	record = core.NewRecord(collection)
+	record.Set("key", authSecurityRecordKey)
+	return record, nil
 }
 
 func saveAuthSecuritySettings(app core.App, settings authSecurityStoredSettings) error {
-	collection, err := app.FindCollectionByNameOrId(authSecurityCollectionName)
-	if err != nil {
-		return err
-	}
-	record, err := app.FindFirstRecordByFilter(authSecurityCollectionName, "key = {:key}", dbx.Params{"key": authSecurityRecordKey})
-	if err != nil {
-		if !errors.Is(err, sql.ErrNoRows) {
+	// 两种登录策略共享同一行，把读取和保存放进同一事务，避免一方覆盖另一方刚生效的配置。
+	return app.RunInTransaction(func(tx core.App) error {
+		record, err := authSecurityRecordForWrite(tx)
+		if err != nil {
 			return err
 		}
-		// singleton 首次保存时创建；后续 PUT 都更新同一行，防止历史配置残留多份 secret。
-		record = core.NewRecord(collection)
-	}
-	record.Set("key", authSecurityRecordKey)
-	record.Set("turnstileEnabled", settings.TurnstileEnabled)
-	record.Set("turnstileSiteKey", strings.TrimSpace(settings.TurnstileSiteKey))
-	record.Set("turnstileSecret", strings.TrimSpace(settings.TurnstileSecret))
-	return app.Save(record)
+		record.Set("turnstileEnabled", settings.TurnstileEnabled)
+		record.Set("turnstileSiteKey", strings.TrimSpace(settings.TurnstileSiteKey))
+		record.Set("turnstileSecret", strings.TrimSpace(settings.TurnstileSecret))
+		return tx.Save(record)
+	})
 }
 
 func authSecuritySettingsFromRecord(record *core.Record) authSecurityStoredSettings {
