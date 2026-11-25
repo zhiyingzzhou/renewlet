@@ -31,5 +31,5 @@ minimumReleaseAgeExclude:
   # 工程优化已审计并指定Vite版本；仅放行该版本的发布冷却期，不扩大后续升级范围。
   - vite@8.3.4
   - undici@8.12.4
-  - miniflare@5.20261117.0-beta
-  - wrangler@4.164.0
+  - miniflare@5.20261123.1-beta
+  - wrangler@4.168.0
